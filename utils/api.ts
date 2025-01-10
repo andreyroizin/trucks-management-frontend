@@ -21,10 +21,29 @@ api.interceptors.request.use((config) => {
 
 // Login API call
 export const login = async (credentials: { email: string; password: string }) => {
-    const response = await api.post('/login', credentials);
-    const { token } = response.data;
-    localStorage.setItem('authToken', token); // Save token to localStorage
-    return response.data;
+    try {
+        const response = await api.post('/login', credentials);
+        const data = response.data;
+
+        if (data.isSuccess) {
+            return data; // Return successful response
+        } else {
+            // Return structured error response for frontend handling
+            return {
+                isSuccess: false,
+                errors: data.errors || ['Unknown error occurred'],
+            };
+        }
+    } catch (error: any) {
+        // Handle unexpected errors
+        if (error.response && error.response.data) {
+            return error.response.data; // Return API error response
+        }
+        return {
+            isSuccess: false,
+            errors: ['Network error or unexpected issue occurred'],
+        };
+    }
 };
 
 // Register API call
