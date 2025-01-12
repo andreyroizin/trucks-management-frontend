@@ -25,21 +25,20 @@ export default function LoginForm() {
     });
     const [apiError, setApiError] = useState<string | null>(null);
 
+
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-        setApiError(null); // Clear previous errors
+        setApiError(null); // Clear previous error
         try {
             const response = await login(data);
 
             if (!response.isSuccess) {
-                // Display the first error message from the API response
                 setApiError(response.errors?.[0] || 'Unknown error occurred');
             } else {
-                console.log('Login successful:', response);
                 window.location.href = '/'; // Redirect to home page
             }
-        } catch (error) {
-            console.error('An unexpected error occurred:', error);
-            setApiError('An unexpected error occurred. Please try again.');
+        } catch (error: any) {
+            console.error('Error:', error);
+            setApiError(error.message || 'An unexpected error occurred. Please try again.');
         }
     };
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {LoginResponse} from "@/types/api";
 
 const API_BASE_URL = 'https://localhost:7129'; // Update with your API base URL
 
@@ -22,7 +23,7 @@ api.interceptors.request.use((config) => {
 // Login API call
 export const login = async (credentials: { email: string; password: string }) => {
     try {
-        const response = await api.post('/login', credentials);
+        const response = await api.post<LoginResponse>('/login', credentials);
         const data = response.data;
 
         if (data.isSuccess) {
@@ -59,6 +60,6 @@ export const logout = () => {
 
 // Get the current user
 export const getCurrentUser = async () => {
-    const response = await api.get('/auth/me'); // Replace '/auth/me' with your endpoint
-    return response.data;
+    const response = await api.get('/users/me'); // Replace '/auth/me' with your endpoint
+    return response.data.data;
 };

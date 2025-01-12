@@ -1,18 +1,33 @@
-'use client'
+'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function ProtectedPage() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/auth/login');
+    if (!loading && !isAuthenticated) {
+      router.push('/auth/login'); // Redirect to login if not authenticated
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, loading, router]);
 
-  return <div>Protected Content</div>;
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading state while checking authentication
+  }
+
+  if (!isAuthenticated) {
+    return null; // Prevent rendering until authentication state is determined
+  }
+
+  return (
+      <div>
+        <h1>Welcome, {user?.firstName} {user?.lastName}</h1>
+        <p>Email: {user?.email}</p>
+        <p>Company ID: {user?.companyId}</p>
+        <p>Roles: {user?.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}</p>
+      </div>
+  );
 }
