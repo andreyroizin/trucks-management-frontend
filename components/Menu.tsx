@@ -14,6 +14,8 @@ export default function Menu() {
         router.push('/auth/login'); // Redirect to login after logout
     };
 
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
+
     return (
         <nav className="flex justify-between items-center p-4 bg-gray-800 text-white">
             <div className="flex items-center space-x-4">
@@ -25,9 +27,6 @@ export default function Menu() {
                         <Link href="/auth/login" className="hover:underline">
                             Login
                         </Link>
-                        <Link href="/auth/register" className="hover:underline">
-                            Register
-                        </Link>
                     </>
                 )}
                 {isAuthenticated && (
@@ -35,6 +34,11 @@ export default function Menu() {
                         <Link href="/profile" className="hover:underline">
                             Profile
                         </Link>
+                        {isGlobalAdmin && (
+                            <Link href="/auth/register" className="hover:underline">
+                                Register
+                            </Link>
+                        )}
                         <Button
                             variant="text"
                             color="inherit"
@@ -56,4 +60,3 @@ export default function Menu() {
         </nav>
     );
 }
-

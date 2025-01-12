@@ -1,5 +1,3 @@
-'use client';
-
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel, Alert } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
