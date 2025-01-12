@@ -7,6 +7,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import "./globals.css";
 import Providers from "@/app/providers";
+import Menu from "@/components/Menu";
 
 
 const geistSans = Geist({
@@ -33,7 +34,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <Providers>{children}</Providers>
+            <Providers>
+                <Menu />
+                <main className="p-4">{children}</main>
+            </Providers>
             </body>
         </html>
     );

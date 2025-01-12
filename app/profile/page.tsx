@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function ProtectedPage() {
+export default function ProfilePage() {
   const { user, isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
