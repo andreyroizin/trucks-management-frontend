@@ -49,7 +49,7 @@ export const login = async (credentials: { email: string; password: string }) =>
 
 // Register API call
 export const register = async (credentials: { email: string; password: string }) => {
-    const response = await api.post('/auth/register', credentials);
+    const response = await api.post('/register', credentials);
     return response.data;
 };
 
