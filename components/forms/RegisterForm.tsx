@@ -3,10 +3,11 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel, Alert } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useCompanies } from '@/hooks/useCompanies';
 import { useState } from 'react';
+import { useCompanies } from '@/hooks/useCompanies';
+import { useRoles } from '@/hooks/useRoles';
 import { register as registerApi } from '@/utils/api';
+import * as yup from 'yup';
 
 // Validation schema
 const registerSchema = yup.object().shape({
@@ -19,6 +20,7 @@ const registerSchema = yup.object().shape({
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
     companyId: yup.string().required('Company is required'),
+    role: yup.string().required('Role is required'),
 });
 
 type RegisterFormInputs = {
@@ -28,6 +30,7 @@ type RegisterFormInputs = {
     firstName: string;
     lastName: string;
     companyId: string;
+    role: string;
 };
 
 export default function RegisterForm() {
@@ -35,39 +38,36 @@ export default function RegisterForm() {
         resolver: yupResolver(registerSchema),
     });
 
-    const { data: companies, isLoading, isError } = useCompanies();
+    const { data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies } = useCompanies();
+    const { data: roles, isLoading: isLoadingRoles, isError: isErrorRoles } = useRoles();
+
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-        setApiError(null); // Clear previous errors
-        setSuccessMessage(null); // Clear previous success messages
+        setApiError(null);
+        setSuccessMessage(null);
 
         try {
-            const response = await registerApi(data); // Send data to API
+            const response = await registerApi(data);
             if (response.isSuccess) {
-                setSuccessMessage(response.data); // Display success message
+                setSuccessMessage(response.data);
             } else {
                 setApiError(response.errors?.[0] || 'Unknown error occurred');
             }
         } catch (error: any) {
-            setApiError(error?.response?.data?.errors[0]|| 'An unexpected error occurred. Please try again later.');
+            setApiError(error?.response?.data?.errors?.[0]|| 'An unexpected error occurred. Please try again later.');
         }
     };
 
     return (
-        <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-md p-6 bg-white rounded-lg shadow-md"
-        >
-            <Typography variant="h5" className="mb-4">
-                Register
-            </Typography>
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+            <Typography variant="h5" className="mb-4">Register</Typography>
 
-            {/* Display API error message */}
+            {/* Display API Error */}
             {apiError && <Alert severity="error" className="mb-4">{apiError}</Alert>}
 
-            {/* Display success message */}
+            {/* Display Success Message */}
             {successMessage && <Alert severity="success" className="mb-4">{successMessage}</Alert>}
 
             <TextField
@@ -122,7 +122,7 @@ export default function RegisterForm() {
                 className="mb-4"
             />
 
-            {/* Company Select Field */}
+            {/* Company Select */}
             <FormControl fullWidth className="mb-4" error={!!errors.companyId}>
                 <InputLabel>Company</InputLabel>
                 <Select
@@ -130,9 +130,9 @@ export default function RegisterForm() {
                     {...register('companyId')}
                 >
                     <MenuItem value="" disabled>
-                        {isLoading ? 'Loading companies...' : 'Select a company'}
+                        {isLoadingCompanies ? 'Loading companies...' : 'Select a company'}
                     </MenuItem>
-                    {isError && <MenuItem disabled>Error loading companies</MenuItem>}
+                    {isErrorCompanies && <MenuItem disabled>Error loading companies</MenuItem>}
                     {companies?.map((company) => (
                         <MenuItem key={company.id} value={company.id}>
                             {company.name}
@@ -144,13 +144,29 @@ export default function RegisterForm() {
                 </Typography>
             </FormControl>
 
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                className="mt-4"
-            >
+            {/* Role Select */}
+            <FormControl fullWidth className="mb-4" error={!!errors.role}>
+                <InputLabel>Role</InputLabel>
+                <Select
+                    defaultValue=""
+                    {...register('role')}
+                >
+                    <MenuItem value="" disabled>
+                        {isLoadingRoles ? 'Loading roles...' : 'Select a role'}
+                    </MenuItem>
+                    {isErrorRoles && <MenuItem disabled>Error loading roles</MenuItem>}
+                    {roles?.map((role) => (
+                        <MenuItem key={role.id} value={role.name}>
+                            {role.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <Typography variant="caption" color="error">
+                    {errors.role?.message}
+                </Typography>
+            </FormControl>
+
+            <Button type="submit" variant="contained" color="primary" fullWidth className="mt-4">
                 Register
             </Button>
         </form>

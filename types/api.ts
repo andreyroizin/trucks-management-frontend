@@ -25,5 +25,10 @@ export type User = {
 export type Company = {
     id: string;
     name: string;
-    users: User[]; // Array of users associated with the company
+    users: User[];
+};
+
+export type Role = {
+    id: string;
+    name: string;
 };
