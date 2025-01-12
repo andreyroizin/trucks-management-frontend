@@ -8,3 +8,22 @@ export type LoginResponse = {
     data: LoginData | null;
     errors: string[] | null;
 };
+
+export type ApiResponse<T> = {
+    isSuccess: boolean;
+    statusCode: number;
+    data: T;
+    errors: string[] | null;
+};
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+};
+
+export type Company = {
+    id: string;
+    name: string;
+    users: User[]; // Array of users associated with the company
+};

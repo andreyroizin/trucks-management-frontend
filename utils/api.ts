@@ -4,7 +4,7 @@ import {LoginResponse} from "@/types/api";
 const API_BASE_URL = 'https://localhost:7129'; // Update with your API base URL
 
 // Create an Axios instance
-const api = axios.create({
+export const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
