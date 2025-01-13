@@ -69,7 +69,7 @@ export const forgotPassword = async (email: string): Promise<ApiResponse<string>
     return response.data;
 };
 
-export const resetPassword = async (payload: ResetPasswordPayload) => {
+export const resetPasswordWithToken = async (payload: ResetPasswordPayload) => {
     const response = await api.post('/reset-password-token', payload);
     return response.data;
 };

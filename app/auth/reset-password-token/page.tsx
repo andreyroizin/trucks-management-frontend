@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, Alert, CircularProgress, Link as MuiLink } from '@mui/material';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { resetPassword } from '@/utils/api';
+import { resetPasswordWithToken } from '@/utils/api';
 import { ResetPasswordPayload } from '@/types/api';
 import Link from 'next/link';
 
@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
                 confirmPassword: data.confirmPassword,
             };
 
-            const response = await resetPassword(payload);
+            const response = await resetPasswordWithToken(payload);
 
             if (response.isSuccess) {
                 setSuccessMessage('Your password has been successfully reset.');
