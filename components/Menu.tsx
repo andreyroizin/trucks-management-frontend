@@ -95,6 +95,11 @@ export default function Menu() {
                                             Register
                                         </Link>
                                     </MenuItem>
+                                    <MenuItem onClick={() => handleMenuClose('systemAnchorEl')}>
+                                        <Link href="/users" className="w-full">
+                                            Users
+                                        </Link>
+                                    </MenuItem>
                                 </MuiMenu>
                             </>
                         )}

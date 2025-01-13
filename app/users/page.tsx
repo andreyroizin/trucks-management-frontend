@@ -1,0 +1,107 @@
+'use client';
+
+import { useState } from 'react';
+import { useUsers } from '@/hooks/useUsers';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Paper,
+  Typography,
+  CircularProgress,
+  Alert,
+  IconButton,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { useRouter } from 'next/navigation';
+
+export default function UsersPage() {
+  const [page, setPage] = useState(0); // Zero-based index for the page
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Results per page
+  const router = useRouter();
+
+  const { data, isLoading, isError } = useUsers(page + 1, rowsPerPage); // Adjust API's 1-based page number
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset to the first page when changing page size
+  };
+
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+          <CircularProgress />
+        </div>
+    );
+  }
+
+  if (isError) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+          <Alert severity="error">Failed to load users. Please try again later.</Alert>
+        </div>
+    );
+  }
+
+  return (
+      <div className="p-6">
+        <Typography variant="h4" gutterBottom>
+          Users List
+        </Typography>
+        <Paper>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>First Name</TableCell>
+                  <TableCell>Last Name</TableCell>
+                  <TableCell>Company Name</TableCell>
+                  <TableCell>Roles</TableCell>
+                  <TableCell>Edit</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data?.data.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{user.id}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.firstName}</TableCell>
+                      <TableCell>{user.lastName}</TableCell>
+                      <TableCell>{user.companyName}</TableCell>
+                      <TableCell>{user.roles.join(', ')}</TableCell>
+                      <TableCell>
+                        <IconButton
+                            color="primary"
+                            onClick={() => router.push(`/users/edit?id=${user.id}`)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+              rowsPerPageOptions={[5, 10, 20, 50]}
+              component="div"
+              count={data?.totalUsers || 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </div>
+  );
+}
