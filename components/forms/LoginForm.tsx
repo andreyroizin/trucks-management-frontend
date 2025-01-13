@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { TextField, Button, Typography, Alert } from '@mui/material';
+import { TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import * as yup from 'yup';
@@ -24,10 +24,11 @@ export default function LoginForm() {
         resolver: yupResolver(loginSchema),
     });
     const [apiError, setApiError] = useState<string | null>(null);
-
+    const [loading, setLoading] = useState(false); // Loading state
 
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
         setApiError(null); // Clear previous error
+        setLoading(true); // Start loading
         try {
             const response = await login(data);
 
@@ -39,6 +40,8 @@ export default function LoginForm() {
         } catch (error: any) {
             console.error('Error:', error);
             setApiError(error.message || 'An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
@@ -59,6 +62,7 @@ export default function LoginForm() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 sx={{ marginBottom: '1rem' }}
+                disabled={loading} // Disable input while loading
             />
             <TextField
                 label="Password"
@@ -69,9 +73,17 @@ export default function LoginForm() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 sx={{ marginBottom: '1rem' }}
+                disabled={loading} // Disable input while loading
             />
-            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '1rem' }}>
-                Login
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ marginTop: '1rem' }}
+                disabled={loading} // Disable button while loading
+            >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
             </Button>
         </form>
     );
