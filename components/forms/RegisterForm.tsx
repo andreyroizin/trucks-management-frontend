@@ -60,13 +60,13 @@ export default function RegisterForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-            <Typography variant="h5" className="mb-4">Register</Typography>
+            <Typography variant="h5" sx={{ marginBottom: '1rem' }}>Register</Typography>
 
             {/* Display API Error */}
-            {apiError && <Alert severity="error" className="mb-4">{apiError}</Alert>}
+            {apiError && <Alert severity="error" sx={{ marginBottom: '1rem' }}>{apiError}</Alert>}
 
             {/* Display Success Message */}
-            {successMessage && <Alert severity="success" className="mb-4">{successMessage}</Alert>}
+            {successMessage && <Alert severity="success" sx={{ marginBottom: '1rem' }}>{successMessage}</Alert>}
 
             <TextField
                 label="First Name"
@@ -75,7 +75,7 @@ export default function RegisterForm() {
                 {...register('firstName')}
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
 
             <TextField
@@ -85,7 +85,7 @@ export default function RegisterForm() {
                 {...register('lastName')}
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
 
             <TextField
@@ -95,7 +95,7 @@ export default function RegisterForm() {
                 {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
 
             <TextField
@@ -106,7 +106,7 @@ export default function RegisterForm() {
                 {...register('password')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
 
             <TextField
@@ -117,11 +117,11 @@ export default function RegisterForm() {
                 {...register('confirmPassword')}
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
 
             {/* Company Select */}
-            <FormControl fullWidth className="mb-4" error={!!errors.companyId}>
+            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.companyId}>
                 <InputLabel>Company</InputLabel>
                 <Select
                     defaultValue=""
@@ -143,7 +143,7 @@ export default function RegisterForm() {
             </FormControl>
 
             {/* Role Select */}
-            <FormControl fullWidth className="mb-4" error={!!errors.role}>
+            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.role}>
                 <InputLabel>Role</InputLabel>
                 <Select
                     defaultValue=""
@@ -164,7 +164,7 @@ export default function RegisterForm() {
                 </Typography>
             </FormControl>
 
-            <Button type="submit" variant="contained" color="primary" fullWidth className="mt-4">
+            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '1rem' }}>
                 Register
             </Button>
         </form>

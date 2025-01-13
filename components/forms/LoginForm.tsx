@@ -44,12 +44,12 @@ export default function LoginForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-            <Typography variant="h5" className="mb-4">
+            <Typography variant="h5" sx={{ marginBottom: '1rem' }}>
                 Login
             </Typography>
 
             {/* Display API error message */}
-            {apiError && <Alert severity="error" className="mb-4">{apiError}</Alert>}
+            {apiError && <Alert severity="error" sx={{ marginBottom: '1rem' }}>{apiError}</Alert>}
 
             <TextField
                 label="Email"
@@ -58,7 +58,7 @@ export default function LoginForm() {
                 {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
             <TextField
                 label="Password"
@@ -68,9 +68,9 @@ export default function LoginForm() {
                 {...register('password')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
-                className="mb-4"
+                sx={{ marginBottom: '1rem' }}
             />
-            <Button type="submit" variant="contained" color="primary" fullWidth className="mt-4">
+            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '1rem' }}>
                 Login
             </Button>
         </form>
