@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {LoginResponse} from "@/types/api";
+import {ApiResponse, LoginResponse} from "@/types/api";
 
 const API_BASE_URL = 'https://localhost:7129'; // Update with your API base URL
 
@@ -62,4 +62,9 @@ export const logout = () => {
 export const getCurrentUser = async () => {
     const response = await api.get('/users/me'); // Replace '/auth/me' with your endpoint
     return response.data.data;
+};
+
+export const forgotPassword = async (email: string): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>('/forgotpassword', { email });
+    return response.data;
 };
