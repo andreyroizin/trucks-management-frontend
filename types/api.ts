@@ -32,3 +32,10 @@ export type Role = {
     id: string;
     name: string;
 };
+
+export type ResetPasswordPayload = {
+    email: string | null;
+    token: string | null;
+    newPassword: string;
+    confirmPassword: string;
+};
