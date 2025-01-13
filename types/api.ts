@@ -39,3 +39,9 @@ export type ResetPasswordPayload = {
     newPassword: string;
     confirmPassword: string;
 };
+
+export type ChangePasswordPayload = {
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+};

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ApiResponse, LoginResponse, ResetPasswordPayload} from "@/types/api";
+import {ApiResponse, ChangePasswordPayload, LoginResponse, ResetPasswordPayload} from "@/types/api";
 
 const API_BASE_URL = 'https://localhost:7129'; // Update with your API base URL
 
@@ -71,5 +71,10 @@ export const forgotPassword = async (email: string): Promise<ApiResponse<string>
 
 export const resetPasswordWithToken = async (payload: ResetPasswordPayload) => {
     const response = await api.post('/reset-password-token', payload);
+    return response.data;
+};
+
+export const changePassword = async (payload: ChangePasswordPayload): Promise<ApiResponse<string>> => {
+    const response = await api.post<ApiResponse<string>>('/users/change-password', payload);
     return response.data;
 };

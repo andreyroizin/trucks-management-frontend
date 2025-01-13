@@ -3,11 +3,28 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@mui/material';
+import { Button, Menu as MuiMenu, MenuItem } from '@mui/material';
+import { useState } from 'react';
 
 export default function Menu() {
     const { isAuthenticated, user, logout } = useAuth();
     const router = useRouter();
+
+    const [menuState, setMenuState] = useState({
+        accountAnchorEl: null as HTMLElement | null,
+        systemAnchorEl: null as HTMLElement | null,
+    });
+
+    const handleMenuClick = (menu: 'accountAnchorEl' | 'systemAnchorEl', event: React.MouseEvent<HTMLElement>) => {
+        setMenuState((prev) => ({
+            ...prev,
+            [menu]: prev[menu] === event.currentTarget ? null : event.currentTarget,
+        }));
+    };
+
+    const handleMenuClose = (menu: 'accountAnchorEl' | 'systemAnchorEl') => {
+        setMenuState((prev) => ({ ...prev, [menu]: null }));
+    };
 
     const handleLogout = () => {
         logout();
@@ -23,22 +40,65 @@ export default function Menu() {
                     Home
                 </Link>
                 {!isAuthenticated && (
-                    <>
-                        <Link href="/auth/login" className="hover:underline">
-                            Login
-                        </Link>
-                    </>
+                    <Link href="/auth/login" className="hover:underline">
+                        Login
+                    </Link>
                 )}
                 {isAuthenticated && (
                     <>
-                        <Link href="/profile" className="hover:underline">
-                            Profile
-                        </Link>
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            onClick={(e) => handleMenuClick('accountAnchorEl', e)}
+                            className="hover:underline"
+                        >
+                            Account
+                        </Button>
+                        <MuiMenu
+                            anchorEl={menuState.accountAnchorEl}
+                            open={Boolean(menuState.accountAnchorEl)}
+                            onClose={() => handleMenuClose('accountAnchorEl')}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                        >
+                            <MenuItem onClick={() => handleMenuClose('accountAnchorEl')}>
+                                <Link href="/profile" className="w-full">
+                                    Profile
+                                </Link>
+                            </MenuItem>
+                            <MenuItem onClick={() => handleMenuClose('accountAnchorEl')}>
+                                <Link href="/auth/change-password" className="w-full">
+                                    Change Password
+                                </Link>
+                            </MenuItem>
+                        </MuiMenu>
+
                         {isGlobalAdmin && (
-                            <Link href="/auth/register" className="hover:underline">
-                                Register
-                            </Link>
+                            <>
+                                <Button
+                                    variant="text"
+                                    color="inherit"
+                                    onClick={(e) => handleMenuClick('systemAnchorEl', e)}
+                                    className="hover:underline"
+                                >
+                                    System
+                                </Button>
+                                <MuiMenu
+                                    anchorEl={menuState.systemAnchorEl}
+                                    open={Boolean(menuState.systemAnchorEl)}
+                                    onClose={() => handleMenuClose('systemAnchorEl')}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                >
+                                    <MenuItem onClick={() => handleMenuClose('systemAnchorEl')}>
+                                        <Link href="/auth/register" className="w-full">
+                                            Register
+                                        </Link>
+                                    </MenuItem>
+                                </MuiMenu>
+                            </>
                         )}
+
                         <Button
                             variant="text"
                             color="inherit"
