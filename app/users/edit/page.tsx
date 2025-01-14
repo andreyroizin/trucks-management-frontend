@@ -1,10 +1,10 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useUserDetails, useUpdateUser } from '@/hooks/useUser';
-import { useCompanies } from '@/hooks/useCompanies';
-import { useRoles } from '@/hooks/useRoles';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import {useSearchParams, useRouter} from 'next/navigation';
+import {useUserDetails, useUpdateUser} from '@/hooks/useUser';
+import {useCompanies} from '@/hooks/useCompanies';
+import {useRoles} from '@/hooks/useRoles';
+import {useForm, SubmitHandler} from 'react-hook-form';
 import {
     TextField,
     Button,
@@ -19,7 +19,8 @@ import {
     CircularProgress,
 } from '@mui/material';
 import {useEffect, useMemo, useState} from 'react';
-import {useAuth} from "@/hooks/useAuth";
+import {useAuth} from '@/hooks/useAuth';
+import {countries} from '@/data/countries';
 
 type EditUserFormInputs = {
     email: string;
@@ -27,29 +28,35 @@ type EditUserFormInputs = {
     lastName: string;
     companyId: string;
     roles: string[]; // Array of role names
+    postcode?: string;
+    phoneNumber?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    remark?: string;
 };
 
 export default function EditUserPage() {
-    const { user, isAuthenticated, loading } = useAuth();
+    const {user, isAuthenticated, loading} = useAuth();
     const searchParams = useSearchParams();
     const router = useRouter();
     const userId = searchParams.get('id');
-    const { data: userDetails, isLoading, isError } = useUserDetails(userId || '');
-    const { mutate, isLoading: isMutating } = useUpdateUser();
+    const {data: userDetails, isLoading, isError} = useUserDetails(userId || '');
+    const {mutate, isLoading: isMutating} = useUpdateUser();
 
-    const { data: companies } = useCompanies();
-    const { data: roles } = useRoles();
+    const {data: companies} = useCompanies();
+    const {data: roles} = useRoles();
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
-    const userRoles = useMemo(() => userDetails?.roles.map(role => role.roleName), [userDetails?.roles]);
+    const userRoles = useMemo(() => userDetails?.roles.map((role) => role.roleName), [userDetails?.roles]);
 
     const {
         register,
         handleSubmit,
         setValue,
         watch,
-        formState: { errors },
+        formState: {errors},
     } = useForm<EditUserFormInputs>({
         defaultValues: {
             email: '',
@@ -57,6 +64,12 @@ export default function EditUserPage() {
             lastName: '',
             companyId: '',
             roles: [],
+            postcode: '',
+            phoneNumber: '',
+            address: '',
+            city: '',
+            country: '',
+            remark: '',
         },
     });
 
@@ -72,7 +85,13 @@ export default function EditUserPage() {
             setValue('firstName', userDetails.firstName);
             setValue('lastName', userDetails.lastName);
             setValue('companyId', userDetails.companyId);
-            setValue('roles', userRoles || []); // Prepopulate roles
+            setValue('roles', userRoles || []);
+            setValue('postcode', userDetails.postcode || '');
+            setValue('phoneNumber', userDetails.phoneNumber || '');
+            setValue('address', userDetails.address || '');
+            setValue('city', userDetails.city || '');
+            setValue('country', userDetails.country || '');
+            setValue('remark', userDetails.remark || '');
         }
     }, [userDetails, setValue, isAuthenticated, loading, user, router]);
 
@@ -92,7 +111,7 @@ export default function EditUserPage() {
         updatedFields.roles = selectedRoles;
 
         mutate(
-            { id: userId, updatedFields },
+            {id: userId, updatedFields},
             {
                 onSuccess: () => {
                     setSuccessMessage('User updated successfully');
@@ -107,7 +126,7 @@ export default function EditUserPage() {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <CircularProgress />
+                <CircularProgress/>
             </div>
         );
     }
@@ -127,13 +146,13 @@ export default function EditUserPage() {
             </Typography>
 
             {apiError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert severity="error" sx={{mb: 2}}>
                     {apiError}
                 </Alert>
             )}
 
             {successMessage && (
-                <Alert severity="success" sx={{ mb: 2 }}>
+                <Alert severity="success" sx={{mb: 2}}>
                     {successMessage}
                 </Alert>
             )}
@@ -149,43 +168,33 @@ export default function EditUserPage() {
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                 }}
             >
-                <TextField
-                    label="Email"
-                    fullWidth
-                    variant="outlined"
-                    {...register('email', { required: 'Email is required' })}
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                    sx={{ mb: 2 }}
-                />
-
-                <TextField
-                    label="First Name"
-                    fullWidth
-                    variant="outlined"
-                    {...register('firstName', { required: 'First Name is required' })}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName?.message}
-                    sx={{ mb: 2 }}
-                />
-
-                <TextField
-                    label="Last Name"
-                    fullWidth
-                    variant="outlined"
-                    {...register('lastName', { required: 'Last Name is required' })}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName?.message}
-                    sx={{ mb: 2 }}
-                />
-
-                <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.companyId}>
+                <TextField label="Email" fullWidth {...register('email', {required: 'Email is required'})}
+                           error={!!errors.email} helperText={errors.email?.message} sx={{mb: 2}}/>
+                <TextField label="First Name" fullWidth {...register('firstName', {required: 'First Name is required'})}
+                           error={!!errors.firstName} helperText={errors.firstName?.message} sx={{mb: 2}}/>
+                <TextField label="Last Name" fullWidth {...register('lastName', {required: 'Last Name is required'})}
+                           error={!!errors.lastName} helperText={errors.lastName?.message} sx={{mb: 2}}/>
+                <TextField label="Address" fullWidth {...register('address')} sx={{mb: 2}}/>
+                <TextField label="Postcode" fullWidth {...register('postcode')} sx={{mb: 2}}/>
+                <TextField label="City" fullWidth {...register('city')} sx={{mb: 2}}/>
+                <FormControl fullWidth sx={{mb: 2}}>
+                    <InputLabel>Country</InputLabel>
+                    <Select {...register('country')} value={watch('country') || ''}
+                            onChange={(e) => setValue('country', e.target.value)}>
+                        <MenuItem value="" disabled>Select a country</MenuItem>
+                        {countries.map((country) => (
+                            <MenuItem key={country.code} value={country.name}>
+                                {country.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
+                <TextField label="Remark" fullWidth multiline rows={4} {...register('remark')} sx={{mb: 2}}/>
+                <FormControl fullWidth sx={{mb: 2}}>
                     <InputLabel>Company</InputLabel>
-                    <Select
-                        {...register('companyId', { required: 'Company is required' })}
-                        value={watch('companyId')}
-                        onChange={(e) => setValue('companyId', e.target.value)}
-                    >
+                    <Select {...register('companyId', {required: 'Company is required'})} value={watch('companyId')}
+                            onChange={(e) => setValue('companyId', e.target.value)}>
                         {companies?.map((company) => (
                             <MenuItem key={company.id} value={company.id}>
                                 {company.name}
@@ -193,10 +202,7 @@ export default function EditUserPage() {
                         ))}
                     </Select>
                 </FormControl>
-
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                    Roles
-                </Typography>
+                <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
                 {roles?.map((role) => (
                     <FormControlLabel
                         key={role.id}
@@ -215,16 +221,19 @@ export default function EditUserPage() {
                         label={role.name}
                     />
                 ))}
+                {apiError && (
+                    <Alert severity="error" sx={{mt: 2}}>
+                        {apiError}
+                    </Alert>
+                )}
 
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    disabled={isMutating}
-                >
-                    {isMutating ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
+                {successMessage && (
+                    <Alert severity="success" sx={{mt: 2}}>
+                        {successMessage}
+                    </Alert>
+                )}
+                <Button type="submit" variant="contained" color="primary" fullWidth disabled={isMutating} sx={{mt: 2}}>
+                    {isMutating ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
                 </Button>
             </form>
         </div>

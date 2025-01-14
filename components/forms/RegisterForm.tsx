@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
+import {useForm, SubmitHandler} from 'react-hook-form';
 import {
     TextField,
     Button,
@@ -12,12 +12,13 @@ import {
     Alert,
     CircularProgress,
 } from '@mui/material';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
-import { useCompanies } from '@/hooks/useCompanies';
-import { useRoles } from '@/hooks/useRoles';
-import { register as registerApi } from '@/utils/api';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useState} from 'react';
+import {useCompanies} from '@/hooks/useCompanies';
+import {useRoles} from '@/hooks/useRoles';
+import {register as registerApi} from '@/utils/api';
 import * as yup from 'yup';
+import {countries} from '@/data/countries';
 
 const registerSchema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Email is required'),
@@ -39,11 +40,17 @@ type RegisterFormInputs = {
     firstName: string;
     lastName: string;
     companyId: string;
-    roles: string[]; // Array of role names
+    roles: string[];
+    postcode?: string;
+    phoneNumber?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    remark?: string;
 };
 
 export default function RegisterForm() {
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterFormInputs>({
+    const {register, handleSubmit, setValue, watch, formState: {errors}} = useForm<RegisterFormInputs>({
         resolver: yupResolver(registerSchema),
         defaultValues: {
             email: '',
@@ -56,8 +63,8 @@ export default function RegisterForm() {
         },
     });
 
-    const { data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies } = useCompanies();
-    const { data: roles, isLoading: isLoadingRoles, isError: isErrorRoles } = useRoles();
+    const {data: companies, isLoading: isLoadingCompanies} = useCompanies();
+    const {data: roles} = useRoles();
 
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -90,96 +97,69 @@ export default function RegisterForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-            <Typography variant="h5" sx={{ marginBottom: '1rem' }}>Register</Typography>
+            <Typography variant="h5" sx={{marginBottom: '1rem'}}>Register</Typography>
+            {apiError && <Alert severity="error" sx={{marginBottom: '1rem'}}>{apiError}</Alert>}
+            {successMessage && <Alert severity="success" sx={{marginBottom: '1rem'}}>{successMessage}</Alert>}
 
-            {/* Display API Error */}
-            {apiError && <Alert severity="error" sx={{ marginBottom: '1rem' }}>{apiError}</Alert>}
+            {/* User Details */}
+            <TextField label="First Name" fullWidth {...register('firstName')} error={!!errors.firstName}
+                       helperText={errors.firstName?.message} sx={{mb: 2}}/>
+            <TextField label="Last Name" fullWidth {...register('lastName')} error={!!errors.lastName}
+                       helperText={errors.lastName?.message} sx={{mb: 2}}/>
+            <TextField label="Email" fullWidth {...register('email')} error={!!errors.email}
+                       helperText={errors.email?.message} sx={{mb: 2}}/>
+            <TextField label="Password" fullWidth type="password" {...register('password')} error={!!errors.password}
+                       helperText={errors.password?.message} sx={{mb: 2}}/>
+            <TextField label="Confirm Password" fullWidth type="password" {...register('confirmPassword')}
+                       error={!!errors.confirmPassword} helperText={errors.confirmPassword?.message} sx={{mb: 2}}/>
 
-            {/* Display Success Message */}
-            {successMessage && <Alert severity="success" sx={{ marginBottom: '1rem' }}>{successMessage}</Alert>}
-
-            <TextField
-                label="First Name"
-                fullWidth
-                variant="outlined"
-                {...register('firstName')}
-                error={!!errors.firstName}
-                helperText={errors.firstName?.message}
-                sx={{ marginBottom: '1rem' }}
-                disabled={loading}
-            />
-
-            <TextField
-                label="Last Name"
-                fullWidth
-                variant="outlined"
-                {...register('lastName')}
-                error={!!errors.lastName}
-                helperText={errors.lastName?.message}
-                sx={{ marginBottom: '1rem' }}
-                disabled={loading}
-            />
-
-            <TextField
-                label="Email"
-                fullWidth
-                variant="outlined"
-                {...register('email')}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-                sx={{ marginBottom: '1rem' }}
-                disabled={loading}
-            />
-
-            <TextField
-                label="Password"
-                fullWidth
-                type="password"
-                variant="outlined"
-                {...register('password')}
-                error={!!errors.password}
-                helperText={errors.password?.message}
-                sx={{ marginBottom: '1rem' }}
-                disabled={loading}
-            />
-
-            <TextField
-                label="Confirm Password"
-                fullWidth
-                type="password"
-                variant="outlined"
-                {...register('confirmPassword')}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword?.message}
-                sx={{ marginBottom: '1rem' }}
-                disabled={loading}
-            />
-
-            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.companyId}>
-                <InputLabel>Company</InputLabel>
+            {/* Address Details */}
+            <TextField label="Address" fullWidth {...register('address')} sx={{mb: 2}}/>
+            <TextField label="Postcode" fullWidth {...register('postcode')} sx={{mb: 2}}/>
+            <TextField label="City" fullWidth {...register('city')} sx={{mb: 2}}/>
+            <FormControl fullWidth sx={{mb: 2}}>
+                <InputLabel>Country</InputLabel>
                 <Select
-                    {...register('companyId')}
+                    {...register('country')}
                     defaultValue=""
-                    disabled={loading}
                 >
                     <MenuItem value="" disabled>
-                        {isLoadingCompanies ? 'Loading companies...' : 'Select a company'}
+                        Select a country
                     </MenuItem>
-                    {isErrorCompanies && <MenuItem disabled>Error loading companies</MenuItem>}
-                    {companies?.map((company) => (
-                        <MenuItem key={company.id} value={company.id}>
-                            {company.name}
+                    {countries.map((country) => (
+                        <MenuItem key={country.code} value={country.name}>
+                            {country.name}
                         </MenuItem>
                     ))}
                 </Select>
                 <Typography variant="caption" color="error">
-                    {errors.companyId?.message}
+                    {errors.country?.message}
                 </Typography>
             </FormControl>
+            <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
 
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Roles
-            </Typography>
+            {/* Remark */}
+            <TextField
+                label="Remark"
+                fullWidth
+                multiline
+                rows={4}
+                {...register('remark')}
+                sx={{mb: 2}}
+            />
+
+            {/* Company and Roles */}
+            <FormControl fullWidth sx={{mb: 2}}>
+                <InputLabel>Company</InputLabel>
+                <Select {...register('companyId')} defaultValue="">
+                    <MenuItem value="" disabled>{isLoadingCompanies ? 'Loading...' : 'Select a Company'}</MenuItem>
+                    {companies?.map((company) => (
+                        <MenuItem key={company.id} value={company.id}>{company.name}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
             {roles?.map((role) => (
                 <FormControlLabel
                     key={role.id}
@@ -198,22 +178,14 @@ export default function RegisterForm() {
                     label={role.name}
                 />
             ))}
-            {errors.roles && (
-                <Typography variant="caption" color="error" sx={{ mb: 2 }}>
-                    {errors.roles.message}
-                </Typography>
-            )}
 
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{ marginTop: '1rem' }}
-                disabled={loading}
-            >
-                {loading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
+            {apiError && <Alert severity="error" sx={{marginTop: '1rem'}}>{apiError}</Alert>}
+            {successMessage && <Alert severity="success" sx={{marginTop: '1rem'}}>{successMessage}</Alert>}
+
+            <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading} sx={{mt: 2}}>
+                {loading ? <CircularProgress size={24}/> : 'Register'}
             </Button>
+
         </form>
     );
 }
