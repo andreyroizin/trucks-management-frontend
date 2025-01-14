@@ -1,7 +1,7 @@
 'use client';
 
 import {useSearchParams, useRouter} from 'next/navigation';
-import {useUserDetails, useUpdateUser} from '@/hooks/useUser';
+import {useUserDetails, useUpdateUser, UserDetailRole} from '@/hooks/useUser';
 import {useCompanies} from '@/hooks/useCompanies';
 import {useRoles} from '@/hooks/useRoles';
 import {useForm, SubmitHandler} from 'react-hook-form';
@@ -42,14 +42,20 @@ export default function EditUserPage() {
     const router = useRouter();
     const userId = searchParams.get('id');
     const {data: userDetails, isLoading, isError} = useUserDetails(userId || '');
-    const {mutate, isLoading: isMutating} = useUpdateUser();
+    const { mutate, isPending} = useUpdateUser();
 
     const {data: companies} = useCompanies();
     const {data: roles} = useRoles();
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
-    const userRoles = useMemo(() => userDetails?.roles.map((role) => role.roleName), [userDetails?.roles]);
+    const userRoles = useMemo(() => {
+        if (Array.isArray(userDetails?.roles) && typeof userDetails.roles[0] === "object") {
+            // Narrow the type to UserDetailRole[]
+            return (userDetails.roles as UserDetailRole[]).map((role) => role.roleName);
+        }
+        return [];
+    }, [userDetails?.roles]);
 
     const {
         register,
@@ -103,6 +109,8 @@ export default function EditUserPage() {
         const updatedFields: Partial<EditUserFormInputs> = {};
         Object.keys(data).forEach((key) => {
             if (data[key as keyof EditUserFormInputs] !== userDetails?.[key as keyof EditUserFormInputs]) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
                 updatedFields[key as keyof EditUserFormInputs] = data[key as keyof EditUserFormInputs];
             }
         });
@@ -232,8 +240,8 @@ export default function EditUserPage() {
                         {successMessage}
                     </Alert>
                 )}
-                <Button type="submit" variant="contained" color="primary" fullWidth disabled={isMutating} sx={{mt: 2}}>
-                    {isMutating ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
+                <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending} sx={{mt: 2}}>
+                    {isPending ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
                 </Button>
             </form>
         </div>

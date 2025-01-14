@@ -2,13 +2,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
+export type UserDetailRole = {
+    roleName: string;
+    roleId: string;
+};
+
 export type UserDetails = {
     id: string;
     email: string;
     firstName: string;
     lastName: string;
     companyId: string;
-    roles: string[];
+    roles: string[] | UserDetailRole[];
     postcode?: string;
     phoneNumber?: string;
     address?: string;
