@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { TextField, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { changePassword } from '@/utils/api';
+import {useAuth} from "@/hooks/useAuth";
+import {useRouter} from "next/navigation";
 
 // Validation schema
 const changePasswordSchema = yup.object().shape({
@@ -24,13 +26,21 @@ type ChangePasswordFormInputs = {
 };
 
 export default function ChangePasswordPage() {
+    const { user, isAuthenticated, loading: loadingUser } = useAuth();
     const { register, handleSubmit, formState: { errors } } = useForm<ChangePasswordFormInputs>({
         resolver: yupResolver(changePasswordSchema),
     });
 
+    const router = useRouter();
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!loading && (!isAuthenticated)) {
+            router.push('/auth/login'); // Redirect to login if not authorized
+        }
+    }, [isAuthenticated, loadingUser, user, router]);
 
     const onSubmit: SubmitHandler<ChangePasswordFormInputs> = async (data) => {
         setApiError(null);

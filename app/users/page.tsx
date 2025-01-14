@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { useUsers } from '@/hooks/useUsers';
 import {
   Table,
@@ -18,13 +18,21 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from 'next/navigation';
+import {useAuth} from "@/hooks/useAuth";
 
 export default function UsersPage() {
+  const { user, isAuthenticated, loading } = useAuth();
   const [page, setPage] = useState(0); // Zero-based index for the page
   const [rowsPerPage, setRowsPerPage] = useState(5); // Results per page
   const router = useRouter();
 
   const { data, isLoading, isError } = useUsers(page + 1, rowsPerPage); // Adjust API's 1-based page number
+
+  useEffect(() => {
+    if (!loading && (!isAuthenticated || !user?.roles.includes('globalAdmin'))) {
+      router.push('/auth/login'); // Redirect to login if not authorized
+    }
+  }, [isAuthenticated, loading, user, router]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

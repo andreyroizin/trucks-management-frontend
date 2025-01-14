@@ -19,6 +19,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import {useEffect, useMemo, useState} from 'react';
+import {useAuth} from "@/hooks/useAuth";
 
 type EditUserFormInputs = {
     email: string;
@@ -29,6 +30,7 @@ type EditUserFormInputs = {
 };
 
 export default function EditUserPage() {
+    const { user, isAuthenticated, loading } = useAuth();
     const searchParams = useSearchParams();
     const router = useRouter();
     const userId = searchParams.get('id');
@@ -61,6 +63,10 @@ export default function EditUserPage() {
     const selectedRoles = watch('roles', []);
 
     useEffect(() => {
+        if (!loading && (!isAuthenticated || !user?.roles.includes('globalAdmin'))) {
+            router.push('/auth/login'); // Redirect to login if not authorized
+        }
+
         if (userDetails) {
             setValue('email', userDetails.email);
             setValue('firstName', userDetails.firstName);
@@ -68,7 +74,7 @@ export default function EditUserPage() {
             setValue('companyId', userDetails.companyId);
             setValue('roles', userRoles || []); // Prepopulate roles
         }
-    }, [userDetails, setValue]);
+    }, [userDetails, setValue, isAuthenticated, loading, user, router]);
 
     const onSubmit: SubmitHandler<EditUserFormInputs> = (data) => {
         if (!userId) return;
