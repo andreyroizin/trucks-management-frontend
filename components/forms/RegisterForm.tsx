@@ -30,8 +30,11 @@ const registerSchema = yup.object().shape({
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
     companyId: yup.string().required('Company is required'),
-    roles: yup.array().of(yup.string()).required('At least one role must be selected'),
-});
+    roles: yup
+        .array()
+        .of(yup.string().required('Role is required'))
+        .compact() // Removes undefined values
+        .required('At least one role must be selected'),});
 
 type RegisterFormInputs = {
     email: string;
