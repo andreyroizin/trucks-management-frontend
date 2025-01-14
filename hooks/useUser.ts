@@ -9,6 +9,12 @@ export type UserDetails = {
     lastName: string;
     companyId: string;
     roles: string[];
+    postcode?: string;
+    phoneNumber?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    remark?: string;
 };
 
 export const fetchUser = async (id: string): Promise<UserDetails> => {

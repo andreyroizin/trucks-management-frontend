@@ -15,7 +15,7 @@ const changePasswordSchema = yup.object().shape({
     newPassword: yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
     confirmNewPassword: yup
         .string()
-        .oneOf([yup.ref('newPassword'), null], 'Passwords must match')
+        .oneOf([yup.ref('newPassword')], 'Passwords must match')
         .required('Confirm New Password is required'),
 });
 
@@ -40,7 +40,7 @@ export default function ChangePasswordPage() {
         if (!loading && (!isAuthenticated)) {
             router.push('/auth/login'); // Redirect to login if not authorized
         }
-    }, [isAuthenticated, loadingUser, user, router]);
+    }, [isAuthenticated, loading, loadingUser, user, router]);
 
     const onSubmit: SubmitHandler<ChangePasswordFormInputs> = async (data) => {
         setApiError(null);

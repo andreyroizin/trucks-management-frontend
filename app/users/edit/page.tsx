@@ -93,7 +93,7 @@ export default function EditUserPage() {
             setValue('country', userDetails.country || '');
             setValue('remark', userDetails.remark || '');
         }
-    }, [userDetails, setValue, isAuthenticated, loading, user, router]);
+    }, [userDetails, setValue, isAuthenticated, loading, user, router, userRoles]);
 
     const onSubmit: SubmitHandler<EditUserFormInputs> = (data) => {
         if (!userId) return;

@@ -88,7 +88,7 @@ export default function ProfilePage() {
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
                                 <strong>Roles:</strong>{' '}
-                                {user?.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}
+                                {user?.roles && user?.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
