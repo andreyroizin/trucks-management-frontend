@@ -6,6 +6,7 @@ import { TextField, Button, Typography, Alert, CircularProgress } from '@mui/mat
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import * as yup from 'yup';
+import {useRouter} from "next/navigation";
 
 // Validation schema
 const loginSchema = yup.object().shape({
@@ -25,6 +26,7 @@ export default function LoginForm() {
     });
     const [apiError, setApiError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false); // Loading state
+    const router = useRouter();
 
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
         setApiError(null); // Clear previous error
@@ -35,7 +37,7 @@ export default function LoginForm() {
             if (!response.isSuccess) {
                 setApiError(response.errors?.[0] || 'Unknown error occurred');
             } else {
-                window.location.href = '/'; // Redirect to home page
+                router.push('/'); // Redirect to the home page
             }
         } catch (error: any) {
             console.error('Error:', error);
