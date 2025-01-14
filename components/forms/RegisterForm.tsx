@@ -1,5 +1,17 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { TextField, Button, Typography, MenuItem, Select, FormControl, InputLabel, Alert, CircularProgress } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Typography,
+    Checkbox,
+    FormControlLabel,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Alert,
+    CircularProgress,
+} from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useCompanies } from '@/hooks/useCompanies';
@@ -7,7 +19,6 @@ import { useRoles } from '@/hooks/useRoles';
 import { register as registerApi } from '@/utils/api';
 import * as yup from 'yup';
 
-// Validation schema
 const registerSchema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Email is required'),
     password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
@@ -18,7 +29,7 @@ const registerSchema = yup.object().shape({
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
     companyId: yup.string().required('Company is required'),
-    role: yup.string().required('Role is required'),
+    roles: yup.array().of(yup.string()).required('At least one role must be selected'),
 });
 
 type RegisterFormInputs = {
@@ -28,12 +39,21 @@ type RegisterFormInputs = {
     firstName: string;
     lastName: string;
     companyId: string;
-    role: string;
+    roles: string[]; // Array of role names
 };
 
 export default function RegisterForm() {
-    const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormInputs>({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegisterFormInputs>({
         resolver: yupResolver(registerSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+            confirmPassword: '',
+            firstName: '',
+            lastName: '',
+            companyId: '',
+            roles: [],
+        },
     });
 
     const { data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies } = useCompanies();
@@ -41,15 +61,21 @@ export default function RegisterForm() {
 
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false); // Added loading state
+    const [loading, setLoading] = useState(false);
+
+    const selectedRoles = watch('roles', []);
 
     const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
         setApiError(null);
         setSuccessMessage(null);
-        setLoading(true); // Start loading
+        setLoading(true);
 
         try {
-            const response = await registerApi(data);
+            const response = await registerApi({
+                ...data,
+                roles: selectedRoles, // Ensure roles are sent as an array of strings
+            });
+
             if (response.isSuccess) {
                 setSuccessMessage('Registration successful!');
             } else {
@@ -58,7 +84,7 @@ export default function RegisterForm() {
         } catch (error: any) {
             setApiError(error?.response?.data?.errors?.[0] || 'An unexpected error occurred. Please try again later.');
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
 
@@ -80,7 +106,7 @@ export default function RegisterForm() {
                 error={!!errors.firstName}
                 helperText={errors.firstName?.message}
                 sx={{ marginBottom: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             />
 
             <TextField
@@ -91,7 +117,7 @@ export default function RegisterForm() {
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
                 sx={{ marginBottom: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             />
 
             <TextField
@@ -102,7 +128,7 @@ export default function RegisterForm() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 sx={{ marginBottom: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             />
 
             <TextField
@@ -114,7 +140,7 @@ export default function RegisterForm() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 sx={{ marginBottom: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             />
 
             <TextField
@@ -126,13 +152,16 @@ export default function RegisterForm() {
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 sx={{ marginBottom: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             />
 
-            {/* Company Select */}
-            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.companyId} disabled={loading}>
+            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.companyId}>
                 <InputLabel>Company</InputLabel>
-                <Select defaultValue="" {...register('companyId')} disabled={loading}>
+                <Select
+                    {...register('companyId')}
+                    defaultValue=""
+                    disabled={loading}
+                >
                     <MenuItem value="" disabled>
                         {isLoadingCompanies ? 'Loading companies...' : 'Select a company'}
                     </MenuItem>
@@ -148,24 +177,32 @@ export default function RegisterForm() {
                 </Typography>
             </FormControl>
 
-            {/* Role Select */}
-            <FormControl fullWidth sx={{ marginBottom: '1rem' }} error={!!errors.role} disabled={loading}>
-                <InputLabel>Role</InputLabel>
-                <Select defaultValue="" {...register('role')} disabled={loading}>
-                    <MenuItem value="" disabled>
-                        {isLoadingRoles ? 'Loading roles...' : 'Select a role'}
-                    </MenuItem>
-                    {isErrorRoles && <MenuItem disabled>Error loading roles</MenuItem>}
-                    {roles?.map((role) => (
-                        <MenuItem key={role.id} value={role.name}>
-                            {role.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-                <Typography variant="caption" color="error">
-                    {errors.role?.message}
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Roles
+            </Typography>
+            {roles?.map((role) => (
+                <FormControlLabel
+                    key={role.id}
+                    control={
+                        <Checkbox
+                            value={role.name}
+                            checked={selectedRoles.includes(role.name)}
+                            onChange={(e) => {
+                                const updatedRoles = e.target.checked
+                                    ? [...selectedRoles, role.name]
+                                    : selectedRoles.filter((r) => r !== role.name);
+                                setValue('roles', updatedRoles);
+                            }}
+                        />
+                    }
+                    label={role.name}
+                />
+            ))}
+            {errors.roles && (
+                <Typography variant="caption" color="error" sx={{ mb: 2 }}>
+                    {errors.roles.message}
                 </Typography>
-            </FormControl>
+            )}
 
             <Button
                 type="submit"
@@ -173,7 +210,7 @@ export default function RegisterForm() {
                 color="primary"
                 fullWidth
                 sx={{ marginTop: '1rem' }}
-                disabled={loading} // Disable during loading
+                disabled={loading}
             >
                 {loading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
             </Button>
