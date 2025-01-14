@@ -125,7 +125,7 @@ export default function EditUserPage() {
                     setSuccessMessage('User updated successfully');
                 },
                 onError: (error: any) => {
-                    setApiError(error.message || 'An unexpected error occurred');
+                    setApiError(error?.response?.data?.errors?.[0] || error.message || 'An unexpected error occurred');
                 },
             }
         );
