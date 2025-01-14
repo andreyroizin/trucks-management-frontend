@@ -26,6 +26,11 @@ export default function Menu() {
         setMenuState((prev) => ({ ...prev, [menu]: null }));
     };
 
+    const navigateTo = (url: string, menu: 'accountAnchorEl' | 'systemAnchorEl') => {
+        handleMenuClose(menu);
+        router.push(url); // Use router.push for reliable navigation
+    };
+
     const handleLogout = () => {
         logout();
         router.push('/auth/login'); // Redirect to login after logout
@@ -61,15 +66,11 @@ export default function Menu() {
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                             transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                         >
-                            <MenuItem onClick={() => handleMenuClose('accountAnchorEl')}>
-                                <Link href="/profile" className="w-full">
-                                    Profile
-                                </Link>
+                            <MenuItem onClick={() => navigateTo('/profile', 'accountAnchorEl')}>
+                                Profile
                             </MenuItem>
-                            <MenuItem onClick={() => handleMenuClose('accountAnchorEl')}>
-                                <Link href="/auth/change-password" className="w-full">
-                                    Change Password
-                                </Link>
+                            <MenuItem onClick={() => navigateTo('/auth/change-password', 'accountAnchorEl')}>
+                                Change Password
                             </MenuItem>
                         </MuiMenu>
 
@@ -90,15 +91,11 @@ export default function Menu() {
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                 >
-                                    <MenuItem onClick={() => handleMenuClose('systemAnchorEl')}>
-                                        <Link href="/auth/register" className="w-full">
-                                            Register
-                                        </Link>
+                                    <MenuItem onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
+                                        Register
                                     </MenuItem>
-                                    <MenuItem onClick={() => handleMenuClose('systemAnchorEl')}>
-                                        <Link href="/users" className="w-full">
-                                            Users
-                                        </Link>
+                                    <MenuItem onClick={() => navigateTo('/users', 'systemAnchorEl')}>
+                                        Users
                                     </MenuItem>
                                 </MuiMenu>
                             </>
