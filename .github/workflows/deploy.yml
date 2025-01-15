@@ -10,29 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Node.js
+      # Step 2: Setup Node.js for initial build
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 22  # Ensure compatibility with your Node.js version
           cache: 'npm'
 
-      # Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Build the Next.js app
-      - name: Build app
-        run: npm run build
+      # Step 4: Run the first build to check for errors
+      - name: Build and Test
+        run: |
+          npm run build  # Check if the build process succeeds locally
 
-      # Deploy to the server
+      # Step 5: Deploy to the server
       - name: Deploy to Server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
         run: |
           # Set up SSH
           mkdir -p ~/.ssh
@@ -40,15 +44,16 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           
           # Add the server to known_hosts
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
           
-          # Deploy the .next directory
-          scp -r .next public package.json package-lock.json root@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
+          # Transfer only the source files (excluding .next and other unnecessary files)
+          rsync -av --exclude=".next" --exclude="node_modules" --exclude=".git" . $SERVER_USER@$SERVER_IP:/var/www/vhosts/$SERVER_DOMAIN/httpdocs/
           
-          # Run commands on the server
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
-            source ~/.bashrc  # Load nvm and PATH
-            cd /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs
+          # Build the app on the server
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+            source ~/.bashrc  # Ensure nvm and Node.js are loaded
+            cd /var/www/vhosts/$SERVER_DOMAIN/httpdocs
             npm install --production
+            npm run build  # Perform production build on the server
             pm2 restart nextjs-app || pm2 start npm --name "nextjs-app" -- start
           EOF
