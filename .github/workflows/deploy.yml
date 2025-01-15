@@ -38,16 +38,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
+          
           # Add the server to known_hosts
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-
-          # Debug: Test SSH connection
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} echo "SSH connection successful"
-
-          # Deploy the .next directory (Next.js build output)
-          scp -r .next public package.json package-lock.json root@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
+          
+          # Deploy the .next directory
+#          scp -r .next public package.json package-lock.json root@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
+          
+          # Run commands on the server
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+            source /root/.bashrc  # Load nvm and PATH
             cd /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs
             npm install --production
             pm2 restart nextjs-app || pm2 start npm --name "nextjs-app" -- start
