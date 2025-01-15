@@ -43,10 +43,10 @@ jobs:
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
           # Deploy the .next directory
-          scp -r .next public package.json package-lock.json root@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
+          scp -r .next public package.json package-lock.json ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
 
           # Run commands on the server
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             source ~/.bashrc  # Load nvm and PATH
             cd /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs
             npm install --production
