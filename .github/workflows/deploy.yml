@@ -47,7 +47,7 @@ jobs:
           
           # Run commands on the server
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
-            source /root/.bashrc  # Load nvm and PATH
+            source ~/.bashrc  # Load nvm and PATH
             cd /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs
             npm install --production
             pm2 restart nextjs-app || pm2 start npm --name "nextjs-app" -- start
