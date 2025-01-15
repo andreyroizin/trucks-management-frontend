@@ -26,34 +26,31 @@ jobs:
         run: npm install
 
       # Step 4: Run the first build to check for errors
-      - name: Build and Test
-        run: |
-          npm run build  # Check if the build process succeeds locally
+      - name: Build Locally
+        run: npm run build
 
       # Step 5: Deploy to the server
       - name: Deploy to Server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_DOMAIN: ${{ secrets.SERVER_DOMAIN }}
         run: |
           # Set up SSH
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
           # Add the server to known_hosts
-          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          
+          # Ensure the target directory exists
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "mkdir -p /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs"
           
           # Transfer only the source files (excluding .next and other unnecessary files)
-          rsync -av --exclude=".next" --exclude="node_modules" --exclude=".git" . $SERVER_USER@$SERVER_IP:/var/www/vhosts/$SERVER_DOMAIN/httpdocs/
+          rsync -av --exclude=".next" --exclude="node_modules" --exclude=".git" . ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs/
           
           # Build the app on the server
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             source ~/.bashrc  # Ensure nvm and Node.js are loaded
-            cd /var/www/vhosts/$SERVER_DOMAIN/httpdocs
+            cd /var/www/vhosts/${{ secrets.SERVER_DOMAIN }}/httpdocs
             npm install --production
-            npm run build  # Perform production build on the server
+            npm run build
             pm2 restart nextjs-app || pm2 start npm --name "nextjs-app" -- start
           EOF
