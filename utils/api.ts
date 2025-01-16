@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {ApiResponse, ChangePasswordPayload, LoginResponse, ResetPasswordPayload} from "@/types/api";
 
-const API_BASE_URL = 'https://localhost:7129'; // Update with your API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Create an Axios instance
 export const api = axios.create({
