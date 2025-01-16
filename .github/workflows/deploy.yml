@@ -27,6 +27,8 @@ jobs:
 
       # Step 4: Run the first build to check for errors
       - name: Build Locally
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
         run: npm run build
 
       # Step 5: Deploy to the server
