@@ -1,1 +1,1 @@
-On build the backend API URL is set in the Github secrets. 
+On build the backend API URL is set in the GitHub secrets. 
