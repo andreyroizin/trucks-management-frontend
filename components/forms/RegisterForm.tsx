@@ -29,7 +29,11 @@ const registerSchema = yup.object().shape({
         .required('Confirm Password is required'),
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
-    companyId: yup.string().required('Company is required'),
+    companyIds: yup
+        .array()
+        .of(yup.string().required('Each company must have a valid ID'))
+        .min(1, 'At least one company must be selected')
+        .required('Company selection is required'),
     roles: yup
         .array()
         .of(yup.string().required('Role is required'))
@@ -43,7 +47,7 @@ type RegisterFormInputs = {
     confirmPassword: string;
     firstName: string;
     lastName: string;
-    companyId: string;
+    companyIds: string[];
     roles: string[];
     postcode?: string;
     phoneNumber?: string;
@@ -62,7 +66,7 @@ export default function RegisterForm() {
             confirmPassword: '',
             firstName: '',
             lastName: '',
-            companyId: '',
+            companyIds: [],
             roles: [],
         },
     });
@@ -171,14 +175,43 @@ export default function RegisterForm() {
             />
 
             {/* Company and Roles */}
-            <FormControl fullWidth sx={{mb: 2}}>
-                <InputLabel>Company</InputLabel>
-                <Select {...register('companyId')} defaultValue="">
-                    <MenuItem value="" disabled>{isLoadingCompanies ? 'Loading...' : 'Select a Company'}</MenuItem>
-                    {companies?.data.map((company) => (
-                        <MenuItem key={company.id} value={company.id}>{company.name}</MenuItem>
-                    ))}
+            <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Companies</InputLabel>
+                <Select
+                    {...register('companyIds')}
+                    multiple
+                    value={watch('companyIds')}
+                    onChange={(event) => {
+                        const {
+                            target: { value },
+                        } = event;
+                        setValue('companyIds', typeof value === 'string' ? value.split(',') : value);
+                    }}
+                    renderValue={(selected) => {
+                        if (!selected) return '';
+                        const selectedNames = selected.map((id) => {
+                            const company = companies?.data.find((c) => c.id === id);
+                            return company ? company.name : id;
+                        });
+                        return selectedNames.join(', ');
+                    }}
+                >
+                    {isLoadingCompanies ? (
+                        <MenuItem disabled>
+                            <em>Loading...</em>
+                        </MenuItem>
+                    ) : (
+                        companies?.data.map((company) => (
+                            <MenuItem key={company.id} value={company.id}>
+                                <Checkbox checked={watch('companyIds').includes(company.id)} />
+                                <Typography variant="body2">{company.name}</Typography>
+                            </MenuItem>
+                        ))
+                    )}
                 </Select>
+                <Typography variant="caption" color="error">
+                    {errors.companyIds?.message}
+                </Typography>
             </FormControl>
 
             <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
