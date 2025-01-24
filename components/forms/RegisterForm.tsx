@@ -34,7 +34,8 @@ const registerSchema = yup.object().shape({
         .array()
         .of(yup.string().required('Role is required'))
         .compact() // Removes undefined values
-        .required('At least one role must be selected'),});
+        .required('At least one role must be selected'),
+});
 
 type RegisterFormInputs = {
     email: string;
@@ -66,8 +67,8 @@ export default function RegisterForm() {
         },
     });
 
-    const {data: companies, isLoading: isLoadingCompanies} = useCompanies();
-    const {data: roles} = useRoles();
+    const {data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies} = useCompanies();
+    const {data: roles, isLoading: isLoadingRoles, isError: isErrorRoles} = useRoles();
 
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -97,6 +98,24 @@ export default function RegisterForm() {
             setLoading(false);
         }
     };
+
+
+    if (isErrorCompanies || isErrorRoles) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                Unexpected error occurred. Please try again later.
+            </div>
+        );
+    }
+
+    // Show a loading indicator
+    if (loading || isLoadingCompanies || isLoadingRoles) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CircularProgress size={24}/>
+            </div>
+        );
+    }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
@@ -156,7 +175,7 @@ export default function RegisterForm() {
                 <InputLabel>Company</InputLabel>
                 <Select {...register('companyId')} defaultValue="">
                     <MenuItem value="" disabled>{isLoadingCompanies ? 'Loading...' : 'Select a Company'}</MenuItem>
-                    {companies?.map((company) => (
+                    {companies?.data.map((company) => (
                         <MenuItem key={company.id} value={company.id}>{company.name}</MenuItem>
                     ))}
                 </Select>
