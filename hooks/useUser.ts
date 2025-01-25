@@ -36,6 +36,18 @@ type DriverInfo = {
     companyName: string
 }
 
+export type UpdateUserDriverInput = {
+    id: string;
+    companyId: string;
+};
+
+export type UpdateUserDriverDataResponse = {
+    driverId: string,
+    companyId: string,
+    companyName: string
+};
+
+
 export const fetchUser = async (id: string): Promise<UserDetails> => {
     const response = await api.get<ApiResponse<UserDetails>>(`/users/${id}`);
     if (response.data.isSuccess) {
@@ -70,6 +82,29 @@ export const useUpdateUserBasic = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (data: { id: string; updatedFields: Partial<UserDetails> }) => updateUserBasic(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userDetails'] });
+        },
+    });
+};
+
+// Function to perform the API call to update driver-specific data
+const updateUserDriver = async ({
+                                    id,
+                                    companyId,
+                                }: UpdateUserDriverInput): Promise<ApiResponse<UpdateUserDriverDataResponse>> => {
+    const response = await api.put<ApiResponse<ApiResponse<UpdateUserDriverDataResponse>>>(`/users/${id}/driver`, { companyId });
+    if (response.data.isSuccess) {
+        return response.data.data;
+    }
+    throw new Error(response.data.errors?.[0] || 'Failed to update driver data');
+};
+
+// Hook to use the mutation
+export const useUpdateUserDriver = () => {
+    const queryClient = useQueryClient();
+    return useMutation<ApiResponse<UpdateUserDriverDataResponse>, Error, UpdateUserDriverInput>({
+        mutationFn: updateUserDriver,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['userDetails'] });
         },

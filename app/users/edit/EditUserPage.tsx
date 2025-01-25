@@ -20,6 +20,7 @@ import {
 import {useEffect, useState} from 'react';
 import {useAuth} from '@/hooks/useAuth';
 import {countries} from '@/data/countries';
+import Link from "next/link";
 
 type EditUserFormInputs = {
     email: string;
@@ -149,6 +150,34 @@ export default function EditUserPage() {
                 <Alert severity="success" sx={{mb: 2}}>
                     {successMessage}
                 </Alert>
+            )}
+
+
+            {/* Conditional Navigation Buttons with Link */}
+            {userDetails.driverInfo && (
+                <Link href={`/users/edit/${userId}/driver`} passHref>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        component="a"
+                        sx={{ mb: 2 }}
+                    >
+                        Edit driver-specific data
+                    </Button>
+                </Link>
+            )}
+
+            {userDetails.contactPersonInfo && (
+                <Link href={`/users/edit/${userId}/contact-person`} passHref>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        component="a"
+                        sx={{ mb: 2 }}
+                    >
+                        Edit contact person-specific data
+                    </Button>
+                </Link>
             )}
 
             <form
