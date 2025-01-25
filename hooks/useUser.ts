@@ -15,7 +15,26 @@ export type UserDetails = {
     city?: string;
     country?: string;
     remark?: string;
+    driverInfo?: DriverInfo;
+    contactPersonInfo?: ContactPersonInfo;
 };
+
+type ContactPersonInfo = {
+    contactPersonId: string,
+    clientsCompanies: ClientCompany []
+}
+type ClientCompany = {
+    companyId?: string,
+    companyName?: string,
+    clientId?: string,
+    clientName?: string
+}
+
+type DriverInfo = {
+    driverId: string,
+    companyId: string,
+    companyName: string
+}
 
 export const fetchUser = async (id: string): Promise<UserDetails> => {
     const response = await api.get<ApiResponse<UserDetails>>(`/users/${id}`);

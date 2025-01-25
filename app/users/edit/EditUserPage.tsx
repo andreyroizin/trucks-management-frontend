@@ -40,7 +40,7 @@ export default function EditUserPage() {
     const router = useRouter();
     const userId = searchParams.get('id');
     const {data: userDetails, isLoading, isError} = useUserDetails(userId || '');
-    const { mutate, isPending} = useUpdateUserBasic();
+    const {mutate, isPending} = useUpdateUserBasic();
     const {data: roles} = useRoles();
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
