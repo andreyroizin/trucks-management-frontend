@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/utils/api';
-import { ApiResponse } from '@/types/api';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {api} from '@/utils/api';
+import {ApiResponse} from '@/types/api';
 
 export type UserDetails = {
     id: string;
@@ -47,6 +47,16 @@ export type UpdateUserDriverDataResponse = {
     companyName: string
 };
 
+export type UpdateUserContactPersonInput = {
+    id: string;
+    clientIds?: string[];
+    companyIds?: string[];
+};
+
+export type UpdateUserContactPersonResponse = {
+    contactPersonId: string,
+    clientsCompanies: ClientCompany []
+};
 
 export const fetchUser = async (id: string): Promise<UserDetails> => {
     const response = await api.get<ApiResponse<UserDetails>>(`/users/${id}`);
@@ -57,9 +67,9 @@ export const fetchUser = async (id: string): Promise<UserDetails> => {
 };
 
 export const updateUserBasic = async ({
-                                     id,
-                                     updatedFields,
-                                 }: {
+                                          id,
+                                          updatedFields,
+                                      }: {
     id: string;
     updatedFields: Partial<UserDetails>;
 }): Promise<void> => {
@@ -83,7 +93,7 @@ export const useUpdateUserBasic = () => {
     return useMutation({
         mutationFn: (data: { id: string; updatedFields: Partial<UserDetails> }) => updateUserBasic(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['userDetails'] });
+            queryClient.invalidateQueries({queryKey: ['userDetails']});
         },
     });
 };
@@ -93,7 +103,7 @@ const updateUserDriver = async ({
                                     id,
                                     companyId,
                                 }: UpdateUserDriverInput): Promise<ApiResponse<UpdateUserDriverDataResponse>> => {
-    const response = await api.put<ApiResponse<ApiResponse<UpdateUserDriverDataResponse>>>(`/users/${id}/driver`, { companyId });
+    const response = await api.put<ApiResponse<ApiResponse<UpdateUserDriverDataResponse>>>(`/users/${id}/driver`, {companyId});
     if (response.data.isSuccess) {
         return response.data.data;
     }
@@ -106,6 +116,34 @@ export const useUpdateUserDriver = () => {
     return useMutation<ApiResponse<UpdateUserDriverDataResponse>, Error, UpdateUserDriverInput>({
         mutationFn: updateUserDriver,
         onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['userDetails']});
+        },
+    });
+};
+
+const updateUserContactPerson = async ({
+                                           id,
+                                           clientIds,
+                                           companyIds,
+                                       }: UpdateUserContactPersonInput): Promise<UpdateUserContactPersonResponse> => {
+    const response = await api.put<ApiResponse<UpdateUserContactPersonResponse>>(
+        `/users/${id}/contact-person`,
+        {clientIds, companyIds },
+    );
+
+    if (response.data.isSuccess) {
+        return response.data.data;
+    }
+    throw new Error(response.data.errors?.[0] || 'Failed to update contact person data');
+};
+
+// Hook to use the mutation
+export const useUpdateUserContactPerson = () => {
+    const queryClient = useQueryClient();
+    return useMutation<UpdateUserContactPersonResponse, Error, UpdateUserContactPersonInput>({
+        mutationFn: updateUserContactPerson,
+        onSuccess: () => {
+            // Invalidate and refetch user details to ensure data consistency
             queryClient.invalidateQueries({ queryKey: ['userDetails'] });
         },
     });
