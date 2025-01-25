@@ -1,7 +1,7 @@
 'use client';
 
 import {useRouter, useSearchParams} from 'next/navigation';
-import {UserDetailRole, useUpdateUserBasic, useUserDetails} from '@/hooks/useUser';
+import {useUpdateUserBasic, useUserDetails} from '@/hooks/useUser';
 import {useRoles} from '@/hooks/useRoles';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import {
@@ -17,7 +17,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useAuth} from '@/hooks/useAuth';
 import {countries} from '@/data/countries';
 
@@ -42,16 +42,8 @@ export default function EditUserPage() {
     const {data: userDetails, isLoading, isError} = useUserDetails(userId || '');
     const { mutate, isPending} = useUpdateUserBasic();
     const {data: roles} = useRoles();
-
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
-    const userRoles = useMemo(() => {
-        if (Array.isArray(userDetails?.roles) && typeof userDetails.roles[0] === "object") {
-            // Narrow the type to UserDetailRole[]
-            return (userDetails.roles as UserDetailRole[]).map((role) => role.roleName);
-        }
-        return [];
-    }, [userDetails?.roles]);
 
     const {
         register,
@@ -85,7 +77,7 @@ export default function EditUserPage() {
             setValue('email', userDetails.email);
             setValue('firstName', userDetails.firstName);
             setValue('lastName', userDetails.lastName);
-            setValue('roles', userRoles || []);
+            setValue('roles', userDetails.roles);
             setValue('postcode', userDetails.postcode || '');
             setValue('phoneNumber', userDetails.phoneNumber || '');
             setValue('address', userDetails.address || '');
@@ -93,7 +85,7 @@ export default function EditUserPage() {
             setValue('country', userDetails.country || '');
             setValue('remark', userDetails.remark || '');
         }
-    }, [userDetails, setValue, isAuthenticated, loading, user, router, userRoles]);
+    }, [userDetails, setValue, isAuthenticated, loading, user, router]);
 
     const onSubmit: SubmitHandler<EditUserFormInputs> = (data) => {
         if (!userId) return;
