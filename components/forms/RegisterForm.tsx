@@ -30,14 +30,6 @@ const registerSchema = yup.object().shape({
         .required('Confirm Password is required'),
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
-    companyIds: yup
-        .array()
-        .of(yup.string().required('Each company must have a valid ID'))
-        .notRequired(),
-    clientIds: yup
-        .array()
-        .of(yup.string().required('Each client must have a valid ID'))
-        .notRequired(),
     roles: yup
         .array()
         .of(yup.string().required('Role is required'))
@@ -51,7 +43,7 @@ type RegisterFormInputs = {
     confirmPassword: string;
     firstName: string;
     lastName: string;
-    companyIds: string[];
+    companyIds?: string[];
     clientIds?: string[];
     roles: string[];
     postcode?: string;
@@ -210,7 +202,7 @@ export default function RegisterForm() {
                     ) : (
                         companies?.data.map((company) => (
                             <MenuItem key={company.id} value={company.id}>
-                                <Checkbox checked={watch('companyIds').includes(company.id)} />
+                                <Checkbox checked={watch('companyIds')?.includes(company.id)} />
                                 <Typography variant="body2">{company.name}</Typography>
                             </MenuItem>
                         ))
@@ -250,7 +242,7 @@ export default function RegisterForm() {
                     ) : (
                         clients?.data.map((client) => (
                             <MenuItem key={client.id} value={client.id}>
-                                <Checkbox checked={watch('clientIds').includes(client.id)} />
+                                <Checkbox checked={watch('clientIds')?.includes(client.id)} />
                                 <Typography variant="body2">{client.name}</Typography>
                             </MenuItem>
                         ))
