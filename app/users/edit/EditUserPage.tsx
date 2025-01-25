@@ -1,22 +1,21 @@
 'use client';
 
-import {useSearchParams, useRouter} from 'next/navigation';
-import {useUserDetails, useUpdateUserBasic, UserDetailRole} from '@/hooks/useUser';
-import {useCompanies} from '@/hooks/useCompanies';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {UserDetailRole, useUpdateUserBasic, useUserDetails} from '@/hooks/useUser';
 import {useRoles} from '@/hooks/useRoles';
-import {useForm, SubmitHandler} from 'react-hook-form';
+import {SubmitHandler, useForm} from 'react-hook-form';
 import {
-    TextField,
+    Alert,
     Button,
     Checkbox,
+    CircularProgress,
+    FormControl,
     FormControlLabel,
+    InputLabel,
     MenuItem,
     Select,
-    FormControl,
-    InputLabel,
+    TextField,
     Typography,
-    Alert,
-    CircularProgress,
 } from '@mui/material';
 import {useEffect, useMemo, useState} from 'react';
 import {useAuth} from '@/hooks/useAuth';
