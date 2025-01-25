@@ -1,7 +1,7 @@
 'use client';
 
 import {useSearchParams, useRouter} from 'next/navigation';
-import {useUserDetails, useUpdateUser, UserDetailRole} from '@/hooks/useUser';
+import {useUserDetails, useUpdateUserBasic, UserDetailRole} from '@/hooks/useUser';
 import {useCompanies} from '@/hooks/useCompanies';
 import {useRoles} from '@/hooks/useRoles';
 import {useForm, SubmitHandler} from 'react-hook-form';
@@ -26,7 +26,6 @@ type EditUserFormInputs = {
     email: string;
     firstName: string;
     lastName: string;
-    companyId: string;
     roles: string[]; // Array of role names
     postcode?: string;
     phoneNumber?: string;
@@ -42,9 +41,7 @@ export default function EditUserPage() {
     const router = useRouter();
     const userId = searchParams.get('id');
     const {data: userDetails, isLoading, isError} = useUserDetails(userId || '');
-    const { mutate, isPending} = useUpdateUser();
-
-    const {data: companies} = useCompanies();
+    const { mutate, isPending} = useUpdateUserBasic();
     const {data: roles} = useRoles();
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -68,7 +65,6 @@ export default function EditUserPage() {
             email: '',
             firstName: '',
             lastName: '',
-            companyId: '',
             roles: [],
             postcode: '',
             phoneNumber: '',
@@ -90,7 +86,6 @@ export default function EditUserPage() {
             setValue('email', userDetails.email);
             setValue('firstName', userDetails.firstName);
             setValue('lastName', userDetails.lastName);
-            setValue('companyId', userDetails.companyId);
             setValue('roles', userRoles || []);
             setValue('postcode', userDetails.postcode || '');
             setValue('phoneNumber', userDetails.phoneNumber || '');
@@ -199,17 +194,6 @@ export default function EditUserPage() {
                 </FormControl>
                 <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
                 <TextField label="Remark" fullWidth multiline rows={4} {...register('remark')} sx={{mb: 2}}/>
-                <FormControl fullWidth sx={{mb: 2}}>
-                    <InputLabel>Company</InputLabel>
-                    <Select {...register('companyId', {required: 'Company is required'})} value={watch('companyId')}
-                            onChange={(e) => setValue('companyId', e.target.value)}>
-                        {companies?.map((company) => (
-                            <MenuItem key={company.id} value={company.id}>
-                                {company.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
                 <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
                 {roles?.map((role) => (
                     <FormControlLabel

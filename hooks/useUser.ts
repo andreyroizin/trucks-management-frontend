@@ -30,14 +30,14 @@ export const fetchUser = async (id: string): Promise<UserDetails> => {
     throw new Error(response.data.errors?.[0] || 'Failed to fetch user details');
 };
 
-export const updateUser = async ({
+export const updateUserBasic = async ({
                                      id,
                                      updatedFields,
                                  }: {
     id: string;
     updatedFields: Partial<UserDetails>;
 }): Promise<void> => {
-    const response = await api.put<ApiResponse<null>>(`/users/${id}`, updatedFields);
+    const response = await api.put<ApiResponse<null>>(`/users/${id}/basic`, updatedFields);
     if (!response.data.isSuccess) {
         throw new Error(response.data.errors?.[0] || 'Failed to update user');
     }
@@ -52,10 +52,10 @@ export const useUserDetails = (id: string) => {
 };
 
 // Update user mutation hook
-export const useUpdateUser = () => {
+export const useUpdateUserBasic = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (data: { id: string; updatedFields: Partial<UserDetails> }) => updateUser(data),
+        mutationFn: (data: { id: string; updatedFields: Partial<UserDetails> }) => updateUserBasic(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['userDetails'] });
         },

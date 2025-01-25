@@ -14,13 +14,13 @@ export default function CompanyList() {
         return <div>Error fetching companies: {error instanceof Error ? error.message : 'Unknown error'}</div>;
     }
 
-    if (!companies || companies.length === 0) {
+    if (!companies?.data || companies?.data.length === 0) {
         return <div>No companies found.</div>;
     }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {companies.map((company) => (
+            {companies?.data.map((company) => (
                 <CompanyCard key={company.id} company={company} />
             ))}
         </div>

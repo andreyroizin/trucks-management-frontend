@@ -25,7 +25,6 @@ export type User = {
 export type Company = {
     id: string;
     name: string;
-    users: User[];
 };
 
 export type Role = {
