@@ -19,6 +19,7 @@ import {useRoles} from '@/hooks/useRoles';
 import {register as registerApi} from '@/utils/api';
 import * as yup from 'yup';
 import {countries} from '@/data/countries';
+import {useClients} from "@/hooks/useClients";
 
 const registerSchema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Email is required'),
@@ -32,8 +33,11 @@ const registerSchema = yup.object().shape({
     companyIds: yup
         .array()
         .of(yup.string().required('Each company must have a valid ID'))
-        .min(1, 'At least one company must be selected')
-        .required('Company selection is required'),
+        .notRequired(),
+    clientIds: yup
+        .array()
+        .of(yup.string().required('Each client must have a valid ID'))
+        .notRequired(),
     roles: yup
         .array()
         .of(yup.string().required('Role is required'))
@@ -48,6 +52,7 @@ type RegisterFormInputs = {
     firstName: string;
     lastName: string;
     companyIds: string[];
+    clientIds?: string[];
     roles: string[];
     postcode?: string;
     phoneNumber?: string;
@@ -67,11 +72,13 @@ export default function RegisterForm() {
             firstName: '',
             lastName: '',
             companyIds: [],
+            clientIds: [],
             roles: [],
         },
     });
 
     const {data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies} = useCompanies();
+    const {data: clients, isLoading: isLoadingClients, isError: isErrorClients} = useClients();
     const {data: roles, isLoading: isLoadingRoles, isError: isErrorRoles} = useRoles();
 
     const [apiError, setApiError] = useState<string | null>(null);
@@ -104,7 +111,7 @@ export default function RegisterForm() {
     };
 
 
-    if (isErrorCompanies || isErrorRoles) {
+    if (isErrorCompanies || isErrorRoles || isErrorClients) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 Unexpected error occurred. Please try again later.
@@ -113,7 +120,7 @@ export default function RegisterForm() {
     }
 
     // Show a loading indicator
-    if (loading || isLoadingCompanies || isLoadingRoles) {
+    if (isLoadingCompanies || isLoadingRoles || isLoadingClients) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <CircularProgress size={24}/>
@@ -174,7 +181,7 @@ export default function RegisterForm() {
                 sx={{mb: 2}}
             />
 
-            {/* Company and Roles */}
+            {/* Company */}
             <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Companies</InputLabel>
                 <Select
@@ -214,6 +221,47 @@ export default function RegisterForm() {
                 </Typography>
             </FormControl>
 
+            {/* Clients Selection */}
+            <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Clients</InputLabel>
+                <Select
+                    {...register('clientIds')}
+                    multiple
+                    value={watch('clientIds')}
+                    onChange={(event) => {
+                        const {
+                            target: { value },
+                        } = event;
+                        setValue('clientIds', typeof value === 'string' ? value.split(',') : value);
+                    }}
+                    renderValue={(selected) => {
+                        if (!selected || selected.length === 0) return '';
+                        const selectedNames = selected.map((id) => {
+                            const client = clients?.data.find((c) => c.id === id);
+                            return client ? client.name : id;
+                        });
+                        return selectedNames.join(', ');
+                    }}
+                >
+                    {isLoadingClients ? (
+                        <MenuItem disabled>
+                            <em>Loading...</em>
+                        </MenuItem>
+                    ) : (
+                        clients?.data.map((client) => (
+                            <MenuItem key={client.id} value={client.id}>
+                                <Checkbox checked={watch('clientIds').includes(client.id)} />
+                                <Typography variant="body2">{client.name}</Typography>
+                            </MenuItem>
+                        ))
+                    )}
+                </Select>
+                <Typography variant="caption" color="error">
+                    {errors.clientIds?.message}
+                </Typography>
+            </FormControl>
+
+            {/* Roles Selection */}
             <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
             {roles?.map((role) => (
                 <FormControlLabel
