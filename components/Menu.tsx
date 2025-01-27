@@ -37,6 +37,7 @@ export default function Menu() {
     };
 
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
     return (
         <nav className="flex justify-between items-center p-4 bg-gray-800 text-white">
@@ -74,7 +75,7 @@ export default function Menu() {
                             </MenuItem>
                         </MuiMenu>
 
-                        {isGlobalAdmin && (
+                        {(isGlobalAdmin || isCustomerAdmin) && (
                             <>
                                 <Button
                                     variant="text"
@@ -91,9 +92,10 @@ export default function Menu() {
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                                 >
-                                    <MenuItem onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
+                                    {isGlobalAdmin &&
+                                        (<MenuItem onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
                                         Register
-                                    </MenuItem>
+                                        </MenuItem>)}
                                     <MenuItem onClick={() => navigateTo('/users', 'systemAnchorEl')}>
                                         Users
                                     </MenuItem>

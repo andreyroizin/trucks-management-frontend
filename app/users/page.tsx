@@ -29,7 +29,10 @@ export default function UsersPage() {
   const { data, isLoading, isError } = useUsers(page + 1, rowsPerPage); // Adjust API's 1-based page number
 
   useEffect(() => {
-    if (!loading && (!isAuthenticated || !user?.roles.includes('globalAdmin'))) {
+    const allowedRoles = ['globalAdmin', 'customerAdmin'];
+    const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+
+    if (!loading && (!isAuthenticated || !hasAccess)) {
       router.push('/auth/login'); // Redirect to login if not authorized
     }
   }, [isAuthenticated, loading, user, router]);

@@ -70,7 +70,10 @@ export default function EditUserPage() {
     const selectedRoles = watch('roles', []);
 
     useEffect(() => {
-        if (!loading && (!isAuthenticated || !user?.roles.includes('globalAdmin'))) {
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
+        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+
+        if (!loading && (!isAuthenticated || !hasAccess)) {
             router.push('/auth/login'); // Redirect to login if not authorized
         }
 
