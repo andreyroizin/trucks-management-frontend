@@ -45,6 +45,7 @@ export default function EditUserPage() {
     const {data: roles} = useRoles();
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     const {
         register,
@@ -217,8 +218,8 @@ export default function EditUserPage() {
                 </FormControl>
                 <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
                 <TextField label="Remark" fullWidth multiline rows={4} {...register('remark')} sx={{mb: 2}}/>
-                <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
-                {roles?.map((role) => (
+                {isGlobalAdmin && (<Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>)}
+                {isGlobalAdmin && roles?.map((role) => (
                     <FormControlLabel
                         key={role.id}
                         control={
