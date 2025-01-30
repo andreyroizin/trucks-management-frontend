@@ -26,16 +26,9 @@ export type ClientsData = {
     data: Client[];
 };
 
-export type ClientsResponse = {
-    isSuccess: boolean;
-    statusCode: number;
-    data: ClientsData;
-    errors: any;
-};
-
 // *** Fetcher Function ***
 const fetchClients = async (page: number, pageSize: number): Promise<ClientsData> => {
-    const response = await api.get<ApiResponse<ClientsResponse>>('/clients', {
+    const response = await api.get<ApiResponse<ClientsData>>('/clients', {
         params: {
             pageNumber: page,
             pageSize: pageSize,

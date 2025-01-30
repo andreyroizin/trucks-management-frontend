@@ -41,7 +41,7 @@ export default function EditContactPersonPage() {
         data: clientsData,
         isLoading: isLoadingClients,
         isError: isErrorClients,
-    } = useClients();
+    } = useClients(1, 1000);
 
     // Initialize the update hook
     const { mutateAsync: mutateUpdateContactPerson, isPending: isUpdatingContactPerson } =
