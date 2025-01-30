@@ -22,13 +22,14 @@ export default function CompanyDetailPage() {
     const params = useParams();
     const companyId = params?.id as string;
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
     // Fetch company details
     const { data: company, isLoading, isError, error } = useCompanyDetails(companyId);
 
     // Access control: Only allow 'globalAdmin' or 'customerAdmin'
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin', 'driver', 'customerAccountant', 'employer', 'customer'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
 
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
@@ -58,11 +59,11 @@ export default function CompanyDetailPage() {
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h5">Company Details</Typography>
-                        <Link href={`/companies/edit?id=${company?.id}`} passHref>
+                        {isCustomerAdmin && <Link href={`/companies/edit?id=${company?.id}`} passHref>
                             <Button variant="contained" color="primary">
                                 Edit Company
                             </Button>
-                        </Link>
+                        </Link>}
                     </Box>
                     <Typography variant="subtitle1" color="textSecondary">
                         Name:
