@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { Button, Menu as MuiMenu, MenuItem } from '@mui/material';
-import { useState } from 'react';
+import {useRouter} from 'next/navigation';
+import {useAuth} from '@/hooks/useAuth';
+import {Button, Menu as MuiMenu, MenuItem} from '@mui/material';
+import {useState} from 'react';
 
 export default function Menu() {
-    const { isAuthenticated, user, logout } = useAuth();
+    const {isAuthenticated, user, logout} = useAuth();
     const router = useRouter();
 
     const [menuState, setMenuState] = useState({
@@ -23,7 +23,7 @@ export default function Menu() {
     };
 
     const handleMenuClose = (menu: 'accountAnchorEl' | 'systemAnchorEl') => {
-        setMenuState((prev) => ({ ...prev, [menu]: null }));
+        setMenuState((prev) => ({...prev, [menu]: null}));
     };
 
     const navigateTo = (url: string, menu: 'accountAnchorEl' | 'systemAnchorEl') => {
@@ -38,6 +38,10 @@ export default function Menu() {
 
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isEmployer = user?.roles.includes('employer');
+    const isCustomer = user?.roles.includes('customer');
+    const isCustomerAccountant = user?.roles.includes('customerAccountant');
+    const isContactPerson = isGlobalAdmin || isCustomerAdmin || isEmployer || isCustomer || isCustomerAccountant;
 
     return (
         <nav className="flex justify-between items-center p-4 bg-gray-800 text-white">
@@ -64,8 +68,8 @@ export default function Menu() {
                             anchorEl={menuState.accountAnchorEl}
                             open={Boolean(menuState.accountAnchorEl)}
                             onClose={() => handleMenuClose('accountAnchorEl')}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                            transformOrigin={{vertical: 'top', horizontal: 'left'}}
                         >
                             <MenuItem onClick={() => navigateTo('/profile', 'accountAnchorEl')}>
                                 Profile
@@ -74,6 +78,27 @@ export default function Menu() {
                                 Change Password
                             </MenuItem>
                         </MuiMenu>
+                        {(isContactPerson && !isEmployer) && (
+                            <>
+                                <Link href="/drivers" className="hover:underline">
+                                    Drivers
+                                </Link>
+                            </>
+                        )}
+                        {isContactPerson && (
+                            <>
+                                <Link href="/companies" className="hover:underline">
+                                    Companies
+                                </Link>
+                            </>
+                        )}
+                        {isContactPerson && (
+                            <>
+                                <Link href="/clients" className="hover:underline">
+                                    Clients
+                                </Link>
+                            </>
+                        )}
 
                         {(isGlobalAdmin || isCustomerAdmin) && (
                             <>
@@ -89,12 +114,12 @@ export default function Menu() {
                                     anchorEl={menuState.systemAnchorEl}
                                     open={Boolean(menuState.systemAnchorEl)}
                                     onClose={() => handleMenuClose('systemAnchorEl')}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                                    transformOrigin={{vertical: 'top', horizontal: 'left'}}
                                 >
                                     {isGlobalAdmin &&
                                         (<MenuItem onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
-                                        Register
+                                            Register
                                         </MenuItem>)}
                                     <MenuItem onClick={() => navigateTo('/users', 'systemAnchorEl')}>
                                         Users
