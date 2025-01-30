@@ -58,7 +58,7 @@ export default function CompanyDetailPage() {
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h5">Company Details</Typography>
-                        <Link href={`/companies/edit?id=${company.id}`} passHref>
+                        <Link href={`/companies/edit?id=${company?.id}`} passHref>
                             <Button variant="contained" color="primary">
                                 Edit Company
                             </Button>
@@ -67,7 +67,7 @@ export default function CompanyDetailPage() {
                     <Typography variant="subtitle1" color="textSecondary">
                         Name:
                     </Typography>
-                    <Typography variant="body1">{company.name}</Typography>
+                    <Typography variant="body1">{company?.name}</Typography>
                 </CardContent>
             </Card>
         </Box>
