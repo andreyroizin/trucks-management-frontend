@@ -1,5 +1,3 @@
-// app/companies/create/page.tsx
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -14,27 +12,31 @@ import {
 } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useCreateCompany } from '@/hooks/useCreateCompany';
-import { useRouter, useParams } from 'next/navigation';
+import { useUpdateCompany } from '@/hooks/useUpdateCompany';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth'; // Ensure this hook is correctly implemented
-import { useUserDetails } from '@/hooks/useUser';
+import { useCompanyDetails } from '@/hooks/useCompanyDetails';
+
+type FormInputs = {
+    name: string;
+};
 
 // *** Validation Schema ***
 const schema = yup.object().shape({
     name: yup.string().required('Company name is required'),
 });
 
-// *** Type for Form Inputs ***
-type FormInputs = {
-    name: string;
-};
-
-export default function CreateCompanyPage() {
+export default function EditCompanyPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const companyId = searchParams.get('id') as string;
     const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-    // Initialize the create company mutation hook
-    const { mutateAsync, isPending, isError, error } = useCreateCompany();
+    // Fetch company details
+    const { data: company, isLoading: isLoadingCompany, isError: isErrorCompany, error: companyError } = useCompanyDetails(companyId);
+
+    // Initialize the update company mutation hook
+    const { mutateAsync, isPending: isUpdating, isError: isUpdateError, error: updateError } = useUpdateCompany();
 
     // Form setup
     const {
@@ -45,13 +47,20 @@ export default function CreateCompanyPage() {
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
         defaultValues: {
-            name: '',
+            name: company?.name || '',
         },
     });
 
+    // Populate form with existing company data when fetched
+    useEffect(() => {
+        if (company) {
+            reset({ name: company.name });
+        }
+    }, [company, reset]);
+
     // Access control: Only allow 'globalAdmin' or 'customerAdmin'
     useEffect(() => {
-        const allowedRoles = ['globalAdmin'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
 
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
@@ -61,16 +70,16 @@ export default function CreateCompanyPage() {
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            await mutateAsync(data);
+            await mutateAsync({ id: companyId, name: data.name });
             reset();
-            router.push('/companies'); // Redirect to Companies page after creation
+            router.push(`/companies/${companyId}`); // Redirect to Company Detail page after update
         } catch (err) {
-            // Error handling is managed by isError and error
+            // Error handling is managed by isUpdateError and updateError
         }
     };
 
-    // Display loading state while fetching user details or during auth checks
-    if (authLoading) {
+    // Display loading state while fetching company details or during auth checks
+    if (authLoading || isLoadingCompany) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress />
@@ -78,15 +87,24 @@ export default function CreateCompanyPage() {
         );
     }
 
+    // Display error if fetching company details fails
+    if (isErrorCompany) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <Alert severity="error">{companyError.message || 'Failed to load company details.'}</Alert>
+            </Box>
+        );
+    }
+
     return (
         <Box maxWidth="500px" mx="auto" p={2}>
             <Typography variant="h5" gutterBottom>
-                Add New Company
+                Edit Company
             </Typography>
 
-            {isError && (
+            {isUpdateError && (
                 <Alert severity="error" sx={{ mb: 2 }}>
-                    {error.message || 'Failed to create company.'}
+                    {updateError.message || 'Failed to update company.'}
                 </Alert>
             )}
 
@@ -114,10 +132,10 @@ export default function CreateCompanyPage() {
                         variant="contained"
                         color="primary"
                         fullWidth
-                        disabled={isPending}
-                        startIcon={isPending ? <CircularProgress size={20} /> : null}
+                        disabled={isUpdating}
+                        startIcon={isUpdating ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Creating...' : 'Create Company'}
+                        {isUpdating ? 'Updating...' : 'Update Company'}
                     </Button>
                 </Box>
             </form>
