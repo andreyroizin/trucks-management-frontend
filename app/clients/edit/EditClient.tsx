@@ -92,7 +92,7 @@ export default function EditClientPage() {
 
     // Access control
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
         const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
         if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
     }, [authLoading, isAuthenticated, router, user?.roles]);
