@@ -24,6 +24,7 @@ export default function ContactPersonDetailPage() {
     const contactPersonId = params.id as string; // ID from the URL
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: userDetails, isLoading, isError, error } = useUserDetails(contactPersonId);
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
     useEffect(() => {
         const allowedRoles = [
@@ -79,11 +80,11 @@ export default function ContactPersonDetailPage() {
                         <Typography variant="h5">
                             {firstName} {lastName}
                         </Typography>
-                        <Link href={`/contactpersons/edit?id=${id}`} passHref>
-                            <Button variant="contained" color="primary">
-                                Edit
-                            </Button>
-                        </Link>
+                        {isCustomerAdmin && <Link href={`/contactpersons/edit?id=${id}`} passHref>
+                                <Button variant="contained" color="primary">
+                                    Edit
+                                </Button>
+                            </Link>}
                     </Box>
 
                     {/* Basic user info */}
