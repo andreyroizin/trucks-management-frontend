@@ -1,5 +1,3 @@
-// app/companies/[id]/page.tsx
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -16,6 +14,7 @@ import {
     CardContent,
 } from '@mui/material';
 import Link from 'next/link';
+import ContactPersonsSection from "@/components/ContactPersons";
 
 export default function CompanyDetailPage() {
     const router = useRouter();
@@ -72,6 +71,7 @@ export default function CompanyDetailPage() {
                     <Typography variant="body1">{company?.name}</Typography>
                 </CardContent>
             </Card>
+            <ContactPersonsSection companyId={company?.id} />
         </Box>
     );
 }

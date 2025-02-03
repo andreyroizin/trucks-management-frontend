@@ -6,6 +6,7 @@ import {Box, Card, CardContent, Typography, CircularProgress, Alert, Button} fro
 import Link from 'next/link';
 import {useAuth} from '@/hooks/useAuth';
 import {useClientDetails} from '@/hooks/useClientDetails';
+import ContactPersonsSection from "@/components/ContactPersons";
 
 export default function ClientDetailPage() {
     const {id} = useParams();
@@ -74,6 +75,7 @@ export default function ClientDetailPage() {
                     </Box>
                 </CardContent>
             </Card>
+            <ContactPersonsSection clientId={client.id} />
         </Box>
     );
 }
