@@ -23,6 +23,7 @@ export default function CompanyDetailPage() {
     const companyId = params?.id as string;
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     // Fetch company details
     const { data: company, isLoading, isError, error } = useCompanyDetails(companyId);
@@ -59,7 +60,7 @@ export default function CompanyDetailPage() {
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h5">Company Details</Typography>
-                        {isCustomerAdmin && <Link href={`/companies/edit?id=${company?.id}`} passHref>
+                        {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/companies/edit?id=${company?.id}`} passHref>
                             <Button variant="contained" color="primary">
                                 Edit Company
                             </Button>

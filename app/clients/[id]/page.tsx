@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Box, Card, CardContent, Typography, CircularProgress, Alert, Button } from '@mui/material';
+import React, {useEffect} from 'react';
+import {useParams, useRouter} from 'next/navigation';
+import {Box, Card, CardContent, Typography, CircularProgress, Alert, Button} from '@mui/material';
 import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
-import { useClientDetails } from '@/hooks/useClientDetails';
+import {useAuth} from '@/hooks/useAuth';
+import {useClientDetails} from '@/hooks/useClientDetails';
 
 export default function ClientDetailPage() {
-    const { id } = useParams();
+    const {id} = useParams();
     const router = useRouter();
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
-    const { data: client, isLoading, isError, error } = useClientDetails(id as string);
+    const {user, isAuthenticated, loading: authLoading} = useAuth();
+    const {data: client, isLoading, isError, error} = useClientDetails(id as string);
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer', 'customer'];
@@ -22,7 +24,7 @@ export default function ClientDetailPage() {
     if (authLoading || isLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -40,14 +42,14 @@ export default function ClientDetailPage() {
             <Card>
                 <CardContent>
                     {/* Title + Edit Button (top-right) */}
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    {(isCustomerAdmin || isGlobalAdmin) && <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h5">{client.name}</Typography>
                         <Link href={`/clients/edit?id=${client.id}`} passHref>
                             <Button variant="contained" color="primary">
                                 Edit
                             </Button>
                         </Link>
-                    </Box>
+                    </Box>}
 
                     <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                         {client.tav}
@@ -57,7 +59,7 @@ export default function ClientDetailPage() {
                     </Typography>
                     <Typography variant="body1">Phone: {client.phoneNumber}</Typography>
                     <Typography variant="body1">Email: {client.email}</Typography>
-                    <Typography variant="body1" sx={{ mt: 1 }}>
+                    <Typography variant="body1" sx={{mt: 1}}>
                         Remark: {client.remark}
                     </Typography>
 
