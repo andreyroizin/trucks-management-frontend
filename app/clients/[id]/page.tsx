@@ -65,7 +65,7 @@ export default function ClientDetailPage() {
 
                     {/* Link to the Company */}
                     <Box mt={2}>
-                        Company:{' '}
+                        Company:{` ${client.company.name} `}
                         <Link href={`/companies/${client.company.id}`} passHref>
                             <Button variant="outlined" size="small">
                                 Go to Company
