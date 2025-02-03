@@ -69,7 +69,7 @@ export default function ContactPersonsSection({
                                 key={cp.contactPersonId}
                                 hover
                                 component={Link}
-                                href={`/contactpersons/${cp.contactPersonId}`}
+                                href={`/contactpersons/${cp.user.id}`}
                                 sx={{ cursor: 'pointer', textDecoration: 'none' }}
                             >
                                 <TableCell>
