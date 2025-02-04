@@ -23,7 +23,7 @@ import {useAuth} from "@/hooks/useAuth";
 export default function UsersPage() {
   const { user, isAuthenticated, loading } = useAuth();
   const [page, setPage] = useState(0); // Zero-based index for the page
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Results per page
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Results per page
   const router = useRouter();
 
   const { data, isLoading, isError } = useUsers(page + 1, rowsPerPage); // Adjust API's 1-based page number
