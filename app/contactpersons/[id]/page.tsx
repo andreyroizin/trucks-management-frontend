@@ -80,7 +80,7 @@ export default function ContactPersonDetailPage() {
                         <Typography variant="h5">
                             {firstName} {lastName}
                         </Typography>
-                        {isCustomerAdmin && <Link href={`/contactpersons/edit?id=${id}`} passHref>
+                        {isCustomerAdmin && <Link href={`/users/edit?id=${id}`} passHref>
                                 <Button variant="contained" color="primary">
                                     Edit
                                 </Button>
