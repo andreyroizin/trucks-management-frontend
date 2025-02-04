@@ -63,7 +63,14 @@ export default function ClientDetailPage() {
                     <Typography variant="body1" sx={{mt: 1}}>
                         Remark: {client.remark}
                     </Typography>
-
+                    {/* Link to the Surcharges */}
+                    <Box mt={2}>
+                        <Link href={`/surcharges/${client.id}`} passHref>
+                            <Button variant="outlined" size="small">
+                                Manage surcharges
+                            </Button>
+                        </Link>
+                    </Box>
                     {/* Link to the Company */}
                     <Box mt={2}>
                         Company:{` ${client.company.name} `}
