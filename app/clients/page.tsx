@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Box,
     Typography,
@@ -17,21 +17,22 @@ import {
     Alert,
     TablePagination, Button,
 } from '@mui/material';
-import { useClients } from '@/hooks/useClients';
-import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import {useClients} from '@/hooks/useClients';
+import {useAuth} from '@/hooks/useAuth';
+import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 
 export default function ClientsPage() {
     const router = useRouter();
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const {user, isAuthenticated, loading: authLoading} = useAuth();
 
     // Pagination state
     const [page, setPage] = useState(0); // MUI's TablePagination starts at 0
     const [pageSize, setPageSize] = useState(10);
 
     // Fetch clients with pagination
-    const { data: clientsData, isLoading, isError, error } = useClients(page + 1, pageSize); // API pages start at 1
+    const {data: clientsData, isLoading, isError, error} = useClients(page + 1, pageSize); // API pages start at 1
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
     // *** Access Control ***
     useEffect(() => {
@@ -57,7 +58,7 @@ export default function ClientsPage() {
     if (authLoading || isLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -75,11 +76,13 @@ export default function ClientsPage() {
             <Typography variant="h4" gutterBottom>
                 Clients
             </Typography>
-            <Link href="/clients/create" passHref>
-                <Button variant="contained" color="primary">
-                    Add Client
-                </Button>
-            </Link>
+            {isCustomerAdmin &&
+                <Link href="/clients/create" passHref>
+                    <Button variant="contained" color="primary">
+                        Add Client
+                    </Button>
+                </Link>
+            }
             <TableContainer component={Paper}>
                 <Table aria-label="clients table">
                     <TableHead>
@@ -102,7 +105,7 @@ export default function ClientsPage() {
                                 hover
                                 component={Link}
                                 href={`/clients/${client.id}`}
-                                sx={{ textDecoration: 'none', cursor: 'pointer' }}
+                                sx={{textDecoration: 'none', cursor: 'pointer'}}
                             >
                                 <TableCell>{client.name}</TableCell>
                                 <TableCell>{client.tav}</TableCell>
