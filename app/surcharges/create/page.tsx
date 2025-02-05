@@ -3,12 +3,12 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import CreateComponent from './CreateComponent';
+import CreateSurchargeComponent from './CreateSurchargeComponent';
 
 export default function EditClientPage() {
     return (
         <Suspense fallback={<div>Loading create surcharge form...</div>}>
-            <CreateComponent />
+            <CreateSurchargeComponent />
         </Suspense>
     );
 }

@@ -37,7 +37,7 @@ export default function SurchargesPage() {
 
     // Access control
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer', 'customer', 'customerAccountant'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
             router.push('/auth/login');

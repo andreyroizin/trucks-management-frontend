@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Box, Button, CircularProgress, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -9,6 +9,7 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {useCompanies} from '@/hooks/useCompanies';
 import {Company, SurchargeInput, useCreateSurcharge} from '@/hooks/useCreateSurcharge';
+import {useAuth} from "@/hooks/useAuth";
 
 // --- VALIDATION SCHEMA ---
 const surchargeSchema = yup.object().shape({
@@ -22,7 +23,8 @@ const surchargeSchema = yup.object().shape({
         .required('Company is required'),
 });
 
-export default function CreateComponent() {
+export default function CreateSurchargeComponent() {
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const clientId = searchParams.get('clientId') ?? '';
@@ -50,6 +52,15 @@ export default function CreateComponent() {
             clientId
         },
     });
+
+    // Access control
+    useEffect(() => {
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
+        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+        if (!authLoading && (!isAuthenticated || !hasAccess)) {
+            router.push('/auth/login');
+        }
+    }, [authLoading, isAuthenticated, user?.roles, router]);
 
     // Submit Handler
     const onSubmit: SubmitHandler<SurchargeInput> = async (data) => {
