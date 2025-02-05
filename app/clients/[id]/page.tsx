@@ -15,6 +15,8 @@ export default function ClientDetailPage() {
     const {data: client, isLoading, isError, error} = useClientDetails(id as string);
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomer = user?.roles.includes('customer');
+    const isCustomerAccountant = user?.roles.includes('customerAccountant');
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer', 'customer'];
@@ -43,14 +45,15 @@ export default function ClientDetailPage() {
             <Card>
                 <CardContent>
                     {/* Title + Edit Button (top-right) */}
-                    {(isCustomerAdmin || isGlobalAdmin) && <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                        <Typography variant="h5">{client.name}</Typography>
-                        <Link href={`/clients/edit?id=${client.id}`} passHref>
-                            <Button variant="contained" color="primary">
-                                Edit
-                            </Button>
-                        </Link>
-                    </Box>}
+                    {(isCustomerAdmin || isGlobalAdmin) &&
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                            <Typography variant="h5">{client.name}</Typography>
+                            <Link href={`/clients/edit?id=${client.id}`} passHref>
+                                <Button variant="contained" color="primary">
+                                    Edit
+                                </Button>
+                            </Link>
+                        </Box>}
 
                     <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                         {client.tav}
@@ -64,13 +67,14 @@ export default function ClientDetailPage() {
                         Remark: {client.remark}
                     </Typography>
                     {/* Link to the Surcharges */}
-                    <Box mt={2}>
+                    {(isGlobalAdmin || isCustomerAdmin || isCustomerAccountant || isCustomer) && <Box mt={2}>
                         <Link href={`/surcharges/${client.id}`} passHref>
                             <Button variant="outlined" size="small">
                                 Manage surcharges
                             </Button>
                         </Link>
                     </Box>
+                    }
                     {/* Link to the Company */}
                     <Box mt={2}>
                         Company:{` ${client.company.name} `}
@@ -82,7 +86,7 @@ export default function ClientDetailPage() {
                     </Box>
                 </CardContent>
             </Card>
-            <ContactPersonsSection clientId={client.id} />
+            <ContactPersonsSection clientId={client.id}/>
         </Box>
     );
 }
