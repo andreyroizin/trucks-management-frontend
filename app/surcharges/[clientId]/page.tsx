@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Typography,
@@ -13,7 +13,7 @@ import {
     Paper,
     TablePagination,
     CircularProgress,
-    Alert,
+    Alert, Button,
 } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useParams } from 'next/navigation';
@@ -25,6 +25,8 @@ export default function SurchargesPage() {
     const router = useRouter();
     const params = useParams();
     const clientId = params.clientId as string;
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     // Pagination state
     const [page, setPage] = useState(0);
@@ -34,7 +36,7 @@ export default function SurchargesPage() {
     const { data, isLoading, isError, error } = useSurcharges(clientId, page + 1, pageSize); // API pages start at 1
 
     // Access control
-    React.useEffect(() => {
+    useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
@@ -70,6 +72,11 @@ export default function SurchargesPage() {
             <Typography variant="h4" gutterBottom>
                 Surcharges
             </Typography>
+            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/surcharges/create?clientId=${clientId}`} passHref>
+                <Button variant="contained" color="primary">
+                    Create new surcharge
+                </Button>
+            </Link>}
             <TableContainer component={Paper}>
                 <Table aria-label="surcharges table">
                     <TableHead>
