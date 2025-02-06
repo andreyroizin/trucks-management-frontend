@@ -25,6 +25,7 @@ export default function ContactPersonDetailPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: userDetails, isLoading, isError, error } = useUserDetails(contactPersonId);
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     useEffect(() => {
         const allowedRoles = [
@@ -80,7 +81,7 @@ export default function ContactPersonDetailPage() {
                         <Typography variant="h5">
                             {firstName} {lastName}
                         </Typography>
-                        {isCustomerAdmin && <Link href={`/users/edit?id=${id}`} passHref>
+                        {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/users/edit?id=${id}`} passHref>
                                 <Button variant="contained" color="primary">
                                     Edit
                                 </Button>
