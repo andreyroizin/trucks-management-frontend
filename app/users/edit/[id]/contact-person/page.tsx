@@ -5,13 +5,14 @@ import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Company, useCompanies} from '@/hooks/useCompanies';
 import {Client, useClients} from '@/hooks/useClients';
 import {useUpdateUserContactPerson, useUserDetails} from '@/hooks/useUser';
 import * as yup from 'yup';
 import {useDeleteContactPerson} from "@/hooks/useDeleteContactPerson";
 import ConfirmModal from "@/components/ConfirmModal";
+import {useAuth} from "@/hooks/useAuth";
 
 // *** Validation Schema ***
 const editContactPersonSchema = yup.object().shape({});
@@ -23,14 +24,23 @@ type EditContactPersonFormInputs = {
 };
 
 export default function EditContactPersonPage() {
+    const {user, isAuthenticated, loading: authLoading} = useAuth();
     const params = useParams();
     const userId = params?.id as string;
     const router = useRouter();
     const [openModal, setOpenModal] = useState(false);
     const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
-
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
     // Fetch user details
     const {data: userDetails, isLoading: isLoadingUser, isError: isErrorUser} = useUserDetails(userId);
+    const contactPersonIsGlobalAdmin = useMemo(
+        () => {
+            return userDetails?.roles.includes('globalAdmin');
+        },
+        [userDetails]);
+
+    console.log(contactPersonIsGlobalAdmin);
+
     const {
         mutateAsync: deleteContactPerson,
         isPending: isDeleting,
@@ -77,6 +87,14 @@ export default function EditContactPersonPage() {
     // Separate states for selected clients and companies
     const [selectedClients, setSelectedClients] = useState<Client[]>([]);
     const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
+
+    useEffect(() => {
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
+        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+        if (!authLoading && (!isAuthenticated || !hasAccess)) {
+            router.push('/auth/login');
+        }
+    }, [isAuthenticated, authLoading, router, user?.roles]);
 
     // Populate form with existing contactPersonInfo
     useEffect(() => {
@@ -254,16 +272,18 @@ export default function EditContactPersonPage() {
                 >
                     {isUpdatingContactPerson ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
                 </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    fullWidth
-                    sx={{mt: 2}}
-                    disabled={isDeleting}
-                    onClick={() => setOpenModal(true)}
-                >
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                </Button>
+                {(!contactPersonIsGlobalAdmin || isGlobalAdmin) && (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        fullWidth
+                        sx={{mt: 2}}
+                        disabled={isDeleting}
+                        onClick={() => setOpenModal(true)}
+                    >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                )}
             </form>
             <ConfirmModal
                 open={openModal}
