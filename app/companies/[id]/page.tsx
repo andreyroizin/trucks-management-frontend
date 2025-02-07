@@ -30,7 +30,7 @@ export default function CompanyDetailPage() {
     const { data: company, isLoading, isError, error } = useCompanyDetails(companyId);
 
     // Delete Company Hook
-    const { mutateAsync, isPending, isError: isDeleteError, error: deleteError } = useDeleteCompany();
+    const { mutateAsync, isPending } = useDeleteCompany();
 
     // State for confirmation modal
     const [openModal, setOpenModal] = useState(false);
