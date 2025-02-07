@@ -1,6 +1,6 @@
 'use client';
 
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -9,6 +9,9 @@ import {useEffect, useState} from 'react';
 import {useCompanies} from '@/hooks/useCompanies';
 import {useUpdateUserDriver, useUserDetails} from '@/hooks/useUser'; // Import the new hook
 import * as yup from 'yup';
+import {useAuth} from "@/hooks/useAuth";
+import { useDeleteDriver } from '@/hooks/useDeleteDriver';
+import ConfirmModal from "@/components/ConfirmModal";
 
 // *** Validation Schema ***
 const editDriverSchema = yup.object().shape({
@@ -23,7 +26,14 @@ type EditDriverFormInputs = {
 export default function EditDriverPage() {
     const params = useParams();
     const userId = params?.id as string;
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
+    const [openModal, setOpenModal] = useState(false);
+    const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
+    const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     // Fetch user details
     const { data: userDetails, isLoading: isLoadingUser, isError: isErrorUser } = useUserDetails(userId);
 
@@ -50,12 +60,35 @@ export default function EditDriverPage() {
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+    useEffect(() => {
+        const allowedRoles = [
+            'globalAdmin',
+            'customerAdmin',
+        ];
+        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+        if (!authLoading && (!isAuthenticated || !hasAccess)) {
+            router.push('/auth/login');
+        }
+    }, [authLoading, isAuthenticated, router, user?.roles]);
+
     // Populate form with existing driverInfo
     useEffect(() => {
         if (userDetails?.driverInfo?.companyId) {
             setValue('companyId', userDetails.driverInfo.companyId);
         }
     }, [userDetails, setValue]);
+
+    const handleDelete = async () => {
+        setDeleteErrorMsg(null);
+        try {
+            await deleteDriver(userDetails?.driverInfo?.driverId || '');
+            setOpenModal(false);
+            router.push('/drivers'); // Redirect after deletion
+        } catch (err: any) {
+            setDeleteErrorMsg(err.message || 'Failed to delete driver.');
+            setOpenModal(false);
+        }
+    };
 
     // Handle form submission
     const onSubmit: SubmitHandler<EditDriverFormInputs> = async (data) => {
@@ -157,7 +190,32 @@ export default function EditDriverPage() {
                 >
                     {isUpdatingDriver ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
                 </Button>
+
+                {(isGlobalAdmin || isCustomerAdmin) && (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        disabled={isDeleting}
+                        onClick={() => setOpenModal(true)}
+                    >
+                        {isDeleting ? 'Deleting...' : 'Delete Driver'}
+                    </Button>
+                )}
+                {deleteErrorMsg && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        {deleteErrorMsg}
+                    </Alert>
+                )}
             </form>
+            <ConfirmModal
+                open={openModal}
+                title="Delete Driver?"
+                message="Are you sure you want to delete this driver?"
+                onClose={() => setOpenModal(false)}
+                onConfirm={handleDelete}
+            />
         </div>
     );
 }
