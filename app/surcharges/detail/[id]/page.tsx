@@ -51,7 +51,7 @@ export default function SurchargeDetailPage() {
 
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box display="flex" justifyContent="flex-end" mb={2}>
-                            <Link href={`/surcharges/edit?id=${surcharge.id}`} passHref>
+                            <Link href={`/surcharges/edit/${surcharge.id}`} passHref>
                                 <Button variant="contained" color="primary">Edit</Button>
                             </Link>
                         </Box>
