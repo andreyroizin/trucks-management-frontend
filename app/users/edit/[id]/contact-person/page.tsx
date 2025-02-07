@@ -1,6 +1,6 @@
 'use client';
 
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -10,11 +10,11 @@ import {Company, useCompanies} from '@/hooks/useCompanies';
 import {Client, useClients} from '@/hooks/useClients';
 import {useUpdateUserContactPerson, useUserDetails} from '@/hooks/useUser';
 import * as yup from 'yup';
+import {useDeleteContactPerson} from "@/hooks/useDeleteContactPerson";
+import ConfirmModal from "@/components/ConfirmModal";
 
 // *** Validation Schema ***
-const editContactPersonSchema = yup.object().shape({
-
-});
+const editContactPersonSchema = yup.object().shape({});
 
 // *** Type for Form Inputs ***
 type EditContactPersonFormInputs = {
@@ -25,9 +25,18 @@ type EditContactPersonFormInputs = {
 export default function EditContactPersonPage() {
     const params = useParams();
     const userId = params?.id as string;
+    const router = useRouter();
+    const [openModal, setOpenModal] = useState(false);
+    const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
 
     // Fetch user details
-    const { data: userDetails, isLoading: isLoadingUser, isError: isErrorUser } = useUserDetails(userId);
+    const {data: userDetails, isLoading: isLoadingUser, isError: isErrorUser} = useUserDetails(userId);
+    const {
+        mutateAsync: deleteContactPerson,
+        isPending: isDeleting,
+        isError: isDeleteError,
+        error: deleteError,
+    } = useDeleteContactPerson();
 
     // Fetch companies
     const {
@@ -44,7 +53,7 @@ export default function EditContactPersonPage() {
     } = useClients(1, 1000);
 
     // Initialize the update hook
-    const { mutateAsync: mutateUpdateContactPerson, isPending: isUpdatingContactPerson } =
+    const {mutateAsync: mutateUpdateContactPerson, isPending: isUpdatingContactPerson} =
         useUpdateUserContactPerson();
 
     // Form setup
@@ -52,7 +61,7 @@ export default function EditContactPersonPage() {
         handleSubmit,
         control,
         setValue,
-        formState: { errors },
+        formState: {errors},
     } = useForm<EditContactPersonFormInputs>({
         resolver: yupResolver(editContactPersonSchema),
         defaultValues: {
@@ -91,6 +100,18 @@ export default function EditContactPersonPage() {
         }
     }, [userDetails, setValue, clientsData, companiesData]);
 
+    const handleDelete = async () => {
+        setDeleteErrorMsg(null);
+        try {
+            await deleteContactPerson(userDetails?.contactPersonInfo?.contactPersonId || ''); // pass the contact person's ID
+            setOpenModal(false);
+            router.push('/users'); // or wherever you list contact persons
+        } catch (err: any) {
+            setDeleteErrorMsg(err.message || 'Failed to delete contact person.');
+            setOpenModal(false);
+        }
+    };
+
     // Handle form submission
     const onSubmit: SubmitHandler<EditContactPersonFormInputs> = async (data) => {
         setApiError(null);
@@ -111,7 +132,7 @@ export default function EditContactPersonPage() {
     if (isLoadingUser || isLoadingCompanies || isLoadingClients) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <CircularProgress />
+                <CircularProgress/>
             </div>
         );
     }
@@ -135,13 +156,13 @@ export default function EditContactPersonPage() {
             </Typography>
 
             {apiError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert severity="error" sx={{mb: 2}}>
                     {apiError}
                 </Alert>
             )}
 
             {successMessage && (
-                <Alert severity="success" sx={{ mb: 2 }}>
+                <Alert severity="success" sx={{mb: 2}}>
                     {successMessage}
                 </Alert>
             )}
@@ -158,11 +179,11 @@ export default function EditContactPersonPage() {
                 }}
             >
                 {/* Clients Selection with Autocomplete */}
-                <FormControl fullWidth sx={{ mb: 4 }}>
+                <FormControl fullWidth sx={{mb: 4}}>
                     <Controller
                         name="clientIds"
                         control={control}
-                        render={({ field }) => (
+                        render={({field}) => (
                             <Autocomplete
                                 {...field}
                                 multiple
@@ -191,11 +212,11 @@ export default function EditContactPersonPage() {
                 </FormControl>
 
                 {/* Companies Selection with Autocomplete */}
-                <FormControl fullWidth sx={{ mb: 4 }}>
+                <FormControl fullWidth sx={{mb: 4}}>
                     <Controller
                         name="companyIds"
                         control={control}
-                        render={({ field }) => (
+                        render={({field}) => (
                             <Autocomplete
                                 {...field}
                                 multiple
@@ -229,11 +250,34 @@ export default function EditContactPersonPage() {
                     color="primary"
                     fullWidth
                     disabled={isUpdatingContactPerson}
-                    sx={{ mt: 2 }}
+                    sx={{mt: 2}}
                 >
-                    {isUpdatingContactPerson ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
+                    {isUpdatingContactPerson ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="error"
+                    fullWidth
+                    sx={{mt: 2}}
+                    disabled={isDeleting}
+                    onClick={() => setOpenModal(true)}
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
             </form>
+            <ConfirmModal
+                open={openModal}
+                title="Delete Contact Person?"
+                message="Are you sure you want to delete this contact person?"
+                onClose={() => setOpenModal(false)}
+                onConfirm={handleDelete}
+            />
+
+            {(isDeleteError || deleteErrorMsg) && (
+                <Alert severity="error" sx={{mt: 2}}>
+                    {deleteErrorMsg || deleteError?.message}
+                </Alert>
+            )}
         </div>
     );
 }
