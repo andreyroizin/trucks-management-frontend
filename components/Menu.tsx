@@ -118,12 +118,25 @@ export default function Menu() {
                                     transformOrigin={{vertical: 'top', horizontal: 'left'}}
                                 >
                                     {isGlobalAdmin &&
-                                        (<MenuItem onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
-                                            Register
-                                        </MenuItem>)}
+                                        (<>
+                                                <MenuItem
+                                                    onClick={() => navigateTo('/auth/register', 'systemAnchorEl')}>
+                                                    Register
+                                                </MenuItem>
+                                                <MenuItem
+                                                    onClick={() => navigateTo('/clients/pending', 'systemAnchorEl')}>
+                                                    Pending Clients
+                                                </MenuItem>
+                                                <MenuItem
+                                                    onClick={() => navigateTo('/companies/pending', 'systemAnchorEl')}>
+                                                    Pending Companies
+                                                </MenuItem>
+                                            </>
+                                        )}
                                     <MenuItem onClick={() => navigateTo('/users', 'systemAnchorEl')}>
                                         Users
                                     </MenuItem>
+
                                 </MuiMenu>
                             </>
                         )}

@@ -107,7 +107,7 @@ export default function ClientDetailPage() {
                                     <Button
                                         variant="contained"
                                         color="success"
-                                        sx={{ mr: 1 }}
+                                        sx={{mr: 1}}
                                         disabled={isApproving}
                                         onClick={handleApprove}
                                     >
@@ -166,7 +166,7 @@ export default function ClientDetailPage() {
                 </CardContent>
             </Card>
 
-            <ContactPersonsSection clientId={client.id}/>
+            {client.isApproved && <ContactPersonsSection clientId={client.id}/>}
 
             {/* Confirm Deletion Modal */}
             <ConfirmModal

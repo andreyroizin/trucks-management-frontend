@@ -2,22 +2,14 @@
 
 'use client';
 
-import React, { useEffect } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Alert,
-    CircularProgress,
-} from '@mui/material';
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, {useEffect} from 'react';
+import {Controller, SubmitHandler, useForm} from 'react-hook-form';
+import {Alert, Box, Button, CircularProgress, TextField, Typography,} from '@mui/material';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useCreateCompany } from '@/hooks/useCreateCompany';
-import { useRouter, useParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth'; // Ensure this hook is correctly implemented
-import { useUserDetails } from '@/hooks/useUser';
+import {useCreateCompany} from '@/hooks/useCreateCompany';
+import {useRouter} from 'next/navigation';
+import {useAuth} from '@/hooks/useAuth'; // Ensure this hook is correctly implemented
 
 // *** Validation Schema ***
 const schema = yup.object().shape({
@@ -51,7 +43,7 @@ export default function CreateCompanyPage() {
 
     // Access control: Only allow 'globalAdmin' or 'customerAdmin'
     useEffect(() => {
-        const allowedRoles = ['globalAdmin'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
 
         if (!authLoading && (!isAuthenticated || !hasAccess)) {

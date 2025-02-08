@@ -139,7 +139,7 @@ export default function CompanyDetailPage() {
             </Card>
 
             {/* Additional Content, e.g., ContactPersonsSection */}
-            <ContactPersonsSection companyId={company?.id} />
+            {company?.isApproved && <ContactPersonsSection companyId={company?.id} />}
 
             {/* Confirm Modal */}
             <ConfirmModal
