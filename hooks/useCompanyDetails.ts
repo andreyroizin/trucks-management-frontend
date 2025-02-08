@@ -5,6 +5,7 @@ import {ApiResponse} from "@/types/api";
 export type Company = {
     id: string;
     name: string;
+    isApproved: boolean;
 };
 
 const fetchCompany = async (id: string): Promise<Company> => {

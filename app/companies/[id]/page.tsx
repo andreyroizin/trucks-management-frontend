@@ -17,6 +17,7 @@ import Link from 'next/link';
 import ContactPersonsSection from '@/components/ContactPersons';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useDeleteCompany } from '@/hooks/useDeleteCompany';
+import {useApproveCompany} from "@/hooks/useApproveCompany";
 
 export default function CompanyDetailPage() {
     const router = useRouter();
@@ -25,13 +26,11 @@ export default function CompanyDetailPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
-
     // Fetch company details
     const { data: company, isLoading, isError, error } = useCompanyDetails(companyId);
-
     // Delete Company Hook
     const { mutateAsync, isPending } = useDeleteCompany();
-
+    const { mutateAsync: approveCompany, isPending: isApproving, isError: isApproveError, error: approveError } = useApproveCompany();
     // State for confirmation modal
     const [openModal, setOpenModal] = useState(false);
     const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null);
@@ -55,6 +54,15 @@ export default function CompanyDetailPage() {
         } catch (error: any) {
             setDeleteErrorMessage(error.message || 'Failed to delete company.');
             setOpenModal(false); // Close modal even if error happens
+        }
+    };
+
+    const handleApprove = async () => {
+        try {
+            await approveCompany(companyId);
+            router.refresh(); // Refresh page after approval
+        } catch (err) {
+            console.error('Approval failed', err);
         }
     };
 
@@ -87,9 +95,25 @@ export default function CompanyDetailPage() {
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                         <Typography variant="h5">Company Details</Typography>
+                        {isApproveError && (
+                            <Alert severity="error" sx={{ mt: 2 }}>
+                                {approveError?.message || 'Failed to approve company.'}
+                            </Alert>
+                        )}
                         <Box>
                             {(isCustomerAdmin || isGlobalAdmin) && (
                                 <>
+                                    {isGlobalAdmin && !company?.isApproved && (
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            disabled={isApproving}
+                                            onClick={handleApprove}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            {isApproving ? 'Approving...' : 'Approve'}
+                                        </Button>
+                                    )}
                                     <Link href={`/companies/edit?id=${company?.id}`} passHref>
                                         <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                             Edit Company
