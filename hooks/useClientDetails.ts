@@ -18,6 +18,7 @@ type Client = {
     phoneNumber: string;
     email: string;
     remark: string;
+    isApproved: boolean;
     company: Company;
 };
 
