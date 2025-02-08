@@ -10,6 +10,7 @@ import {useAuth} from "@/hooks/useAuth";
 
 export default function CompaniesPage() {
     const { user } = useAuth();
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     return (
@@ -18,7 +19,7 @@ export default function CompaniesPage() {
                 <Typography variant="h4" component="h1">
                     Companies
                 </Typography>
-                {isGlobalAdmin && <AddNewButton />}
+                {(isGlobalAdmin || isCustomerAdmin) && <AddNewButton />}
             </Box>
             <CompanyList />
         </Box>

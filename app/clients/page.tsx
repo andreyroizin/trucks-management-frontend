@@ -33,6 +33,7 @@ export default function ClientsPage() {
     // Fetch clients with pagination
     const {data: clientsData, isLoading, isError, error} = useClients(page + 1, pageSize); // API pages start at 1
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     // *** Access Control ***
     useEffect(() => {
@@ -76,7 +77,7 @@ export default function ClientsPage() {
             <Typography variant="h4" gutterBottom>
                 Clients
             </Typography>
-            {isCustomerAdmin &&
+            {(isCustomerAdmin || isGlobalAdmin) &&
                 <Link href="/clients/create" passHref>
                     <Button variant="contained" color="primary">
                         Add Client
