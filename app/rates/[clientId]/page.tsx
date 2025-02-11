@@ -77,7 +77,7 @@ export default function RatesPage() {
 
             {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/rates/create?clientId=${clientId}`} passHref>
                 <Button variant="contained" color="primary">
-                    Create new surcharge
+                    Create new rate
                 </Button>
             </Link>}
 
