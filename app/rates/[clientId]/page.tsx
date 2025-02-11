@@ -13,17 +13,19 @@ import {
     TableHead,
     TableRow,
     Paper,
-    TablePagination,
+    TablePagination, Button,
 } from '@mui/material';
 import { useRates } from '@/hooks/useRates';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function RatesPage() {
     const { clientId } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     // Pagination State
     const [page, setPage] = useState(0); // MUI TablePagination starts at 0
@@ -72,6 +74,13 @@ export default function RatesPage() {
             <Typography variant="h4" gutterBottom>
                 Rates for Client
             </Typography>
+
+            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/rates/create?clientId=${clientId}`} passHref>
+                <Button variant="contained" color="primary">
+                    Create new surcharge
+                </Button>
+            </Link>}
+
             <TableContainer component={Paper}>
                 <Table aria-label="rates table">
                     <TableHead>
