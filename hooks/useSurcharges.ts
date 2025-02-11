@@ -23,7 +23,7 @@ type SurchargesResponse = {
 
 // --- FETCH FUNCTION ---
 const fetchSurcharges = async (clientId: string, page: number, pageSize: number): Promise<SurchargesResponse> => {
-    const response = await api.get<ApiResponse<SurchargesResponse>>(`/surcharges/${clientId}?page=${page}&pageSize=${pageSize}`);
+    const response = await api.get<ApiResponse<SurchargesResponse>>(`/surcharges/${clientId}?pageNumber=${page}&pageSize=${pageSize}`);
     if (response.data.isSuccess) return response.data.data;
     throw new Error(response.data.errors?.[0] || 'Failed to fetch surcharges');
 };
