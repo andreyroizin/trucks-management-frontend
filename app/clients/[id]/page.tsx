@@ -145,13 +145,22 @@ export default function ClientDetailPage() {
 
                     {/* Link to surcharges */}
                     {(isGlobalAdmin || isCustomerAdmin || isCustomerAccountant || isCustomer) && (
-                        <Box mt={2}>
-                            <Link href={`/surcharges/${client.id}`} passHref>
-                                <Button variant="outlined" size="small">
-                                    Manage surcharges
-                                </Button>
-                            </Link>
-                        </Box>
+                        <>
+                            <Box mt={2}>
+                                <Link href={`/surcharges/${client.id}`} passHref>
+                                    <Button variant="outlined" size="small">
+                                        Manage surcharges
+                                    </Button>
+                                </Link>
+                            </Box>
+                            <Box mt={2}>
+                                <Link href={`/rates/${client.id}`} passHref>
+                                    <Button variant="outlined" size="small">
+                                        Manage rates
+                                    </Button>
+                                </Link>
+                            </Box>
+                        </>
                     )}
 
                     {/* Link to the Company */}
