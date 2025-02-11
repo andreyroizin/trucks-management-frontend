@@ -7,6 +7,7 @@ import { useUnitDetail } from '@/hooks/useUnitDetail';
 import { useDeleteUnit } from '@/hooks/useDeleteUnit';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
+import Link from "next/link";
 
 export default function UnitDetailPage() {
     const { id } = useParams();
@@ -78,18 +79,20 @@ export default function UnitDetailPage() {
                     <Typography variant="body1" gutterBottom>
                         <strong>Value:</strong> {unit.value}
                     </Typography>
-
-                    {/* Delete button (only visible to global admin) */}
                     {isGlobalAdmin && (
-                        <Button
-                            variant="contained"
-                            color="error"
-                            disabled={isDeleting}
-                            onClick={() => setOpenModal(true)}
-                            sx={{ mt: 2 }}
-                        >
-                            {isDeleting ? 'Deleting...' : 'Delete'}
-                        </Button>
+                        <Box display="flex" gap={1} mb={2}>
+                            <Link href={`/units/edit/${unit.id}`} passHref>
+                                <Button variant="contained" color="primary">Edit</Button>
+                            </Link>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                disabled={isDeleting}
+                                onClick={() => setOpenModal(true)}
+                            >
+                                {isDeleting ? 'Deleting...' : 'Delete'}
+                            </Button>
+                        </Box>
                     )}
                 </CardContent>
             </Card>
