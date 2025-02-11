@@ -136,6 +136,10 @@ export default function Menu() {
                                     <MenuItem onClick={() => navigateTo('/users', 'systemAnchorEl')}>
                                         Users
                                     </MenuItem>
+                                    <MenuItem
+                                        onClick={() => navigateTo('/units', 'systemAnchorEl')}>
+                                        Units
+                                    </MenuItem>
 
                                 </MuiMenu>
                             </>
