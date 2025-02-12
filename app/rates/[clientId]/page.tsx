@@ -96,7 +96,7 @@ export default function RatesPage() {
                                 key={rate.id}
                                 hover
                                 component={Link}
-                                href={`/rates/${clientId}/${rate.id}`}
+                                href={`/rates/detail/${rate.id}`}
                                 sx={{ textDecoration: 'none', cursor: 'pointer' }}
                             >
                                 <TableCell>{rate.name}</TableCell>
