@@ -135,6 +135,14 @@ export default function CompanyDetailPage() {
                         Name:
                     </Typography>
                     <Typography variant="body1">{company?.name}</Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        <strong>Company Cars:</strong>{' '}
+                        <Link href={`/cars?companyId=${company?.id}`} passHref>
+                            <Button variant="outlined" size="small">
+                                View Cars
+                            </Button>
+                        </Link>
+                    </Typography>
                 </CardContent>
             </Card>
 
