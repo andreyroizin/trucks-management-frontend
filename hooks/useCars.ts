@@ -20,7 +20,7 @@ export type CarsResponse = {
 
 // --- API CALL ---
 const fetchCars = async (companyId: string, page: number, pageSize: number): Promise<CarsResponse> => {
-    const response = await api.get<ApiResponse<CarsResponse>>(`/cars?companyId=${companyId}&page=${page}&pageSize=${pageSize}`);
+    const response = await api.get<ApiResponse<CarsResponse>>(`/cars?companyId=${companyId}&pageNumber=${page}&pageSize=${pageSize}`);
     if (!response.data.isSuccess) {
         throw new Error(response.data.errors?.[0] || 'Failed to fetch cars');
     }
