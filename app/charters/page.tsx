@@ -29,8 +29,8 @@ export default function ChartersPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
-    // const isCustomerAdmin = user?.roles.includes('customerAdmin');
-    // const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
     // Extract existing search params
     const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
@@ -88,19 +88,29 @@ export default function ChartersPage() {
 
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
-            <Typography variant="h4" gutterBottom>
-                Charters
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" gutterBottom>
+                    Charters
+                </Typography>
+
+                {(isCustomerAdmin || isGlobalAdmin) &&
+                    <Link href="/charters/create" passHref>
+                        <Button variant="contained" color="primary">
+                            Create Charter
+                        </Button>
+                    </Link>
+                }
+            </Box>
 
             {/* FILTERS */}
             <Box display="flex" gap={2} mb={2}>
                 {(isLoadingCompanies || isLoadingClients) ? (
-                    <CircularProgress />
+                    <CircularProgress/>
                 ) : (
                     <>
                         {/* Company Filter */}
                         <Autocomplete
-                            sx={{ minWidth: '300px', maxWidth: '500px' }}
+                            sx={{minWidth: '300px', maxWidth: '500px'}}
                             options={companiesData?.data || []}
                             getOptionLabel={(option) => option.name || ''}
                             value={companiesData?.data.find((c) => c.id === companyId) || null}
@@ -121,7 +131,7 @@ export default function ChartersPage() {
 
                         {/* Client Filter */}
                         <Autocomplete
-                            sx={{ minWidth: '300px', maxWidth: '500px' }}
+                            sx={{minWidth: '300px', maxWidth: '500px'}}
                             options={clientsData?.data || []}
                             getOptionLabel={(option) => option.name || ''}
                             value={clientsData?.data.find((cl) => cl.id === clientId) || null}
