@@ -14,6 +14,7 @@ export default function RateDetailPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
 
     // Fetch rate details
     const { data: rate, isLoading, isError, error } = useRateDetail(id as string);
@@ -71,7 +72,7 @@ export default function RateDetailPage() {
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h5">Rate Detail</Typography>
-                        {isGlobalAdmin && (
+                        {(isGlobalAdmin || isCustomerAdmin) && (
                             <Box>
                                 <Link href={`/rates/edit/${rate.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
