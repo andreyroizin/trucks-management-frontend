@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Suspense} from 'react';
 import {
     Box,
     Typography,
@@ -25,7 +25,7 @@ import {useCompanies} from "@/hooks/useCompanies";
 import {useClients} from "@/hooks/useClients";
 import Autocomplete from "@mui/material/Autocomplete";
 
-export default function ChartersPage() {
+function ChartersInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
@@ -204,5 +204,13 @@ export default function ChartersPage() {
                 />
             </TableContainer>
         </Box>
+    );
+}
+
+export default function ChartersPage() {
+    return (
+        <Suspense fallback={<CircularProgress />}>
+            <ChartersInner />
+        </Suspense>
     );
 }

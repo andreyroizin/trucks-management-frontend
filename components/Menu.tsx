@@ -78,6 +78,13 @@ export default function Menu() {
                                 Change Password
                             </MenuItem>
                         </MuiMenu>
+                        {isContactPerson && (
+                            <>
+                                <Link href="/charters" className="hover:underline">
+                                    Charters
+                                </Link>
+                            </>
+                        )}
                         {(isContactPerson && !isEmployer) && (
                             <>
                                 <Link href="/drivers" className="hover:underline">

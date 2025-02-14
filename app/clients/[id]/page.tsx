@@ -160,6 +160,13 @@ export default function ClientDetailPage() {
                                     </Button>
                                 </Link>
                             </Box>
+                            <Box mt={2}>
+                                <Link href={`/charters?clientId=${client.id}`} passHref>
+                                    <Button variant="outlined" size="small">
+                                        View Charters
+                                    </Button>
+                                </Link>
+                            </Box>
                         </>
                     )}
 

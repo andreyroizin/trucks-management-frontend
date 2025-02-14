@@ -143,6 +143,14 @@ export default function CompanyDetailPage() {
                             </Button>
                         </Link>
                     </Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        <strong>Company Charters:</strong>{' '}
+                        <Link href={`/charters?companyId=${company?.id}`} passHref>
+                            <Button variant="outlined" size="small">
+                                View Charters
+                            </Button>
+                        </Link>
+                    </Typography>
                 </CardContent>
             </Card>
 
