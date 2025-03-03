@@ -83,6 +83,9 @@ export default function Menu() {
                                 <Link href="/charters" className="hover:underline">
                                     Charters
                                 </Link>
+                                <Link href="/rides" className="hover:underline">
+                                    Rides
+                                </Link>
                             </>
                         )}
                         {(isContactPerson && !isEmployer) && (
