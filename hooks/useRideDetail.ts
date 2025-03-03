@@ -23,7 +23,12 @@ export type PartRide = {
         id: string;
         licensePlate: string;
     } | null;
-    driver: any; // or better typed if known
+    driver: {
+        id: string;
+        aspNetUserId: string;
+        firstName: string;
+        lastName: string;
+    } | null;
     client: {
         id: string;
         name: string;

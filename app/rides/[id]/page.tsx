@@ -146,6 +146,7 @@ export default function RideDetailPage() {
                                     <TableCell>Kilometers</TableCell>
                                     <TableCell>Turnover</TableCell>
                                     <TableCell>Client</TableCell>
+                                    <TableCell>Driver</TableCell>
                                     <TableCell>Car</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -165,6 +166,17 @@ export default function RideDetailPage() {
                                                     </Button>
                                                 </Link>
                                             ) : 'N/A'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {partRide.driver ? (
+                                                <Link href={`/drivers/${partRide.driver.aspNetUserId}`} passHref>
+                                                    <Button variant="text" size="small">
+                                                        {partRide.driver.firstName} {partRide.driver.lastName}
+                                                    </Button>
+                                                </Link>
+                                            ) : (
+                                                'N/A'
+                                            )}
                                         </TableCell>
                                         <TableCell>
                                             {partRide.car ? (
