@@ -42,13 +42,13 @@ const DriversTable: React.FC<DriversTableProps> = ({ drivers }) => {
                             key={driver.id}
                             hover
                             style={{ cursor: 'pointer' }}
-                            onClick={() => handleRowClick(driver.user.id)}
+                            onClick={() => handleRowClick(driver?.user?.id)}
                         >
                             <TableCell>
-                                {driver.user.firstName} {driver.user.lastName}
+                                {driver?.user?.firstName} {driver?.user?.lastName}
                             </TableCell>
-                            <TableCell>{driver.user.email}</TableCell>
-                            <TableCell>{driver.companyName}</TableCell>
+                            <TableCell>{driver?.user?.email}</TableCell>
+                            <TableCell>{driver?.companyName}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
