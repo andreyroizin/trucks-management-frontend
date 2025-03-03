@@ -23,14 +23,15 @@ import {useRides} from '@/hooks/useRides';
 export default function RidesPage() {
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
-    const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
-    // Authorize only globalAdmins
     useEffect(() => {
-        if (!authLoading && (!isAuthenticated || !isGlobalAdmin)) {
+        const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant', 'employer'];
+        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+        if (!authLoading && (!isAuthenticated || !hasAccess)) {
             router.push('/auth/login');
         }
-    }, [authLoading, isAuthenticated, isGlobalAdmin, router]);
+    }, [isAuthenticated, authLoading, router, user?.roles]);
+
 
     // Local pagination state
     const [page, setPage] = useState(0);
