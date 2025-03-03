@@ -30,7 +30,6 @@ export default function RideCreatePage() {
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-    // Restrict access to globalAdmins only
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant', 'employer'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
