@@ -124,18 +124,7 @@ export default function CreatePartRidePage() {
     };
 
     // If any data for the filters is still loading
-    if (
-        authLoading ||
-        isLoadingCompanies ||
-        isLoadingClients ||
-        isLoadingDrivers ||
-        isLoadingCars ||
-        isLoadingRides ||
-        isLoadingUnits ||
-        isLoadingRates ||
-        isLoadingSurcharges ||
-        isLoadingCharters
-    ) {
+    if (authLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress/>
@@ -391,6 +380,7 @@ export default function CreatePartRidePage() {
                                 <Autocomplete
                                     options={companiesData?.data || []}
                                     getOptionLabel={(option) => option.name}
+                                    loading={isLoadingCompanies}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => {
                                         const newCompanyId = newValue?.id || '';
@@ -418,6 +408,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={clientsData?.data || []}
+                                    loading={isLoadingClients}
                                     getOptionLabel={(option) => option.name}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => {
@@ -446,6 +437,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={driversData || []}
+                                    loading={isLoadingDrivers}
                                     getOptionLabel={(option) => `${option.user.firstName} ${option.user.lastName}`}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
@@ -471,6 +463,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={carsData?.cars || []}
+                                    loading={isLoadingCars}
                                     getOptionLabel={(option) => option.licensePlate}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
@@ -496,6 +489,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={ridesData?.data || []}
+                                    loading={isLoadingRides}
                                     getOptionLabel={(option) => option.name}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
@@ -522,6 +516,7 @@ export default function CreatePartRidePage() {
                                 <Autocomplete
                                     options={unitsData?.units || []}
                                     getOptionLabel={(option) => option.value}
+                                    loading={isLoadingUnits}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                     value={unitsData?.units.find((un) => un.id === field.value) || null}
@@ -546,6 +541,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={ratesData?.rates || []}
+                                    loading={isLoadingRates}
                                     getOptionLabel={(option) => option.name}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
@@ -571,6 +567,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={surchargesData?.data || []}
+                                    loading={isLoadingSurcharges}
                                     getOptionLabel={(option) => `${option.value || ''}`}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
@@ -596,6 +593,7 @@ export default function CreatePartRidePage() {
                             render={({field}) => (
                                 <Autocomplete
                                     options={chartersData?.data || []}
+                                    loading={isLoadingCharters}
                                     getOptionLabel={(option) => option.name}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     onChange={(_, newValue) => field.onChange(newValue?.id || '')}
