@@ -132,9 +132,16 @@ export default function PartRidesPage() {
 
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
-            <Typography variant="h4" gutterBottom>
-                Part Rides
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" gutterBottom>
+                    Part Rides
+                </Typography>
+                <Link href="/partrides/create" passHref>
+                    <Button variant="contained" color="primary">
+                        Create Part ride
+                    </Button>
+                </Link>
+            </Box>
 
             {/* FILTERS */}
             <Box display="flex" flexWrap="wrap" gap={2} mb={2}>
