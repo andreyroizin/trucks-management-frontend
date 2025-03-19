@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -25,7 +25,7 @@ type RideFormInputs = {
     companyId: string;
 };
 
-export default function RideCreatePage() {
+function RideCreatePageWrapper() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -150,5 +150,14 @@ export default function RideCreatePage() {
                 </Button>
             </form>
         </Box>
+    );
+}
+
+
+export default function RideCreatePage() {
+    return (
+        <Suspense fallback={<CircularProgress />}>
+            <RideCreatePageWrapper />
+        </Suspense>
     );
 }
