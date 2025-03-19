@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {
     Box,
     Typography,
@@ -28,7 +28,7 @@ import { useClients } from '@/hooks/useClients';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useCars } from '@/hooks/useCars';
 
-export default function PartRidesPage() {
+function PartRidesWrapperPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isAuthenticated, loading: authLoading } = useAuth();
@@ -366,3 +366,12 @@ export default function PartRidesPage() {
         </Box>
     );
 }
+
+export default function PartRidesPage() {
+    return (
+        <Suspense fallback={<CircularProgress />}>
+            <PartRidesWrapperPage/>
+        </Suspense>
+    );
+}
+
