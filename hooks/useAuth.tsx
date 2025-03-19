@@ -16,6 +16,11 @@ type User = {
     city?: string;
     country?: string;
     remark?: string;
+    driverInfo: {
+        driverId: string,
+        companyId: string,
+        companyName: string
+    } | null,
 };
 type AuthContextType = {
     user: User | null;
