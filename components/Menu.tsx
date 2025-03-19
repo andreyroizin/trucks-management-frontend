@@ -78,6 +78,9 @@ export default function Menu() {
                                 Change Password
                             </MenuItem>
                         </MuiMenu>
+                        <Link href="/partrides" className="hover:underline">
+                            Part Rides
+                        </Link>
                         {isContactPerson && (
                             <>
                                 <Link href="/charters" className="hover:underline">
