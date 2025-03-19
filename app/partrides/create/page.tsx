@@ -107,12 +107,16 @@ export default function CreatePartRidePage() {
             turnover: 0,
             remark: '',
             // If user is driver => prefill companyId
-            companyId: isDriverRole ? (user?.companyId || '') : '',
+            companyId: isDriverRole ? (user?.driverInfo?.companyId || '') : '',
         },
     });
 
     // On Submit
     const onSubmit: SubmitHandler<CreatePartRideInput> = async (data) => {
+        if(isDriverRole) {
+            data = prefillDriversDataInTheForm(data, user?.driverInfo?.companyId, user?.driverInfo?.driverId);
+        }
+
         setApiError(null);
         try {
             await createPartRide(data);
@@ -122,6 +126,12 @@ export default function CreatePartRidePage() {
             setApiError(err.response?.data?.errors?.[0] || err.message);
         }
     };
+
+    const prefillDriversDataInTheForm = (initialDataObject: CreatePartRideInput, companyId?: string, driverId?: string): CreatePartRideInput => {
+        initialDataObject.companyId = companyId;
+        initialDataObject.driverId = driverId;
+        return initialDataObject;
+    }
 
     // If any data for the filters is still loading
     if (authLoading) {
