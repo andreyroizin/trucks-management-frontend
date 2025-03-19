@@ -4,6 +4,7 @@ import {useState, useEffect, createContext, useContext} from 'react';
 import {login as apiLogin, logout as apiLogout, getCurrentUser} from '@/utils/api';
 import {LoginResponse} from "@/types/api";
 
+
 type User = {
     email: string;
     firstName: string;
@@ -20,6 +21,17 @@ type User = {
         driverId: string,
         companyId: string,
         companyName: string
+    } | null,
+    contactPersonInfo: {
+        contactPersonId: string,
+        clientsCompanies: [
+            {
+                companyId: string | null,
+                companyName: string | null,
+                clientId: string | null,
+                clientName: string | null
+            }
+        ]
     } | null,
 };
 type AuthContextType = {
