@@ -121,15 +121,6 @@ function PartRidesWrapperPage() {
         );
     }
 
-    // If any of the filter-data hooks are loading
-    if (isLoadingCompanies || isLoadingClients || isLoadingDrivers || isLoadingCars) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -151,6 +142,7 @@ function PartRidesWrapperPage() {
                     sx={{ width: 250 }}
                     options={companiesData?.data || []}
                     getOptionLabel={(option) => option.name || ''}
+                    loading={isLoadingCompanies}
                     isOptionEqualToValue={(option, value) => option.id === value?.id}
                     value={companiesData?.data.find((co) => co.id === companyId) || null}
                     onChange={(_, newVal) => {
@@ -171,6 +163,7 @@ function PartRidesWrapperPage() {
                 <Autocomplete
                     sx={{ width: 250 }}
                     options={clientsData?.data || []}
+                    loading={isLoadingClients}
                     getOptionLabel={(option) => option.name || ''}
                     isOptionEqualToValue={(option, value) => option.id === value?.id}
                     value={clientsData?.data.find((cl) => cl.id === clientId) || null}
@@ -192,6 +185,7 @@ function PartRidesWrapperPage() {
                 <Autocomplete
                     sx={{ width: 250 }}
                     options={driversData || []}
+                    loading={isLoadingDrivers}
                     getOptionLabel={(option) => `${option?.user?.firstName} ${option?.user?.lastName}` || ''}
                     isOptionEqualToValue={(option, value) => option.id === value?.id}
                     value={driversData?.find((dr) => dr.id === driverId) || null}
@@ -213,6 +207,7 @@ function PartRidesWrapperPage() {
                 <Autocomplete
                     sx={{ width: 250 }}
                     options={carsData?.cars || []}
+                    loading={isLoadingCars}
                     getOptionLabel={(option) => option.licensePlate || ''}
                     isOptionEqualToValue={(option, value) => option.id === value?.id}
                     value={carsData?.cars.find((ca) => ca.id === carId) || null}
