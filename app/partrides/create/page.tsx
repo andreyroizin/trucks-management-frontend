@@ -7,6 +7,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -50,6 +52,10 @@ const createPartRideSchema = yup.object().shape({
 });
 
 export default function CreatePartRidePage() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
+    const AMSTERDAM_TZ = "Europe/Amsterdam";
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
 
@@ -59,6 +65,7 @@ export default function CreatePartRidePage() {
             router.push('/auth/login');
         }
     }, [authLoading, isAuthenticated, router]);
+
 
     // If user is a driver => hide certain fields
     const isDriverRole = user?.roles.includes('driver');
@@ -165,11 +172,26 @@ export default function CreatePartRidePage() {
                             render={({ field }) => (
                                 <DatePicker
                                     {...field}
-                                    value={field.value ? dayjs(field.value) : null}
+                                    // Convert the stored UTC date to Amsterdam time for display
+                                    value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
                                     onChange={(newDate) => {
-                                        field.onChange(newDate ? newDate.toISOString() : '');
+                                        if (newDate) {
+                                            // Convert user-selected date to UTC midnight (00:00:00Z)
+                                            const utcMidnight = dayjs.utc(newDate).startOf("day").toISOString();
+                                            field.onChange(utcMidnight);
+                                        } else {
+                                            field.onChange('');
+                                        }
                                     }}
                                     format="YYYY-MM-DD"
+                                    slotProps={{
+                                        textField: {
+                                            fullWidth: true,
+                                            margin: "normal",
+                                            error: !!errors.date,
+                                            helperText: errors.date?.message,
+                                        },
+                                    }}
                                 />
                             )}
                         />

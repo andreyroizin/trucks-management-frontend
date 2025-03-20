@@ -7,6 +7,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 import {useAuth} from '@/hooks/useAuth';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail'; // To fetch existing data
@@ -21,6 +23,10 @@ import {useUnits} from '@/hooks/useUnits';
 import {useRates} from '@/hooks/useRates';
 import {useSurcharges} from '@/hooks/useSurcharges';
 import {useCharters} from '@/hooks/useCharters';
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 // --- VALIDATION SCHEMA ---
 const editPartRideSchema = yup.object().shape({
@@ -47,10 +53,15 @@ const editPartRideSchema = yup.object().shape({
 });
 
 export default function EditPartRidePage() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
+    const AMSTERDAM_TZ = "Europe/Amsterdam";
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const partRideId = searchParams.get('id') || '';
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');
 
     // Only logged-in users
@@ -61,24 +72,24 @@ export default function EditPartRidePage() {
     }, [authLoading, isAuthenticated, router]);
 
     // Fetch existing part ride detail
-    const { data: partRide, isLoading, error } = usePartRideDetail(partRideId);
+    const {data: partRide, isLoading, error} = usePartRideDetail(partRideId);
 
     // Edit Part Ride Hook
-    const { mutateAsync: editPartRide, isPending } = useEditPartRide();
+    const {mutateAsync: editPartRide, isPending} = useEditPartRide();
 
     const [companyId, setCompanyId] = useState(partRide?.company?.id || '');
     const [clientId, setClientId] = useState(partRide?.client?.id || '');
 
     // Additional data for Autocomplete
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
-    const { data: clientsData, isLoading: isLoadingClients } = useClients(1, 1000);
-    const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
-    const { data: carsData, isLoading: isLoadingCars } = useCars(companyId, 1, 1000);
-    const { data: ridesData, isLoading: isLoadingRides } = useRides(1, 1000);
-    const { data: unitsData, isLoading: isLoadingUnits } = useUnits(1, 1000);
-    const { data: ratesData, isLoading: isLoadingRates } = useRates(clientId, 1, 1000);
-    const { data: surchargesData, isLoading: isLoadingSurcharges } = useSurcharges(clientId, 1, 1000);
-    const { data: chartersData, isLoading: isLoadingCharters } = useCharters(companyId, clientId, 1, 1000);
+    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
+    const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
+    const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
+    const {data: carsData, isLoading: isLoadingCars} = useCars(companyId, 1, 1000);
+    const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
+    const {data: unitsData, isLoading: isLoadingUnits} = useUnits(1, 1000);
+    const {data: ratesData, isLoading: isLoadingRates} = useRates(clientId, 1, 1000);
+    const {data: surchargesData, isLoading: isLoadingSurcharges} = useSurcharges(clientId, 1, 1000);
+    const {data: chartersData, isLoading: isLoadingCharters} = useCharters(companyId, clientId, 1, 1000);
 
     const someDataIsLoading = useMemo(() => {
         return isLoading || isLoadingCompanies || isLoadingClients || isLoadingDrivers
@@ -93,7 +104,7 @@ export default function EditPartRidePage() {
         handleSubmit,
         control,
         setValue,
-        formState: { errors },
+        formState: {errors},
     } = useForm<EditPartRideInput>({
         resolver: yupResolver(editPartRideSchema),
         defaultValues: {
@@ -169,7 +180,7 @@ export default function EditPartRidePage() {
     ) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -183,39 +194,58 @@ export default function EditPartRidePage() {
     }
 
     return (
-        <Suspense fallback={<CircularProgress />}>
+        <Suspense fallback={<CircularProgress/>}>
             <Box maxWidth="700px" mx="auto" p={4}>
                 <Typography variant="h4" gutterBottom>
                     Edit Part Ride
                 </Typography>
 
                 {apiError && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
+                    <Alert severity="error" sx={{mb: 2}}>
                         {apiError}
                     </Alert>
                 )}
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <FormLabel>Date</FormLabel>
-                    <Controller
-                        name="date"
-                        control={control}
-                        render={({ field }) => (
-                            <TextField
-                                {...field}
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                error={!!errors.date}
-                                helperText={errors.date?.message}
+                    <Box width="100%" mb={2}>
+                        <FormLabel>Date</FormLabel>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <Controller
+                                name="date"
+                                control={control}
+                                render={({field}) => (
+                                    <DatePicker
+                                        {...field}
+                                        // Convert stored UTC date to Amsterdam time for display
+                                        value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
+                                        onChange={(newDate) => {
+                                            if (newDate) {
+                                                // Convert user-selected date to UTC midnight before saving
+                                                const utcMidnight = dayjs.utc(newDate).startOf("day").toISOString();
+                                                field.onChange(utcMidnight);
+                                            } else {
+                                                field.onChange('');
+                                            }
+                                        }}
+                                        format="YYYY-MM-DD"
+                                        slotProps={{
+                                            textField: {
+                                                fullWidth: true,
+                                                margin: "normal",
+                                                error: !!errors.date,
+                                                helperText: errors.date?.message,
+                                            },
+                                        }}
+                                    />
+                                )}
                             />
-                        )}
-                    />
+                        </LocalizationProvider>
+                    </Box>
 
                     <FormLabel>Start</FormLabel>
                     <Controller
                         name="start"
                         control={control}
-                        render={({ field }) => (
+                        render={({field}) => (
                             <TextField
                                 {...field}
                                 variant="outlined"
@@ -231,7 +261,7 @@ export default function EditPartRidePage() {
                     <Controller
                         name="end"
                         control={control}
-                        render={({ field }) => (
+                        render={({field}) => (
                             <TextField
                                 {...field}
                                 variant="outlined"
@@ -250,7 +280,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="rest"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         variant="outlined"
@@ -265,7 +295,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="kilometers"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         type="number"
@@ -281,7 +311,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="costs"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         type="number"
@@ -297,7 +327,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="weekNumber"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         type="number"
@@ -313,7 +343,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="costsDescription"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         variant="outlined"
@@ -328,7 +358,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="turnover"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         type="number"
@@ -345,7 +375,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="companyId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={companiesData?.data || []}
                                         getOptionLabel={(option) => option.name}
@@ -354,8 +384,9 @@ export default function EditPartRidePage() {
                                         onChange={(_, newValue) => {
                                             setCompanyId(newValue?.id || '');
                                             field.onChange(newValue?.id || '');
-                                        }}                                        value={companiesData?.data.find((co) => co.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        }} value={companiesData?.data.find((co) => co.id === field.value) || null}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -365,7 +396,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="clientId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={clientsData?.data || []}
                                         getOptionLabel={(option) => option.name}
@@ -376,7 +407,8 @@ export default function EditPartRidePage() {
                                             field.onChange(newValue?.id || '');
                                         }}
                                         value={clientsData?.data.find((cl) => cl.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -386,7 +418,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="driverId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={driversData || []}
                                         loading={isLoadingDrivers}
@@ -394,7 +426,8 @@ export default function EditPartRidePage() {
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={driversData?.find((dr) => dr.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -404,7 +437,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="carId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={carsData?.cars || []}
                                         loading={isLoadingCars}
@@ -412,7 +445,8 @@ export default function EditPartRidePage() {
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={carsData?.cars?.find((ca) => ca.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -422,7 +456,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="rideId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={ridesData?.data || []}
                                         getOptionLabel={(option) => option.name}
@@ -430,7 +464,8 @@ export default function EditPartRidePage() {
                                         loading={isLoadingRides}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -440,7 +475,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="unitId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={unitsData?.units || []}
                                         getOptionLabel={(option) => option.value}
@@ -448,7 +483,8 @@ export default function EditPartRidePage() {
                                         loading={isLoadingUnits}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={unitsData?.units?.find((un) => un.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -458,7 +494,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="rateId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={ratesData?.rates || []}
                                         getOptionLabel={(option) => option.name}
@@ -466,7 +502,8 @@ export default function EditPartRidePage() {
                                         loading={isLoadingRates}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={ratesData?.rates?.find((ra) => ra.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -476,7 +513,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="surchargeId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={surchargesData?.data || []}
                                         getOptionLabel={(option) => `${option.value}`}
@@ -484,7 +521,8 @@ export default function EditPartRidePage() {
                                         loading={isLoadingSurcharges}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={surchargesData?.data.find((su) => su.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -494,7 +532,7 @@ export default function EditPartRidePage() {
                             <Controller
                                 name="charterId"
                                 control={control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <Autocomplete
                                         options={chartersData?.data || []}
                                         getOptionLabel={(option) => option.name}
@@ -502,7 +540,8 @@ export default function EditPartRidePage() {
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={chartersData?.data.find((ch) => ch.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined" margin="normal" />}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
@@ -514,7 +553,7 @@ export default function EditPartRidePage() {
                     <Controller
                         name="remark"
                         control={control}
-                        render={({ field }) => (
+                        render={({field}) => (
                             <TextField
                                 {...field}
                                 variant="outlined"
@@ -532,7 +571,8 @@ export default function EditPartRidePage() {
                             fullWidth
                             disabled={isPending || someDataIsLoading}
                         >
-                            {isPending || someDataIsLoading ? <CircularProgress size={20} color="inherit" /> : 'Save Changes'}
+                            {isPending || someDataIsLoading ?
+                                <CircularProgress size={20} color="inherit"/> : 'Save Changes'}
                         </Button>
                     </Box>
                 </form>
