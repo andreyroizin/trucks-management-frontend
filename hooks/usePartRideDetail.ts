@@ -74,6 +74,22 @@ export type PartRideDetail = {
     saturdayHours?: number;
     sundayHolidayHours?: number;
     variousCompensation?: number;
+    approvals?: {
+        id: string;
+        status: number;
+        updatedAt: string;
+        comments?: string | null;
+        role: {
+            id: string;
+            name: string;
+        };
+        approvedByUser?: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+        } | null;
+    }[];
 };
 
 // --- FETCH FUNCTION ---

@@ -17,7 +17,8 @@ import Link from 'next/link';
 import {useAuth} from '@/hooks/useAuth';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import {useDeletePartRide} from '@/hooks/useDeletePartRide';
-import ConfirmModal from '@/components/ConfirmModal'; // A reusable modal for confirmations
+import ConfirmModal from '@/components/ConfirmModal';
+import {partRideApprovalStatusMap} from "@/utils/constants/approvalStatusMap"; // A reusable modal for confirmations
 
 export default function PartRideDetailPage() {
     const router = useRouter();
@@ -380,6 +381,44 @@ export default function PartRideDetailPage() {
                     </Table>
                 </TableContainer>
             </Box>
+            {partRide.approvals && partRide.approvals.length > 0 && (
+                <Box mt={2}>
+                    <Typography variant="h6" gutterBottom>
+                        Approvals
+                    </Typography>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableBody>
+                                {partRide.approvals.map((approval) => {
+
+                                    return (
+                                        <TableRow key={approval.id}>
+                                            <TableCell>
+                                                <strong>Status:</strong> {partRideApprovalStatusMap[approval.status]}
+                                            </TableCell>
+                                            <TableCell>
+                                                <strong>Updated At:</strong> {approval.updatedAt}
+                                            </TableCell>
+                                            <TableCell>
+                                                <strong>Comments:</strong> {approval.comments ?? 'N/A'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <strong>Role:</strong> {approval.role?.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                <strong>Approved By:</strong>{' '}
+                                                {approval.approvedByUser
+                                                    ? `${approval.approvedByUser.firstName} ${approval.approvedByUser.lastName}`
+                                                    : 'N/A'}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            )}
 
             {/* Confirm Deletion Modal */}
             <ConfirmModal
