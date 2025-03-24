@@ -18,7 +18,8 @@ import {useAuth} from '@/hooks/useAuth';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import {useDeletePartRide} from '@/hooks/useDeletePartRide';
 import ConfirmModal from '@/components/ConfirmModal';
-import {partRideApprovalStatusMap} from "@/utils/constants/approvalStatusMap"; // A reusable modal for confirmations
+import {partRideApprovalStatusMap} from "@/utils/constants/approvalStatusMap";
+import ApprovalActions from "@/components/ApprovalActions"; // A reusable modal for confirmations
 
 export default function PartRideDetailPage() {
     const router = useRouter();
@@ -381,6 +382,11 @@ export default function PartRideDetailPage() {
                     </Table>
                 </TableContainer>
             </Box>
+            <ApprovalActions
+                userRoles={user?.roles || []}
+                approvals={partRide.approvals}
+                partRideId={partRide.id}
+            />
             {partRide.approvals && partRide.approvals.length > 0 && (
                 <Box mt={2}>
                     <Typography variant="h6" gutterBottom>
