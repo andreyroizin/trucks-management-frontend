@@ -8,7 +8,7 @@ type ApprovalResponse = {
 
 type ApprovalPayload = {
     id: string;         // part ride ID
-    comment?: string;   // optional comment body
+    comments?: string;   // optional comment body
 };
 
 // 1) Approve
@@ -17,10 +17,10 @@ export const useApprovePartRide = () => {
 
     return useMutation({
         mutationFn: async (payload: ApprovalPayload) => {
-            const { id, comment } = payload;
+            const { id, comments } = payload;
             const response = await api.post<ApiResponse<ApprovalResponse>>(
                 `/partrides/${id}/approve`,
-                { comment }
+                { comments }
             );
             if (!response.data.isSuccess) {
                 throw new Error(response.data.errors?.[0] || 'Approve request failed.');
@@ -39,10 +39,10 @@ export const useRejectPartRide = () => {
 
     return useMutation({
         mutationFn: async (payload: ApprovalPayload) => {
-            const { id, comment } = payload;
+            const { id, comments } = payload;
             const response = await api.post<ApiResponse<ApprovalResponse>>(
                 `/partrides/${id}/reject`,
-                { comment }
+                { comments }
             );
             if (!response.data.isSuccess) {
                 throw new Error(response.data.errors?.[0] || 'Reject request failed.');
@@ -61,10 +61,10 @@ export const useRequestChangesPartRide = () => {
 
     return useMutation({
         mutationFn: async (payload: ApprovalPayload) => {
-            const { id, comment } = payload;
+            const { id, comments } = payload;
             const response = await api.post<ApiResponse<ApprovalResponse>>(
                 `/partrides/${id}/changes-requested`,
-                { comment }
+                { comments }
             );
             if (!response.data.isSuccess) {
                 throw new Error(response.data.errors?.[0] || 'Request changes failed.');

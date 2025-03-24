@@ -33,7 +33,7 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
     // --- local modal state for comment + which action ---
     const [openModal, setOpenModal] = useState(false);
     const [actionType, setActionType] = useState<'approve'|'reject'|'changes'|null>(null);
-    const [comment, setComment] = useState('');
+    const [comments, setComments] = useState('');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     // hooks for each action
@@ -62,7 +62,7 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
 
     const showChangesRequestedButton = useMemo(() => {
         if (isCustomerAdmin) {
-            return !userHasApproval || isPending || isRejected;
+            return !userHasApproval || isPending || isRejected || isApproved;
         }
         return false;
     }, [isCustomerAdmin, userHasApproval, isPending, isRejected]);
@@ -80,21 +80,21 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
     // open a modal for user input
     const handleOpenModal = (type: 'approve'|'reject'|'changes') => {
         setActionType(type);
-        setComment('');
+        setComments('');
         setOpenModal(true);
     };
 
     const handleCloseModal = () => {
         setOpenModal(false);
         setActionType(null);
-        setComment('');
+        setComments('');
     };
 
     // on confirm
     const handleConfirm = async () => {
         if (!actionType) return;
         try {
-            const payload = { id: partRideId, comment };
+            const payload = { id: partRideId, comments };
             if (actionType === 'approve') {
                 await approveMutation(payload);
             } else if (actionType === 'reject') {
@@ -105,7 +105,7 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
             // close the modal
             handleCloseModal();
         } catch (err: any) {
-            setErrorMessage(err?.response?.data?.message || err.message || 'Something went wrong.');
+            setErrorMessage(err?.response?.data?.errors?.[0] || err.message || 'Something went wrong.');
             console.error('Action failed:', err);
         }
     };
@@ -135,7 +135,7 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
                         disabled={isAnyLoading}
                         onClick={() => handleOpenModal('changes')}
                     >
-                        Changes Requested
+                        Request changes
                     </Button>
                 )}
                 {showRejectButton && (
@@ -159,8 +159,8 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
                         multiline
                         fullWidth
                         rows={3}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
                         margin="normal"
                     />
                     {errorMessage && (
