@@ -19,7 +19,8 @@ import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import {useDeletePartRide} from '@/hooks/useDeletePartRide';
 import ConfirmModal from '@/components/ConfirmModal';
 import {partRideApprovalStatusMap} from "@/utils/constants/approvalStatusMap";
-import ApprovalActions from "@/components/ApprovalActions"; // A reusable modal for confirmations
+import ApprovalActions from "@/components/ApprovalActions";
+import dayjs from "dayjs"; // A reusable modal for confirmations
 
 export default function PartRideDetailPage() {
     const router = useRouter();
@@ -403,7 +404,7 @@ export default function PartRideDetailPage() {
                                                 <strong>Status:</strong> {partRideApprovalStatusMap[approval.status]}
                                             </TableCell>
                                             <TableCell>
-                                                <strong>Updated At:</strong> {approval.updatedAt}
+                                                <strong>Updated At:</strong> {dayjs(approval.updatedAt).format('DD.MM.YYYY HH:mm')}
                                             </TableCell>
                                             <TableCell>
                                                 <strong>Comments:</strong> {approval.comments ?? 'N/A'}
