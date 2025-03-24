@@ -82,12 +82,14 @@ export default function ApprovalActions({ userRoles, approvals, partRideId }: Ap
         setActionType(type);
         setComments('');
         setOpenModal(true);
+        setErrorMessage(null);
     };
 
     const handleCloseModal = () => {
         setOpenModal(false);
         setActionType(null);
         setComments('');
+        setErrorMessage(null);
     };
 
     // on confirm
