@@ -226,7 +226,7 @@ export default function EditPartRidePage() {
                                                 field.onChange('');
                                             }
                                         }}
-                                        format="YYYY-MM-DD"
+                                        format="DD-MM-YYYY"
                                         slotProps={{
                                             textField: {
                                                 fullWidth: true,

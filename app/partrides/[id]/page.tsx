@@ -111,7 +111,7 @@ export default function PartRideDetailPage() {
                     {/* Basic Fields */}
                     <Typography variant="body1" gutterBottom>
                         <strong>Date:</strong>{' '}
-                        {partRide.date?.substring(0, 10) || 'N/A'}
+                        { partRide.date ? dayjs(partRide.date).format('DD.MM.YYYY') : 'N/A'}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                         <strong>Start:</strong> {partRide.start}
