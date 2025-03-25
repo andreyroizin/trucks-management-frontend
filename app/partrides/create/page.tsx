@@ -9,10 +9,10 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 
 import {CreatePartRideInput, useCreatePartRide} from '@/hooks/useCreatePartRide';
 import {useAuth} from '@/hooks/useAuth';
@@ -87,8 +87,11 @@ export default function CreatePartRidePage() {
         data: surchargesData,
         isLoading: isLoadingSurcharges
     } = useSurcharges(selectedClientId || '', 1, 1000);
-    const {data: chartersData, isLoading: isLoadingCharters} = useCharters(selectedCompanyId || '', selectedClientId || '', 1, 1000);
-    const { data: hoursCodesData, isLoading: isLoadingHoursCodes } = useHoursCodes();
+    const {
+        data: chartersData,
+        isLoading: isLoadingCharters
+    } = useCharters(selectedCompanyId || '', selectedClientId || '', 1, 1000);
+    const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
 
     console.log(hoursCodesData)
     // Create Hook
@@ -123,7 +126,7 @@ export default function CreatePartRidePage() {
 
     // On Submit
     const onSubmit: SubmitHandler<CreatePartRideInput> = async (data) => {
-        if(isDriverRole) {
+        if (isDriverRole) {
             data = prefillDriversDataInTheForm(data, user?.driverInfo?.companyId, user?.driverInfo?.driverId);
         }
 
@@ -172,7 +175,7 @@ export default function CreatePartRidePage() {
                         <Controller
                             name="date"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <DatePicker
                                     {...field}
                                     // Convert the stored UTC date to Amsterdam time for display
@@ -234,32 +237,35 @@ export default function CreatePartRidePage() {
                         />
                     )}
                 />
-                {/* HOURS CODE FIELD */}
-                <FormLabel>Hours Code</FormLabel>
-                <Controller
-                    name="hoursCodeId"
-                    control={control}
-                    render={({ field }) => (
-                        <Autocomplete
-                            options={hoursCodesData || []}
-                            loading={isLoadingHoursCodes}
-                            getOptionLabel={(option) => option.name}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                            value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    variant="outlined"
-                                    margin="normal"
-                                    error={!!errors.hoursCodeId}
-                                    helperText={errors.hoursCodeId?.message}
+                {!isDriverRole && (
+                    <>
+                        {/* HOURS CODE FIELD */}
+                        <FormLabel>Hours Code</FormLabel>
+                        <Controller
+                            name="hoursCodeId"
+                            control={control}
+                            render={({field}) => (
+                                <Autocomplete
+                                    options={hoursCodesData || []}
+                                    loading={isLoadingHoursCodes}
+                                    getOptionLabel={(option) => option.name}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                    value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant="outlined"
+                                            margin="normal"
+                                            error={!!errors.hoursCodeId}
+                                            helperText={errors.hoursCodeId?.message}
+                                        />
+                                    )}
                                 />
                             )}
                         />
-                    )}
-                />
-
+                    </>
+                )}
                 {/* kilometers */}
                 {!isDriverRole && (
                     <>
@@ -425,7 +431,7 @@ export default function CreatePartRidePage() {
                                         const newCompanyId = newValue?.id || '';
                                         field.onChange(newCompanyId); // Update form state
                                         setSelectedCompanyId(newCompanyId); // Update local state for fetching cars
-                                    }}                                    value={companiesData?.data.find((co) => co.id === field.value) || null}
+                                    }} value={companiesData?.data.find((co) => co.id === field.value) || null}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -454,7 +460,7 @@ export default function CreatePartRidePage() {
                                         const newClientId = newValue?.id || '';
                                         field.onChange(newClientId); // Update form state
                                         setSelectedClientId(newClientId); // Update local state for fetching related data
-                                    }}                                    value={clientsData?.data.find((cl) => cl.id === field.value) || null}
+                                    }} value={clientsData?.data.find((cl) => cl.id === field.value) || null}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}

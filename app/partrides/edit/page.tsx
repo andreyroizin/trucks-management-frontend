@@ -27,6 +27,7 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import {useHoursCodes} from "@/hooks/useHoursCodes";
 
 // --- VALIDATION SCHEMA ---
 const editPartRideSchema = yup.object().shape({
@@ -42,6 +43,7 @@ const editPartRideSchema = yup.object().shape({
     driverId: yup.string().optional(),
     carId: yup.string().optional(),
     rateId: yup.string().optional(),
+    hoursCodeId: yup.string().optional(),
     surchargeId: yup.string().optional(),
     charterId: yup.string().optional(),
     unitId: yup.string().optional(),
@@ -87,6 +89,7 @@ function EditPartRidePageWrapper() {
     const [clientId, setClientId] = useState(partRide?.client?.id || '');
 
     // Additional data for Autocomplete
+    const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
@@ -149,6 +152,7 @@ function EditPartRidePageWrapper() {
             setValue('costsDescription', partRide.costsDescription || '');
             setValue('turnover', partRide.turnover || 0);
             setValue('remark', partRide.remark || '');
+            setValue('hoursCodeId', partRide.hoursCode?.id || '');
             setValue('companyId', partRide.company?.id || '');
             setValue('clientId', partRide.client?.id || '');
             setValue('driverId', partRide.driver?.id || '');
@@ -276,6 +280,36 @@ function EditPartRidePageWrapper() {
                             />
                         )}
                     />
+
+                    {!isDriverRole && (
+                        <>
+                            {/* Hours Code */}
+                            <FormLabel>Hours Code</FormLabel>
+                            <Controller
+                                name="hoursCodeId"
+                                control={control}
+                                render={({field}) => (
+                                    <Autocomplete
+                                        options={hoursCodesData || []}
+                                        getOptionLabel={(option) => option.name}
+                                        loading={isLoadingHoursCodes}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                        value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                margin="normal"
+                                                error={!!errors.hoursCodeId}
+                                                helperText={errors.hoursCodeId?.message}
+                                            />
+                                        )}
+                                    />
+                                )}
+                            />
+                        </>
+                    )}
 
                     {/* If user is driver => hide some fields */}
                     {!isDriverRole && (
@@ -575,8 +609,8 @@ function EditPartRidePageWrapper() {
 
 export default function EditPartRidePage() {
     return (
-        <Suspense fallback={<CircularProgress />}>
-            <EditPartRidePageWrapper />
+        <Suspense fallback={<CircularProgress/>}>
+            <EditPartRidePageWrapper/>
         </Suspense>
     );
 }
