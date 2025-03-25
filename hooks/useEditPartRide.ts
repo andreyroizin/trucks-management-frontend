@@ -15,7 +15,7 @@ export type EditPartRideInput = {
     driverId?: string;
     costs?: number;
     clientId?: string;
-    weekNumber?: number;
+    weekNumber?: number | null;
     unitId?: string;
     rateId?: string;
     costsDescription?: string;
