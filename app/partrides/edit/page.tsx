@@ -46,7 +46,11 @@ const editPartRideSchema = yup.object().shape({
     charterId: yup.string().optional(),
     unitId: yup.string().optional(),
     rideId: yup.string().optional(),
-    weekNumber: yup.number().optional(),
+    weekNumber: yup
+        .number()
+        .transform((value, originalValue) => originalValue === '' ? undefined : value)
+        .nullable()
+        .optional(),
     costsDescription: yup.string().optional(),
     turnover: yup.number().optional(),
     remark: yup.string().optional(),
@@ -161,7 +165,6 @@ export default function EditPartRidePage() {
 
     // On Submit
     const onSubmit: SubmitHandler<EditPartRideInput> = async (data) => {
-        console.log(data)
         setApiError(null);
         // Force required ID
         data.id = partRideId;
@@ -334,6 +337,8 @@ export default function EditPartRidePage() {
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
+                                        error={!!errors.weekNumber}
+                                        helperText={errors.weekNumber?.message}
                                     />
                                 )}
                             />
