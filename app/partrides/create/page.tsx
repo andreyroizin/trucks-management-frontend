@@ -25,6 +25,7 @@ import {useUnits} from '@/hooks/useUnits';
 import {useRates} from '@/hooks/useRates';
 import {useSurcharges} from '@/hooks/useSurcharges';
 import {useCharters} from '@/hooks/useCharters';
+import {useHoursCodes} from "@/hooks/useHoursCodes";
 
 // --- VALIDATION SCHEMA ---
 const createPartRideSchema = yup.object().shape({
@@ -38,6 +39,7 @@ const createPartRideSchema = yup.object().shape({
     driverId: yup.string().optional(),
     costs: yup.number().optional(),
     employer: yup.string().optional(),
+    hoursCodeId: yup.string().optional(),
     clientId: yup.string().optional(),
     weekNumber: yup.number().optional(),
     unitId: yup.string().optional(),
@@ -86,7 +88,9 @@ export default function CreatePartRidePage() {
         isLoading: isLoadingSurcharges
     } = useSurcharges(selectedClientId || '', 1, 1000);
     const {data: chartersData, isLoading: isLoadingCharters} = useCharters(selectedCompanyId || '', selectedClientId || '', 1, 1000);
+    const { data: hoursCodesData, isLoading: isLoadingHoursCodes } = useHoursCodes();
 
+    console.log(hoursCodesData)
     // Create Hook
     const {mutateAsync: createPartRide, isPending} = useCreatePartRide();
 
@@ -107,6 +111,7 @@ export default function CreatePartRidePage() {
             kilometers: 0,
             costs: 0,
             employer: '',
+            hoursCodeId: '', // or null
             weekNumber: 0,
             costsDescription: '',
             turnover: 0,
@@ -226,6 +231,31 @@ export default function CreatePartRidePage() {
                             margin="normal"
                             error={!!errors.end}
                             helperText={errors.end?.message}
+                        />
+                    )}
+                />
+                {/* HOURS CODE FIELD */}
+                <FormLabel>Hours Code</FormLabel>
+                <Controller
+                    name="hoursCodeId"
+                    control={control}
+                    render={({ field }) => (
+                        <Autocomplete
+                            options={hoursCodesData || []}
+                            loading={isLoadingHoursCodes}
+                            getOptionLabel={(option) => option.name}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                            value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    margin="normal"
+                                    error={!!errors.hoursCodeId}
+                                    helperText={errors.hoursCodeId?.message}
+                                />
+                            )}
                         />
                     )}
                 />
