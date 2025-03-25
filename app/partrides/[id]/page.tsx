@@ -111,7 +111,7 @@ export default function PartRideDetailPage() {
                     {/* Basic Fields */}
                     <Typography variant="body1" gutterBottom>
                         <strong>Date:</strong>{' '}
-                        { partRide.date ? dayjs(partRide.date).format('DD.MM.YYYY') : 'N/A'}
+                        {partRide.date ? dayjs(partRide.date).format('DD.MM.YYYY') : 'N/A'}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                         <strong>Start:</strong> {partRide.start}
@@ -288,85 +288,55 @@ export default function PartRideDetailPage() {
                                 </TableCell>
                             </TableRow>
 
-                            {/* correctionTotalHours */}
-                            {partRide.correctionTotalHours !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Correction Total Hours</strong></TableCell>
-                                    <TableCell>{partRide.correctionTotalHours}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Correction Total Hours</strong></TableCell>
+                                <TableCell>{partRide.correctionTotalHours ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* taxFreeCompensation */}
-                            {partRide.taxFreeCompensation !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Tax Free Compensation</strong></TableCell>
-                                    <TableCell>€ {partRide.taxFreeCompensation}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Tax Free Compensation</strong></TableCell>
+                                <TableCell>{partRide.taxFreeCompensation !== undefined ? `€ ${partRide.taxFreeCompensation}` : 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* standOver */}
-                            {partRide.standOver !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Stand Over</strong></TableCell>
-                                    <TableCell>{partRide.standOver}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Stand Over</strong></TableCell>
+                                <TableCell>{partRide.standOver ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* nightAllowance */}
-                            {partRide.nightAllowance !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Night Allowance</strong></TableCell>
-                                    <TableCell>€ {partRide.nightAllowance}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Night Allowance</strong></TableCell>
+                                <TableCell>{partRide.nightAllowance !== undefined ? `€ ${partRide.nightAllowance}` : 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* kilometerReimbursement */}
-                            {partRide.kilometerReimbursement !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Kilometer Reimbursement</strong></TableCell>
-                                    <TableCell>{partRide.kilometerReimbursement}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Kilometer Reimbursement</strong></TableCell>
+                                <TableCell>{partRide.kilometerReimbursement ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* extraKilometers */}
-                            {partRide.extraKilometers !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Extra Kilometers</strong></TableCell>
-                                    <TableCell>{partRide.extraKilometers}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Extra Kilometers</strong></TableCell>
+                                <TableCell>{partRide.extraKilometers ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* consignmentFee */}
-                            {partRide.consignmentFee !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Consignment Fee</strong></TableCell>
-                                    <TableCell>{partRide.consignmentFee}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Consignment Fee</strong></TableCell>
+                                <TableCell>{partRide.consignmentFee ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* saturdayHours */}
-                            {partRide.saturdayHours !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Saturday Hours</strong></TableCell>
-                                    <TableCell>{partRide.saturdayHours}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Saturday Hours</strong></TableCell>
+                                <TableCell>{partRide.saturdayHours ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* sundayHolidayHours */}
-                            {partRide.sundayHolidayHours !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Sunday/Holiday Hours</strong></TableCell>
-                                    <TableCell>{partRide.sundayHolidayHours}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Sunday/Holiday Hours</strong></TableCell>
+                                <TableCell>{partRide.sundayHolidayHours ?? 'N/A'}</TableCell>
+                            </TableRow>
 
-                            {/* variousCompensation */}
-                            {partRide.variousCompensation !== undefined && (
-                                <TableRow>
-                                    <TableCell><strong>Various Compensation</strong></TableCell>
-                                    <TableCell>{partRide.variousCompensation}</TableCell>
-                                </TableRow>
-                            )}
+                            <TableRow>
+                                <TableCell><strong>Various Compensation</strong></TableCell>
+                                <TableCell>{partRide.variousCompensation ?? 'N/A'}</TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -392,7 +362,8 @@ export default function PartRideDetailPage() {
                                                 <strong>Status:</strong> {partRideApprovalStatusMap[approval.status]}
                                             </TableCell>
                                             <TableCell>
-                                                <strong>Updated At:</strong> {dayjs(approval.updatedAt).format('DD.MM.YYYY HH:mm')}
+                                                <strong>Updated
+                                                    At:</strong> {dayjs(approval.updatedAt).format('DD.MM.YYYY HH:mm')}
                                             </TableCell>
                                             <TableCell>
                                                 <strong>Comments:</strong> {approval.comments ?? 'N/A'}
