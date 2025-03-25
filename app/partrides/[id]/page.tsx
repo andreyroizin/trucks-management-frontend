@@ -272,33 +272,21 @@ export default function PartRideDetailPage() {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableBody>
-                            {/* hoursOption */}
-                            {partRide.hoursOption && (
-                                <TableRow>
-                                    <TableCell><strong>Hours Option</strong></TableCell>
-                                    <TableCell>
-                                        <Link href={`/hoursoption/${partRide.hoursOption.id}`} passHref>
-                                            <Button variant="text" size="small">
-                                                {partRide.hoursOption.name}
-                                            </Button>
-                                        </Link>
-                                    </TableCell>
-                                </TableRow>
-                            )}
+                            {/* Hours Code */}
+                            <TableRow>
+                                <TableCell><strong>Hours Code</strong></TableCell>
+                                <TableCell>
+                                    {partRide.hoursCode?.name || 'N/A'}
+                                </TableCell>
+                            </TableRow>
 
-                            {/* hoursCode */}
-                            {partRide.hoursCode && (
-                                <TableRow>
-                                    <TableCell><strong>Hours Code</strong></TableCell>
-                                    <TableCell>
-                                        <Link href={`/hourscode/${partRide.hoursCode.id}`} passHref>
-                                            <Button variant="text" size="small">
-                                                {partRide.hoursCode.name}
-                                            </Button>
-                                        </Link>
-                                    </TableCell>
-                                </TableRow>
-                            )}
+                            {/* Hours Option */}
+                            <TableRow>
+                                <TableCell><strong>Hours Option</strong></TableCell>
+                                <TableCell>
+                                    {partRide.hoursOption?.name || 'N/A'}
+                                </TableCell>
+                            </TableRow>
 
                             {/* correctionTotalHours */}
                             {partRide.correctionTotalHours !== undefined && (

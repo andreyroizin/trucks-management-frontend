@@ -28,6 +28,7 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import {useHoursCodes} from "@/hooks/useHoursCodes";
+import {useHoursOptions} from "@/hooks/useHoursOptions";
 
 // --- VALIDATION SCHEMA ---
 const editPartRideSchema = yup.object().shape({
@@ -44,6 +45,7 @@ const editPartRideSchema = yup.object().shape({
     carId: yup.string().optional(),
     rateId: yup.string().optional(),
     hoursCodeId: yup.string().optional(),
+    hoursOptionId: yup.string().optional(),
     surchargeId: yup.string().optional(),
     charterId: yup.string().optional(),
     unitId: yup.string().optional(),
@@ -90,6 +92,7 @@ function EditPartRidePageWrapper() {
 
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
+    const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
@@ -149,6 +152,7 @@ function EditPartRidePageWrapper() {
             setValue('kilometers', partRide.kilometers || 0);
             setValue('costs', partRide.costs || 0);
             setValue('weekNumber', partRide.weekNumber || 0);
+            setValue('hoursOptionId', partRide.hoursOption?.id || '');
             setValue('costsDescription', partRide.costsDescription || '');
             setValue('turnover', partRide.turnover || 0);
             setValue('remark', partRide.remark || '');
@@ -308,6 +312,32 @@ function EditPartRidePageWrapper() {
                                     />
                                 )}
                             />
+                            {/* Hours Option */}
+                            <FormLabel>Hours Option</FormLabel>
+                            <Controller
+                                name="hoursOptionId"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        options={hoursOptionsData || []}
+                                        getOptionLabel={(option) => option.name}
+                                        loading={isLoadingHoursOptions}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                        value={hoursOptionsData?.find((ho) => ho.id === field.value) || null}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                margin="normal"
+                                                error={!!errors.hoursOptionId}
+                                                helperText={errors.hoursOptionId?.message}
+                                            />
+                                        )}
+                                    />
+                                )}
+                            />
+
                         </>
                     )}
 
