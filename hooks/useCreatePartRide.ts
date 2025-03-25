@@ -8,7 +8,6 @@ export type CreatePartRideInput = {
     date: string;               // e.g. "2024-03-06T00:00:00Z"
     start: string;              // e.g. "20:00:00"
     end: string;                // e.g. "05:00:00"
-    rest?: string;              // e.g. "00:00:00"
     kilometers?: number;
     carId?: string;             // hidden if driver
     driverId?: string;          // hidden/prefilled if driver

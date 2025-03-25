@@ -119,7 +119,6 @@ export default function EditPartRidePage() {
             start: '',
             end: '',
             rideId: '',
-            rest: '00:00:00',
             kilometers: 0,
             costs: 0,
             weekNumber: 0,
@@ -144,7 +143,6 @@ export default function EditPartRidePage() {
             setValue('date', partRide.date);
             setValue('start', partRide.start);
             setValue('end', partRide.end);
-            setValue('rest', partRide.rest || '00:00:00');
             setValue('kilometers', partRide.kilometers || 0);
             setValue('costs', partRide.costs || 0);
             setValue('weekNumber', partRide.weekNumber || 0);
@@ -282,20 +280,6 @@ export default function EditPartRidePage() {
                     {/* If user is driver => hide some fields */}
                     {!isDriverRole && (
                         <>
-                            <FormLabel>Rest</FormLabel>
-                            <Controller
-                                name="rest"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                    />
-                                )}
-                            />
-
                             {/* Kilometers */}
                             <FormLabel>Kilometers</FormLabel>
                             <Controller

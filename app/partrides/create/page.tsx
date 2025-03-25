@@ -33,7 +33,6 @@ const createPartRideSchema = yup.object().shape({
     end: yup.string().required('End time is required (e.g. "05:00:00")'),
     // If driver => hide or not required
     rideId: yup.string().optional(),
-    rest: yup.string().optional(),
     kilometers: yup.number().optional(),
     carId: yup.string().optional(),
     driverId: yup.string().optional(),
@@ -105,7 +104,6 @@ export default function CreatePartRidePage() {
             date: '',
             start: '',
             end: '',
-            rest: '00:00:00',
             kilometers: 0,
             costs: 0,
             employer: '',
@@ -231,27 +229,6 @@ export default function CreatePartRidePage() {
                         />
                     )}
                 />
-
-                {/* rest */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Rest (Example: 00:00:00)</FormLabel>
-                        <Controller
-                            name="rest"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.rest}
-                                    helperText={errors.rest?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
 
                 {/* kilometers */}
                 {!isDriverRole && (

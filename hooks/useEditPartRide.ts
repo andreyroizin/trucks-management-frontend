@@ -9,7 +9,6 @@ export type EditPartRideInput = {
     date: string;
     start: string;
     end: string;
-    rest?: string;
     kilometers?: number;
     carId?: string;
     driverId?: string;
