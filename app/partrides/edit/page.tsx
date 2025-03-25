@@ -58,7 +58,7 @@ const editPartRideSchema = yup.object().shape({
     remark: yup.string().optional(),
 });
 
-export default function EditPartRidePage() {
+function EditPartRidePageWrapper() {
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
@@ -569,6 +569,14 @@ export default function EditPartRidePage() {
                     </Box>
                 </form>
             </Box>
+        </Suspense>
+    );
+}
+
+export default function EditPartRidePage() {
+    return (
+        <Suspense fallback={<CircularProgress />}>
+            <EditPartRidePageWrapper />
         </Suspense>
     );
 }
