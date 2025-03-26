@@ -11,7 +11,6 @@ export type PartRideDetail = {
     rest?: string;
     kilometers?: number;
     costs?: number;
-    employer?: string;
     client?: {
         id: string;
         name: string;
@@ -69,7 +68,6 @@ export type PartRideDetail = {
     standOver?: number;
     nightAllowance?: number;
     kilometerReimbursement?: number;
-    extraKilometers?: number;
     consignmentFee?: number;
     saturdayHours?: number;
     sundayHolidayHours?: number;

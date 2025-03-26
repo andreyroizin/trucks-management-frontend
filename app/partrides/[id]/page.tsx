@@ -123,13 +123,7 @@ export default function PartRideDetailPage() {
                         <strong>Rest:</strong> {partRide.rest || 'N/A'}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Kilometers:</strong> {partRide.kilometers ?? 'N/A'}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
                         <strong>Costs:</strong> {partRide.costs ?? 'N/A'}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Employer:</strong> {partRide.employer || 'N/A'}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                         <strong>Week Number:</strong> {partRide.weekNumber}
@@ -315,7 +309,7 @@ export default function PartRideDetailPage() {
 
                             <TableRow>
                                 <TableCell><strong>Extra Kilometers</strong></TableCell>
-                                <TableCell>{partRide.extraKilometers ?? 'N/A'}</TableCell>
+                                <TableCell>{partRide.kilometers ?? 'N/A'}</TableCell>
                             </TableRow>
 
                             <TableRow>
