@@ -43,6 +43,8 @@ const createPartRideSchema = yup.object().shape({
     hoursOptionId: yup.string().optional(),
     clientId: yup.string().optional(),
     weekNumber: yup.number().optional(),
+    hoursCorrection: yup.number().optional(),
+    variousCompensation: yup.number().optional(),
     unitId: yup.string().optional(),
     rateId: yup.string().optional(),
     costsDescription: yup.string().optional(),
@@ -77,7 +79,7 @@ export default function CreatePartRidePage() {
 
 
     // Data hooks for Autocomplete:
-    const { data: hoursOptionsData, isLoading: isLoadingHoursOptions } = useHoursOptions();
+    const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(/* e.g. pass companyId if needed */);
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
@@ -118,6 +120,8 @@ export default function CreatePartRidePage() {
             hoursCodeId: '',
             hoursOptionId: '',
             weekNumber: 0,
+            hoursCorrection: 0,
+            variousCompensation: 0,
             costsDescription: '',
             turnover: 0,
             remark: '',
@@ -241,6 +245,26 @@ export default function CreatePartRidePage() {
                 />
                 {!isDriverRole && (
                     <>
+                        <FormLabel>Correction time</FormLabel>
+                        <Controller
+                            name="hoursCorrection"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    type="number"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.hoursCorrection}
+                                    helperText={errors.hoursCorrection?.message}
+                                />
+                            )}
+                        />
+                    </>
+                )}
+                {!isDriverRole && (
+                    <>
                         {/* HOURS CODE FIELD */}
                         <FormLabel>Hours Code</FormLabel>
                         <Controller
@@ -271,7 +295,7 @@ export default function CreatePartRidePage() {
                         <Controller
                             name="hoursOptionId"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <Autocomplete
                                     options={hoursOptionsData || []}
                                     loading={isLoadingHoursOptions}
@@ -658,6 +682,22 @@ export default function CreatePartRidePage() {
                                             helperText={errors.charterId?.message}
                                         />
                                     )}
+                                />
+                            )}
+                        />
+                        <FormLabel>Various Compensation</FormLabel>
+                        <Controller
+                            name="variousCompensation"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    type="number"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.variousCompensation}
+                                    helperText={errors.variousCompensation?.message}
                                 />
                             )}
                         />

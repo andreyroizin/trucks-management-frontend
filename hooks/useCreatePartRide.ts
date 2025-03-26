@@ -19,6 +19,8 @@ export type CreatePartRideInput = {
     costsDescription?: string;
     hoursCodeId?: string,
     hoursOptionId?: string,
+    hoursCorrection?: number,
+    variousCompensation?: number,
     surchargeId?: string;       // hidden if driver
     turnover?: number;          // hidden if driver
     remark?: string;
