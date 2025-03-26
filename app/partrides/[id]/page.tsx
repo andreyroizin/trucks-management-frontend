@@ -266,6 +266,10 @@ export default function PartRideDetailPage() {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableBody>
+                            <TableRow>
+                                <TableCell><strong>Number of Hours</strong></TableCell>
+                                <TableCell>{partRide.numberOfHours ?? 'N/A'}</TableCell>
+                            </TableRow>
                             {/* Hours Code */}
                             <TableRow>
                                 <TableCell><strong>Hours Code</strong></TableCell>

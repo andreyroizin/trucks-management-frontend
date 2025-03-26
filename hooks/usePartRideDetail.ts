@@ -70,6 +70,7 @@ export type PartRideDetail = {
     kilometerReimbursement?: number;
     consignmentFee?: number;
     saturdayHours?: number;
+    numberOfHours?: number;
     sundayHolidayHours?: number;
     variousCompensation?: number;
     approvals?: {
