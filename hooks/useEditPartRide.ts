@@ -19,6 +19,8 @@ export type EditPartRideInput = {
     rateId?: string;
     costsDescription?: string;
     hoursCodeId?: string;
+    hoursCorrection?: number,
+    variousCompensation?: number,
     hoursOptionId?: string;
     surchargeId?: string;
     turnover?: number;

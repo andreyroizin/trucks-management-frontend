@@ -45,6 +45,8 @@ const editPartRideSchema = yup.object().shape({
     rateId: yup.string().optional(),
     hoursCodeId: yup.string().optional(),
     hoursOptionId: yup.string().optional(),
+    hoursCorrection: yup.number().optional(),
+    variousCompensation: yup.number().optional(),
     surchargeId: yup.string().optional(),
     charterId: yup.string().optional(),
     unitId: yup.string().optional(),
@@ -131,6 +133,8 @@ function EditPartRidePageWrapper() {
             turnover: 0,
             remark: '',
             companyId: '',
+            hoursCorrection: 0,
+            variousCompensation: 0,
             clientId: '',
             driverId: '',
             carId: '',
@@ -151,6 +155,8 @@ function EditPartRidePageWrapper() {
             setValue('kilometers', partRide.kilometers || 0);
             setValue('costs', partRide.costs || 0);
             setValue('weekNumber', partRide.weekNumber || 0);
+            setValue('hoursCorrection', partRide.correctionTotalHours || 0);
+            setValue('variousCompensation', partRide.variousCompensation || 0);
             setValue('hoursOptionId', partRide.hoursOption?.id || '');
             setValue('costsDescription', partRide.costsDescription || '');
             setValue('turnover', partRide.turnover || 0);
@@ -286,6 +292,22 @@ function EditPartRidePageWrapper() {
 
                     {!isDriverRole && (
                         <>
+                            <FormLabel>Correction time</FormLabel>
+                            <Controller
+                                name="hoursCorrection"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        type="number"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        error={!!errors.hoursCorrection}
+                                        helperText={errors.hoursCorrection?.message}
+                                    />
+                                )}
+                            />
                             {/* Hours Code */}
                             <FormLabel>Hours Code</FormLabel>
                             <Controller
@@ -597,6 +619,22 @@ function EditPartRidePageWrapper() {
                                         value={chartersData?.data.find((ch) => ch.id === field.value) || null}
                                         renderInput={(params) => <TextField {...params} variant="outlined"
                                                                             margin="normal"/>}
+                                    />
+                                )}
+                            />
+                            <FormLabel>Various Compensation</FormLabel>
+                            <Controller
+                                name="variousCompensation"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        type="number"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        error={!!errors.variousCompensation}
+                                        helperText={errors.variousCompensation?.message}
                                     />
                                 )}
                             />
