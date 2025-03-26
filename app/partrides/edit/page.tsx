@@ -38,7 +38,6 @@ const editPartRideSchema = yup.object().shape({
     end: yup.string().required("End time is required"),
     kilometers: yup.number().optional(),
     costs: yup.number().optional(),
-    employer: yup.string().optional(),
     clientId: yup.string().optional(),
     companyId: yup.string().optional(),
     driverId: yup.string().optional(),

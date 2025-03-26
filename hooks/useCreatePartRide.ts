@@ -12,7 +12,6 @@ export type CreatePartRideInput = {
     carId?: string;             // hidden if driver
     driverId?: string;          // hidden/prefilled if driver
     costs?: number;
-    employer?: string;
     clientId?: string;          // hidden if driver
     weekNumber?: number;
     unitId?: string;            // hidden if driver

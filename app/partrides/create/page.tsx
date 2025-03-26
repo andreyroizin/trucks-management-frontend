@@ -39,7 +39,6 @@ const createPartRideSchema = yup.object().shape({
     carId: yup.string().optional(),
     driverId: yup.string().optional(),
     costs: yup.number().optional(),
-    employer: yup.string().optional(),
     hoursCodeId: yup.string().optional(),
     hoursOptionId: yup.string().optional(),
     clientId: yup.string().optional(),
@@ -116,7 +115,6 @@ export default function CreatePartRidePage() {
             end: '',
             kilometers: 0,
             costs: 0,
-            employer: '',
             hoursCodeId: '',
             hoursOptionId: '',
             weekNumber: 0,
@@ -333,27 +331,6 @@ export default function CreatePartRidePage() {
                                     margin="normal"
                                     error={!!errors.costs}
                                     helperText={errors.costs?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* employer */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Employer</FormLabel>
-                        <Controller
-                            name="employer"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.employer}
-                                    helperText={errors.employer?.message}
                                 />
                             )}
                         />
