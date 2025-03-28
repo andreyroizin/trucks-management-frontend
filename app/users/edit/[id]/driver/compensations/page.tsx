@@ -207,9 +207,10 @@ export default function DriverCompensationsPage() {
                             margin="normal"
                             error={!!errors.driverRatePerHour}
                             helperText={errors.driverRatePerHour?.message}
-                            inputProps={{
-                                step: '0.01',
-                                inputMode: 'decimal',
+                            slotProps={{
+                                input: {
+                                    inputMode: 'decimal',
+                                }
                             }}
                         />
                     )}
@@ -228,9 +229,10 @@ export default function DriverCompensationsPage() {
                             margin="normal"
                             error={!!errors.nightAllowanceRate}
                             helperText={errors.nightAllowanceRate?.message}
-                            inputProps={{
-                                step: '0.01',
-                                inputMode: 'decimal',
+                            slotProps={{
+                                input: {
+                                    inputMode: 'decimal',
+                                }
                             }}
                         />
                     )}
@@ -317,9 +319,10 @@ export default function DriverCompensationsPage() {
                             margin="normal"
                             error={!!errors.kilometerAllowance}
                             helperText={errors.kilometerAllowance?.message}
-                            inputProps={{
-                                step: '0.01',
-                                inputMode: 'decimal',
+                            slotProps={{
+                                input: {
+                                    inputMode: 'decimal',
+                                }
                             }}
                         />
                     )}
@@ -338,9 +341,10 @@ export default function DriverCompensationsPage() {
                             margin="normal"
                             error={!!errors.salary4Weeks}
                             helperText={errors.salary4Weeks?.message}
-                            inputProps={{
-                                step: '0.01',
-                                inputMode: 'decimal',
+                            slotProps={{
+                                input: {
+                                    inputMode: 'decimal',
+                                }
                             }}
                         />
                     )}
@@ -359,9 +363,10 @@ export default function DriverCompensationsPage() {
                             margin="normal"
                             error={!!errors.weeklySalary}
                             helperText={errors.weeklySalary?.message}
-                            inputProps={{
-                                step: '0.01',
-                                inputMode: 'decimal',
+                            slotProps={{
+                                input: {
+                                    inputMode: 'decimal',
+                                }
                             }}
                         />
                     )}
