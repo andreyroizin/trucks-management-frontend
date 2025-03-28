@@ -12,6 +12,7 @@ import * as yup from 'yup';
 import {useAuth} from "@/hooks/useAuth";
 import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import ConfirmModal from "@/components/ConfirmModal";
+import Link from "next/link";
 
 // *** Validation Schema ***
 const editDriverSchema = yup.object().shape({
@@ -190,6 +191,18 @@ export default function EditDriverPage() {
                 >
                     {isUpdatingDriver ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
                 </Button>
+
+                <Link href={`/users/edit/${userId}/driver/compensations`} passHref>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        component="a"
+                        sx={{ mt: 2 }}
+                    >
+                        Driver Rates & Allowances
+                    </Button>
+                </Link>
 
                 {(isGlobalAdmin || isCustomerAdmin) && (
                     <Button
