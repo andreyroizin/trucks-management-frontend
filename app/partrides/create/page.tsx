@@ -115,6 +115,7 @@ export default function CreatePartRidePage() {
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: {errors},
     } = useForm<CreatePartRideInput>({
         resolver: yupResolver(schema),
@@ -286,8 +287,14 @@ export default function CreatePartRidePage() {
                                     loading={isLoadingDrivers}
                                     getOptionLabel={(option) => `${option.user.firstName} ${option.user.lastName}`}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={driversData?.find((dr) => dr.id === field.value) || null}
+                                    onChange={(_, newValue) => {
+                                        const driverId = newValue?.id || '';
+                                        const driverCompanyId = newValue?.companyId || '';
+
+                                        field.onChange(driverId);         // set driverId
+                                        setValue('companyId', driverCompanyId); // set companyId
+                                        setSelectedCompanyId(driverCompanyId);  // also update cars/charters
+                                    }}                                    value={driversData?.find((dr) => dr.id === field.value) || null}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}

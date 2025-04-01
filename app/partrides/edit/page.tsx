@@ -331,7 +331,14 @@ function EditPartRidePageWrapper() {
                                         loading={isLoadingDrivers}
                                         getOptionLabel={(option) => `${option.user?.firstName} ${option.user?.lastName}`}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                        onChange={(_, newValue) => {
+                                            const driverId = newValue?.id || '';
+                                            const driverCompanyId = newValue?.companyId || '';
+
+                                            field.onChange(driverId);              // Set driverId
+                                            setValue('companyId', driverCompanyId); // Set companyId in the form
+                                            setCompanyId(driverCompanyId);          // Update local state for car/charter filtering
+                                        }}
                                         value={driversData?.find((dr) => dr.id === field.value) || null}
                                         renderInput={(params) =>
                                             <TextField {...params}
