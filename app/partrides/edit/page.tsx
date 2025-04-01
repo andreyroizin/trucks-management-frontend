@@ -19,9 +19,6 @@ import {useClients} from '@/hooks/useClients';
 import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import {useRides} from '@/hooks/useRides';
-import {useUnits} from '@/hooks/useUnits';
-import {useRates} from '@/hooks/useRates';
-import {useSurcharges} from '@/hooks/useSurcharges';
 import {useCharters} from '@/hooks/useCharters';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
@@ -42,14 +39,11 @@ const editPartRideSchema = yup.object().shape({
     companyId: yup.string().optional(),
     driverId: yup.string().optional(),
     carId: yup.string().optional(),
-    rateId: yup.string().optional(),
     hoursCodeId: yup.string().optional(),
     hoursOptionId: yup.string().optional(),
     hoursCorrection: yup.number().optional(),
     variousCompensation: yup.number().optional(),
-    surchargeId: yup.string().optional(),
     charterId: yup.string().optional(),
-    unitId: yup.string().optional(),
     rideId: yup.string().optional(),
     weekNumber: yup
         .number()
@@ -99,15 +93,12 @@ function EditPartRidePageWrapper() {
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(companyId, 1, 1000);
     const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
-    const {data: unitsData, isLoading: isLoadingUnits} = useUnits(1, 1000);
-    const {data: ratesData, isLoading: isLoadingRates} = useRates(clientId, 1, 1000);
-    const {data: surchargesData, isLoading: isLoadingSurcharges} = useSurcharges(clientId, 1, 1000);
     const {data: chartersData, isLoading: isLoadingCharters} = useCharters(companyId, clientId, 1, 1000);
 
     const someDataIsLoading = useMemo(() => {
         return isLoading || isLoadingCompanies || isLoadingClients || isLoadingDrivers
-            || isLoadingCars || isLoadingRides || isLoadingRates || isLoadingSurcharges || isLoadingCharters;
-    }, [isLoading, isLoadingCars, isLoadingCharters, isLoadingClients, isLoadingCompanies, isLoadingDrivers, isLoadingRates, isLoadingRides, isLoadingSurcharges]);
+            || isLoadingCars || isLoadingRides || isLoadingCharters;
+    }, [isLoading, isLoadingCars, isLoadingCharters, isLoadingClients, isLoadingCompanies, isLoadingDrivers, isLoadingRides]);
 
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
@@ -138,10 +129,7 @@ function EditPartRidePageWrapper() {
             clientId: '',
             driverId: '',
             carId: '',
-            rateId: '',
-            surchargeId: '',
             charterId: '',
-            unitId: '',
         },
     });
 
@@ -166,11 +154,7 @@ function EditPartRidePageWrapper() {
             setValue('clientId', partRide.client?.id || '');
             setValue('driverId', partRide.driver?.id || '');
             setValue('carId', partRide.car?.id || '');
-            setValue('rateId', partRide.rate?.id || '');
-            setValue('surchargeId', partRide.surcharge?.id || '');
             setValue('charterId', partRide.charter?.id || '');
-            setValue('unitId', partRide.unit?.id || '');
-            setValue('rideId', partRide.ride?.id || '');
             setCompanyId(partRide.company?.id || '');
             setClientId(partRide.client?.id || '');
         }
@@ -541,63 +525,6 @@ function EditPartRidePageWrapper() {
                                         loading={isLoadingRides}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Unit */}
-                            <FormLabel>Unit</FormLabel>
-                            <Controller
-                                name="unitId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={unitsData?.units || []}
-                                        getOptionLabel={(option) => option.value}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        loading={isLoadingUnits}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={unitsData?.units?.find((un) => un.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Rate */}
-                            <FormLabel>Rate</FormLabel>
-                            <Controller
-                                name="rateId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={ratesData?.rates || []}
-                                        getOptionLabel={(option) => option.name}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        loading={isLoadingRates}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={ratesData?.rates?.find((ra) => ra.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Surcharge */}
-                            <FormLabel>Surcharge</FormLabel>
-                            <Controller
-                                name="surchargeId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={surchargesData?.data || []}
-                                        getOptionLabel={(option) => `${option.value}`}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        loading={isLoadingSurcharges}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={surchargesData?.data.find((su) => su.id === field.value) || null}
                                         renderInput={(params) => <TextField {...params} variant="outlined"
                                                                             margin="normal"/>}
                                     />

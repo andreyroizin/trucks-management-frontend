@@ -15,14 +15,11 @@ export type EditPartRideInput = {
     costs?: number;
     clientId?: string;
     weekNumber?: number | null;
-    unitId?: string;
-    rateId?: string;
     costsDescription?: string;
     hoursCodeId?: string;
     hoursCorrection?: number,
     variousCompensation?: number,
     hoursOptionId?: string;
-    surchargeId?: string;
     turnover?: number;
     remark?: string;
     companyId?: string;

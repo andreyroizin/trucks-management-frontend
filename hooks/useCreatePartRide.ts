@@ -14,14 +14,11 @@ export type CreatePartRideInput = {
     costs?: number;
     clientId?: string;          // hidden if driver
     weekNumber?: number;
-    unitId?: string;            // hidden if driver
-    rateId?: string;            // hidden if driver
     costsDescription?: string;
     hoursCodeId?: string,
     hoursOptionId?: string,
     hoursCorrection?: number,
     variousCompensation?: number,
-    surchargeId?: string;       // hidden if driver
     turnover?: number;          // hidden if driver
     remark?: string;
     companyId?: string;         // if driver, prefill or hide

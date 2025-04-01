@@ -21,9 +21,6 @@ import {useClients} from '@/hooks/useClients';
 import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import {useRides} from '@/hooks/useRides';
-import {useUnits} from '@/hooks/useUnits';
-import {useRates} from '@/hooks/useRates';
-import {useSurcharges} from '@/hooks/useSurcharges';
 import {useCharters} from '@/hooks/useCharters';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
@@ -45,10 +42,7 @@ const createPartRideSchema = yup.object().shape({
     weekNumber: yup.number().optional(),
     hoursCorrection: yup.number().optional(),
     variousCompensation: yup.number().optional(),
-    unitId: yup.string().optional(),
-    rateId: yup.string().optional(),
     costsDescription: yup.string().optional(),
-    surchargeId: yup.string().optional(),
     turnover: yup.number().optional(),
     remark: yup.string().optional(),
     companyId: yup.string().optional(),
@@ -85,12 +79,6 @@ export default function CreatePartRidePage() {
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(selectedCompanyId || '', 1, 1000);
     const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
-    const {data: unitsData, isLoading: isLoadingUnits} = useUnits(1, 1000);
-    const {data: ratesData, isLoading: isLoadingRates} = useRates(selectedClientId || '', 1, 1000);
-    const {
-        data: surchargesData,
-        isLoading: isLoadingSurcharges
-    } = useSurcharges(selectedClientId || '', 1, 1000);
     const {
         data: chartersData,
         isLoading: isLoadingCharters
@@ -576,84 +564,6 @@ export default function CreatePartRidePage() {
                                             margin="normal"
                                             error={!!errors.rideId}
                                             helperText={errors.rideId?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                        />
-
-                        {/* unitId as MUI Autocomplete */}
-                        <FormLabel>Unit</FormLabel>
-                        <Controller
-                            name="unitId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={unitsData?.units || []}
-                                    getOptionLabel={(option) => option.value}
-                                    loading={isLoadingUnits}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={unitsData?.units.find((un) => un.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.unitId}
-                                            helperText={errors.unitId?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                        />
-
-                        {/* rateId as MUI Autocomplete */}
-                        <FormLabel>Rate</FormLabel>
-                        <Controller
-                            name="rateId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={ratesData?.rates || []}
-                                    loading={isLoadingRates}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={ratesData?.rates.find((ra) => ra.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.rateId}
-                                            helperText={errors.rateId?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                        />
-
-                        {/* surchargeId as MUI Autocomplete */}
-                        <FormLabel>Surcharge</FormLabel>
-                        <Controller
-                            name="surchargeId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={surchargesData?.data || []}
-                                    loading={isLoadingSurcharges}
-                                    getOptionLabel={(option) => `${option.value || ''}`}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={surchargesData?.data.find((su) => su.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.surchargeId}
-                                            helperText={errors.surchargeId?.message}
                                         />
                                     )}
                                 />

@@ -199,34 +199,6 @@ export default function PartRideDetailPage() {
                         )}
                     </Typography>
 
-                    {/* Rate Link */}
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Rate:</strong>{' '}
-                        {partRide.rate ? (
-                            <Link href={`/rates/detail/${partRide.rate.id}`} passHref>
-                                <Button variant="text" size="small">
-                                    {partRide.rate.name}
-                                </Button>
-                            </Link>
-                        ) : (
-                            'N/A'
-                        )}
-                    </Typography>
-
-                    {/* Surcharge Link */}
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Surcharge:</strong>{' '}
-                        {partRide.surcharge ? (
-                            <Link href={`/surcharges/${partRide.surcharge.id}`} passHref>
-                                <Button variant="text" size="small">
-                                    {partRide.surcharge.value}
-                                </Button>
-                            </Link>
-                        ) : (
-                            'N/A'
-                        )}
-                    </Typography>
-
                     {/* Charter Link */}
                     <Typography variant="body1" gutterBottom>
                         <strong>Charter:</strong>{' '}
@@ -239,11 +211,6 @@ export default function PartRideDetailPage() {
                         ) : (
                             'N/A'
                         )}
-                    </Typography>
-
-                    {/* Unit Link */}
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Unit:</strong> {partRide.unit?.value}
                     </Typography>
 
                     {/* Ride Link */}
