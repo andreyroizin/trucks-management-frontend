@@ -13,6 +13,11 @@ import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 
 import {CreatePartRideInput, useCreatePartRide} from '@/hooks/useCreatePartRide';
 import {useAuth} from '@/hooks/useAuth';
@@ -91,11 +96,13 @@ export default function CreatePartRidePage() {
 
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     // React Hook Form
     const {
         handleSubmit,
         control,
+        watch,
         formState: {errors},
     } = useForm<CreatePartRideInput>({
         resolver: yupResolver(createPartRideSchema),
@@ -139,6 +146,22 @@ export default function CreatePartRidePage() {
         initialDataObject.driverId = driverId;
         return initialDataObject;
     }
+
+    useEffect(() => {
+        const subscription = watch((value) => {
+            const shouldExpand =
+                value.start === '00:00:00' ||
+                value.start === '00:00' ||
+                value.end === '24:00:00' ||
+                value.end === '24:00' ||
+                value.end === '1.00:00:00' ||
+                value.end === '1.00:00:';
+
+            setShowAdvanced(shouldExpand);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [watch]);
 
     // If any data for the filters is still loading
     if (authLoading) {
@@ -253,56 +276,63 @@ export default function CreatePartRidePage() {
                 )}
                 {!isDriverRole && (
                     <>
-                        {/* HOURS CODE FIELD */}
-                        <FormLabel>Hours Code</FormLabel>
-                        <Controller
-                            name="hoursCodeId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={hoursCodesData || []}
-                                    loading={isLoadingHoursCodes}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.hoursCodeId}
-                                            helperText={errors.hoursCodeId?.message}
+                        <Accordion expanded={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                                <Typography fontWeight="bold">Special hours</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                {/* HOURS CODE FIELD */}
+                                <FormLabel>Hours Code</FormLabel>
+                                <Controller
+                                    name="hoursCodeId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={hoursCodesData || []}
+                                            loading={isLoadingHoursCodes}
+                                            getOptionLabel={(option) => option.name}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                            value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.hoursCodeId}
+                                                    helperText={errors.hoursCodeId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-                        {/* Hours Option */}
-                        <FormLabel>Hours Option</FormLabel>
-                        <Controller
-                            name="hoursOptionId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={hoursOptionsData || []}
-                                    loading={isLoadingHoursOptions}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={hoursOptionsData?.find((ho) => ho.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.hoursOptionId}
-                                            helperText={errors.hoursOptionId?.message}
+                                {/* Hours Option */}
+                                <FormLabel>Hours Option</FormLabel>
+                                <Controller
+                                    name="hoursOptionId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={hoursOptionsData || []}
+                                            loading={isLoadingHoursOptions}
+                                            getOptionLabel={(option) => option.name}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                            value={hoursOptionsData?.find((ho) => ho.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.hoursOptionId}
+                                                    helperText={errors.hoursOptionId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
+                            </AccordionDetails>
+                        </Accordion>
                     </>
                 )}
                 {/* kilometers */}
