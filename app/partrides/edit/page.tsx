@@ -31,40 +31,6 @@ import dayjs from "dayjs";
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 
-// --- VALIDATION SCHEMA ---
-const editPartRideSchema = yup.object().shape({
-    id: yup.string().required("ID is required"),
-    date: yup.string().required("Date is required"),
-    start: yup.string().required("Start time is required"),
-    end: yup.string().required("End time is required"),
-    kilometers: yup.number().optional(),
-    costs: yup.number().optional(),
-    clientId: yup.string().optional(),
-    companyId: yup.string().optional(),
-    driverId: yup.string().optional(),
-    carId: yup.string().optional(),
-    hoursCodeId: yup.string().when(['start', 'end'], {
-        is: (start: string, end: string) =>
-            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
-        then: (schema) => schema.required('Hours Code is required for this time range'),
-        otherwise: (schema) => schema.optional(),
-    }), hoursOptionId: yup.string().optional(),
-    hoursCorrection: yup.number().optional(),
-    variousCompensation: yup.number().optional(),
-    charterId: yup.string().optional(),
-    rideId: yup.string().optional(),
-    weekNumber: yup
-        .number()
-        .transform((value, originalValue) =>
-            originalValue === '' ? null : value
-        )
-        .nullable()
-        .optional(),
-    costsDescription: yup.string().optional(),
-    turnover: yup.number().optional(),
-    remark: yup.string().optional(),
-});
-
 function EditPartRidePageWrapper() {
     dayjs.extend(utc);
     dayjs.extend(timezone);
@@ -76,6 +42,48 @@ function EditPartRidePageWrapper() {
     const partRideId = searchParams.get('id') || '';
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');
+
+    // --- VALIDATION SCHEMA ---
+    const schema = useMemo(() => {
+        return yup.object().shape({
+            id: yup.string().required("ID is required"),
+            date: yup.string().required("Date is required"),
+            start: yup.string().required("Start time is required"),
+            end: yup.string().required("End time is required"),
+            kilometers: yup.number().optional(),
+            costs: yup.number().optional(),
+            clientId: yup.string().optional(),
+            companyId: yup.string().optional(),
+            driverId: yup.string().optional(),
+            carId: yup.string().optional(),
+            hoursCodeId: yup.string().when(['start', 'end'], {
+                is: (start: string, end: string) =>
+                    (!isDriverRole && (
+                        start === '00:00:00' ||
+                        start === '00:00' ||
+                        end === '24:00:00' ||
+                        end === '24:00' ||
+                        end === '1.00:00:00' ||
+                        end === '1.00:00'
+                    )),
+                then: (schema) => schema.required('Hours Code is required for this time range'),
+                otherwise: (schema) => schema.optional(),
+            }),
+            hoursOptionId: yup.string().optional(),
+            hoursCorrection: yup.number().optional(),
+            variousCompensation: yup.number().optional(),
+            charterId: yup.string().optional(),
+            rideId: yup.string().optional(),
+            weekNumber: yup
+                .number()
+                .transform((value, originalValue) => (originalValue === '' ? null : value))
+                .nullable()
+                .optional(),
+            costsDescription: yup.string().optional(),
+            turnover: yup.number().optional(),
+            remark: yup.string().optional(),
+        });
+    }, [isDriverRole]);
 
     // Only logged-in users
     useEffect(() => {
@@ -121,7 +129,7 @@ function EditPartRidePageWrapper() {
         watch,
         formState: {errors},
     } = useForm<EditPartRideInput>({
-        resolver: yupResolver(editPartRideSchema),
+        resolver: yupResolver(schema),
         defaultValues: {
             id: partRideId,
             date: '',
@@ -622,7 +630,7 @@ function EditPartRidePageWrapper() {
                                     />
                                 )}
                             />
-                            
+
                             {/* remark (visible for all) */}
                             <FormLabel>Remark</FormLabel>
                             <Controller

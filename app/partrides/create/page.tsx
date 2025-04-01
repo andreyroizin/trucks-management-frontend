@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, FormLabel, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -17,8 +17,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-
 import {CreatePartRideInput, useCreatePartRide} from '@/hooks/useCreatePartRide';
 import {useAuth} from '@/hooks/useAuth';
 import {useCompanies} from '@/hooks/useCompanies';
@@ -30,35 +28,6 @@ import {useCharters} from '@/hooks/useCharters';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 
-// --- VALIDATION SCHEMA ---
-const createPartRideSchema = yup.object().shape({
-    date: yup.string().required('Date is required (e.g. "24-06-2025")'),
-    start: yup.string().required('Start time is required (e.g. "20:00")'),
-    end: yup.string().required('End time is required (e.g. "05:00")'),
-    // If driver => hide or not required
-    rideId: yup.string().optional(),
-    kilometers: yup.number().optional(),
-    carId: yup.string().optional(),
-    driverId: yup.string().optional(),
-    costs: yup.number().optional(),
-    hoursCodeId: yup.string().when(['start', 'end'], {
-        is: (start: string, end: string) =>
-            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
-        then: (schema) => schema.required('Hours Code is required for this time range'),
-        otherwise: (schema) => schema.optional(),
-    }),
-    hoursOptionId: yup.string().optional(),
-    clientId: yup.string().optional(),
-    weekNumber: yup.number().optional(),
-    hoursCorrection: yup.number().optional(),
-    variousCompensation: yup.number().optional(),
-    costsDescription: yup.string().optional(),
-    turnover: yup.number().optional(),
-    remark: yup.string().optional(),
-    companyId: yup.string().optional(),
-    charterId: yup.string().optional(),
-});
-
 export default function CreatePartRidePage() {
     dayjs.extend(utc);
     dayjs.extend(timezone);
@@ -66,6 +35,45 @@ export default function CreatePartRidePage() {
     const AMSTERDAM_TZ = "Europe/Amsterdam";
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
+    const isDriverRole = user?.roles.includes('driver');
+
+    // --- VALIDATION SCHEMA ---
+    const schema = useMemo(() => {
+        return yup.object().shape({
+            date: yup.string().required('Date is required (e.g. "24-06-2025")'),
+            start: yup.string().required('Start time is required (e.g. "20:00")'),
+            end: yup.string().required('End time is required (e.g. "05:00")'),
+            // If driver => hide or not required
+            rideId: yup.string().optional(),
+            kilometers: yup.number().optional(),
+            carId: yup.string().optional(),
+            driverId: yup.string().optional(),
+            costs: yup.number().optional(),
+            hoursCodeId: yup.string().when(['start', 'end'], {
+                is: (start: string, end: string) =>
+                    (!isDriverRole && (
+                        start === '00:00:00' ||
+                        start === '00:00' ||
+                        end === '24:00:00' ||
+                        end === '24:00' ||
+                        end === '1.00:00:00' ||
+                        end === '1.00:00'
+                    )),
+                then: (schema) => schema.required('Hours Code is required for this time range'),
+                otherwise: (schema) => schema.optional(),
+            }),
+            hoursOptionId: yup.string().optional(),
+            clientId: yup.string().optional(),
+            weekNumber: yup.number().optional(),
+            hoursCorrection: yup.number().optional(),
+            variousCompensation: yup.number().optional(),
+            costsDescription: yup.string().optional(),
+            turnover: yup.number().optional(),
+            remark: yup.string().optional(),
+            companyId: yup.string().optional(),
+            charterId: yup.string().optional(),
+        });
+    }, [isDriverRole]);
 
     // Ensure user is logged in
     useEffect(() => {
@@ -74,13 +82,8 @@ export default function CreatePartRidePage() {
         }
     }, [authLoading, isAuthenticated, router]);
 
-
-    // If user is a driver => hide certain fields
-    const isDriverRole = user?.roles.includes('driver');
-
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
     const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-
 
     // Data hooks for Autocomplete:
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
@@ -110,7 +113,7 @@ export default function CreatePartRidePage() {
         watch,
         formState: {errors},
     } = useForm<CreatePartRideInput>({
-        resolver: yupResolver(createPartRideSchema),
+        resolver: yupResolver(schema),
         defaultValues: {
             date: '',
             start: '',
