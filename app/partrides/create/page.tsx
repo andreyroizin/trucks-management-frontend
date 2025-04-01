@@ -41,7 +41,12 @@ const createPartRideSchema = yup.object().shape({
     carId: yup.string().optional(),
     driverId: yup.string().optional(),
     costs: yup.number().optional(),
-    hoursCodeId: yup.string().optional(),
+    hoursCodeId: yup.string().when(['start', 'end'], {
+        is: (start: string, end: string) =>
+            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '1.00:00:00' || end === '1.00:00',
+        then: (schema) => schema.required('Hours Code is required for this time range'),
+        otherwise: (schema) => schema.optional(),
+    }),
     hoursOptionId: yup.string().optional(),
     clientId: yup.string().optional(),
     weekNumber: yup.number().optional(),
@@ -90,7 +95,6 @@ export default function CreatePartRidePage() {
     } = useCharters(selectedCompanyId || '', selectedClientId || '', 1, 1000);
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
 
-    console.log(hoursCodesData)
     // Create Hook
     const {mutateAsync: createPartRide, isPending} = useCreatePartRide();
 
