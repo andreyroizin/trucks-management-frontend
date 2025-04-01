@@ -54,7 +54,11 @@ function EditPartRidePageWrapper() {
             costs: yup.number().optional(),
             clientId: yup.string().optional(),
             companyId: yup.string().optional(),
-            driverId: yup.string().optional(),
+            driverId: yup.string().when([], {
+                is: () => !isDriverRole,
+                then: (schema) => schema.required("Driver is required"),
+                otherwise: (schema) => schema.optional(),
+            }),
             carId: yup.string().optional(),
             hoursCodeId: yup.string().when(['start', 'end'], {
                 is: (start: string, end: string) =>
@@ -329,8 +333,13 @@ function EditPartRidePageWrapper() {
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                         value={driversData?.find((dr) => dr.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
+                                        renderInput={(params) =>
+                                            <TextField {...params}
+                                                       variant="outlined"
+                                                       margin="normal"
+                                                       error={!!errors.driverId}
+                                                       helperText={errors.driverId?.message}
+                                            />}
                                     />
                                 )}
                             />

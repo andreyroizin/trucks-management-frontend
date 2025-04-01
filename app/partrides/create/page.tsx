@@ -47,7 +47,11 @@ export default function CreatePartRidePage() {
             rideId: yup.string().optional(),
             kilometers: yup.number().optional(),
             carId: yup.string().optional(),
-            driverId: yup.string().optional(),
+            driverId: yup.string().when([], {
+                is: () => !isDriverRole,
+                then: (schema) => schema.required("Driver is required"),
+                otherwise: (schema) => schema.optional(),
+            }),
             costs: yup.number().optional(),
             hoursCodeId: yup.string().when(['start', 'end'], {
                 is: (start: string, end: string) =>
@@ -120,6 +124,7 @@ export default function CreatePartRidePage() {
             end: '',
             kilometers: 0,
             costs: 0,
+            driverId: '',
             hoursCodeId: '',
             hoursOptionId: '',
             weekNumber: 0,
@@ -151,7 +156,7 @@ export default function CreatePartRidePage() {
 
     const prefillDriversDataInTheForm = (initialDataObject: CreatePartRideInput, companyId?: string, driverId?: string): CreatePartRideInput => {
         initialDataObject.companyId = companyId;
-        initialDataObject.driverId = driverId;
+        initialDataObject.driverId = driverId ?? '';
         return initialDataObject;
     }
 
