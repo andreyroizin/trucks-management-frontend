@@ -101,6 +101,7 @@ export default function CreatePartRidePage() {
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
     const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
+    console.log('isDriverRole', isDriverRole);
     const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
 
     // React Hook Form
@@ -167,6 +168,12 @@ export default function CreatePartRidePage() {
 
         return () => subscription.unsubscribe();
     }, [watch]);
+
+    useEffect(() => {
+        if (!authLoading && user?.roles.includes('driver')) {
+            setShowAdditionalFieldsAccordion(true);
+        }
+    }, [authLoading, user]);
 
     // If any data for the filters is still loading
     if (authLoading) {
