@@ -43,7 +43,7 @@ const createPartRideSchema = yup.object().shape({
     costs: yup.number().optional(),
     hoursCodeId: yup.string().when(['start', 'end'], {
         is: (start: string, end: string) =>
-            start === '00:00:00' || start === '00:00' ||  end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
+            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
         then: (schema) => schema.required('Hours Code is required for this time range'),
         otherwise: (schema) => schema.optional(),
     }),
@@ -455,50 +455,6 @@ export default function CreatePartRidePage() {
                                         />
                                     </>
                                 )}
-                                {/* costs */}
-                                {!isDriverRole && (
-                                    <>
-                                        <FormLabel>Costs</FormLabel>
-                                        <Controller
-                                            name="costs"
-                                            control={control}
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    type="number"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    error={!!errors.costs}
-                                                    helperText={errors.costs?.message}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                )}
-
-
-                                {/* costsDescription */}
-                                {!isDriverRole && (
-                                    <>
-                                        <FormLabel>Costs Description</FormLabel>
-                                        <Controller
-                                            name="costsDescription"
-                                            control={control}
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    error={!!errors.costsDescription}
-                                                    helperText={errors.costsDescription?.message}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                )}
-
                                 {/* clientId as MUI Autocomplete */}
                                 <FormLabel>Client</FormLabel>
                                 <Controller
@@ -642,24 +598,58 @@ export default function CreatePartRidePage() {
                                         />
                                     </>
                                 )}
-                                {/* remark */}
-                                <FormLabel>Remark</FormLabel>
-                                <Controller
-                                    name="remark"
-                                    control={control}
-                                    render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            variant="outlined"
-                                            fullWidth
-                                            margin="normal"
-                                            error={!!errors.remark}
-                                            helperText={errors.remark?.message}
-                                        />
-                                    )}
-                                />
                             </>
                         )}
+                        {/* costs */}
+                        <FormLabel>Costs</FormLabel>
+                        <Controller
+                            name="costs"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    type="number"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.costs}
+                                    helperText={errors.costs?.message}
+                                />
+                            )}
+                        />
+
+                        {/* costsDescription */}
+                        <FormLabel>Costs Description</FormLabel>
+                        <Controller
+                            name="costsDescription"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.costsDescription}
+                                    helperText={errors.costsDescription?.message}
+                                />
+                            )}
+                        />
+                        {/* remark */}
+                        <FormLabel>Remark</FormLabel>
+                        <Controller
+                            name="remark"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.remark}
+                                    helperText={errors.remark?.message}
+                                />
+                            )}
+                        />
                     </AccordionDetails>
                 </Accordion>
 
