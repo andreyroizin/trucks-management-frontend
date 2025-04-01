@@ -101,7 +101,6 @@ export default function CreatePartRidePage() {
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
     const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
-    console.log('isDriverRole', isDriverRole);
     const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
 
     // React Hook Form
@@ -419,27 +418,6 @@ export default function CreatePartRidePage() {
                                         />
                                     )}
                                 />
-                                {/* kilometers */}
-                                {!isDriverRole && (
-                                    <>
-                                        <FormLabel>Extra Kilometers</FormLabel>
-                                        <Controller
-                                            name="kilometers"
-                                            control={control}
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    type="number"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    error={!!errors.kilometers}
-                                                    helperText={errors.kilometers?.message}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                )}
 
                                 {/* weekNumber */}
                                 {!isDriverRole && (
@@ -607,6 +585,24 @@ export default function CreatePartRidePage() {
                                 )}
                             </>
                         )}
+                        {/* kilometers */}
+                        <FormLabel>Extra Kilometers</FormLabel>
+                        <Controller
+                            name="kilometers"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    type="number"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.kilometers}
+                                    helperText={errors.kilometers?.message}
+                                />
+                            )}
+                        />
+
                         {/* costs */}
                         <FormLabel>Costs</FormLabel>
                         <Controller

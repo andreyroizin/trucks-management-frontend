@@ -9,6 +9,10 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import {useAuth} from '@/hooks/useAuth';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail'; // To fetch existing data
@@ -39,8 +43,12 @@ const editPartRideSchema = yup.object().shape({
     companyId: yup.string().optional(),
     driverId: yup.string().optional(),
     carId: yup.string().optional(),
-    hoursCodeId: yup.string().optional(),
-    hoursOptionId: yup.string().optional(),
+    hoursCodeId: yup.string().when(['start', 'end'], {
+        is: (start: string, end: string) =>
+            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
+        then: (schema) => schema.required('Hours Code is required for this time range'),
+        otherwise: (schema) => schema.optional(),
+    }), hoursOptionId: yup.string().optional(),
     hoursCorrection: yup.number().optional(),
     variousCompensation: yup.number().optional(),
     charterId: yup.string().optional(),
@@ -99,6 +107,8 @@ function EditPartRidePageWrapper() {
         return isLoading || isLoadingCompanies || isLoadingClients || isLoadingDrivers
             || isLoadingCars || isLoadingRides || isLoadingCharters;
     }, [isLoading, isLoadingCars, isLoadingCharters, isLoadingClients, isLoadingCompanies, isLoadingDrivers, isLoadingRides]);
+    const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
+    const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
 
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
@@ -108,6 +118,7 @@ function EditPartRidePageWrapper() {
         handleSubmit,
         control,
         setValue,
+        watch,
         formState: {errors},
     } = useForm<EditPartRideInput>({
         resolver: yupResolver(editPartRideSchema),
@@ -173,6 +184,28 @@ function EditPartRidePageWrapper() {
             setApiError(err.response?.data?.errors?.[0] || err.message);
         }
     };
+
+    useEffect(() => {
+        const subscription = watch((value) => {
+            const shouldExpand =
+                value.start === '00:00:00' ||
+                value.start === '00:00' ||
+                value.end === '24:00:00' ||
+                value.end === '24:00' ||
+                value.end === '1.00:00:00' ||
+                value.end === '1.00:00:';
+
+            setShowSpecialHoursAccordion(shouldExpand);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [watch]);
+
+    useEffect(() => {
+        if (!authLoading && user?.roles.includes('driver')) {
+            setShowAdditionalFieldsAccordion(true);
+        }
+    }, [authLoading, user]);
 
     // If anything is still loading
     if (
@@ -273,84 +306,279 @@ function EditPartRidePageWrapper() {
                             />
                         )}
                     />
-
                     {!isDriverRole && (
                         <>
-                            <FormLabel>Correction time</FormLabel>
+                            {/* Driver */}
+                            <FormLabel>Driver</FormLabel>
                             <Controller
-                                name="hoursCorrection"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        error={!!errors.hoursCorrection}
-                                        helperText={errors.hoursCorrection?.message}
-                                    />
-                                )}
-                            />
-                            {/* Hours Code */}
-                            <FormLabel>Hours Code</FormLabel>
-                            <Controller
-                                name="hoursCodeId"
+                                name="driverId"
                                 control={control}
                                 render={({field}) => (
                                     <Autocomplete
-                                        options={hoursCodesData || []}
-                                        getOptionLabel={(option) => option.name}
-                                        loading={isLoadingHoursCodes}
+                                        options={driversData || []}
+                                        loading={isLoadingDrivers}
+                                        getOptionLabel={(option) => `${option.user?.firstName} ${option.user?.lastName}`}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
                                         onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant="outlined"
-                                                margin="normal"
-                                                error={!!errors.hoursCodeId}
-                                                helperText={errors.hoursCodeId?.message}
-                                            />
-                                        )}
+                                        value={driversData?.find((dr) => dr.id === field.value) || null}
+                                        renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                            margin="normal"/>}
                                     />
                                 )}
                             />
-                            {/* Hours Option */}
-                            <FormLabel>Hours Option</FormLabel>
-                            <Controller
-                                name="hoursOptionId"
-                                control={control}
-                                render={({ field }) => (
-                                    <Autocomplete
-                                        options={hoursOptionsData || []}
-                                        getOptionLabel={(option) => option.name}
-                                        loading={isLoadingHoursOptions}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={hoursOptionsData?.find((ho) => ho.id === field.value) || null}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant="outlined"
-                                                margin="normal"
-                                                error={!!errors.hoursOptionId}
-                                                helperText={errors.hoursOptionId?.message}
+                        </>)}
+                    {!isDriverRole && (
+                        <>
+                            <Accordion expanded={showSpecialHoursAccordion}
+                                       onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                                    <Typography>Special hours</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    {/* Hours Code */}
+                                    <FormLabel>Hours Code</FormLabel>
+                                    <Controller
+                                        name="hoursCodeId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={hoursCodesData || []}
+                                                getOptionLabel={(option) => option.name}
+                                                loading={isLoadingHoursCodes}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                                value={hoursCodesData?.find((hc) => hc.id === field.value) || null}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="outlined"
+                                                        margin="normal"
+                                                        error={!!errors.hoursCodeId}
+                                                        helperText={errors.hoursCodeId?.message}
+                                                    />
+                                                )}
                                             />
                                         )}
                                     />
-                                )}
-                            />
-
+                                    {/* Hours Option */}
+                                    <FormLabel>Hours Option</FormLabel>
+                                    <Controller
+                                        name="hoursOptionId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={hoursOptionsData || []}
+                                                getOptionLabel={(option) => option.name}
+                                                loading={isLoadingHoursOptions}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                                value={hoursOptionsData?.find((ho) => ho.id === field.value) || null}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="outlined"
+                                                        margin="normal"
+                                                        error={!!errors.hoursOptionId}
+                                                        helperText={errors.hoursOptionId?.message}
+                                                    />
+                                                )}
+                                            />
+                                        )}
+                                    />
+                                </AccordionDetails>
+                            </Accordion>
                         </>
                     )}
 
-                    {/* If user is driver => hide some fields */}
-                    {!isDriverRole && (
-                        <>
+                    <Accordion expanded={showAdditionalFieldsAccordion}
+                               onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon/>}
+                            aria-controls="panel1-content"
+                            id="panel1-header"
+                        >
+                            <Typography component="span">Additional inputs</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {!isDriverRole && (
+                                <>
+                                    <FormLabel>Correction time</FormLabel>
+                                    <Controller
+                                        name="hoursCorrection"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                type="number"
+                                                variant="outlined"
+                                                fullWidth
+                                                margin="normal"
+                                                error={!!errors.hoursCorrection}
+                                                helperText={errors.hoursCorrection?.message}
+                                            />
+                                        )}
+                                    />
+                                </>
+                            )}
+
+                            {/* If user is driver => hide some fields */}
+                            {!isDriverRole && (
+                                <>
+                                    {/* weekNumber */}
+                                    <FormLabel>Week Number</FormLabel>
+                                    <Controller
+                                        name="weekNumber"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                type="number"
+                                                variant="outlined"
+                                                fullWidth
+                                                margin="normal"
+                                                error={!!errors.weekNumber}
+                                                helperText={errors.weekNumber?.message}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* turnover */}
+                                    <FormLabel>Turnover</FormLabel>
+                                    <Controller
+                                        name="turnover"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                type="number"
+                                                variant="outlined"
+                                                fullWidth
+                                                margin="normal"
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Autocomplete Fields for non-driver */}
+                                    {/* Company */}
+                                    <FormLabel>Company</FormLabel>
+                                    <Controller
+                                        name="companyId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={companiesData?.data || []}
+                                                getOptionLabel={(option) => option.name}
+                                                loading={isLoadingCompanies}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => {
+                                                    setCompanyId(newValue?.id || '');
+                                                    field.onChange(newValue?.id || '');
+                                                }}
+                                                value={companiesData?.data.find((co) => co.id === field.value) || null}
+                                                renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                                    margin="normal"/>}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Client */}
+                                    <FormLabel>Client</FormLabel>
+                                    <Controller
+                                        name="clientId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={clientsData?.data || []}
+                                                getOptionLabel={(option) => option.name}
+                                                loading={isLoadingClients}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => {
+                                                    setClientId(newValue?.id || '');
+                                                    field.onChange(newValue?.id || '');
+                                                }}
+                                                value={clientsData?.data.find((cl) => cl.id === field.value) || null}
+                                                renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                                    margin="normal"/>}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Car */}
+                                    <FormLabel>Car</FormLabel>
+                                    <Controller
+                                        name="carId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={carsData?.cars || []}
+                                                loading={isLoadingCars}
+                                                getOptionLabel={(option) => option.licensePlate}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                                value={carsData?.cars?.find((ca) => ca.id === field.value) || null}
+                                                renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                                    margin="normal"/>}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Ride */}
+                                    <FormLabel>Ride</FormLabel>
+                                    <Controller
+                                        name="rideId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={ridesData?.data || []}
+                                                getOptionLabel={(option) => option.name}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                loading={isLoadingRides}
+                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                                value={ridesData?.data.find((ri) => ri.id === field.value) || null}
+                                                renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                                    margin="normal"/>}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Charter */}
+                                    <FormLabel>Charter</FormLabel>
+                                    <Controller
+                                        name="charterId"
+                                        control={control}
+                                        render={({field}) => (
+                                            <Autocomplete
+                                                options={chartersData?.data || []}
+                                                getOptionLabel={(option) => option.name}
+                                                loading={isLoadingCharters}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                                value={chartersData?.data.find((ch) => ch.id === field.value) || null}
+                                                renderInput={(params) => <TextField {...params} variant="outlined"
+                                                                                    margin="normal"/>}
+                                            />
+                                        )}
+                                    />
+                                    <FormLabel>Various Compensation</FormLabel>
+                                    <Controller
+                                        name="variousCompensation"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                type="number"
+                                                variant="outlined"
+                                                fullWidth
+                                                margin="normal"
+                                                error={!!errors.variousCompensation}
+                                                helperText={errors.variousCompensation?.message}
+                                            />
+                                        )}
+                                    />
+                                </>
+                            )}
                             {/* Kilometers */}
-                            <FormLabel>Kilometers</FormLabel>
+                            <FormLabel>Extra Kilometers</FormLabel>
                             <Controller
                                 name="kilometers"
                                 control={control}
@@ -380,25 +608,6 @@ function EditPartRidePageWrapper() {
                                     />
                                 )}
                             />
-
-                            {/* weekNumber */}
-                            <FormLabel>Week Number</FormLabel>
-                            <Controller
-                                name="weekNumber"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        error={!!errors.weekNumber}
-                                        helperText={errors.weekNumber?.message}
-                                    />
-                                )}
-                            />
-
                             {/* costsDescription */}
                             <FormLabel>Costs Description</FormLabel>
                             <Controller
@@ -413,175 +622,23 @@ function EditPartRidePageWrapper() {
                                     />
                                 )}
                             />
-
-                            {/* turnover */}
-                            <FormLabel>Turnover</FormLabel>
+                            
+                            {/* remark (visible for all) */}
+                            <FormLabel>Remark</FormLabel>
                             <Controller
-                                name="turnover"
+                                name="remark"
                                 control={control}
                                 render={({field}) => (
                                     <TextField
                                         {...field}
-                                        type="number"
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
                                     />
                                 )}
                             />
-
-                            {/* Autocomplete Fields for non-driver */}
-                            {/* Company */}
-                            <FormLabel>Company</FormLabel>
-                            <Controller
-                                name="companyId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={companiesData?.data || []}
-                                        getOptionLabel={(option) => option.name}
-                                        loading={isLoadingCompanies}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => {
-                                            setCompanyId(newValue?.id || '');
-                                            field.onChange(newValue?.id || '');
-                                        }} value={companiesData?.data.find((co) => co.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Client */}
-                            <FormLabel>Client</FormLabel>
-                            <Controller
-                                name="clientId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={clientsData?.data || []}
-                                        getOptionLabel={(option) => option.name}
-                                        loading={isLoadingClients}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => {
-                                            setClientId(newValue?.id || '');
-                                            field.onChange(newValue?.id || '');
-                                        }}
-                                        value={clientsData?.data.find((cl) => cl.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Driver */}
-                            <FormLabel>Driver</FormLabel>
-                            <Controller
-                                name="driverId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={driversData || []}
-                                        loading={isLoadingDrivers}
-                                        getOptionLabel={(option) => `${option.user?.firstName} ${option.user?.lastName}`}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={driversData?.find((dr) => dr.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Car */}
-                            <FormLabel>Car</FormLabel>
-                            <Controller
-                                name="carId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={carsData?.cars || []}
-                                        loading={isLoadingCars}
-                                        getOptionLabel={(option) => option.licensePlate}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={carsData?.cars?.find((ca) => ca.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Ride */}
-                            <FormLabel>Ride</FormLabel>
-                            <Controller
-                                name="rideId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={ridesData?.data || []}
-                                        getOptionLabel={(option) => option.name}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        loading={isLoadingRides}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-
-                            {/* Charter */}
-                            <FormLabel>Charter</FormLabel>
-                            <Controller
-                                name="charterId"
-                                control={control}
-                                render={({field}) => (
-                                    <Autocomplete
-                                        options={chartersData?.data || []}
-                                        getOptionLabel={(option) => option.name}
-                                        loading={isLoadingCharters}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                        value={chartersData?.data.find((ch) => ch.id === field.value) || null}
-                                        renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                            margin="normal"/>}
-                                    />
-                                )}
-                            />
-                            <FormLabel>Various Compensation</FormLabel>
-                            <Controller
-                                name="variousCompensation"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        error={!!errors.variousCompensation}
-                                        helperText={errors.variousCompensation?.message}
-                                    />
-                                )}
-                            />
-                        </>
-                    )}
-
-                    {/* remark (visible for all) */}
-                    <FormLabel>Remark</FormLabel>
-                    <Controller
-                        name="remark"
-                        control={control}
-                        render={({field}) => (
-                            <TextField
-                                {...field}
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                            />
-                        )}
-                    />
+                        </AccordionDetails>
+                    </Accordion>
 
                     <Box mt={3}>
                         <Button
