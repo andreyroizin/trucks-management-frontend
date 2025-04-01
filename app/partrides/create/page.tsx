@@ -32,9 +32,9 @@ import {useHoursOptions} from "@/hooks/useHoursOptions";
 
 // --- VALIDATION SCHEMA ---
 const createPartRideSchema = yup.object().shape({
-    date: yup.string().required('Date is required (e.g. "2024-03-06T00:00:00Z")'),
-    start: yup.string().required('Start time is required (e.g. "20:00:00")'),
-    end: yup.string().required('End time is required (e.g. "05:00:00")'),
+    date: yup.string().required('Date is required (e.g. "24-06-2025")'),
+    start: yup.string().required('Start time is required (e.g. "20:00")'),
+    end: yup.string().required('End time is required (e.g. "05:00")'),
     // If driver => hide or not required
     rideId: yup.string().optional(),
     kilometers: yup.number().optional(),
@@ -43,7 +43,7 @@ const createPartRideSchema = yup.object().shape({
     costs: yup.number().optional(),
     hoursCodeId: yup.string().when(['start', 'end'], {
         is: (start: string, end: string) =>
-            start === '00:00:00' || start === '00:00' || end === '24:00:00' || end === '1.00:00:00' || end === '1.00:00',
+            start === '00:00:00' || start === '00:00' ||  end === '24:00:00' || end === '24:00' || end === '1.00:00:00' || end === '1.00:00',
         then: (schema) => schema.required('Hours Code is required for this time range'),
         otherwise: (schema) => schema.optional(),
     }),
@@ -100,7 +100,8 @@ export default function CreatePartRidePage() {
 
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
-    const [showAdvanced, setShowAdvanced] = useState(false);
+    const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
+    const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
 
     // React Hook Form
     const {
@@ -161,7 +162,7 @@ export default function CreatePartRidePage() {
                 value.end === '1.00:00:00' ||
                 value.end === '1.00:00:';
 
-            setShowAdvanced(shouldExpand);
+            setShowSpecialHoursAccordion(shouldExpand);
         });
 
         return () => subscription.unsubscribe();
@@ -190,7 +191,7 @@ export default function CreatePartRidePage() {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Date */}
-                <FormLabel>Date (Example: 2024-03-06)</FormLabel>
+                <FormLabel>Date (Example: 24-12-2025)</FormLabel>
                 <Box width="100%" mb={2}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Controller
@@ -226,7 +227,7 @@ export default function CreatePartRidePage() {
                 </Box>
 
                 {/* Start */}
-                <FormLabel>Start Time (Example: 20:00:00)</FormLabel>
+                <FormLabel>Start Time (Example: 09:00)</FormLabel>
                 <Controller
                     name="start"
                     control={control}
@@ -243,7 +244,7 @@ export default function CreatePartRidePage() {
                 />
 
                 {/* End */}
-                <FormLabel>End Time (Example: 05:00:00)</FormLabel>
+                <FormLabel>End Time (Example: 21:00)</FormLabel>
                 <Controller
                     name="end"
                     control={control}
@@ -260,29 +261,40 @@ export default function CreatePartRidePage() {
                 />
                 {!isDriverRole && (
                     <>
-                        <FormLabel>Correction time</FormLabel>
+                        {/* driverId as MUI Autocomplete */}
+                        <FormLabel>Driver</FormLabel>
                         <Controller
-                            name="hoursCorrection"
+                            name="driverId"
                             control={control}
                             render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.hoursCorrection}
-                                    helperText={errors.hoursCorrection?.message}
+                                <Autocomplete
+                                    options={driversData || []}
+                                    loading={isLoadingDrivers}
+                                    getOptionLabel={(option) => `${option.user.firstName} ${option.user.lastName}`}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                    value={driversData?.find((dr) => dr.id === field.value) || null}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant="outlined"
+                                            margin="normal"
+                                            error={!!errors.driverId}
+                                            helperText={errors.driverId?.message}
+                                        />
+                                    )}
                                 />
                             )}
                         />
                     </>
                 )}
+
                 {!isDriverRole && (
                     <>
-                        <Accordion expanded={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)}>
+                        <Accordion expanded={showSpecialHoursAccordion}
+                                   onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
-                                <Typography fontWeight="bold">Special hours</Typography>
+                                <Typography>Special hours</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 {/* HOURS CODE FIELD */}
@@ -339,314 +351,318 @@ export default function CreatePartRidePage() {
                         </Accordion>
                     </>
                 )}
-                {/* kilometers */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Kilometers</FormLabel>
-                        <Controller
-                            name="kilometers"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.kilometers}
-                                    helperText={errors.kilometers?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* costs */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Costs</FormLabel>
-                        <Controller
-                            name="costs"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.costs}
-                                    helperText={errors.costs?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* weekNumber */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Week Number</FormLabel>
-                        <Controller
-                            name="weekNumber"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.weekNumber}
-                                    helperText={errors.weekNumber?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* costsDescription */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Costs Description</FormLabel>
-                        <Controller
-                            name="costsDescription"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.costsDescription}
-                                    helperText={errors.costsDescription?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* turnover */}
-                {!isDriverRole && (
-                    <>
-                        <FormLabel>Turnover</FormLabel>
-                        <Controller
-                            name="turnover"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.turnover}
-                                    helperText={errors.turnover?.message}
-                                />
-                            )}
-                        />
-                    </>
-                )}
-
-                {/* remark */}
-                <FormLabel>Remark</FormLabel>
-                <Controller
-                    name="remark"
-                    control={control}
-                    render={({field}) => (
-                        <TextField
-                            {...field}
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            error={!!errors.remark}
-                            helperText={errors.remark?.message}
-                        />
-                    )}
-                />
-
-                {/* If user is a driver => prefill or hide. Otherwise show. */}
-                {!isDriverRole && (
-                    <>
-                        {/* companyId as MUI Autocomplete */}
-                        <FormLabel>Company</FormLabel>
-                        <Controller
-                            name="companyId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={companiesData?.data || []}
-                                    getOptionLabel={(option) => option.name}
-                                    loading={isLoadingCompanies}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => {
-                                        const newCompanyId = newValue?.id || '';
-                                        field.onChange(newCompanyId); // Update form state
-                                        setSelectedCompanyId(newCompanyId); // Update local state for fetching cars
-                                    }} value={companiesData?.data.find((co) => co.id === field.value) || null}
-                                    renderInput={(params) => (
+                <Accordion expanded={showAdditionalFieldsAccordion}
+                           onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon/>}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                    >
+                        <Typography component="span">Additional inputs</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {!isDriverRole && (
+                            <>
+                                <FormLabel>Correction time</FormLabel>
+                                <Controller
+                                    name="hoursCorrection"
+                                    control={control}
+                                    render={({field}) => (
                                         <TextField
-                                            {...params}
+                                            {...field}
+                                            type="number"
                                             variant="outlined"
+                                            fullWidth
                                             margin="normal"
-                                            error={!!errors.companyId}
-                                            helperText={errors.companyId?.message}
+                                            error={!!errors.hoursCorrection}
+                                            helperText={errors.hoursCorrection?.message}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-
-                        {/* clientId as MUI Autocomplete */}
-                        <FormLabel>Client</FormLabel>
-                        <Controller
-                            name="clientId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={clientsData?.data || []}
-                                    loading={isLoadingClients}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => {
-                                        const newClientId = newValue?.id || '';
-                                        field.onChange(newClientId); // Update form state
-                                        setSelectedClientId(newClientId); // Update local state for fetching related data
-                                    }} value={clientsData?.data.find((cl) => cl.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.clientId}
-                                            helperText={errors.clientId?.message}
+                            </>
+                        )}
+                        {/* If user is a driver => prefill or hide. Otherwise show. */}
+                        {!isDriverRole && (
+                            <>
+                                {/* companyId as MUI Autocomplete */}
+                                <FormLabel>Company</FormLabel>
+                                <Controller
+                                    name="companyId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={companiesData?.data || []}
+                                            getOptionLabel={(option) => option.name}
+                                            loading={isLoadingCompanies}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => {
+                                                const newCompanyId = newValue?.id || '';
+                                                field.onChange(newCompanyId); // Update form state
+                                                setSelectedCompanyId(newCompanyId); // Update local state for fetching cars
+                                            }} value={companiesData?.data.find((co) => co.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.companyId}
+                                                    helperText={errors.companyId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
+                                {/* kilometers */}
+                                {!isDriverRole && (
+                                    <>
+                                        <FormLabel>Extra Kilometers</FormLabel>
+                                        <Controller
+                                            name="kilometers"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    error={!!errors.kilometers}
+                                                    helperText={errors.kilometers?.message}
+                                                />
+                                            )}
+                                        />
+                                    </>
+                                )}
 
-                        {/* driverId as MUI Autocomplete */}
-                        <FormLabel>Driver</FormLabel>
-                        <Controller
-                            name="driverId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={driversData || []}
-                                    loading={isLoadingDrivers}
-                                    getOptionLabel={(option) => `${option.user.firstName} ${option.user.lastName}`}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={driversData?.find((dr) => dr.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.driverId}
-                                            helperText={errors.driverId?.message}
+                                {/* weekNumber */}
+                                {!isDriverRole && (
+                                    <>
+                                        <FormLabel>Week Number</FormLabel>
+                                        <Controller
+                                            name="weekNumber"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    error={!!errors.weekNumber}
+                                                    helperText={errors.weekNumber?.message}
+                                                />
+                                            )}
+                                        />
+                                    </>
+                                )}
+                                {/* costs */}
+                                {!isDriverRole && (
+                                    <>
+                                        <FormLabel>Costs</FormLabel>
+                                        <Controller
+                                            name="costs"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    error={!!errors.costs}
+                                                    helperText={errors.costs?.message}
+                                                />
+                                            )}
+                                        />
+                                    </>
+                                )}
+
+
+                                {/* costsDescription */}
+                                {!isDriverRole && (
+                                    <>
+                                        <FormLabel>Costs Description</FormLabel>
+                                        <Controller
+                                            name="costsDescription"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    error={!!errors.costsDescription}
+                                                    helperText={errors.costsDescription?.message}
+                                                />
+                                            )}
+                                        />
+                                    </>
+                                )}
+
+                                {/* clientId as MUI Autocomplete */}
+                                <FormLabel>Client</FormLabel>
+                                <Controller
+                                    name="clientId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={clientsData?.data || []}
+                                            loading={isLoadingClients}
+                                            getOptionLabel={(option) => option.name}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => {
+                                                const newClientId = newValue?.id || '';
+                                                field.onChange(newClientId); // Update form state
+                                                setSelectedClientId(newClientId); // Update local state for fetching related data
+                                            }} value={clientsData?.data.find((cl) => cl.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.clientId}
+                                                    helperText={errors.clientId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
 
-                        {/* carId as MUI Autocomplete */}
-                        <FormLabel>Car</FormLabel>
-                        <Controller
-                            name="carId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={carsData?.cars || []}
-                                    loading={isLoadingCars}
-                                    getOptionLabel={(option) => option.licensePlate}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={carsData?.cars.find((ca) => ca.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.carId}
-                                            helperText={errors.carId?.message}
+                                {/* carId as MUI Autocomplete */}
+                                <FormLabel>Car</FormLabel>
+                                <Controller
+                                    name="carId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={carsData?.cars || []}
+                                            loading={isLoadingCars}
+                                            getOptionLabel={(option) => option.licensePlate}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                            value={carsData?.cars.find((ca) => ca.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.carId}
+                                                    helperText={errors.carId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
 
-                        {/* rideId as MUI Autocomplete */}
-                        <FormLabel>Ride</FormLabel>
-                        <Controller
-                            name="rideId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={ridesData?.data || []}
-                                    loading={isLoadingRides}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.rideId}
-                                            helperText={errors.rideId?.message}
+                                {/* rideId as MUI Autocomplete */}
+                                <FormLabel>Ride</FormLabel>
+                                <Controller
+                                    name="rideId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={ridesData?.data || []}
+                                            loading={isLoadingRides}
+                                            getOptionLabel={(option) => option.name}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                            value={ridesData?.data.find((ri) => ri.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.rideId}
+                                                    helperText={errors.rideId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
 
-                        {/* charterId as MUI Autocomplete */}
-                        <FormLabel>Charter</FormLabel>
-                        <Controller
-                            name="charterId"
-                            control={control}
-                            render={({field}) => (
-                                <Autocomplete
-                                    options={chartersData?.data || []}
-                                    loading={isLoadingCharters}
-                                    getOptionLabel={(option) => option.name}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                    value={chartersData?.data.find((ch) => ch.id === field.value) || null}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            margin="normal"
-                                            error={!!errors.charterId}
-                                            helperText={errors.charterId?.message}
+                                {/* charterId as MUI Autocomplete */}
+                                <FormLabel>Charter</FormLabel>
+                                <Controller
+                                    name="charterId"
+                                    control={control}
+                                    render={({field}) => (
+                                        <Autocomplete
+                                            options={chartersData?.data || []}
+                                            loading={isLoadingCharters}
+                                            getOptionLabel={(option) => option.name}
+                                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
+                                            value={chartersData?.data.find((ch) => ch.id === field.value) || null}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    error={!!errors.charterId}
+                                                    helperText={errors.charterId?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-                        <FormLabel>Various Compensation</FormLabel>
-                        <Controller
-                            name="variousCompensation"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.variousCompensation}
-                                    helperText={errors.variousCompensation?.message}
+                                <FormLabel>Various Compensation</FormLabel>
+                                <Controller
+                                    name="variousCompensation"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            type="number"
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            error={!!errors.variousCompensation}
+                                            helperText={errors.variousCompensation?.message}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    </>
-                )}
+                                {/* turnover */}
+                                {!isDriverRole && (
+                                    <>
+                                        <FormLabel>Turnover</FormLabel>
+                                        <Controller
+                                            name="turnover"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    error={!!errors.turnover}
+                                                    helperText={errors.turnover?.message}
+                                                />
+                                            )}
+                                        />
+                                    </>
+                                )}
+                                {/* remark */}
+                                <FormLabel>Remark</FormLabel>
+                                <Controller
+                                    name="remark"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            error={!!errors.remark}
+                                            helperText={errors.remark?.message}
+                                        />
+                                    )}
+                                />
+                            </>
+                        )}
+                    </AccordionDetails>
+                </Accordion>
+
 
                 <Box mt={3}>
                     <Button
@@ -661,5 +677,6 @@ export default function CreatePartRidePage() {
                 </Box>
             </form>
         </Box>
-    );
+    )
+        ;
 }
