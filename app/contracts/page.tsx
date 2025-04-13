@@ -37,7 +37,7 @@ export default function ContractsPage() {
     }, [authLoading, isAuthenticated, router]);
 
     // Pagination + filters
-    const [pageNumber, setPageNumber] = useState(1);
+    const [pageNumber, setPageNumber] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [driverId, setDriverId] = useState('');
     const [companyId, setCompanyId] = useState('');
@@ -48,7 +48,7 @@ export default function ContractsPage() {
 
     // Main query
     const { data, isLoading, isError, error } = useEmployeeContracts(
-        pageNumber,
+        pageNumber + 1,
         pageSize,
         driverId,
         companyId
@@ -124,6 +124,7 @@ export default function ContractsPage() {
                     <TableHead>
                         <TableRow>
                             <TableCell>Contract ID</TableCell>
+                            <TableCell>Contract Employee</TableCell>
                             <TableCell>Driver Name</TableCell>
                             <TableCell>Company Name</TableCell>
                         </TableRow>
@@ -137,6 +138,7 @@ export default function ContractsPage() {
                                 style={{ cursor: 'pointer' }}
                             >
                                 <TableCell>{contract.id}</TableCell>
+                                <TableCell>{contract.employeeFirstName + " " + contract.employeeLastName}</TableCell>
                                 <TableCell>{contract.driver.fullName}</TableCell>
                                 <TableCell>{contract.company.name}</TableCell>
                             </TableRow>

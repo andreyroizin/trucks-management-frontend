@@ -7,7 +7,8 @@ export type EmployeeContract = {
     id: string;
     driver: { id: string; fullName: string; aspNetUserId: string };
     company: { id: string; name: string };
-    // ...other fields
+    employeeFirstName: string,
+    employeeLastName: string,
 };
 
 export type PaginatedContractsResponse = {
