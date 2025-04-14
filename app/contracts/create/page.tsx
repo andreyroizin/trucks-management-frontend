@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import {
     Box,
     Typography,
@@ -15,20 +15,22 @@ import {
     Checkbox
 } from '@mui/material';
 import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 
-import { useAuth } from '@/hooks/useAuth';
-import { useDrivers } from '@/hooks/useDrivers';
-import { useCompanies } from '@/hooks/useCompanies';
+import {useAuth} from '@/hooks/useAuth';
+import {useDrivers} from '@/hooks/useDrivers';
+import {useCompanies} from '@/hooks/useCompanies';
 
-import { useCreateEmployeeContract, CreateEmployeeContractInput } from '@/hooks/useCreateEmployeeContract';
+import {useCreateEmployeeContract, CreateEmployeeContractInput} from '@/hooks/useCreateEmployeeContract';
 
 // React Hook Form + Yup
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 // --- VALIDATION SCHEMA ---
 const createContractSchema = yup.object().shape({
@@ -39,8 +41,12 @@ const createContractSchema = yup.object().shape({
 });
 
 export default function CreateEmployeeContractPage() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const AMSTERDAM_TZ = 'Europe/Amsterdam';
+
     const router = useRouter();
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const {isAuthenticated, loading: authLoading} = useAuth();
 
     // Restrict access
     useEffect(() => {
@@ -50,15 +56,15 @@ export default function CreateEmployeeContractPage() {
     }, [authLoading, isAuthenticated, router]);
 
     // Fetch data
-    const { data: driversData, isLoading: loadingDrivers } = useDrivers();
-    const { data: companiesData, isLoading: loadingCompanies } = useCompanies();
+    const {data: driversData, isLoading: loadingDrivers} = useDrivers();
+    const {data: companiesData, isLoading: loadingCompanies} = useCompanies();
 
     // React Hook Form
     const {
         handleSubmit,
         control,
         setValue,
-        formState: { errors },
+        formState: {errors},
     } = useForm<CreateEmployeeContractInput>({
         resolver: yupResolver(createContractSchema),
         defaultValues: {
@@ -87,7 +93,7 @@ export default function CreateEmployeeContractPage() {
         },
     });
 
-    const { mutateAsync: createContract, isPending } = useCreateEmployeeContract();
+    const {mutateAsync: createContract, isPending} = useCreateEmployeeContract();
     const [apiError, setApiError] = React.useState<string | null>(null);
 
     // On Submit
@@ -105,7 +111,7 @@ export default function CreateEmployeeContractPage() {
     if (authLoading || loadingDrivers || loadingCompanies) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="70vh">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -148,7 +154,7 @@ export default function CreateEmployeeContractPage() {
                 </Typography>
 
                 {apiError && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
+                    <Alert severity="error" sx={{mb: 2}}>
                         {apiError}
                     </Alert>
                 )}
@@ -157,7 +163,7 @@ export default function CreateEmployeeContractPage() {
                 <Box
                     sx={{
                         display: 'grid',
-                        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                        gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'},
                         gap: 2,
                         maxWidth: 1000,
                         width: '100%',
@@ -169,10 +175,10 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="driverId"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <Autocomplete
                                     options={driversData || []}
-                                    isOptionEqualToValue={(option, value) => option.id === value}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
                                     getOptionLabel={(option) =>
                                         option.user?.firstName + ' ' + option.user?.lastName
                                     }
@@ -195,7 +201,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="commuteKilometers"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Commute Kilometers"
@@ -209,7 +215,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employeeFirstName"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employee First Name *"
@@ -226,7 +232,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employeeLastName"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employee Last Name *"
@@ -243,23 +249,25 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="dateOfBirth"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <DesktopDatePicker
                                     label="Date of Birth"
-                                    value={field.value ? dayjs(field.value) : null}
+                                    value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
                                     onChange={(newVal) => {
                                         if (newVal) {
-                                            field.onChange(newVal.startOf('day').toISOString());
+                                            const utcMidnight = dayjs.utc(newVal).startOf('day').toISOString();
+                                            field.onChange(utcMidnight);
                                         } else {
                                             field.onChange(null);
                                         }
                                     }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            helperText="YYYY-MM-DD (optional)"
-                                        />
-                                    )}
+                                    format="DD-MM-YYYY"
+                                    slotProps={{
+                                        textField: {
+                                            helperText: "DD-MM-YYYY",
+                                            fullWidth: true,
+                                        }
+                                    }}
                                 />
                             )}
                         />
@@ -268,7 +276,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="bsn"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="BSN"
@@ -281,23 +289,25 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="dateOfEmployment"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <DesktopDatePicker
                                     label="Date of Employment"
-                                    value={field.value ? dayjs(field.value) : null}
+                                    value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
                                     onChange={(newVal) => {
                                         if (newVal) {
-                                            field.onChange(newVal.startOf('day').toISOString());
+                                            const utcMidnight = dayjs.utc(newVal).startOf('day').toISOString();
+                                            field.onChange(utcMidnight);
                                         } else {
                                             field.onChange(null);
                                         }
                                     }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            helperText="Start date (optional)"
-                                        />
-                                    )}
+                                    format="DD-MM-YYYY"
+                                    slotProps={{
+                                        textField: {
+                                            helperText: "Start date (optional)",
+                                            fullWidth: true,
+                                        }
+                                    }}
                                 />
                             )}
                         />
@@ -306,23 +316,26 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="lastWorkingDay"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <DesktopDatePicker
                                     label="Last Working Day"
-                                    value={field.value ? dayjs(field.value) : null}
+                                    value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
                                     onChange={(newVal) => {
                                         if (newVal) {
-                                            field.onChange(newVal.startOf('day').toISOString());
+                                            const utcMidnight = dayjs.utc(newVal).startOf('day').toISOString();
+                                            field.onChange(utcMidnight);
                                         } else {
                                             field.onChange(null);
                                         }
                                     }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            helperText="If applicable"
-                                        />
-                                    )}
+                                    format="DD-MM-YYYY"
+                                    slotProps={{
+                                        textField: {
+                                            helperText: "If applicable",
+                                            fullWidth: true,
+                                            margin: "normal"
+                                        }
+                                    }}
                                 />
                             )}
                         />
@@ -331,7 +344,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employeeAddress"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employee Address"
@@ -344,7 +357,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employeePostcode"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employee Postcode"
@@ -357,7 +370,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employeeCity"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employee City"
@@ -370,7 +383,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="function"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Function/Role"
@@ -383,7 +396,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="probationPeriod"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Probation Period"
@@ -396,7 +409,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="workweekDuration"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Workweek (hrs)"
@@ -410,7 +423,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="weeklySchedule"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Weekly Schedule"
@@ -423,7 +436,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="workingHours"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Working Hours"
@@ -436,7 +449,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="noticePeriod"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Notice Period"
@@ -448,9 +461,9 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="nightHoursAllowed"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormControlLabel
-                                    sx={{ mt: 1 }}
+                                    sx={{mt: 1}}
                                     control={
                                         <Checkbox
                                             checked={field.value ?? false}
@@ -469,7 +482,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyId"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <Autocomplete
                                     options={companiesData?.data || []}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -499,7 +512,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyName"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company Name *"
@@ -516,7 +529,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="employerName"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Employer Name *"
@@ -533,7 +546,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyAddress"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company Address"
@@ -546,7 +559,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyPostcode"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company Postcode"
@@ -559,7 +572,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyCity"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company City"
@@ -572,7 +585,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyPhoneNumber"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company Phone"
@@ -585,7 +598,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyBtw"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company BTW"
@@ -598,7 +611,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="companyKvk"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Company KVK"
@@ -611,7 +624,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="compensationPerMonthExclBtw"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Compensation/Month Excl BTW"
@@ -625,7 +638,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="compensationPerMonthInclBtw"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Compensation/Month Incl BTW"
@@ -639,7 +652,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="payScale"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     select
@@ -659,7 +672,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="payScaleStep"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     select
@@ -679,7 +692,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="hourlyWage100Percent"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Hourly Wage (100%)"
@@ -693,7 +706,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="deviatingWage"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Deviating Wage"
@@ -707,9 +720,9 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="kilometersAllowanceAllowed"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormControlLabel
-                                    sx={{ mt: 1 }}
+                                    sx={{mt: 1}}
                                     control={
                                         <Checkbox
                                             checked={field.value ?? false}
@@ -725,7 +738,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="travelExpenses"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Travel Expenses"
@@ -739,7 +752,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="maxTravelExpenses"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Max Travel Expenses"
@@ -753,7 +766,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="vacationAge"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Vacation Age"
@@ -767,7 +780,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="vacationDays"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Vacation Days"
@@ -781,7 +794,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="atv"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="ATV"
@@ -795,7 +808,7 @@ export default function CreateEmployeeContractPage() {
                         <Controller
                             name="vacationAllowance"
                             control={control}
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     label="Vacation Allowance (%)"
@@ -815,7 +828,7 @@ export default function CreateEmployeeContractPage() {
                         disabled={isPending}
                         fullWidth
                     >
-                        {isPending ? <CircularProgress size={20} color="inherit" /> : 'Create Contract'}
+                        {isPending ? <CircularProgress size={20} color="inherit"/> : 'Create Contract'}
                     </Button>
                 </Box>
             </Box>
