@@ -41,6 +41,7 @@ export default function ContractsPage() {
     const [pageSize, setPageSize] = useState(10);
     const [driverId, setDriverId] = useState('');
     const [companyId, setCompanyId] = useState('');
+    console.log(pageNumber)
 
     // Fetch data for drivers + companies
     const { data: driversData, isLoading: loadingDrivers } = useDrivers();
@@ -93,7 +94,7 @@ export default function ContractsPage() {
                     value={selectedDriver}
                     onChange={(_, newValue) => {
                         setDriverId(newValue?.id || '');
-                        setPageNumber(1); // reset pagination
+                        setPageNumber(0); // reset pagination
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     renderInput={(params) => (
@@ -109,7 +110,7 @@ export default function ContractsPage() {
                     value={selectedCompany}
                     onChange={(_, newValue) => {
                         setCompanyId(newValue?.id || '');
-                        setPageNumber(1);
+                        setPageNumber(0);
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     renderInput={(params) => (
