@@ -89,7 +89,7 @@ export default function ContractDetailPage() {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h5">Contract Detail</Typography>
                 <Box display="flex" gap={2}>
-                    <Link href={`/contracts/edit?id=${contract.id}`} passHref>
+                    <Link href={`/contracts/edit/${contract.id}`} passHref>
                         <Button variant="contained" color="primary">
                             Edit
                         </Button>
@@ -113,7 +113,7 @@ export default function ContractDetailPage() {
                             <TableCell><strong>Driver</strong></TableCell>
                             <TableCell>
                                 {contract.driver ? (
-                                    <Link href={`/drivers/${contract.driver.id}`}>
+                                    <Link href={`/drivers/${contract.driver.aspNetUserId}`}>
                                         {contract.driver.fullName}
                                     </Link>
                                 ) : 'N/A'}
