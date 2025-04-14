@@ -122,8 +122,8 @@ export default function CreateEmployeeContractPage() {
         setValue('driverId', driverId);
         const foundDriver = driversData?.find((d) => d.id === driverId);
         if (foundDriver?.user) {
-            setValue('employeeFirstName', foundDriver.user.firstName || '');
-            setValue('employeeLastName', foundDriver.user.lastName || '');
+            setValue('employeeFirstName', String(foundDriver.user.firstName || ''));
+            setValue('employeeLastName', String(foundDriver.user.lastName || ''));
         }
     };
 
@@ -224,6 +224,7 @@ export default function CreateEmployeeContractPage() {
                                         errors.employeeFirstName?.message ||
                                         'This is a required field'
                                     }
+                                    value={field.value ?? ''}
                                 />
                             )}
                         />
@@ -241,6 +242,7 @@ export default function CreateEmployeeContractPage() {
                                         errors.employeeLastName?.message ||
                                         'This is a required field'
                                     }
+                                    value={field.value ?? ''}
                                 />
                             )}
                         />
@@ -521,6 +523,7 @@ export default function CreateEmployeeContractPage() {
                                         errors.companyName?.message ||
                                         'Required company name'
                                     }
+                                    value={field.value ?? ''}
                                 />
                             )}
                         />
