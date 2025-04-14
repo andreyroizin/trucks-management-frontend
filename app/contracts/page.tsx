@@ -140,8 +140,8 @@ export default function ContractsPage() {
                             >
                                 <TableCell>{contract.id}</TableCell>
                                 <TableCell>{contract.employeeFirstName + " " + contract.employeeLastName}</TableCell>
-                                <TableCell>{contract.driver.fullName}</TableCell>
-                                <TableCell>{contract.company.name}</TableCell>
+                                <TableCell>{contract.driver?.fullName}</TableCell>
+                                <TableCell>{contract.company?.name}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
