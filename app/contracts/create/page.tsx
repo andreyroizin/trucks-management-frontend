@@ -122,8 +122,8 @@ export default function CreateEmployeeContractPage() {
         setValue('driverId', driverId);
         const foundDriver = driversData?.find((d) => d.id === driverId);
         if (foundDriver?.user) {
-            setValue('employeeFirstName', String(foundDriver.user.firstName || ''));
-            setValue('employeeLastName', String(foundDriver.user.lastName || ''));
+            setValue('employeeFirstName', foundDriver.user.firstName || '');
+            setValue('employeeLastName', foundDriver.user.lastName || '');
         }
     };
 
