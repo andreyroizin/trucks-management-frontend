@@ -26,6 +26,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
+    "react-signature-canvas": "^1.1.0-alpha.2",
     "timezone-support": "^3.1.0",
     "yup": "^1.6.1"
   },
