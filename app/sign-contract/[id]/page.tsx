@@ -18,6 +18,7 @@ import type {SignatureCanvasProps, SignatureCanvas} from 'react-signature-canvas
 
 import {usePublicContractDetail} from '@/hooks/usePublicContractDetail';
 import {useSignPublicContract} from '@/hooks/useSignPublicContract';
+import {generateContractPdf} from "@/utils/pdf/generateContractPdf";
 
 // We must dynamically import SignatureCanvas in Next.js
 const SignatureCanvasComponent = dynamic(
@@ -38,7 +39,8 @@ function SignContractPageInner() {
     const [userCode, setUserCode] = useState('');
     const [usingUrlCode, setUsingUrlCode] = useState(!!codeFromUrl);
     const [manuallyAsked, setManuallyAsked] = useState(false);
-
+    const signatureRef = useRef<SignatureCanvas | null>(null);
+    const contractRef = useRef<HTMLDivElement>(null);
     // Attempt to fetch contract with code if usingUrlCode or if user pressed "View"
     const canFetch = (usingUrlCode && codeFromUrl) || (!usingUrlCode && accessCode);
 
@@ -66,8 +68,6 @@ function SignContractPageInner() {
     const {mutateAsync: signContract, isPending: signing} = useSignPublicContract();
     const [agree, setAgree] = useState(false);
 
-    const signatureRef = useRef<SignatureCanvas | null>(null);
-
     const handleSign = async () => {
         if (!signatureRef.current) {
             alert('No signature pad found');
@@ -84,16 +84,32 @@ function SignContractPageInner() {
         }
         const signature = signatureRef.current.toDataURL();
 
-        try {
-            await signContract({
-                contractId,
-                accessCode,
-                signature,
-            });
-            alert('Contract signed successfully!');
-        } catch (err: any) {
-            alert(err.message || 'Error signing contract');
+        if (!contractRef.current) {
+            alert('Contract is not rendered yet.');
+            return;
         }
+
+        const pdfBlob = await generateContractPdf(contractRef.current);
+
+        // ✅ Create a temporary download link and trigger it
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'signed-contract.pdf';
+        a.click();
+        URL.revokeObjectURL(url); // Clean up
+
+        // try {
+        //     await signContract({
+        //         contractId,
+        //         accessCode,
+        //         signature,
+        //         pdfFile: pdfBlob
+        //     });
+        //     alert('Contract signed successfully!');
+        // } catch (err: any) {
+        //     alert(err.message || 'Error signing contract');
+        // }
     };
 
     const handleClearSignature = () => {
@@ -163,7 +179,7 @@ function SignContractPageInner() {
     // Show the contract "on paper" with signature
     return (
         <Box maxWidth="700px" mx="auto" mt={4} mb={4}>
-            <Paper sx={{p: 2}}>
+            <Paper sx={{p: 2}} ref={contractRef}>
                 <Typography variant="h4" mb={2} align="center">
                     Employment Contract
                 </Typography>
@@ -184,10 +200,11 @@ function SignContractPageInner() {
                     <strong>Function: </strong>
                     {contractData.function || 'N/A'}
                 </Typography>
-                {/* ... Add all relevant fields similarly ... */}
+
+                {/* Use below page breaker to break the page and add a new one */}
+                {/*<div className="pdf-page-break" />   /!* <‑‑ forced break *!/*/}
 
                 {/* Show signature button or pad */}
-
                 <>
                     <Box mt={2}>
                         <Typography>Please sign below:</Typography>

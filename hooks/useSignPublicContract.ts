@@ -3,12 +3,29 @@ import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
 // --- SIGN FUNCTION ---
-async function signPublicContract(contractId: string, accessCode: string, signature: string): Promise<void> {
-    const res = await api.post<ApiResponse<null>>('/employee-contracts/sign', {
-        contractId,
-        accessCode,
-        signature,
-    });
+async function signPublicContract(
+    contractId: string,
+    accessCode: string,
+    signature: string,
+    pdfFile?: Blob
+): Promise<void> {
+    const formData = new FormData();
+    formData.append('contractId', contractId);
+    formData.append('accessCode', accessCode);
+    formData.append('signature', signature);
+
+    if (pdfFile) {
+        formData.append('file', pdfFile, 'signed-contract.pdf');
+    }
+
+    const res = await api.post<ApiResponse<null>>(
+        '/employee-contracts/sign',
+        formData,
+        {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        }
+    );
+
     if (!res.data.isSuccess) {
         throw new Error(res.data.errors?.[0] || 'Failed to sign contract');
     }
@@ -18,11 +35,22 @@ async function signPublicContract(contractId: string, accessCode: string, signat
 export function useSignPublicContract() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ contractId, accessCode, signature }: { contractId: string; accessCode: string; signature: string }) =>
-            signPublicContract(contractId, accessCode, signature),
+        mutationFn: ({
+                         contractId,
+                         accessCode,
+                         signature,
+                         pdfFile,
+                     }: {
+            contractId: string;
+            accessCode: string;
+            signature: string;
+            pdfFile?: Blob;
+        }) =>
+            signPublicContract(contractId, accessCode, signature, pdfFile),
         onSuccess: (_data, variables) => {
-            // Invalidate or refetch public contract detail so user sees updated status
-            queryClient.invalidateQueries({ queryKey: ['publicContractDetail', variables.contractId, variables.accessCode] });
+            queryClient.invalidateQueries({
+                queryKey: ['publicContractDetail', variables.contractId, variables.accessCode],
+            });
         },
     });
 }
