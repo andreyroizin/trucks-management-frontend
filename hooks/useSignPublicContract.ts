@@ -15,7 +15,7 @@ async function signPublicContract(
     formData.append('signature', signature);
 
     if (pdfFile) {
-        formData.append('file', pdfFile, 'signed-contract.pdf');
+        formData.append('PdfFile', pdfFile, 'signed-contract.pdf');
     }
 
     const res = await api.post<ApiResponse<null>>(
