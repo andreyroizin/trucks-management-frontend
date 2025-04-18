@@ -9,6 +9,7 @@ export type EmployeeContract = {
     company: { id: string; name: string };
     employeeFirstName: string,
     employeeLastName: string,
+    status: 0 | 1; // 0 = pending, 1 = signed
 };
 
 export type PaginatedContractsResponse = {

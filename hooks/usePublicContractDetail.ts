@@ -53,6 +53,7 @@ export type PublicContract = {
     companyPhoneNumber?: string | null;
     companyBtw?: string | null;
     companyKvk?: string | null;
+    status?: 0 | 1; // 0 = pending, 1 = signed
 };
 
 // --- FETCH FUNCTION ---

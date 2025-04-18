@@ -53,6 +53,9 @@ export type EmployeeContractDetail = {
     companyPhoneNumber?: string;
     companyBtw?: string;
     companyKvk?: string;
+    status?: 0 | 1; // 0 = pending, 1 = signed
+    signedAt?: string;
+    accessCode?: string;
 };
 
 // --- FETCH DETAIL ---
