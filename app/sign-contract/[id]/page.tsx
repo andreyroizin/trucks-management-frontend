@@ -91,14 +91,6 @@ function SignContractPageInner() {
 
         const pdfBlob = await generateContractPdf(contractRef.current);
 
-        // // ✅ Create a temporary download link and trigger it
-        // const url = URL.createObjectURL(pdfBlob);
-        // const a = document.createElement('a');
-        // a.href = url;
-        // a.download = 'signed-contract.pdf';
-        // a.click();
-        // URL.revokeObjectURL(url); // Clean up
-
         try {
             await signContract({
                 contractId,
