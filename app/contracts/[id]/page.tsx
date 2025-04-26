@@ -17,11 +17,13 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import dayjs from 'dayjs';
+import { downloadBase64Pdf } from '@/utils/downloadBlob';
 
 import {useAuth} from '@/hooks/useAuth';
 import {useEmployeeContractDetail} from '@/hooks/useEmployeeContractDetail';
 import {useDeleteEmployeeContract} from "@/hooks/useDeleteEmployeeContract";
 import ConfirmModal from '@/components/ConfirmModal';
+import {useDownloadContract} from "@/hooks/useDownloadContract";
 
 export default function ContractDetailPage() {
     const router = useRouter();
@@ -42,6 +44,10 @@ export default function ContractDetailPage() {
         isError,
         error,
     } = useEmployeeContractDetail(id as string);
+    const { mutateAsync: downloadContract, isPending: downloading } =
+        useDownloadContract();
+
+    const contractSigned = contract?.status === 1;
 
     // 3) Deletion
     const {mutateAsync: deleteContract, isPending} = useDeleteEmployeeContract();
@@ -56,6 +62,22 @@ export default function ContractDetailPage() {
             router.push('/contracts'); // Return to listing
         } catch (err: any) {
             setDeleteError(err.message || 'Failed to delete contract');
+        }
+    };
+
+    const handleContractDownload = async () => {
+        try {
+            if (!contract?.accessCode) {
+                throw new Error('Missing access code');
+            }
+            const res = await downloadContract({
+                id: contract.id,
+                access: contract.accessCode,
+            });
+
+            downloadBase64Pdf(res.contentBase64, contract?.employeeFirstName + '-' +  contract?.employeeLastName + '-' + res.fileName);
+        } catch (err: any) {
+            alert(err.message || 'Download failed');
         }
     };
 
@@ -89,6 +111,15 @@ export default function ContractDetailPage() {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h5">Contract Detail</Typography>
                 <Box display="flex" gap={2}>
+                    {contractSigned && (
+                        <Button
+                            variant="outlined"
+                            disabled={downloading}
+                            onClick={handleContractDownload}
+                        >
+                            {downloading ? 'Downloading…' : 'Download Signed Contract'}
+                        </Button>
+                    )}
                     <Link href={`/contracts/edit/${contract.id}`} passHref>
                         <Button variant="contained" color="primary">
                             Edit
@@ -131,7 +162,23 @@ export default function ContractDetailPage() {
                                 ) : 'N/A'}
                             </TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell><strong>Contract status</strong></TableCell>
+                            <TableCell>{contractSigned ? 'Signed' : 'Pending'}</TableCell>
+                        </TableRow>
 
+                        <TableRow>
+                            <TableCell><strong>Contract signed on</strong></TableCell>
+                            <TableCell>
+                                {contract.signedAt
+                                    ? dayjs(contract.signedAt).format('DD-MM-YYYY HH:mm')
+                                    : 'N/A'}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell><strong>Contract access code</strong></TableCell>
+                            <TableCell>{contract.accessCode || 'N/A'}</TableCell>
+                        </TableRow>
                         {/* releaseVersion */}
                         <TableRow>
                             <TableCell><strong>Release Version</strong></TableCell>
