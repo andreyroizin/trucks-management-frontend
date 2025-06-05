@@ -236,8 +236,11 @@ export default function CurrentPeriod() {
                     </Box>
                 ))}
 
+            <RoundedButton label="View Pending Periods" colorType="gray"
+                           onClick={() => router.push('/periods/driver/pending')}/>
+
             <RoundedButton label="View Older Periods" colorType="gray"
-                           onClick={() => router.push('/workdays/history')}/>
+                           onClick={() => router.push('/periods/driver/archived')}/>
         </Box>
     );
 }
