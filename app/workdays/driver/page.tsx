@@ -144,7 +144,7 @@ export default function MyWorkdaysPage() {
             )}
             {period.status === 3 && (
                 <>
-                    <Typography variant="body2" mb={3}>
+                    <Typography variant="body2" mb={0}>
                         This period was changed after being signed. Please review and re-sign if necessary.
                     </Typography>
                     <RoundedButton
