@@ -1,30 +1,15 @@
 'use client';
 
 import React, {useEffect} from 'react';
-import {
-    Box,
-    Typography,
-    CircularProgress,
-    Alert,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-    Chip,
-    Divider,
-    Table,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-} from '@mui/material';
+import {Alert, Box, Chip, CircularProgress, Typography,} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import dayjs from 'dayjs';
 import {useRouter} from 'next/navigation';
 
 import {useAuth} from '@/hooks/useAuth';
 import {useCurrentDriverPeriod} from '@/hooks/useCurrentDriverPeriod';
 import RoundedButton from "@/components/RoundedButton";
+import PeriodWeekAccordionList from "@/components/PeriodWeekAccordionList";
 
 /* ---------- mapping helpers ---------- */
 const periodStatus = (s: number) =>
@@ -40,21 +25,6 @@ const periodColor = (s: number) =>
             : s === 2 ? 'success'
                 : s === 3 ? 'error'
                     : 'warning';
-
-const approvalLabel = (s?: number) =>
-    s === 0 ? 'Pending'
-        : s === 1 ? 'Changes'
-            : s === 2 ? 'Approved'
-                : s === 3 ? 'Rejected'
-                    : 'Unknown';
-
-const approvalColor = (s?: number) =>
-    s === 0 ? 'default'
-        : s === 1 ? 'warning'
-            : s === 2 ? 'success'
-                : s === 3 ? 'error'
-                    : 'default';
-/* ------------------------------------- */
 
 export default function CurrentPeriod() {
     const router = useRouter();
@@ -159,82 +129,7 @@ export default function CurrentPeriod() {
                 </>
             )}
 
-            {period.weeks
-                .sort((a, b) => b.weekInPeriod - a.weekInPeriod)
-                .map((week, index) => (
-                    <Box key={week.weekInPeriod}>
-                        <Accordion
-                            disableGutters
-                            elevation={0}
-                            square
-                            sx={{
-                                border: 'none',
-                                '&:before': {display: 'none'},
-                            }}
-                        >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={{px: 0}}>
-                                <Box>
-                                    <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {week.totalDecimalHours} hours worked
-                                    </Typography>
-                                </Box>
-                            </AccordionSummary>
-
-                            <AccordionDetails sx={{px: 0}}>
-                                {week.partRides.length === 0 ? (
-                                    <Typography color="text.secondary" px={2} pb={1}>
-                                        No records for this week.
-                                    </Typography>
-                                ) : (
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell sx={{fontWeight: 500}}>Date</TableCell>
-                                                <TableCell sx={{fontWeight: 500}}>Hours</TableCell>
-                                                <TableCell sx={{fontWeight: 500}}>Status</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {week.partRides.map((pr, prIndex) => {
-                                                const isLast = prIndex === week.partRides.length - 1;
-                                                return (
-                                                    <TableRow
-                                                        key={pr.id}
-                                                        hover
-                                                        sx={{cursor: 'pointer'}}
-                                                        onClick={() => router.push(`/partrides/${pr.id}`)}
-                                                    >
-                                                        <TableCell
-                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
-                                                        >
-                                                            {dayjs(pr.date).format('DD.MM.YY')}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
-                                                        >
-                                                            {pr.decimalHours.toString().replace('.', ',')} h.
-                                                        </TableCell>
-                                                        <TableCell
-                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
-                                                        >
-                                                            <Chip
-                                                                label={approvalLabel(pr.status)}
-                                                                size="small"
-                                                                color={approvalColor(pr.status)}
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                )}
-                            </AccordionDetails>
-                        </Accordion>
-                        {index !== period.weeks.length - 1 && <Divider/>}
-                    </Box>
-                ))}
+            <PeriodWeekAccordionList weeks={period.weeks} />
 
             <RoundedButton label="View Pending Periods" colorType="gray"
                            onClick={() => router.push('/periods/driver/pending')}/>
