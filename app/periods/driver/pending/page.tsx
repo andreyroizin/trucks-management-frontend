@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useArchivedDriverPeriods } from '@/hooks/useArchivedDriverPeriods';
 import DriverPeriodListContent from '@/components/DriverPeriodList';
+import {usePendingDriverPeriods} from "@/hooks/usePendingDriverPeriods";
 
 export default function ArchivedPeriodsPage() {
     const router = useRouter();
@@ -12,7 +13,7 @@ export default function ArchivedPeriodsPage() {
 
     const [page, setPage] = useState(1);
     const [size, setSize] = useState(10);
-    const { data, isLoading, isError, error } = useArchivedDriverPeriods(page, size);
+    const { data, isLoading, isError, error } = usePendingDriverPeriods(page, size);
 
     useEffect(() => {
         if (!loading && (!isAuthenticated || !user?.roles.some(r => ['driver', 'globalAdmin'].includes(r))))
@@ -21,8 +22,8 @@ export default function ArchivedPeriodsPage() {
 
     return (
         <DriverPeriodListContent
-            title="Archived Periods"
-            description="Browse your signed and completed work periods."
+            title="Pending Periods"
+            description="These periods are waiting for your approval."
             pagination={{
                 pageNumber: page,
                 pageSize: size,
