@@ -27,26 +27,27 @@ export default function DriverHomePage() {
     const name = user?.firstName ? `Hello, ${user.firstName} ${user.lastName}` : 'Hello';
 
     return (
-        <Box>
+        <Box pb={7}>
             <Box
                 sx={{
-                    backgroundColor: '#0b1e39',
+                    backgroundColor: '#0C203B',
                     color: 'white',
                     textAlign: 'center',
-                    py: 6,
-                    borderBottomLeftRadius: 16,
-                    borderBottomRightRadius: 16,
+                    py: 12,
+                    px: 4,
+                    mx: -4,
+                    mt: -2,
                 }}
             >
                 <Typography variant="h3" fontWeight={500}>
                     {name}
                 </Typography>
-                <Typography mt={2}>
+                <Typography mt={2} variant="body2">
                     Keep track of your workdays and add new ones when needed.
                 </Typography>
             </Box>
 
-            <Box mt={4} px={2} display="flex" flexDirection="column" gap={2}>
+            <Box mt={3} display="flex" flexDirection="column" gap={1.5}>
                 <DriverDashboardCardButton
                     title="Submit Workday"
                     subtitle="Register a new workday quickly and easily"
@@ -57,7 +58,7 @@ export default function DriverHomePage() {
                 <DriverDashboardCardButton
                     title="My Workdays"
                     subtitle="View and manage all your registered workdays"
-                    onClick={() => router.push('/workdays')}
+                    onClick={() => router.push('/periods/driver/current')}
                 />
                 <DriverDashboardCardButton
                     title="Disputes"

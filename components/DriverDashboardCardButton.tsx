@@ -24,8 +24,8 @@ export default function DriverDashboardCardButton({
             sx={{
                 p: 3,
                 borderRadius: 3,
-                backgroundColor: highlight ? '#005ca8' : '#f9f9f9',
-                color: highlight ? 'common.white' : '#005ca8',
+                backgroundColor: highlight ? '#02579b' : '#f9f9f9',
+                color: highlight ? 'common.white' : '#02579b',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
@@ -40,7 +40,7 @@ export default function DriverDashboardCardButton({
                 <Box
                     sx={{
                         backgroundColor: highlight ? 'white' : 'transparent',
-                        color: highlight ? '#005ca8' : 'inherit',
+                        color: highlight ? '#02579b' : 'inherit',
                         width: 40,
                         height: 40,
                         display: 'flex',
@@ -54,10 +54,10 @@ export default function DriverDashboardCardButton({
                 </Box>
             )}
             <Box>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h5" fontWeight={500}>
                     {title}
                 </Typography>
-                <Typography fontSize={14}>{subtitle}</Typography>
+                <Typography fontSize={14} variant="body2">{subtitle}</Typography>
             </Box>
         </Paper>
     );
