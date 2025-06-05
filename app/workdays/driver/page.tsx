@@ -130,7 +130,7 @@ export default function MyWorkdaysPage() {
                                 '&:before': {display: 'none'}, // removes default top border
                             }}
                         >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={{px:0}}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={{px: 0}}>
                                 <Box>
                                     <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
                                     <Typography variant="body2" color="text.secondary">
@@ -154,24 +154,37 @@ export default function MyWorkdaysPage() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {week.partRides.map(pr => (
-                                                <TableRow
-                                                    key={pr.id}
-                                                    hover
-                                                    sx={{cursor: 'pointer'}}
-                                                    onClick={() => router.push(`/partrides/${pr.id}`)}
-                                                >
-                                                    <TableCell>{dayjs(pr.date).format('DD.MM.YY')}</TableCell>
-                                                    <TableCell>{pr.decimalHours.toString().replace('.', ',')} h.</TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label={approvalLabel(pr.status)}
-                                                            size="small"
-                                                            color={approvalColor(pr.status)}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {week.partRides.map((pr, prIndex) => {
+                                                const isLast = prIndex === week.partRides.length - 1;
+                                                return (
+                                                    <TableRow
+                                                        key={pr.id}
+                                                        hover
+                                                        sx={{cursor: 'pointer'}}
+                                                        onClick={() => router.push(`/partrides/${pr.id}`)}
+                                                    >
+                                                        <TableCell
+                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
+                                                        >
+                                                            {dayjs(pr.date).format('DD.MM.YY')}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
+                                                        >
+                                                            {pr.decimalHours.toString().replace('.', ',')} h.
+                                                        </TableCell>
+                                                        <TableCell
+                                                            sx={isLast ? {borderBottom: 'none'} : undefined}
+                                                        >
+                                                            <Chip
+                                                                label={approvalLabel(pr.status)}
+                                                                size="small"
+                                                                color={approvalColor(pr.status)}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 )}
