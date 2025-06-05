@@ -3,22 +3,25 @@
 import { Button, SxProps, Theme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import type { SystemStyleObject } from '@mui/system';
+import { ReactNode } from 'react';
 
 type RoundedNavButtonProps = {
     label: string;
     to?: string;
     onClick?: () => void;
     colorType?: 'gray' | 'green';
+    icon?: ReactNode; // <-- ✅ NEW
     sx?: SxProps<Theme>;
 };
 
 export default function RoundedButton({
-                                             label,
-                                             to,
-                                             onClick,
-                                             colorType = 'gray',
-                                             sx = {},
-                                         }: RoundedNavButtonProps) {
+                                          label,
+                                          to,
+                                          onClick,
+                                          colorType = 'gray',
+                                          icon,
+                                          sx = {},
+                                      }: RoundedNavButtonProps) {
     const router = useRouter();
 
     const handleClick = () => {
@@ -38,10 +41,10 @@ export default function RoundedButton({
             },
         },
         green: {
-            backgroundColor: '#4caf50',
+            backgroundColor: '#2E7D32',
             color: 'common.white',
             '&:hover': {
-                backgroundColor: '#43a047',
+                backgroundColor: '#2E7D32',
             },
         },
     };
@@ -50,6 +53,7 @@ export default function RoundedButton({
         <Button
             fullWidth
             onClick={handleClick}
+            startIcon={icon} // ✅ use MUI icon prop
             sx={{
                 mt: 3,
                 py: 1.5,
