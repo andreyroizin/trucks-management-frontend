@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
     Box,
     Typography,
@@ -19,10 +19,10 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 
-import { useAuth } from '@/hooks/useAuth';
-import { useCurrentDriverPeriod } from '@/hooks/useCurrentDriverPeriod';
+import {useAuth} from '@/hooks/useAuth';
+import {useCurrentDriverPeriod} from '@/hooks/useCurrentDriverPeriod';
 import RoundedButton from "@/components/RoundedButton";
 
 /* ---------- mapping helpers ---------- */
@@ -49,7 +49,7 @@ const approvalColor = (s?: number) =>
 
 export default function MyWorkdaysPage() {
     const router = useRouter();
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const {user, isAuthenticated, loading: authLoading} = useAuth();
 
     /* access guard ---------------------------------------------------- */
     useEffect(() => {
@@ -71,7 +71,7 @@ export default function MyWorkdaysPage() {
     if (authLoading || isLoading) {
         return (
             <Box minHeight="50vh" display="flex" justifyContent="center" alignItems="center">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -85,10 +85,10 @@ export default function MyWorkdaysPage() {
 
     const periodTitle = `${period.year}-P-${period.periodNr.toString().padStart(2, '0')}`;
     const from = dayjs(period.fromDate).format('DD.MM.YYYY');
-    const to   = dayjs(period.toDate).format('DD.MM.YYYY');
+    const to = dayjs(period.toDate).format('DD.MM.YYYY');
 
     return (
-        <Box maxWidth="700px" mx="auto" p={{ xs: 2, md: 4 }}>
+        <Box maxWidth="700px" mx="auto" p={{xs: 2, md: 4}}>
             {/* Breadcrumb substitute  */}
 
             <Typography variant="h4" mb={2}>My Workdays</Typography>
@@ -100,7 +100,7 @@ export default function MyWorkdaysPage() {
             <Box display="flex" alignItems="center" mb={1}>
                 <Typography variant="h5">{periodTitle}</Typography>
                 <Chip
-                    sx={{ ml: 2 }}
+                    sx={{ml: 2}}
                     size="small"
                     label={periodStatus(period.status)}
                     color={periodColor(period.status)}
@@ -119,59 +119,72 @@ export default function MyWorkdaysPage() {
             {/* weeks accordions */}
             {period.weeks
                 .sort((a, b) => b.weekInPeriod - a.weekInPeriod)
-                .map(week => (
-                    <Accordion key={week.weekInPeriod}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Box>
-                                <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {week.totalDecimalHours} hours worked
-                                </Typography>
-                            </Box>
-                        </AccordionSummary>
+                .map((week, index) => (
+                    <Box key={week.weekInPeriod}>
+                        <Accordion
+                            disableGutters
+                            elevation={0}
+                            square
+                            sx={{
+                                border: 'none',
+                                '&:before': {display: 'none'}, // removes default top border
+                            }}
+                        >
+                            <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={{px:0}}>
+                                <Box>
+                                    <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {week.totalDecimalHours} hours worked
+                                    </Typography>
+                                </Box>
+                            </AccordionSummary>
 
-                        <AccordionDetails sx={{ px: 0 }}>
-                            {week.partRides.length === 0 ? (
-                                <Typography color="text.secondary" px={2} pb={1}>
-                                    No records for this week.
-                                </Typography>
-                            ) : (
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 500 }}>Date</TableCell>
-                                            <TableCell sx={{ fontWeight: 500 }}>Hours</TableCell>
-                                            <TableCell sx={{ fontWeight: 500 }}>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {week.partRides.map(pr => (
-                                            <TableRow
-                                                key={pr.id}
-                                                hover
-                                                sx={{ cursor: 'pointer' }}
-                                                onClick={() => router.push(`/partrides/${pr.id}`)}
-                                            >
-                                                <TableCell>{dayjs(pr.date).format('DD.MM.YY')}</TableCell>
-                                                <TableCell>{pr.decimalHours.toString().replace('.', ',')} h.</TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={approvalLabel(pr.status)}
-                                                        size="small"
-                                                        color={approvalColor(pr.status)}
-                                                    />
-                                                </TableCell>
+                            <AccordionDetails sx={{px: 0}}>
+                                {week.partRides.length === 0 ? (
+                                    <Typography color="text.secondary" px={2} pb={1}>
+                                        No records for this week.
+                                    </Typography>
+                                ) : (
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell sx={{fontWeight: 500}}>Date</TableCell>
+                                                <TableCell sx={{fontWeight: 500}}>Hours</TableCell>
+                                                <TableCell sx={{fontWeight: 500}}>Status</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </AccordionDetails>
-                        <Divider />
-                    </Accordion>
+                                        </TableHead>
+                                        <TableBody>
+                                            {week.partRides.map(pr => (
+                                                <TableRow
+                                                    key={pr.id}
+                                                    hover
+                                                    sx={{cursor: 'pointer'}}
+                                                    onClick={() => router.push(`/partrides/${pr.id}`)}
+                                                >
+                                                    <TableCell>{dayjs(pr.date).format('DD.MM.YY')}</TableCell>
+                                                    <TableCell>{pr.decimalHours.toString().replace('.', ',')} h.</TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            label={approvalLabel(pr.status)}
+                                                            size="small"
+                                                            color={approvalColor(pr.status)}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                )}
+                            </AccordionDetails>
+                        </Accordion>
+
+                        {/* Divider between items, but not after the last one */}
+                        {index !== period.weeks.length - 1 && <Divider/>}
+                    </Box>
                 ))}
 
-            <RoundedButton label="View Older Periods" colorType="gray" onClick={() => router.push('/workdays/history')} />
+            <RoundedButton label="View Older Periods" colorType="gray"
+                           onClick={() => router.push('/workdays/history')}/>
         </Box>
     );
 }
