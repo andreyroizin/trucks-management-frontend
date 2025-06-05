@@ -34,9 +34,14 @@ export default function DriverHomePage() {
                     color: 'white',
                     textAlign: 'center',
                     py: 12,
-                    px: 4,
-                    mx: -4,
+                    px: 2,
                     mt: -2,
+                    width: '100vw',
+                    position: 'relative',
+                    left: '50%',
+                    right: '50%',
+                    marginLeft: '-50vw',
+                    marginRight: '-50vw',
                 }}
             >
                 <Typography variant="h3" fontWeight={500}>
