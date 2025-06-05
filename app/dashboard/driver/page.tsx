@@ -9,7 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 export default function DriverHomePage() {
     const router = useRouter();
-    const { user, isAuthenticated, loading } = useAuth();
+    const {user, isAuthenticated, loading} = useAuth();
 
     useEffect(() => {
         if (!loading) {
@@ -52,29 +52,37 @@ export default function DriverHomePage() {
                 </Typography>
             </Box>
 
-            <Box mt={3} display="flex" flexDirection="column" gap={1.5}>
-                <DriverDashboardCardButton
+            <Box mt={3} display="flex" justifyContent="center">
+                <Box
+                    width="100%"
+                    maxWidth={{md: '600px'}}
+                    display="flex"
+                    flexDirection="column"
+                    gap={1.5}
+                    px={{xs: 2, md: 0}} // optional: adds side padding on small screens
+                > <DriverDashboardCardButton
                     title="Submit Workday"
                     subtitle="Register a new workday quickly and easily"
-                    icon={<AddIcon fontSize="medium" />}
+                    icon={<AddIcon fontSize="medium"/>}
                     highlight
                     onClick={() => router.push('/partrides/create')}
                 />
-                <DriverDashboardCardButton
-                    title="My Workdays"
-                    subtitle="View and manage all your registered workdays"
-                    onClick={() => router.push('/periods/driver/current')}
-                />
-                <DriverDashboardCardButton
-                    title="Disputes"
-                    subtitle="Follow up on records with changes or issues"
-                    onClick={() => router.push('/workdays/disputes')}
-                />
-                <DriverDashboardCardButton
-                    title="Archived Periods"
-                    subtitle="See full summaries of your signed periods"
-                    onClick={() => router.push('/periods/driver/archived')}
-                />
+                    <DriverDashboardCardButton
+                        title="My Workdays"
+                        subtitle="View and manage all your registered workdays"
+                        onClick={() => router.push('/periods/driver/current')}
+                    />
+                    <DriverDashboardCardButton
+                        title="Disputes"
+                        subtitle="Follow up on records with changes or issues"
+                        onClick={() => router.push('/workdays/disputes')}
+                    />
+                    <DriverDashboardCardButton
+                        title="Archived Periods"
+                        subtitle="See full summaries of your signed periods"
+                        onClick={() => router.push('/periods/driver/archived')}
+                    />
+                </Box>
             </Box>
         </Box>
     );
