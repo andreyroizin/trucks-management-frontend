@@ -34,7 +34,7 @@ export type CurrentDriverPeriod = {
 
 async function fetchCurrentPeriod() {
     const res = await api.get<ApiResponse<CurrentDriverPeriod>>(
-        '/drivers/period/current'
+        '/drivers/periods/current'
     );
 
     if (!res.data.isSuccess || !res.data.data) {

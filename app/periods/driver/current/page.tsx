@@ -56,7 +56,7 @@ const approvalColor = (s?: number) =>
                     : 'default';
 /* ------------------------------------- */
 
-export default function MyWorkdaysPage() {
+export default function CurrentPeriod() {
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
 
