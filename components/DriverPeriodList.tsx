@@ -79,7 +79,7 @@ export default function DriverPeriodListContent({ title, description, pagination
         `${p.year}-${p.periodNr.toString().padStart(2, '0')} Period`;
 
     return (
-        <Box maxWidth="700px" mx="auto" p={{ xs: 2, md: 4 }}>
+        <Box maxWidth="700px" mx="auto" my={4}>
             <Typography variant="h4" mb={2}>{title}</Typography>
             <Typography color="text.secondary" mb={3}>{description}</Typography>
 
@@ -90,7 +90,7 @@ export default function DriverPeriodListContent({ title, description, pagination
                         alignItems="center"
                         justifyContent="space-between"
                         sx={{ cursor: 'pointer', py: 1.5 }}
-                        onClick={() => router.push(`/workdays/period/${p.year}-${p.periodNr}`)}
+                        onClick={() => router.push(`/periods/driver/${p.year}-${p.periodNr}`)}
                     >
                         <Box>
                             <Typography variant="h5">{formatTitle(p)}</Typography>

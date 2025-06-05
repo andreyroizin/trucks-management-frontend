@@ -65,7 +65,7 @@ export default function CurrentPeriod() {
     const to = dayjs(period.toDate).format('DD.MM.YYYY');
 
     return (
-        <Box maxWidth="700px" mx="auto" p={{xs: 2, md: 4}}>
+        <Box maxWidth="700px" mx="auto" my={4}>
             <Typography variant="h4" mb={2}>My Workdays</Typography>
             <Typography color="text.secondary" mb={3}>
                 Keep track of your submitted workdays and sign periods when ready.
@@ -86,7 +86,7 @@ export default function CurrentPeriod() {
 
             {period.status === 0 && (
                 <>
-                    <Typography variant="body2" mb={0}>
+                    <Typography variant="body2" mb={2}>
                         All records in this period are approved. Please review and sign to confirm.
                     </Typography>
                     <RoundedButton
@@ -129,9 +129,10 @@ export default function CurrentPeriod() {
                 </>
             )}
 
-            <PeriodWeekAccordionList weeks={period.weeks} />
+            <PeriodWeekAccordionList weeks={period.weeks}/>
 
             <RoundedButton label="View Pending Periods" colorType="gray"
+                           sx={{my: 2}}
                            onClick={() => router.push('/periods/driver/pending')}/>
 
             <RoundedButton label="View Older Periods" colorType="gray"

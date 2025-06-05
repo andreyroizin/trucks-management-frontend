@@ -55,7 +55,6 @@ export default function RoundedButton({
             onClick={handleClick}
             startIcon={icon} // ✅ use MUI icon prop
             sx={{
-                mt: 3,
                 py: 1.5,
                 borderRadius: 2,
                 fontWeight: 400,
