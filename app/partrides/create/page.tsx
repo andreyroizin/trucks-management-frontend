@@ -2,7 +2,7 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Alert, Box, Button, CircularProgress, FormLabel, TextField, Typography,} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -193,21 +193,27 @@ export default function CreatePartRidePage() {
     }
 
     return (
-        <Box maxWidth="700px" mx="auto" p={4}>
+        <Box maxWidth="700px" mx="auto" sx={{ pt: 4, pb: 5}}>
             <Typography variant="h4" gutterBottom>
-                Create Part Ride
+                Submit Workday
             </Typography>
-
+            <Typography variant="subtitle1" gutterBottom>
+                Fill in your work time and trip details — your entry will be saved and reviewed.
+            </Typography>
             {apiError && (
                 <Alert severity="error" sx={{mb: 2}}>
                     {apiError}
                 </Alert>
             )}
+            <Divider sx={{my: 2}} />
+        
+            <Box>
+                <Typography variant="h5">Workday Date & Time</Typography>
+            </Box>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Date */}
-                <FormLabel>Date (Example: 24-12-2025)</FormLabel>
-                <Box width="100%" mb={2}>
+                <Box width="100%">
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Controller
                             name="date"
@@ -231,8 +237,10 @@ export default function CreatePartRidePage() {
                                         textField: {
                                             fullWidth: true,
                                             margin: "normal",
+                                            label: "Date (dd-mm-yy)",
+                                            placeholder: "dd-mm-yy",
                                             error: !!errors.date,
-                                            helperText: errors.date?.message,
+                                            helperText: errors.date?.message || 'Select the day you worked',
                                         },
                                     }}
                                 />
@@ -240,9 +248,7 @@ export default function CreatePartRidePage() {
                         />
                     </LocalizationProvider>
                 </Box>
-
-                {/* Start */}
-                <FormLabel>Start Time (Example: 09:00)</FormLabel>
+                {/* Start Time */}
                 <Controller
                     name="start"
                     control={control}
@@ -250,16 +256,17 @@ export default function CreatePartRidePage() {
                         <TextField
                             {...field}
                             variant="outlined"
+                            sx={{mt: 2}}
                             fullWidth
                             margin="normal"
+                            label="Start Time (e.g. 07:30)"
+                            placeholder="07:30"
                             error={!!errors.start}
-                            helperText={errors.start?.message}
+                            helperText={errors.start?.message || 'What time did you start work?'}
                         />
                     )}
                 />
-
-                {/* End */}
-                <FormLabel>End Time (Example: 21:00)</FormLabel>
+                {/* End Time */}
                 <Controller
                     name="end"
                     control={control}
@@ -268,15 +275,36 @@ export default function CreatePartRidePage() {
                             {...field}
                             variant="outlined"
                             fullWidth
+                            sx={{mt: 2}}
                             margin="normal"
+                            label="End Time (e.g. 17:45)"
+                            placeholder="17:45"
                             error={!!errors.end}
-                            helperText={errors.end?.message}
+                            helperText={errors.end?.message || 'What time did you finish?'}
+                        />
+                    )}
+                />
+                {/* Break Duration */}
+                <Controller
+                    name="hoursOptionId"
+                    control={control}
+                    render={({field}) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            fullWidth
+                            sx={{mt: 2}}
+                            margin="normal"
+                            label="Break Duration (e.g. 01:00)"
+                            placeholder="01:00"
+                            error={!!errors.hoursOptionId}
+                            helperText={errors.hoursOptionId?.message || 'Enter total break time (automatically checked by system).'}
                         />
                     )}
                 />
                 {!isDriverRole && (
                     <>
-                        {/* driverId as MUI Autocomplete */}
+                        {/* Driver (Autocomplete) */}
                         <FormLabel>Driver</FormLabel>
                         <Controller
                             name="driverId"
@@ -290,18 +318,20 @@ export default function CreatePartRidePage() {
                                     onChange={(_, newValue) => {
                                         const driverId = newValue?.id || '';
                                         const driverCompanyId = newValue?.companyId || '';
-
-                                        field.onChange(driverId);         // set driverId
-                                        setValue('companyId', driverCompanyId); // set companyId
-                                        setSelectedCompanyId(driverCompanyId);  // also update cars/charters
-                                    }}                                    value={driversData?.find((dr) => dr.id === field.value) || null}
+                                        field.onChange(driverId);
+                                        setValue('companyId', driverCompanyId);
+                                        setSelectedCompanyId(driverCompanyId);
+                                    }}
+                                    value={driversData?.find((dr) => dr.id === field.value) || null}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
                                             variant="outlined"
                                             margin="normal"
+                                            label="Driver"
+                                            placeholder="Select driver"
                                             error={!!errors.driverId}
-                                            helperText={errors.driverId?.message}
+                                            helperText={errors.driverId?.message || 'Select the driver for this workday.'}
                                         />
                                     )}
                                 />
@@ -310,14 +340,22 @@ export default function CreatePartRidePage() {
                     </>
                 )}
 
+                <Divider sx={{my: 2}} />
+
                 {!isDriverRole && (
                     <>
-                        <Accordion expanded={showSpecialHoursAccordion}
-                                   onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                        <Accordion 
+                            expanded={showSpecialHoursAccordion}
+                            onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}
+                            sx={{ boxShadow: 'none', border: 'none', borderTop: 'none', background: 'none', '&:before': { display: 'none' } }}
+                        >
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                sx={{ p: 0, minHeight: 0 }}
+                            >
                                 <Typography>Special hours</Typography>
                             </AccordionSummary>
-                            <AccordionDetails>
+                            <AccordionDetails sx={{ p: 0 }}>
                                 {/* HOURS CODE FIELD */}
                                 <FormLabel>Hours Code</FormLabel>
                                 <Controller
@@ -372,19 +410,22 @@ export default function CreatePartRidePage() {
                         </Accordion>
                     </>
                 )}
-                <Accordion expanded={showAdditionalFieldsAccordion}
-                           onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}>
+                <Accordion 
+                    expanded={showAdditionalFieldsAccordion}
+                    onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}
+                    sx={{ boxShadow: 'none', border: 'none', background: 'none', '&:before': { display: 'none' } }}
+                >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon/>}
                         aria-controls="panel1-content"
                         id="panel1-header"
+                        sx={{ p: 0, minHeight: 0 }}
                     >
-                        <Typography component="span">Additional inputs</Typography>
+                        <Typography component="span">Additional Fields</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
-                        {!isDriverRole && (
-                            <>
-                                <FormLabel>Correction time</FormLabel>
+                    <AccordionDetails sx={{ p: 0 }}>
+                    {!isDriverRole && (
+                            <>                        
                                 <Controller
                                     name="hoursCorrection"
                                     control={control}
@@ -395,8 +436,11 @@ export default function CreatePartRidePage() {
                                             variant="outlined"
                                             fullWidth
                                             margin="normal"
+                                            sx={{mt: 2}}
+                                            label="Correction time (e.g. 0.5)"
+                                            placeholder="0.5"
                                             error={!!errors.hoursCorrection}
-                                            helperText={errors.hoursCorrection?.message}
+                                            helperText={errors.hoursCorrection?.message || 'Enter any correction time in hours.'}
                                         />
                                     )}
                                 />
@@ -406,7 +450,6 @@ export default function CreatePartRidePage() {
                         {!isDriverRole && (
                             <>
                                 {/* companyId as MUI Autocomplete */}
-                                <FormLabel>Company</FormLabel>
                                 <Controller
                                     name="companyId"
                                     control={control}
@@ -418,16 +461,20 @@ export default function CreatePartRidePage() {
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             onChange={(_, newValue) => {
                                                 const newCompanyId = newValue?.id || '';
-                                                field.onChange(newCompanyId); // Update form state
-                                                setSelectedCompanyId(newCompanyId); // Update local state for fetching cars
-                                            }} value={companiesData?.data.find((co) => co.id === field.value) || null}
+                                                field.onChange(newCompanyId);
+                                                setSelectedCompanyId(newCompanyId);
+                                            }}
+                                            value={companiesData?.data.find((co) => co.id === field.value) || null}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Company"
+                                                    placeholder="Select company"
                                                     error={!!errors.companyId}
-                                                    helperText={errors.companyId?.message}
+                                                    helperText={errors.companyId?.message || 'Select your company for this workday.'}
                                                 />
                                             )}
                                         />
@@ -437,7 +484,6 @@ export default function CreatePartRidePage() {
                                 {/* weekNumber */}
                                 {!isDriverRole && (
                                     <>
-                                        <FormLabel>Week Number</FormLabel>
                                         <Controller
                                             name="weekNumber"
                                             control={control}
@@ -448,15 +494,17 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     fullWidth
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Week Number (e.g. 23)"
+                                                    placeholder="23"
                                                     error={!!errors.weekNumber}
-                                                    helperText={errors.weekNumber?.message}
+                                                    helperText={errors.weekNumber?.message || 'Enter the week number for this workday.'}
                                                 />
                                             )}
                                         />
                                     </>
                                 )}
                                 {/* clientId as MUI Autocomplete */}
-                                <FormLabel>Client</FormLabel>
                                 <Controller
                                     name="clientId"
                                     control={control}
@@ -468,16 +516,20 @@ export default function CreatePartRidePage() {
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             onChange={(_, newValue) => {
                                                 const newClientId = newValue?.id || '';
-                                                field.onChange(newClientId); // Update form state
-                                                setSelectedClientId(newClientId); // Update local state for fetching related data
-                                            }} value={clientsData?.data.find((cl) => cl.id === field.value) || null}
+                                                field.onChange(newClientId);
+                                                setSelectedClientId(newClientId);
+                                            }}
+                                            value={clientsData?.data.find((cl) => cl.id === field.value) || null}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Client"
+                                                    placeholder="Select client"
                                                     error={!!errors.clientId}
-                                                    helperText={errors.clientId?.message}
+                                                    helperText={errors.clientId?.message || 'Select the client for this workday.'}
                                                 />
                                             )}
                                         />
@@ -485,7 +537,6 @@ export default function CreatePartRidePage() {
                                 />
 
                                 {/* carId as MUI Autocomplete */}
-                                <FormLabel>Car</FormLabel>
                                 <Controller
                                     name="carId"
                                     control={control}
@@ -502,16 +553,18 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Car"
+                                                    placeholder="Select car"
                                                     error={!!errors.carId}
-                                                    helperText={errors.carId?.message}
+                                                    helperText={errors.carId?.message || 'Select the car used for this workday.'}
                                                 />
                                             )}
                                         />
                                     )}
                                 />
 
-                                {/* rideId as MUI Autocomplete */}
-                                <FormLabel>Ride</FormLabel>
+                                {/* rideId as MUI Autocomplete */}  
                                 <Controller
                                     name="rideId"
                                     control={control}
@@ -528,8 +581,11 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Ride"
+                                                    placeholder="Select ride"
                                                     error={!!errors.rideId}
-                                                    helperText={errors.rideId?.message}
+                                                    helperText={errors.rideId?.message || 'Select the ride for this workday.'}
                                                 />
                                             )}
                                         />
@@ -537,7 +593,6 @@ export default function CreatePartRidePage() {
                                 />
 
                                 {/* charterId as MUI Autocomplete */}
-                                <FormLabel>Charter</FormLabel>
                                 <Controller
                                     name="charterId"
                                     control={control}
@@ -554,14 +609,16 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Charter"
+                                                    placeholder="Select charter"
                                                     error={!!errors.charterId}
-                                                    helperText={errors.charterId?.message}
+                                                    helperText={errors.charterId?.message || 'Select the charter for this workday.'}
                                                 />
                                             )}
                                         />
                                     )}
                                 />
-                                <FormLabel>Various Compensation</FormLabel>
                                 <Controller
                                     name="variousCompensation"
                                     control={control}
@@ -572,15 +629,17 @@ export default function CreatePartRidePage() {
                                             variant="outlined"
                                             fullWidth
                                             margin="normal"
+                                            sx={{mt: 2}}
+                                            label="Various Compensation (e.g. 10)"
+                                            placeholder="10"
                                             error={!!errors.variousCompensation}
-                                            helperText={errors.variousCompensation?.message}
+                                            helperText={errors.variousCompensation?.message || 'Enter any additional compensation.'}
                                         />
                                     )}
                                 />
                                 {/* turnover */}
                                 {!isDriverRole && (
                                     <>
-                                        <FormLabel>Turnover</FormLabel>
                                         <Controller
                                             name="turnover"
                                             control={control}
@@ -591,8 +650,11 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     fullWidth
                                                     margin="normal"
+                                                    sx={{mt: 2}}
+                                                    label="Turnover (e.g. 100)"
+                                                    placeholder="100"
                                                     error={!!errors.turnover}
-                                                    helperText={errors.turnover?.message}
+                                                    helperText={errors.turnover?.message || 'Enter the turnover for this workday.'}
                                                 />
                                             )}
                                         />
@@ -600,78 +662,126 @@ export default function CreatePartRidePage() {
                                 )}
                             </>
                         )}
-                        {/* kilometers */}
-                        <FormLabel>Extra Kilometers</FormLabel>
-                        <Controller
-                            name="kilometers"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.kilometers}
-                                    helperText={errors.kilometers?.message}
-                                />
-                            )}
-                        />
+                        {/* Distance */}
+                        <Box mb={2}>
+                            <Typography variant="h6">Distance</Typography>
+                            <Controller
+                                name="kilometers"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        type="number"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        label="Total Distance / km (e.g. 135)"
+                                        placeholder="135"
+                                        error={!!errors.kilometers}
+                                        helperText={errors.kilometers?.message || 'How many kilometers did you drive today?'}
+                                    />
+                                )}
+                            />
+                        </Box>
+                        {/* Expenses */}
+                        <Box mb={2}>
+                            <Typography variant="h6">Expenses</Typography>
+                            <Controller
+                                name="costs"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        type="number"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        label="Total Expenses (€) (e.g. 40)"
+                                        placeholder="40"
+                                        error={!!errors.costs}
+                                        helperText={errors.costs?.message || 'Enter the full amount you spent today (fuel, tolls, meals, tunnels, AdBlue, etc.)'}
+                                    />
+                                )}
+                            />
+                        </Box>
+                        {/* Upload Receipts (UI only) */}
+                        <Box mb={2}>
+                            <Typography variant="h6">Upload Receipts</Typography>
+                            <Typography variant="body1" mb={1}>
+                                Add any files related to today's trip (fuel, toll, hotel, etc.)
+                            </Typography>
+                            <Box
+                                sx={{
+                                    border: '1px dashed #ccc',
+                                    borderRadius: 2,
+                                    p: 2,
+                                    mb: 1,
+                                    textAlign: 'center',
+                                    bgcolor: '#fafbfc',
+                                }}
+                            >
+                                <Button component="label" variant="text" color="primary">
+                                    <Box display="flex" flexDirection="column" alignItems="center">
+                                        <span style={{fontSize: 32}}>📁</span>
+                                        Choose files to upload
+                                        <input type="file" hidden multiple />
+                                    </Box>
+                                </Button>
+                                <Typography variant="caption" display="block" mt={1}>
+                                    PNG, JPG, PDF (max. 10MB per file).
+                                </Typography>
+                            </Box>
+                            {/* Example file list UI (static for now) */}
+                            <Box>
+                                <Box display="flex" alignItems="center" mb={1}>
+                                    <span style={{fontSize: 20, marginRight: 8}}>📄</span>
+                                    <Typography variant="body2">document_file_name.xml</Typography>
+                                    <Typography variant="caption" color="textSecondary" ml={1}>100kb • Loading</Typography>
+                                    <CircularProgress size={16} sx={{ml: 1}} />
+                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
+                                </Box>
+                                <Box display="flex" alignItems="center" mb={1}>
+                                    <span style={{fontSize: 20, marginRight: 8}}>📄</span>
+                                    <Typography variant="body2">document_file_name.pdf</Typography>
+                                    <Typography variant="caption" color="textSecondary" ml={1}>100kb • Complete</Typography>
+                                    <span style={{color: 'green', fontSize: 18, marginLeft: 8}}>✔️</span>
+                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
+                                </Box>
+                                <Box display="flex" alignItems="center" mb={1}>
+                                    <span style={{fontSize: 20, marginRight: 8, color: 'red'}}>❌</span>
+                                    <Typography variant="body2" color="error">Upload failed.</Typography>
+                                    <Typography variant="caption" color="error" ml={1}>File too large • Failed</Typography>
+                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
+                                </Box>
+                            </Box>
+                        </Box>
+            
+                        <Divider sx={{my: 2}} />
 
-                        {/* costs */}
-                        <FormLabel>Costs</FormLabel>
-                        <Controller
-                            name="costs"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    type="number"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.costs}
-                                    helperText={errors.costs?.message}
-                                />
-                            )}
-                        />
-
-                        {/* costsDescription */}
-                        <FormLabel>Costs Description</FormLabel>
-                        <Controller
-                            name="costsDescription"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.costsDescription}
-                                    helperText={errors.costsDescription?.message}
-                                />
-                            )}
-                        />
-                        {/* remark */}
-                        <FormLabel>Remark</FormLabel>
-                        <Controller
-                            name="remark"
-                            control={control}
-                            render={({field}) => (
-                                <TextField
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.remark}
-                                    helperText={errors.remark?.message}
-                                />
-                            )}
-                        />
+                        {/* Comments */}
+                        <Box mb={2}>
+                            <Typography variant="h6">Comments</Typography>
+                            <Controller
+                                name="remark"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        multiline
+                                        minRows={3}
+                                        label="Your comment"
+                                        placeholder="Optional — add any notes for Transport Admin"
+                                        error={!!errors.remark}
+                                        helperText={errors.remark?.message || "Use if there's something important about this workday."}
+                                    />
+                                )}
+                            />
+                        </Box>
                     </AccordionDetails>
                 </Accordion>
-
-
                 <Box mt={3}>
                     <Button
                         type="submit"
@@ -680,8 +790,13 @@ export default function CreatePartRidePage() {
                         fullWidth
                         disabled={isPending}
                     >
-                        {isPending ? <CircularProgress size={20} color="inherit"/> : 'Create Part Ride'}
+                        {isPending ? <CircularProgress size={20} color="inherit"/> : 'Submit Workday'}
                     </Button>
+                    {apiError && (
+                        <Alert severity="error" sx={{mb: 2}}>
+                            {apiError}
+                        </Alert>
+                    )}
                 </Box>
             </form>
         </Box>
