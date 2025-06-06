@@ -27,6 +27,7 @@ import {useRides} from '@/hooks/useRides';
 import {useCharters} from '@/hooks/useCharters';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
+import FileUploadBox from '@/components/FileUploadBox';
 
 export default function CreatePartRidePage() {
     dayjs.extend(utc);
@@ -704,56 +705,13 @@ export default function CreatePartRidePage() {
                                 )}
                             />
                         </Box>
-                        {/* Upload Receipts (UI only) */}
+                        {/* Upload Receipts (modular) */}
                         <Box mb={2}>
                             <Typography variant="h6">Upload Receipts</Typography>
                             <Typography variant="body1" mb={1}>
                                 Add any files related to today's trip (fuel, toll, hotel, etc.)
                             </Typography>
-                            <Box
-                                sx={{
-                                    border: '1px dashed #ccc',
-                                    borderRadius: 2,
-                                    p: 2,
-                                    mb: 1,
-                                    textAlign: 'center',
-                                    bgcolor: '#fafbfc',
-                                }}
-                            >
-                                <Button component="label" variant="text" color="primary">
-                                    <Box display="flex" flexDirection="column" alignItems="center">
-                                        <span style={{fontSize: 32}}>📁</span>
-                                        Choose files to upload
-                                        <input type="file" hidden multiple />
-                                    </Box>
-                                </Button>
-                                <Typography variant="caption" display="block" mt={1}>
-                                    PNG, JPG, PDF (max. 10MB per file).
-                                </Typography>
-                            </Box>
-                            {/* Example file list UI (static for now) */}
-                            <Box>
-                                <Box display="flex" alignItems="center" mb={1}>
-                                    <span style={{fontSize: 20, marginRight: 8}}>📄</span>
-                                    <Typography variant="body2">document_file_name.xml</Typography>
-                                    <Typography variant="caption" color="textSecondary" ml={1}>100kb • Loading</Typography>
-                                    <CircularProgress size={16} sx={{ml: 1}} />
-                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
-                                </Box>
-                                <Box display="flex" alignItems="center" mb={1}>
-                                    <span style={{fontSize: 20, marginRight: 8}}>📄</span>
-                                    <Typography variant="body2">document_file_name.pdf</Typography>
-                                    <Typography variant="caption" color="textSecondary" ml={1}>100kb • Complete</Typography>
-                                    <span style={{color: 'green', fontSize: 18, marginLeft: 8}}>✔️</span>
-                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
-                                </Box>
-                                <Box display="flex" alignItems="center" mb={1}>
-                                    <span style={{fontSize: 20, marginRight: 8, color: 'red'}}>❌</span>
-                                    <Typography variant="body2" color="error">Upload failed.</Typography>
-                                    <Typography variant="caption" color="error" ml={1}>File too large • Failed</Typography>
-                                    <Button size="small" sx={{ml: 1}}><span style={{fontSize: 18}}>🗑️</span></Button>
-                                </Box>
-                            </Box>
+                            <FileUploadBox uploadUrl="/api/upload" />
                         </Box>
             
                         <Divider sx={{my: 2}} />
