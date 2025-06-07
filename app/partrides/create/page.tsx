@@ -717,7 +717,7 @@ export default function CreatePartRidePage() {
                         <Divider sx={{my: 2}} />
 
                         {/* Comments */}
-                        <Box mb={2}>
+                        <Box mb={0}>
                             <Typography variant="h6">Comments</Typography>
                             <Controller
                                 name="remark"
@@ -740,7 +740,7 @@ export default function CreatePartRidePage() {
                         </Box>
                     </AccordionDetails>
                 </Accordion>
-                <Box mt={3}>
+                <Box mt={1}>
                     <Button
                         type="submit"
                         variant="contained"
@@ -751,7 +751,7 @@ export default function CreatePartRidePage() {
                         {isPending ? <CircularProgress size={20} color="inherit"/> : 'Submit Workday'}
                     </Button>
                     {apiError && (
-                        <Alert severity="error" sx={{mb: 2}}>
+                        <Alert severity="error" sx={{mt: 2}}>
                             {apiError}
                         </Alert>
                     )}
