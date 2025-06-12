@@ -711,7 +711,7 @@ export default function CreatePartRidePage() {
                             <Typography variant="body1" mb={1}>
                                 Add any files related to today's trip (fuel, toll, hotel, etc.)
                             </Typography>
-                            <FileUploadBox uploadUrl="/api/upload" />
+                            <FileUploadBox uploadUrl="/temporary-uploads" />
                         </Box>
             
                         <Divider sx={{my: 2}} />
