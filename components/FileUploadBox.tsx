@@ -135,7 +135,7 @@ const FileUploadBox: React.FC<FileUploadBoxProps> = ({
         return next;
       });
     } catch (err: any) {
-      const errorMsg = err?.message || 'Upload failed';
+      const errorMsg = err?.response?.data?.errors?.[0] || err?.message || 'Upload failed';
       setFiles((prev) => {
         const next = prev.map((f) =>
             f.name === file.name
