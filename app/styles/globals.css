@@ -7,3 +7,17 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Target MUI Autocomplete and Select dropdowns specifically */
+.MuiAutocomplete-listbox::-webkit-scrollbar,
+.MuiSelect-listbox::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.MuiAutocomplete-listbox::-webkit-scrollbar-thumb,
+.MuiSelect-listbox::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
