@@ -42,7 +42,7 @@ export interface FileUploadBoxProps {
 /* Constants                                                            */
 /* ------------------------------------------------------------------ */
 
-const defaultAccept = 'image/png,image/jpeg,application/pdf';
+const defaultAccept = 'image/png,image/jpeg,image/jpg,image/heic,application/pdf';
 const defaultMaxSize = 10;
 
 /* ------------------------------------------------------------------ */
