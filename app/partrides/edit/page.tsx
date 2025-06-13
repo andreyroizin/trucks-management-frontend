@@ -1,8 +1,9 @@
 'use client';
 
 import React, {Suspense, useEffect, useMemo, useState} from 'react';
+import FileUploadBox from '@/components/FileUploadBox';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {Alert, Box, Button, CircularProgress, FormLabel, TextField, Typography,} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -86,6 +87,7 @@ function EditPartRidePageWrapper() {
             costsDescription: yup.string().optional(),
             turnover: yup.number().optional(),
             remark: yup.string().optional(),
+            newUploadIds: yup.array().optional(),
         });
     }, [isDriverRole]);
 
@@ -104,6 +106,7 @@ function EditPartRidePageWrapper() {
 
     const [companyId, setCompanyId] = useState(partRide?.company?.id || '');
     const [clientId, setClientId] = useState(partRide?.client?.id || '');
+    const [tempFileIds, setTempFileIds] = useState<string[]>([]);
 
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
@@ -153,6 +156,7 @@ function EditPartRidePageWrapper() {
             driverId: '',
             carId: '',
             charterId: '',
+            newUploadIds: [],
         },
     });
 
@@ -189,6 +193,7 @@ function EditPartRidePageWrapper() {
         setApiError(null);
         // Force required ID
         data.id = partRideId;
+        data.newUploadIds = tempFileIds;
         try {
             await editPartRide(data);
             router.push(`/partrides/${partRideId}`); // Go back to detail or list
@@ -646,6 +651,16 @@ function EditPartRidePageWrapper() {
                                     />
                                 )}
                             />
+
+                            {/* Upload Receipts (modular) */}
+                            <Box mb={2}>
+                                <Typography variant="h6">Upload Receipts</Typography>
+                                <Typography variant="body1" mb={1}>
+                                    Add any files related to the trip (fuel, toll, hotel, etc.)
+                                </Typography>
+                                <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds} />                        </Box>
+
+                            <Divider sx={{my: 2}} />
 
                             {/* remark (visible for all) */}
                             <FormLabel>Remark</FormLabel>

@@ -24,6 +24,7 @@ export type EditPartRideInput = {
     remark?: string;
     companyId?: string;
     charterId?: string;
+    newUploadIds?: string[];
 };
 
 // The API might return data or just a success message
