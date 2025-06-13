@@ -172,12 +172,16 @@ export default function CreatePartRidePage() {
             const shouldExpand =
                 value.start === '00:00:00' ||
                 value.start === '00:00' ||
+                value.end === '00:00:00' ||
+                value.end === '00:00' ||
                 value.end === '24:00:00' ||
                 value.end === '24:00' ||
                 value.end === '1.00:00:00' ||
-                value.end === '1.00:00:';
+                value.end === '1.00:00';
 
-            setShowSpecialHoursAccordion(shouldExpand);
+            if (shouldExpand) {
+                setShowSpecialHoursAccordion(true);
+            }
         });
 
         return () => subscription.unsubscribe();
