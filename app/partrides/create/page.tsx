@@ -77,6 +77,7 @@ export default function CreatePartRidePage() {
             remark: yup.string().optional(),
             companyId: yup.string().optional(),
             charterId: yup.string().optional(),
+            newUploadIds: yup.array().optional(),
         });
     }, [isDriverRole]);
 
@@ -89,6 +90,7 @@ export default function CreatePartRidePage() {
 
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
     const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+    const [tempFileIds, setTempFileIds] = useState<string[]>([]);
 
     // Data hooks for Autocomplete:
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
@@ -137,6 +139,7 @@ export default function CreatePartRidePage() {
             remark: '',
             // If user is driver => prefill companyId
             companyId: isDriverRole ? (user?.driverInfo?.companyId || '') : '',
+            newUploadIds: [],
         },
     });
 
@@ -145,6 +148,8 @@ export default function CreatePartRidePage() {
         if (isDriverRole) {
             data = prefillDriversDataInTheForm(data, user?.driverInfo?.companyId, user?.driverInfo?.driverId);
         }
+
+        data.newUploadIds = tempFileIds;
 
         setApiError(null);
         try {
@@ -711,8 +716,7 @@ export default function CreatePartRidePage() {
                             <Typography variant="body1" mb={1}>
                                 Add any files related to today's trip (fuel, toll, hotel, etc.)
                             </Typography>
-                            <FileUploadBox uploadUrl="/temporary-uploads" />
-                        </Box>
+                            <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds} />                        </Box>
             
                         <Divider sx={{my: 2}} />
 

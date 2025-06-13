@@ -23,6 +23,7 @@ export type CreatePartRideInput = {
     remark?: string;
     companyId?: string;         // if driver, prefill or hide
     charterId?: string;         // hidden if driver
+    newUploadIds?: string[],
 };
 
 // The API may return an array if multiple entries were created
