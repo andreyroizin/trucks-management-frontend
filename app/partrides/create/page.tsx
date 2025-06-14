@@ -366,7 +366,6 @@ export default function CreatePartRidePage() {
                             </AccordionSummary>
                             <AccordionDetails sx={{ p: 0 }}>
                                 {/* HOURS CODE FIELD */}
-                                <FormLabel>Hours Code</FormLabel>
                                 <Controller
                                     name="hoursCodeId"
                                     control={control}
@@ -383,6 +382,8 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    label="Hours Code"
+                                                    placeholder="Select hours code"
                                                     error={!!errors.hoursCodeId}
                                                     helperText={errors.hoursCodeId?.message}
                                                 />
@@ -391,7 +392,6 @@ export default function CreatePartRidePage() {
                                     )}
                                 />
                                 {/* Hours Option */}
-                                <FormLabel>Hours Option</FormLabel>
                                 <Controller
                                     name="hoursOptionId"
                                     control={control}
@@ -408,6 +408,8 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
+                                                    label="Hours Option"
+                                                    placeholder="Select hours option"
                                                     error={!!errors.hoursOptionId}
                                                     helperText={errors.hoursOptionId?.message}
                                                 />
