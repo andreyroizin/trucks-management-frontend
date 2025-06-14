@@ -92,7 +92,6 @@ export type PartRideDetail = {
     files?:
         {
             id: string,
-            fileName: string,
             originalFileName: string,
             contentType: string,
             uploadedAt: string

@@ -739,7 +739,7 @@ function EditPartRidePageWrapper() {
                                   <Box key={file.id} mb={1.5}>
                                     <FileTile
                                       id={file.id}
-                                      fileName={file.fileName}
+                                      fileName={file.originalFileName}
                                       onDelete={handleFileDelete}
                                       onClick={handleFileClick}
                                     />

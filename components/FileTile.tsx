@@ -27,7 +27,7 @@ const FileTile: React.FC<FileTileProps> = ({ id, fileName, onDelete, onClick }) 
         >
             <Box display="flex" alignItems="center" gap={2}>
                 <InsertDriveFileOutlinedIcon sx={{ color: '#1976d2', fontSize: 32 }} />
-                <Typography fontSize={18}>{fileName}</Typography>
+                <Typography variant={"body1"}>{fileName}</Typography>
             </Box>
             {onDelete && (
                 <IconButton onClick={(e) => { e.stopPropagation(); onDelete(id); }} aria-label="delete file">
