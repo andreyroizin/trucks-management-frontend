@@ -31,6 +31,7 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
+import FileTile from "@/components/FileTile";
 
 function EditPartRidePageWrapper() {
     dayjs.extend(utc);
@@ -227,6 +228,17 @@ function EditPartRidePageWrapper() {
             setShowAdditionalFieldsAccordion(true);
         }
     }, [authLoading, user]);
+
+    // FileTile handlers
+    const handleFileDelete = (id: string) => {
+        console.log("Delete file with ID:", id);
+        // Implement actual delete logic here if needed
+    };
+
+    const handleFileClick = (id: string) => {
+        console.log("Clicked file with ID:", id);
+        // Implement actual click behavior here if needed
+    };
 
     // If anything is still loading
     if (
@@ -695,7 +707,7 @@ function EditPartRidePageWrapper() {
                                     )}
                                 />
                             </Box>
-
+                            <Divider sx={{my: 2}}/>
                             {/* Expenses */}
                             <Box mb={2}>
                                 <Typography variant="h6">Expenses</Typography>
@@ -717,7 +729,21 @@ function EditPartRidePageWrapper() {
                                     )}
                                 />
                             </Box>
+                            <Box sx={{ mb: 2 }}>
+                                <Typography variant="h6">Receipts</Typography>
+                                {partRide.files?.map((file) => (
+                                  <Box key={file.id} mb={1.5}>
+                                    <FileTile
+                                      id={file.id}
+                                      fileName={file.fileName}
+                                      onDelete={handleFileDelete}
+                                      onClick={handleFileClick}
+                                    />
+                                  </Box>
+                                ))}
+                            </Box>
                             {/* Upload Receipts (modular) */}
+
                             <Box mb={2}>
                                 <Typography variant="h6">Upload Receipts</Typography>
                                 <Typography variant="body1" mb={1}>

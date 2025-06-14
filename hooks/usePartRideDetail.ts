@@ -89,6 +89,14 @@ export type PartRideDetail = {
             email: string;
         } | null;
     }[];
+    files?:
+        {
+            id: string,
+            fileName: string,
+            originalFileName: string,
+            contentType: string,
+            uploadedAt: string
+        } []
 };
 
 // --- FETCH FUNCTION ---
@@ -107,3 +115,4 @@ export const usePartRideDetail = (id: string) => {
         queryFn: () => fetchPartRideDetail(id),
     });
 };
+
