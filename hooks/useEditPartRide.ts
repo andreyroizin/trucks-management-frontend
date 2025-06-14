@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/utils/api';
-import { ApiResponse } from '@/types/api';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {api} from '@/utils/api';
+import {ApiResponse} from '@/types/api';
 
 // --- TYPES ---
 export type EditPartRideInput = {
@@ -24,7 +24,10 @@ export type EditPartRideInput = {
     remark?: string;
     companyId?: string;
     charterId?: string;
-    newUploadIds?: string[];
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[],
 };
 
 // The API might return data or just a success message
@@ -35,7 +38,7 @@ export type EditPartRideResponse = {
 
 // --- PUT FUNCTION ---
 const updatePartRide = async (payload: EditPartRideInput): Promise<ApiResponse<EditPartRideResponse>> => {
-    const { id, ...body } = payload;
+    const {id, ...body} = payload;
     const response = await api.put<ApiResponse<EditPartRideResponse>>(`/partrides/${id}`, body);
 
     if (response.data.isSuccess) {
@@ -51,7 +54,7 @@ export const useEditPartRide = () => {
         mutationFn: updatePartRide,
         onSuccess: () => {
             // Invalidate or refetch relevant queries
-            queryClient.invalidateQueries({ queryKey: ['partRides'] });
+            queryClient.invalidateQueries({queryKey: ['partRides']});
         },
     });
 };

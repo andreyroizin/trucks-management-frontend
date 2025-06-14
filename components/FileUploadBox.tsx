@@ -31,8 +31,10 @@ export interface FileUploadStatus {
 export interface FileUploadBoxProps {
   uploadUrl: string;
   onChange?: (files: FileUploadStatus[]) => void;
-  /** Optional: receive array of fileIds only */
-  onIdsChange?: (ids: string[]) => void;
+  /**
+   * Optional: receive array of fileId and originalFileName objects
+   */
+  onFilesChange?: (files: { fileId: string; originalFileName: string }[]) => void;
   maxSizeMB?: number;
   accept?: string;
   initialFiles?: FileUploadStatus[];
@@ -52,7 +54,7 @@ const defaultMaxSize = 10;
 const FileUploadBox: React.FC<FileUploadBoxProps> = ({
                                                        uploadUrl,
                                                        onChange,
-                                                       onIdsChange,
+                                                       onFilesChange,
                                                        maxSizeMB = defaultMaxSize,
                                                        accept = defaultAccept,
                                                        initialFiles = [],
@@ -67,7 +69,14 @@ const FileUploadBox: React.FC<FileUploadBoxProps> = ({
 
   const pushUpdates = (next: FileUploadStatus[]) => {
     onChange?.(next);
-    onIdsChange?.(next.filter((f) => f.fileId).map((f) => f.fileId!));
+    onFilesChange?.(
+      next
+        .filter((f) => f.fileId)
+        .map((f) => ({
+          fileId: f.fileId!,
+          originalFileName: f.name,
+        }))
+    );
   };
 
   const resetInput = () => {

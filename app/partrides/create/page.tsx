@@ -77,7 +77,7 @@ export default function CreatePartRidePage() {
             remark: yup.string().optional(),
             companyId: yup.string().optional(),
             charterId: yup.string().optional(),
-            newUploadIds: yup.array().optional(),
+            newUploads: yup.array().optional(),
         });
     }, [isDriverRole]);
 
@@ -90,8 +90,7 @@ export default function CreatePartRidePage() {
 
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
     const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-    const [tempFileIds, setTempFileIds] = useState<string[]>([]);
-
+    const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
     // Data hooks for Autocomplete:
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(/* e.g. pass companyId if needed */);
@@ -139,7 +138,7 @@ export default function CreatePartRidePage() {
             remark: '',
             // If user is driver => prefill companyId
             companyId: isDriverRole ? (user?.driverInfo?.companyId || '') : '',
-            newUploadIds: [],
+            newUploads: [],
         },
     });
 
@@ -149,7 +148,7 @@ export default function CreatePartRidePage() {
             data = prefillDriversDataInTheForm(data, user?.driverInfo?.companyId, user?.driverInfo?.driverId);
         }
 
-        data.newUploadIds = tempFileIds;
+        data.newUploads = tempFiles;
 
         setApiError(null);
         try {
@@ -216,7 +215,7 @@ export default function CreatePartRidePage() {
                 </Alert>
             )}
             <Divider sx={{my: 2}} />
-        
+
             <Box>
                 <Typography variant="h5">Workday Date & Time</Typography>
             </Box>
@@ -421,7 +420,7 @@ export default function CreatePartRidePage() {
                         </Accordion>
                     </>
                 )}
-                <Accordion 
+                <Accordion
                     expanded={showAdditionalFieldsAccordion}
                     onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}
                     sx={{ boxShadow: 'none', border: 'none', background: 'none', '&:before': { display: 'none' } }}
@@ -436,7 +435,7 @@ export default function CreatePartRidePage() {
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 0 }}>
                     {!isDriverRole && (
-                            <>                        
+                            <>
                                 <Controller
                                     name="hoursCorrection"
                                     control={control}
@@ -721,7 +720,7 @@ export default function CreatePartRidePage() {
                             <Typography variant="body1" mb={1}>
                                 Add any files related to today's trip (fuel, toll, hotel, etc.)
                             </Typography>
-                            <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds} />                        </Box>
+                            <FileUploadBox uploadUrl="/temporary-uploads" onFilesChange={setTempFiles} />                        </Box>
             
                         <Divider sx={{my: 2}} />
 

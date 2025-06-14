@@ -88,7 +88,12 @@ function EditPartRidePageWrapper() {
             costsDescription: yup.string().optional(),
             turnover: yup.number().optional(),
             remark: yup.string().optional(),
-            newUploadIds: yup.array().optional(),
+            newUploads: yup.array().of(
+                yup.object({
+                    fileId: yup.string().required(),
+                    originalFileName: yup.string().required(),
+                })
+            ).optional(),
         });
     }, [isDriverRole]);
 
@@ -107,8 +112,8 @@ function EditPartRidePageWrapper() {
 
     const [companyId, setCompanyId] = useState(partRide?.company?.id || '');
     const [clientId, setClientId] = useState(partRide?.client?.id || '');
-    const [tempFileIds, setTempFileIds] = useState<string[]>([]);
-
+    const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
+    console.log(newUploads);
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
@@ -157,7 +162,7 @@ function EditPartRidePageWrapper() {
             driverId: '',
             carId: '',
             charterId: '',
-            newUploadIds: [],
+            newUploads: [],
         },
     });
 
@@ -190,11 +195,10 @@ function EditPartRidePageWrapper() {
 
     // On Submit
     const onSubmit: SubmitHandler<EditPartRideInput> = async (data) => {
-        console.log(data)
         setApiError(null);
         // Force required ID
         data.id = partRideId;
-        data.newUploadIds = tempFileIds;
+        data.newUploads = newUploads;
         try {
             await editPartRide(data);
             router.push(`/partrides/${partRideId}`); // Go back to detail or list
@@ -749,7 +753,7 @@ function EditPartRidePageWrapper() {
                                 <Typography variant="body1" mb={1}>
                                     Add any files related to the trip (fuel, toll, hotel, etc.)
                                 </Typography>
-                                <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds}/>
+                                <FileUploadBox uploadUrl="/temporary-uploads" onFilesChange={setNewUploads} />
                             </Box>
 
                             <Divider sx={{my: 2}}/>
