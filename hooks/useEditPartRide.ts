@@ -28,6 +28,7 @@ export type EditPartRideInput = {
         fileId: string;
         originalFileName: string;
     }[],
+    fileIdsToDelete?: string[];
 };
 
 // The API might return data or just a success message

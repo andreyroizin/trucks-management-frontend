@@ -3,7 +3,7 @@
 import React, {Suspense, useEffect, useMemo, useState} from 'react';
 import FileUploadBox from '@/components/FileUploadBox';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {Alert, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography,} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Divider, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -96,6 +96,7 @@ function EditPartRidePageWrapper() {
                     originalFileName: yup.string().required(),
                 })
             ).optional(),
+            fileIdsToDelete: yup.array().optional(),
         });
     }, [isDriverRole]);
 
@@ -133,6 +134,7 @@ function EditPartRidePageWrapper() {
     }, [isLoading, isLoadingCars, isLoadingCharters, isLoadingClients, isLoadingCompanies, isLoadingDrivers, isLoadingRides]);
     const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
     const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
+    const [fileIdsToDelete, setFileIdsToDelete] = useState<string[]>([]);
 
     // Local error
     const [apiError, setApiError] = useState<string | null>(null);
@@ -166,6 +168,7 @@ function EditPartRidePageWrapper() {
             carId: '',
             charterId: '',
             newUploads: [],
+            fileIdsToDelete: []
         },
     });
 
@@ -202,6 +205,7 @@ function EditPartRidePageWrapper() {
         // Force required ID
         data.id = partRideId;
         data.newUploads = newUploads;
+        data.fileIdsToDelete = fileIdsToDelete;
         try {
             await editPartRide(data);
             router.push(`/partrides/${partRideId}`); // Go back to detail or list
@@ -237,14 +241,17 @@ function EditPartRidePageWrapper() {
     }, [authLoading, user]);
 
     const handleFileDelete = (file: ApplicationFile) => {
-        console.log("Delete file with ID:", file.id);
-        // Implement actual delete logic here if needed
+        setFileIdsToDelete((prev) =>
+            prev.includes(file.id) ? prev : [...prev, file.id]
+        );
+
+        if (partRide?.files) {
+            partRide.files = partRide.files.filter((f) => f.id !== file.id);
+        }
     };
 
-    const handleFileClick = (file: ApplicationFile): void => {
-        downloadFile(file);
-        console.log("Clicked file with ID:", file.id);
-        // Implement actual click behavior here if needed
+    const handleFileClick = async (file: ApplicationFile): void => {
+        await downloadFile(file)
     };
 
     // If anything is still loading
