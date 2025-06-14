@@ -32,6 +32,8 @@ import dayjs from "dayjs";
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileTile from "@/components/FileTile";
+import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
+import {ApplicationFile} from "@/types/file";
 
 function EditPartRidePageWrapper() {
     dayjs.extend(utc);
@@ -123,6 +125,7 @@ function EditPartRidePageWrapper() {
     const {data: carsData, isLoading: isLoadingCars} = useCars(companyId, 1, 1000);
     const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
     const {data: chartersData, isLoading: isLoadingCharters} = useCharters(companyId, clientId, 1, 1000);
+    const downloadFile = useDownloadPartRideFile();
 
     const someDataIsLoading = useMemo(() => {
         return isLoading || isLoadingCompanies || isLoadingClients || isLoadingDrivers
@@ -233,14 +236,14 @@ function EditPartRidePageWrapper() {
         }
     }, [authLoading, user]);
 
-    // FileTile handlers
-    const handleFileDelete = (id: string) => {
-        console.log("Delete file with ID:", id);
+    const handleFileDelete = (file: ApplicationFile) => {
+        console.log("Delete file with ID:", file.id);
         // Implement actual delete logic here if needed
     };
 
-    const handleFileClick = (id: string) => {
-        console.log("Clicked file with ID:", id);
+    const handleFileClick = (file: ApplicationFile): void => {
+        downloadFile(file);
+        console.log("Clicked file with ID:", file.id);
         // Implement actual click behavior here if needed
     };
 
@@ -738,8 +741,7 @@ function EditPartRidePageWrapper() {
                                 {partRide.files?.map((file) => (
                                   <Box key={file.id} mb={1.5}>
                                     <FileTile
-                                      id={file.id}
-                                      fileName={file.originalFileName}
+                                        file={file}
                                       onDelete={handleFileDelete}
                                       onClick={handleFileClick}
                                     />
