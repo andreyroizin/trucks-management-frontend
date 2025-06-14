@@ -315,7 +315,6 @@ export default function CreatePartRidePage() {
                 {!isDriverRole && (
                     <>
                         {/* Driver (Autocomplete) */}
-                        <FormLabel>Driver</FormLabel>
                         <Controller
                             name="driverId"
                             control={control}
@@ -354,7 +353,7 @@ export default function CreatePartRidePage() {
 
                 {!isDriverRole && (
                     <>
-                        <Accordion 
+                        <Accordion
                             expanded={showSpecialHoursAccordion}
                             onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}
                             sx={{ boxShadow: 'none', border: 'none', borderTop: 'none', background: 'none', '&:before': { display: 'none' } }}
@@ -574,7 +573,7 @@ export default function CreatePartRidePage() {
                                     )}
                                 />
 
-                                {/* rideId as MUI Autocomplete */}  
+                                {/* rideId as MUI Autocomplete */}
                                 <Controller
                                     name="rideId"
                                     control={control}
@@ -647,29 +646,29 @@ export default function CreatePartRidePage() {
                                         />
                                     )}
                                 />
-                                {/* turnover */}
-                                {!isDriverRole && (
-                                    <>
-                                        <Controller
-                                            name="turnover"
-                                            control={control}
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    type="number"
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    sx={{mt: 2}}
-                                                    label="Turnover (e.g. 100)"
-                                                    placeholder="100"
-                                                    error={!!errors.turnover}
-                                                    helperText={errors.turnover?.message || 'Enter the turnover for this workday.'}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                )}
+                                {/*/!* turnover *!/*/}
+                                {/*{!isDriverRole && (*/}
+                                {/*    <>*/}
+                                {/*        <Controller*/}
+                                {/*            name="turnover"*/}
+                                {/*            control={control}*/}
+                                {/*            render={({field}) => (*/}
+                                {/*                <TextField*/}
+                                {/*                    {...field}*/}
+                                {/*                    type="number"*/}
+                                {/*                    variant="outlined"*/}
+                                {/*                    fullWidth*/}
+                                {/*                    margin="normal"*/}
+                                {/*                    sx={{mt: 2}}*/}
+                                {/*                    label="Turnover (e.g. 100)"*/}
+                                {/*                    placeholder="100"*/}
+                                {/*                    error={!!errors.turnover}*/}
+                                {/*                    helperText={errors.turnover?.message || 'Enter the turnover for this workday.'}*/}
+                                {/*                />*/}
+                                {/*            )}*/}
+                                {/*        />*/}
+                                {/*    </>*/}
+                                {/*)}*/}
                             </>
                         )}
                         {/* Distance */}

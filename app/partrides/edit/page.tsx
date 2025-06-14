@@ -250,7 +250,7 @@ function EditPartRidePageWrapper() {
 
     return (
         <Suspense fallback={<CircularProgress/>}>
-            <Box maxWidth="700px" mx="auto" p={4}>
+            <Box maxWidth="700px" mx="auto" sx={{ pt: 4, pb: 5}}>
                 <Typography variant="h4" gutterBottom>
                     Edit Part Ride
                 </Typography>
@@ -261,8 +261,7 @@ function EditPartRidePageWrapper() {
                     </Alert>
                 )}
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Box width="100%" mb={2}>
-                        <FormLabel>Date</FormLabel>
+                    <Box width="100%">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <Controller
                                 name="date"
@@ -286,8 +285,10 @@ function EditPartRidePageWrapper() {
                                             textField: {
                                                 fullWidth: true,
                                                 margin: "normal",
+                                                label: "Date (dd-mm-yy)",
+                                                placeholder: "dd-mm-yy",
                                                 error: !!errors.date,
-                                                helperText: errors.date?.message,
+                                                helperText: errors.date?.message || 'Select the day you worked',
                                             },
                                         }}
                                     />
@@ -295,8 +296,6 @@ function EditPartRidePageWrapper() {
                             />
                         </LocalizationProvider>
                     </Box>
-
-                    <FormLabel>Start</FormLabel>
                     <Controller
                         name="start"
                         control={control}
@@ -306,13 +305,14 @@ function EditPartRidePageWrapper() {
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
+                                sx={{mt: 2}}
+                                label="Start Time (e.g. 07:30)"
+                                placeholder="07:30"
                                 error={!!errors.start}
-                                helperText={errors.start?.message}
+                                helperText={errors.start?.message || 'What time did you start work?'}
                             />
                         )}
                     />
-
-                    <FormLabel>End</FormLabel>
                     <Controller
                         name="end"
                         control={control}
@@ -322,15 +322,17 @@ function EditPartRidePageWrapper() {
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
+                                sx={{mt: 2}}
+                                label="End Time (e.g. 17:30)"
+                                placeholder="17:30"
                                 error={!!errors.end}
-                                helperText={errors.end?.message}
+                                helperText={errors.end?.message || 'What time did you end work?'}
                             />
                         )}
                     />
                     {!isDriverRole && (
                         <>
                             {/* Driver */}
-                            <FormLabel>Driver</FormLabel>
                             <Controller
                                 name="driverId"
                                 control={control}
@@ -353,8 +355,11 @@ function EditPartRidePageWrapper() {
                                             <TextField {...params}
                                                        variant="outlined"
                                                        margin="normal"
+                                                       sx={{mt: 2}}
+                                                       label="Driver"
+                                                       placeholder="Select driver"
                                                        error={!!errors.driverId}
-                                                       helperText={errors.driverId?.message}
+                                                       helperText={errors.driverId?.message || 'Select the driver for this workday.'}
                                             />}
                                     />
                                 )}
@@ -362,14 +367,25 @@ function EditPartRidePageWrapper() {
                         </>)}
                     {!isDriverRole && (
                         <>
-                            <Accordion expanded={showSpecialHoursAccordion}
-                                       onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                            <Accordion
+                                expanded={showSpecialHoursAccordion}
+                                onChange={() => setShowSpecialHoursAccordion(!showSpecialHoursAccordion)}
+                                sx={{
+                                    boxShadow: 'none',
+                                    border: 'none',
+                                    borderTop: 'none',
+                                    background: 'none',
+                                    '&:before': {display: 'none'}
+                                }}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon/>}
+                                    sx={{p: 0, minHeight: 0}}
+                                >
                                     <Typography>Special hours</Typography>
                                 </AccordionSummary>
-                                <AccordionDetails>
+                                <AccordionDetails sx={{p: 0}}>
                                     {/* Hours Code */}
-                                    <FormLabel>Hours Code</FormLabel>
                                     <Controller
                                         name="hoursCodeId"
                                         control={control}
@@ -386,6 +402,9 @@ function EditPartRidePageWrapper() {
                                                         {...params}
                                                         variant="outlined"
                                                         margin="normal"
+                                                        sx={{mt: 2}}
+                                                        label="Hours Code"
+                                                        placeholder="Select hours code"
                                                         error={!!errors.hoursCodeId}
                                                         helperText={errors.hoursCodeId?.message}
                                                     />
@@ -394,7 +413,6 @@ function EditPartRidePageWrapper() {
                                         )}
                                     />
                                     {/* Hours Option */}
-                                    <FormLabel>Hours Option</FormLabel>
                                     <Controller
                                         name="hoursOptionId"
                                         control={control}
@@ -411,6 +429,9 @@ function EditPartRidePageWrapper() {
                                                         {...params}
                                                         variant="outlined"
                                                         margin="normal"
+                                                        sx={{mt: 2}}
+                                                        label="Hours Option"
+                                                        placeholder="Select hours option"
                                                         error={!!errors.hoursOptionId}
                                                         helperText={errors.hoursOptionId?.message}
                                                     />
@@ -424,18 +445,24 @@ function EditPartRidePageWrapper() {
                     )}
 
                     <Accordion expanded={showAdditionalFieldsAccordion}
-                               onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}>
+                               onChange={() => setShowAdditionalFieldsAccordion(!showAdditionalFieldsAccordion)}
+                               sx={{
+                                   boxShadow: 'none',
+                                   border: 'none',
+                                   borderTop: 'none',
+                                   background: 'none',
+                                   '&:before': {display: 'none'}
+                               }}
+                    >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon/>}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
+                            sx={{p: 0, minHeight: 0}}
                         >
                             <Typography component="span">Additional inputs</Typography>
                         </AccordionSummary>
-                        <AccordionDetails>
+                        <AccordionDetails sx={{p: 0}}>
                             {!isDriverRole && (
                                 <>
-                                    <FormLabel>Correction time</FormLabel>
                                     <Controller
                                         name="hoursCorrection"
                                         control={control}
@@ -445,7 +472,10 @@ function EditPartRidePageWrapper() {
                                                 type="number"
                                                 variant="outlined"
                                                 fullWidth
+                                                label="Correction time"
+                                                placeholder="00:00"
                                                 margin="normal"
+                                                sx={{mt: 2}}
                                                 error={!!errors.hoursCorrection}
                                                 helperText={errors.hoursCorrection?.message}
                                             />
@@ -458,7 +488,6 @@ function EditPartRidePageWrapper() {
                             {!isDriverRole && (
                                 <>
                                     {/* weekNumber */}
-                                    <FormLabel>Week Number</FormLabel>
                                     <Controller
                                         name="weekNumber"
                                         control={control}
@@ -468,32 +497,36 @@ function EditPartRidePageWrapper() {
                                                 type="number"
                                                 variant="outlined"
                                                 fullWidth
-                                                margin="normal"
+                                                sx={{mt: 2}}
+                                                label="Week Number (e.g. 23)"
+                                                placeholder="23"
                                                 error={!!errors.weekNumber}
-                                                helperText={errors.weekNumber?.message}
+                                                helperText={errors.weekNumber?.message || 'Enter the week number for this workday.'}
+                                                margin="normal"
+
                                             />
                                         )}
                                     />
 
-                                    {/* turnover */}
-                                    <FormLabel>Turnover</FormLabel>
-                                    <Controller
-                                        name="turnover"
-                                        control={control}
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                type="number"
-                                                variant="outlined"
-                                                fullWidth
-                                                margin="normal"
-                                            />
-                                        )}
-                                    />
+                                    {/*/!* turnover *!/*/}
+                                    {/*<FormLabel>Turnover</FormLabel>*/}
+                                    {/*<Controller*/}
+                                    {/*    name="turnover"*/}
+                                    {/*    control={control}*/}
+                                    {/*    render={({field}) => (*/}
+                                    {/*        <TextField*/}
+                                    {/*            {...field}*/}
+                                    {/*            type="number"*/}
+                                    {/*            variant="outlined"*/}
+                                    {/*            fullWidth*/}
+                                    {/*            margin="normal"*/}
+                                    {/*            sx={{mt: 2}}*/}
+                                    {/*        />*/}
+                                    {/*    )}*/}
+                                    {/*/>*/}
 
                                     {/* Autocomplete Fields for non-driver */}
                                     {/* Company */}
-                                    <FormLabel>Company</FormLabel>
                                     <Controller
                                         name="companyId"
                                         control={control}
@@ -509,13 +542,18 @@ function EditPartRidePageWrapper() {
                                                 }}
                                                 value={companiesData?.data.find((co) => co.id === field.value) || null}
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"/>}
+                                                                                    margin="normal"
+                                                                                    sx={{mt: 2}}
+                                                                                    label="Company"
+                                                                                    placeholder="Select company"
+                                                                                    error={!!errors.companyId}
+                                                                                    helperText={errors.companyId?.message || 'Select your company for this workday.'}
+                                                />}
                                             />
                                         )}
                                     />
 
                                     {/* Client */}
-                                    <FormLabel>Client</FormLabel>
                                     <Controller
                                         name="clientId"
                                         control={control}
@@ -531,13 +569,18 @@ function EditPartRidePageWrapper() {
                                                 }}
                                                 value={clientsData?.data.find((cl) => cl.id === field.value) || null}
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"/>}
+                                                                                    margin="normal"
+                                                                                    sx={{mt: 2}}
+                                                                                    label="Client"
+                                                                                    placeholder="Select client"
+                                                                                    error={!!errors.clientId}
+                                                                                    helperText={errors.clientId?.message || 'Select the client for this workday.'}
+                                                />}
                                             />
                                         )}
                                     />
 
                                     {/* Car */}
-                                    <FormLabel>Car</FormLabel>
                                     <Controller
                                         name="carId"
                                         control={control}
@@ -550,13 +593,18 @@ function EditPartRidePageWrapper() {
                                                 onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                                 value={carsData?.cars?.find((ca) => ca.id === field.value) || null}
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"/>}
+                                                                                    margin="normal"
+                                                                                    sx={{mt: 2}}
+                                                                                    label="Car"
+                                                                                    placeholder="Select car"
+                                                                                    error={!!errors.carId}
+                                                                                    helperText={errors.carId?.message || 'Select the car used for this workday.'}
+                                                />}
                                             />
                                         )}
                                     />
 
                                     {/* Ride */}
-                                    <FormLabel>Ride</FormLabel>
                                     <Controller
                                         name="rideId"
                                         control={control}
@@ -569,13 +617,18 @@ function EditPartRidePageWrapper() {
                                                 onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                                 value={ridesData?.data.find((ri) => ri.id === field.value) || null}
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"/>}
+                                                                                    margin="normal"
+                                                                                    sx={{mt: 2}}
+                                                                                    label="Ride"
+                                                                                    placeholder="Select ride"
+                                                                                    error={!!errors.rideId}
+                                                                                    helperText={errors.rideId?.message || 'Select the ride for this workday.'}
+                                                />}
                                             />
                                         )}
                                     />
 
                                     {/* Charter */}
-                                    <FormLabel>Charter</FormLabel>
                                     <Controller
                                         name="charterId"
                                         control={control}
@@ -588,11 +641,18 @@ function EditPartRidePageWrapper() {
                                                 onChange={(_, newValue) => field.onChange(newValue?.id || '')}
                                                 value={chartersData?.data.find((ch) => ch.id === field.value) || null}
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"/>}
+                                                                                    margin="normal"
+                                                                                    sx={{mt: 2}}
+                                                                                    label="Charter"
+                                                                                    placeholder="Select charter"
+                                                                                    error={!!errors.charterId}
+                                                                                    helperText={errors.charterId?.message || 'Select the charter for this workday.'}
+                                                />}
                                             />
                                         )}
                                     />
-                                    <FormLabel>Various Compensation</FormLabel>
+
+                                    {/*Various Compensation*/}
                                     <Controller
                                         name="variousCompensation"
                                         control={control}
@@ -603,83 +663,93 @@ function EditPartRidePageWrapper() {
                                                 variant="outlined"
                                                 fullWidth
                                                 margin="normal"
+                                                sx={{mt: 2}}
+                                                label="Various Compensation (e.g. 10)"
+                                                placeholder="10"
                                                 error={!!errors.variousCompensation}
-                                                helperText={errors.variousCompensation?.message}
+                                                helperText={errors.variousCompensation?.message || 'Enter any additional compensation.'}
+
                                             />
                                         )}
                                     />
                                 </>
                             )}
-                            {/* Kilometers */}
-                            <FormLabel>Extra Kilometers</FormLabel>
-                            <Controller
-                                name="kilometers"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                    />
-                                )}
-                            />
+                            {/* Distance/ Kilometers */}
+                            <Box mb={2}>
+                                <Typography variant="h6">Distance</Typography>
+                                <Controller
+                                    name="kilometers"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            type="number"
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            label="Total Distance / km (e.g. 135)"
+                                            placeholder="135"
+                                            error={!!errors.kilometers}
+                                            helperText={errors.kilometers?.message || 'How many kilometers did you drive today?'}
+                                        />
+                                    )}
+                                />
+                            </Box>
 
-                            {/* Costs */}
-                            <FormLabel>Costs</FormLabel>
-                            <Controller
-                                name="costs"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        type="number"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                    />
-                                )}
-                            />
-                            {/* costsDescription */}
-                            <FormLabel>Costs Description</FormLabel>
-                            <Controller
-                                name="costsDescription"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                    />
-                                )}
-                            />
-
+                            {/* Expenses */}
+                            <Box mb={2}>
+                                <Typography variant="h6">Expenses</Typography>
+                                <Controller
+                                    name="costs"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            type="number"
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            label="Total Expenses (€) (e.g. 40)"
+                                            placeholder="40"
+                                            error={!!errors.costs}
+                                            helperText={errors.costs?.message || 'Enter the full amount you spent today (fuel, tolls, meals, tunnels, AdBlue, etc.)'}
+                                        />
+                                    )}
+                                />
+                            </Box>
                             {/* Upload Receipts (modular) */}
                             <Box mb={2}>
                                 <Typography variant="h6">Upload Receipts</Typography>
                                 <Typography variant="body1" mb={1}>
                                     Add any files related to the trip (fuel, toll, hotel, etc.)
                                 </Typography>
-                                <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds} />                        </Box>
+                                <FileUploadBox uploadUrl="/temporary-uploads" onIdsChange={setTempFileIds}/>
+                            </Box>
 
-                            <Divider sx={{my: 2}} />
+                            <Divider sx={{my: 2}}/>
 
-                            {/* remark (visible for all) */}
-                            <FormLabel>Remark</FormLabel>
-                            <Controller
-                                name="remark"
-                                control={control}
-                                render={({field}) => (
-                                    <TextField
-                                        {...field}
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                    />
-                                )}
-                            />
+                            {/* Comments */}
+                            <Box mb={0}>
+                                <Typography variant="h6">Comments</Typography>
+                                <Controller
+                                    name="remark"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            multiline
+                                            minRows={3}
+                                            label="Your comment"
+                                            placeholder="Optional — add any notes for Transport Admin"
+                                            error={!!errors.remark}
+                                            helperText={errors.remark?.message || "Use if there's something important about this workday."}
+                                        />
+                                    )}
+                                />
+                            </Box>
                         </AccordionDetails>
                     </Accordion>
 
