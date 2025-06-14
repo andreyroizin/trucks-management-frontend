@@ -250,7 +250,7 @@ function EditPartRidePageWrapper() {
         }
     };
 
-    const handleFileClick = async (file: ApplicationFile): void => {
+    const handleFileClick = async (file: ApplicationFile): Promise<void> => {
         await downloadFile(file)
     };
 
