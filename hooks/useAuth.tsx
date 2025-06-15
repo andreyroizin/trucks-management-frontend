@@ -73,6 +73,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         if (response.isSuccess) {
             const {token} = response.data;
             localStorage.setItem('authToken', token); // Save the token
+            document.cookie = `auth=${token}; path=/; SameSite=Lax; Secure`;
             const currentUser = await getCurrentUser(); // Fetch user details
             setUser(currentUser);
             setIsAuthenticated(true);
@@ -86,6 +87,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const handleLogout = () => {
         apiLogout();
         localStorage.removeItem('authToken');
+        document.cookie = 'auth=; path=/; max-age=0';
         setUser(null);
         setIsAuthenticated(false);
     };
