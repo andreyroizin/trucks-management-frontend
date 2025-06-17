@@ -10,7 +10,6 @@ import {
     Divider,
     IconButton,
     Paper,
-    Stack,
     Table,
     TableBody,
     TableCell,
@@ -22,11 +21,12 @@ import {
     Typography,
 } from '@mui/material';
 import SyncIcon from '@mui/icons-material/Sync';
-import { useQueryClient } from '@tanstack/react-query';
+import {useQueryClient} from '@tanstack/react-query';
 import Autocomplete from '@mui/material/Autocomplete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import CloseIcon from '@mui/icons-material/Close';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
 
@@ -364,20 +364,29 @@ export default function TripsManagementPage() {
                         py: 1,
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 2,
+                        gap: 3,
                     }}
                 >
-                    <Typography variant="body2" fontWeight={600}>{selectedIds.length} selected</Typography>
+                    <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>
+                        {selectedIds.length} selected
+                    </Typography>
                     <Divider orientation="vertical" flexItem />
-                    <IconButton size="small" color="success">
-                        <CheckCircleOutlineIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" color="info">
-                        <ReportProblemOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" color="error">
-                        <DeleteOutlineIcon fontSize="small" />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <TaskAltRoundedIcon fontSize="small" />
+                        <Typography variant="body2">Approve</Typography>
+                    </Box>
+                    <Divider orientation="vertical" flexItem />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ErrorOutlineIcon fontSize="small" />
+                        <Typography variant="body2">Open Dispute</Typography>
+                    </Box>
+                    <Divider orientation="vertical" flexItem />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <CloseIcon fontSize="small" />
+                        <Typography variant="body2">Reject</Typography>
+                    </Box>
+                    <Divider orientation="vertical" flexItem />
+                    <DeleteOutlineIcon fontSize="small" />
                 </Box>
             )}
         </Box>
