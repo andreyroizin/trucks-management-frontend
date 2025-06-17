@@ -21,14 +21,13 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import SyncIcon from '@mui/icons-material/Sync';
+import { useQueryClient } from '@tanstack/react-query';
 import Autocomplete from '@mui/material/Autocomplete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 
 import {useRouter, useSearchParams} from 'next/navigation';
@@ -38,11 +37,18 @@ import {useClients} from '@/hooks/useClients';
 import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+import DateInputField from '@/components/DateInputField';
 
 export default function TripsManagementPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isAuthenticated, loading: authLoading } = useAuth();
+
+    const queryClient = useQueryClient();
+
+    const handleRefetch = async () => {
+      await queryClient.invalidateQueries({ queryKey: ['partRides'] });
+    };
 
     // Ensure only authenticated users can access
     useEffect(() => {
@@ -57,8 +63,8 @@ export default function TripsManagementPage() {
     const [driverId, setDriverId] = useState(searchParams.get('driverId') || '');
     const [carId, setCarId] = useState(searchParams.get('carId') || '');
     const [status, setStatus] = useState<string | undefined>();
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+    const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
 
     // Hooks for filter dropdown data
     // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
@@ -66,12 +72,11 @@ export default function TripsManagementPage() {
     const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
     const { data: carsData, isLoading: isLoadingCars } = useCars('', 1, 1000);
 
-    console.log(carsData)
     // Pagination
     const [pageNumber, setPageNumber] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const { data: rides, isLoading } = usePartRides({
+    const { data: rides, isLoading, isRefetching } = usePartRides({
       // companyId,
       clientId,
       driverId,
@@ -80,14 +85,16 @@ export default function TripsManagementPage() {
       pageSize: rowsPerPage,
     });
 
-    useEffect(() => {
-      const params = new URLSearchParams();
-      // if (companyId) params.set('companyId', companyId);
-      if (clientId) params.set('clientId', clientId);
-      if (driverId) params.set('driverId', driverId);
-      if (carId) params.set('carId', carId);
-      router.replace(`/partrides?${params.toString()}`);
-    }, [ clientId, driverId, carId, router]);
+  // useEffect(() => {
+  //     const params = new URLSearchParams();
+  //     // if (companyId) params.set('companyId', companyId);
+  //     if (clientId) params.set('clientId', clientId);
+  //     if (driverId) params.set('driverId', driverId);
+  //     if (carId) params.set('carId', carId);
+  //     if (startDate) params.set('startDate', startDate.toISOString());
+  //     if (endDate) params.set('endDate', endDate.toISOString());
+  //     router.replace(`/partrides?${params.toString()}`);
+  //   }, [clientId, driverId, carId, startDate, endDate, router]);
 
     /** ────────────────────────────────────────────────────────────────
      * Row selection handling
@@ -135,87 +142,105 @@ export default function TripsManagementPage() {
             </Box>
 
             {/* Filters */}
-            <Stack direction="row" spacing={2} mb={3}>
-                <Autocomplete
-                    size="small"
-                    options={['Pending', 'Approved', 'Changes']}
-                    value={status ? status[0].toUpperCase() + status.slice(1) : null}
-                    onChange={(_, newValue) =>
-                        setStatus(newValue ? newValue.toLowerCase() : undefined)
-                    }
-                    sx={{ minWidth: 140 }}
-                    renderInput={(params) => <TextField {...params} label="Status" />}
-                    freeSolo={false}
-                />
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between' }} >
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
+                    <Autocomplete
+                        size="small"
+                        options={['Pending', 'Approved', 'Changes']}
+                        value={status ? status[0].toUpperCase() + status.slice(1) : null}
+                        onChange={(_, newValue) =>
+                            setStatus(newValue ? newValue.toLowerCase() : undefined)
+                        }
+                        sx={{ minWidth: 160, maxWidth: 160 }}
+                        renderInput={(params) => <TextField {...params} label="Status" />}
+                        freeSolo={false}
+                    />
 
-                <Autocomplete
-                    size="small"
-                    options={carsData?.cars || []}
-                    getOptionLabel={(o)=> o.licensePlate}
-                    loading={isLoadingCars}
-                    value={carsData?.cars?.find((c)=>c.id===carId) || null}
-                    onChange={(_,v)=> setCarId(v?.id || '')}
-                    sx={{ minWidth: 160 }}
-                    renderInput={(p)=><TextField {...p} label="Vehicle" />}
-                />
+                    <Autocomplete
+                        size="small"
+                        options={carsData?.cars || []}
+                        getOptionLabel={(o)=> o.licensePlate}
+                        loading={isLoadingCars}
+                        value={carsData?.cars?.find((c)=>c.id===carId) || null}
+                        onChange={(_,v)=> setCarId(v?.id || '')}
+                        sx={{ minWidth: 160, maxWidth: 160 }}
+                        renderInput={(p)=><TextField {...p} label="Vehicle" />}
+                    />
 
+                    <Autocomplete
+                        size="small"
+                        options={driversData || []}
+                        getOptionLabel={(o)=> (o.user?.firstName + ' ' + o.user?.lastName)}
+                        loading={isLoadingDrivers}
+                        value={driversData?.find((d)=>d.id===driverId) || null}
+                        onChange={(_,v)=> setDriverId(v?.id || '')}
+                        sx={{ minWidth: 160, maxWidth: 160 }}
+                        renderInput={(p)=><TextField {...p} label="Driver" />}
+                    />
 
-                <Autocomplete
-                    size="small"
-                    options={driversData || []}
-                    getOptionLabel={(o)=> (o.user?.firstName + ' ' + o.user?.lastName)}
-                    loading={isLoadingDrivers}
-                    value={driversData?.find((d)=>d.id===driverId) || null}
-                    onChange={(_,v)=> setDriverId(v?.id || '')}
-                    sx={{ minWidth: 160 }}
-                    renderInput={(p)=><TextField {...p} label="Driver" />}
-                />
+                    <Autocomplete
+                        size="small"
+                        options={clientsData?.data || []}
+                        getOptionLabel={(o)=>o.name}
+                        loading={isLoadingClients}
+                        value={clientsData?.data.find((c)=>c.id===clientId) || null}
+                        onChange={(_,v)=> setClientId(v?.id || '')}
+                        sx={{ minWidth: 160, maxWidth: 160 }}
+                        renderInput={(p)=><TextField {...p} label="Client" />}
+                    />
 
+                    {/* Company */}
+                    {/*<Autocomplete*/}
+                    {/*  size="small"*/}
+                    {/*  options={companiesData?.data || []}*/}
+                    {/*  getOptionLabel={(o) => o.name}*/}
+                    {/*  loading={isLoadingCompanies}*/}
+                    {/*  value={companiesData?.data.find((c)=>c.id===companyId) || null}*/}
+                    {/*  onChange={(_, v) => {*/}
+                    {/*    setCompanyId(v?.id || '');*/}
+                    {/*    setCarId(''); // reset dependent*/}
+                    {/*  }}*/}
+                    {/*  sx={{ minWidth: 160 }}*/}
+                    {/*  renderInput={(p)=> <TextField {...p} label="Company" />}*/}
+                    {/*/>*/}
+                </Box>
 
-                <Autocomplete
-                    size="small"
-                    options={clientsData?.data || []}
-                    getOptionLabel={(o)=>o.name}
-                    loading={isLoadingClients}
-                    value={clientsData?.data.find((c)=>c.id===clientId) || null}
-                    onChange={(_,v)=> setClientId(v?.id || '')}
-                    sx={{ minWidth: 160 }}
-                    renderInput={(p)=><TextField {...p} label="Client" />}
-                />
-
-                {/* Company */}
-                {/*<Autocomplete*/}
-                {/*  size="small"*/}
-                {/*  options={companiesData?.data || []}*/}
-                {/*  getOptionLabel={(o) => o.name}*/}
-                {/*  loading={isLoadingCompanies}*/}
-                {/*  value={companiesData?.data.find((c)=>c.id===companyId) || null}*/}
-                {/*  onChange={(_, v) => {*/}
-                {/*    setCompanyId(v?.id || '');*/}
-                {/*    setCarId(''); // reset dependent*/}
-                {/*  }}*/}
-                {/*  sx={{ minWidth: 160 }}*/}
-                {/*  renderInput={(p)=> <TextField {...p} label="Company" />}*/}
-                {/*/>*/}
-
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                        slotProps={{ textField: { size: 'small' } }}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
+                    <DateInputField
                         label="Start date"
-                        value={startDate ? dayjs(startDate) : null}
-                        onChange={(dt) => setStartDate(dt ? dt.toDate() : null)}
-                    />
-                    <DatePicker
+                        name="startDate"
+                        value={startDate}
+                        sx={{ maxWidth: 160 }}
+                        onDateChange={setStartDate}
                         slotProps={{ textField: { size: 'small' } }}
-                        label="End date"
-                        value={endDate ? dayjs(endDate) : null}
-                        onChange={(dt) => setEndDate(dt ? dt.toDate() : null)}
                     />
-                </LocalizationProvider>
-            </Stack>
+                    -
+                    <DateInputField
+                        label="End date"
+                        name="endDate"
+                        value={endDate}
+                        sx={{ maxWidth: 160 }}
+                        onDateChange={setEndDate}
+                        slotProps={{ textField: { size: 'small' } }}
+                    />
+                </Box>
+            </Box>
 
             {/* Table */}
-            <Paper variant="outlined">
+            <Paper variant="outlined" sx={{p: 3}}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="h4" fontWeight={500}>
+                        Resent records
+                    </Typography>
+                    {(isLoading || isRefetching) ? (
+                        <CircularProgress size={20} />
+                    ) : (
+                        <IconButton onClick={handleRefetch}>
+                            <SyncIcon sx={{ transform: 'rotate(90deg)' }} />
+                        </IconButton>
+                    )}
+                </Box>
+
                 <TableContainer>
                     <Table size="small">
                         <TableHead>
@@ -239,7 +264,7 @@ export default function TripsManagementPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {isLoading ? (
+                            {(isLoading || isRefetching) ? (
                                 <TableRow>
                                     <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
                                         <CircularProgress size={24} />
