@@ -38,6 +38,7 @@ import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import DateInputField from '@/components/DateInputField';
+import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 
 export default function TripsManagementPage() {
     const router = useRouter();
@@ -128,6 +129,34 @@ export default function TripsManagementPage() {
         const conf = map[value] || map.pending;
         return <Chip size="small" label={conf.label} color={conf.color} variant="outlined" />;
     };
+
+    /** ────────────────────────────────────────────────────────────────
+     * Row-level actions
+     * ───────────────────────────────────────────────────────────── */
+    const handleApprove = (row: PartRide) => {
+        console.log('Approving row:', row);
+        // TODO: Implement actual API call or logic
+    };
+
+    const handleDispute = (row: PartRide) => {
+        console.log('Opening dispute for row:', row);
+        // TODO: Implement actual API call or logic
+    };
+
+    const handleReject = (row: PartRide) => {
+        console.log('Rejecting row:', row);
+        // TODO: Implement actual API call or logic
+    };
+
+    const handleEdit = (row: PartRide) => {
+        console.log('Editing row:', row);
+        // TODO: Navigate or open modal for editing
+    };
+
+    // const handleExport = (row: PartRide) => {
+    //     console.log('Exporting row:', row);
+    //     // TODO: Export logic
+    // };
 
     /** ────────────────────────────────────────────────────────────────
      * Render
@@ -260,7 +289,7 @@ export default function TripsManagementPage() {
                                 <TableCell align="right">Hours</TableCell>
                                 <TableCell>Deviation</TableCell>
                                 <TableCell align="right">Forecasted (€)</TableCell>
-                                <TableCell>Status</TableCell>
+                                <TableCell>Statuses & Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -289,7 +318,18 @@ export default function TripsManagementPage() {
                                         <TableCell align="right" sx={{ py: 2.6 }}>{row.decimalHours}</TableCell>
                                         <TableCell sx={{ py: 2.6 }}>N/A</TableCell>
                                         <TableCell align="right" sx={{ py: 2. }}>€{row.turnover}</TableCell>
-                                        <TableCell sx={{ py: 2.4 }}>{statusChip(row)}</TableCell>
+                                        <TableCell sx={{ py: 2.4 }}>
+                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: .5 }}>
+                                            {statusChip(row)}
+                                            <PartRideActionsMenu
+                                                onApprove={() => handleApprove(row)}
+                                                onOpenDispute={() => handleDispute(row)}
+                                                onReject={() => handleReject(row)}
+                                                onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
+                                                // onExport={() => handleExport(row)}
+                                            />
+                                         </Box>
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             )}
