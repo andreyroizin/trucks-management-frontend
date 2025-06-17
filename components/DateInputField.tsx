@@ -8,19 +8,26 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { TextField } from '@mui/material';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface DateInputFieldProps {
+export interface DateInputFieldProps {
     name: string;
-    control: any;
+    control?: any;
     label?: string;
     placeholder?: string;
     helperText?: string;
     timezone?: string;
     error?: boolean;
     errorMessage?: string;
+    slotProps?: Partial<{
+        textField: Partial<React.ComponentProps<typeof TextField>>;
+        [key: string]: any;
+    }>;
+    value?: dayjs.Dayjs | null;
+    onDateChange?: (value: dayjs.Dayjs | null) => void;
 }
 
 const DateInputField: React.FC<DateInputFieldProps> = ({
@@ -32,33 +39,66 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
                                                            timezone = 'Europe/Amsterdam',
                                                            error = false,
                                                            errorMessage = '',
+                                                           slotProps,
+                                                           value,
+                                                           onDateChange,
                                                        }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Controller
-                name={name}
-                control={control}
-                render={({ field }) => (
-                    <DatePicker
-                        {...field}
-                        value={field.value ? dayjs.utc(field.value).tz(timezone) : null}
-                        onChange={(newDate) => {
-                            field.onChange(newDate ? dayjs.utc(newDate).startOf('day').toISOString() : '');
-                        }}
-                        format="DD-MM-YYYY"
-                        slotProps={{
-                            textField: {
-                                fullWidth: true,
-                                margin: 'normal',
-                                label,
-                                placeholder,
-                                error,
-                                helperText: errorMessage || helperText,
-                            },
-                        }}
-                    />
-                )}
-            />
+            {control ? (
+                <Controller
+                    name={name}
+                    control={control}
+                    render={({ field }) => (
+                        <DatePicker
+                            {...field}
+                            value={value ?? (field.value ? dayjs.utc(field.value).tz(timezone) : null)}
+                            onChange={(newDate) => {
+                                field.onChange(newDate ? newDate.utc().startOf('day').toISOString() : '');
+                                if (onDateChange) {
+                                    onDateChange(newDate);
+                                }
+                            }}
+                            format="DD-MM-YYYY"
+                            slotProps={{
+                                textField: {
+                                    fullWidth: true,
+                                    margin: 'normal',
+                                    label,
+                                    placeholder,
+                                    error,
+                                    helperText: errorMessage || helperText,
+                                    ...(slotProps?.textField || {}),
+                                },
+                                ...slotProps,
+                            }}
+                        />
+                    )}
+                />
+            ) : (
+                <DatePicker
+                    value={value}
+                    onChange={(newDate) => {
+                        if (onDateChange) {
+                            onDateChange(newDate);
+                        }
+                    }}
+                    label={label}
+                    format="DD-MM-YYYY"
+                    slotProps={{
+                        textField: {
+                            fullWidth: true,
+                            margin: 'normal',
+                            label,
+                            placeholder,
+                            error,
+                            helperText: errorMessage || helperText,
+                            ...(slotProps?.textField || {}),
+                        },
+                        ...slotProps,
+                    }}
+                />
+            )}
         </LocalizationProvider>
     );
 };
