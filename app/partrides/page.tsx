@@ -1,372 +1,320 @@
+// app/trips/page.tsx
 'use client';
 
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
-    Typography,
+    Checkbox,
+    Chip,
+    CircularProgress,
+    Divider,
+    IconButton,
+    Paper,
+    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
-    Paper,
-    CircularProgress,
-    Alert,
     TablePagination,
-    Button,
+    TableRow,
     TextField,
+    Typography,
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { usePartRides } from '@/hooks/usePartRides';
-// REPLACE OR ADAPT the next lines with your actual hooks for companies, clients, drivers, cars:
-import { useCompanies } from '@/hooks/useCompanies';
-import { useClients } from '@/hooks/useClients';
-import { useDrivers } from '@/hooks/useDrivers';
-import { useCars } from '@/hooks/useCars';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import {PartRide, usePartRides} from '@/hooks/usePartRides';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
 
-function PartRidesWrapperPage() {
+import {useRouter, useSearchParams} from 'next/navigation';
+import {useAuth} from '@/hooks/useAuth';
+// import { useCompanies } from '@/hooks/useCompanies';
+import {useClients} from '@/hooks/useClients';
+import {useDrivers} from '@/hooks/useDrivers';
+import {useCars} from '@/hooks/useCars';
+import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+
+export default function TripsManagementPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isAuthenticated, loading: authLoading } = useAuth();
 
     // Ensure only authenticated users can access
     useEffect(() => {
-        if (!authLoading && !isAuthenticated) {
-            router.push('/auth/login');
-        }
+      if (!authLoading && !isAuthenticated) {
+        router.push('/auth/login');
+      }
     }, [authLoading, isAuthenticated, router]);
 
     // Local states for filters (prefilled from URL)
-    const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
+    // const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
     const [clientId, setClientId] = useState(searchParams.get('clientId') || '');
     const [driverId, setDriverId] = useState(searchParams.get('driverId') || '');
     const [carId, setCarId] = useState(searchParams.get('carId') || '');
-    const [weekNumber, setWeekNumber] = useState(searchParams.get('weekNumber') || '');
-    const [turnoverMin, setTurnoverMin] = useState(searchParams.get('turnoverMin') || '');
-    const [turnoverMax, setTurnoverMax] = useState(searchParams.get('turnoverMax') || '');
-    const [decimalHoursMin, setDecimalHoursMin] = useState(searchParams.get('decimalHoursMin') || '');
-    const [decimalHoursMax, setDecimalHoursMax] = useState(searchParams.get('decimalHoursMax') || '');
+    const [status, setStatus] = useState<string | undefined>();
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
 
-    // Hooks for filter data
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
+    // Hooks for filter dropdown data
+    // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
     const { data: clientsData, isLoading: isLoadingClients } = useClients(1, 1000);
     const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
-    const { data: carsData, isLoading: isLoadingCars } = useCars(companyId, 1, 1000);
+    const { data: carsData, isLoading: isLoadingCars } = useCars('', 1, 1000);
 
+    console.log(carsData)
     // Pagination
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    // Query for part rides
-    const {
-        data: partRidesData,
-        isLoading,
-        isError,
-        error,
-    } = usePartRides({
-        companyId,
-        clientId,
-        driverId,
-        carId,
-        weekNumber,
-        turnoverMin,
-        turnoverMax,
-        decimalHoursMin,
-        decimalHoursMax,
-        pageNumber: page + 1,
-        pageSize,
+    const { data: rides, isLoading } = usePartRides({
+      // companyId,
+      clientId,
+      driverId,
+      carId,
+      pageNumber,
+      pageSize: rowsPerPage,
     });
 
-    // Sync URL with local states
     useEffect(() => {
-        const params = new URLSearchParams();
-        if (companyId) params.set('companyId', companyId);
-        if (clientId) params.set('clientId', clientId);
-        if (driverId) params.set('driverId', driverId);
-        if (carId) params.set('carId', carId);
-        if (weekNumber) params.set('weekNumber', weekNumber);
-        if (turnoverMin) params.set('turnoverMin', turnoverMin);
-        if (turnoverMax) params.set('turnoverMax', turnoverMax);
-        if (decimalHoursMin) params.set('decimalHoursMin', decimalHoursMin);
-        if (decimalHoursMax) params.set('decimalHoursMax', decimalHoursMax);
+      const params = new URLSearchParams();
+      // if (companyId) params.set('companyId', companyId);
+      if (clientId) params.set('clientId', clientId);
+      if (driverId) params.set('driverId', driverId);
+      if (carId) params.set('carId', carId);
+      router.replace(`/partrides?${params.toString()}`);
+    }, [ clientId, driverId, carId, router]);
 
-        router.replace(`/partrides?${params.toString()}`);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [companyId, clientId, driverId, carId, weekNumber, turnoverMin, turnoverMax, decimalHoursMin, decimalHoursMax]);
-
-    // Pagination handlers
-    const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-    const handleChangePageSize = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPageSize(parseInt(e.target.value, 10));
-        setPage(0);
+    /** ────────────────────────────────────────────────────────────────
+     * Row selection handling
+     * ───────────────────────────────────────────────────────────── */
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const toggleRow = (id: string) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+    const toggleAll = () => {
+        if (!rides?.data) return;
+        if (selectedIds.length === rides.data.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(rides.data.map((r) => r.id));
+        }
     };
 
-    if (authLoading || isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
+    /** ────────────────────────────────────────────────────────────────
+     * Helpers
+     * ───────────────────────────────────────────────────────────── */
+    const statusChip = (r: PartRide) => {
+        // Placeholder – infer status from hours/remark until real field exists
+        const value = (r as any).status ?? 'pending';
+        const map: Record<string, { label: string; color: 'success' | 'warning' | 'info' }> = {
+            approved: { label: 'Approved', color: 'success' },
+            changes: { label: 'Changes', color: 'warning' },
+            pending: { label: 'Pending', color: 'info' },
+        };
+        const conf = map[value] || map.pending;
+        return <Chip size="small" label={conf.label} color={conf.color} variant="outlined" />;
+    };
 
-    if (isError) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load part rides.'}</Alert>
-            </Box>
-        );
-    }
-
+    /** ────────────────────────────────────────────────────────────────
+     * Render
+     * ───────────────────────────────────────────────────────────── */
     return (
-        <Box maxWidth="lg" mx="auto" p={4}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h4" gutterBottom>
-                    Part Rides
+        <Box sx={{ py: 4 }}>
+            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h2" fontWeight={500}>
+                    Trips Management
                 </Typography>
-                <Link href="/partrides/create" passHref>
-                    <Button variant="contained" color="primary">
-                        Create Part ride
-                    </Button>
-                </Link>
+                <LanguageSelectDesktop/>
             </Box>
 
-            {/* FILTERS */}
-            <Box display="flex" flexWrap="wrap" gap={2} mb={2}>
-
-                {/* Company Filter */}
+            {/* Filters */}
+            <Stack direction="row" spacing={2} mb={3}>
                 <Autocomplete
-                    sx={{ width: 250 }}
-                    options={companiesData?.data || []}
-                    getOptionLabel={(option) => option.name || ''}
-                    loading={isLoadingCompanies}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    value={companiesData?.data.find((co) => co.id === companyId) || null}
-                    onChange={(_, newVal) => {
-                        setCompanyId(newVal?.id || '');
-                        setPage(0);
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Company"
-                            variant="outlined"
-                            size="small"
-                        />
-                    )}
+                    size="small"
+                    options={['Pending', 'Approved', 'Changes']}
+                    value={status ? status[0].toUpperCase() + status.slice(1) : null}
+                    onChange={(_, newValue) =>
+                        setStatus(newValue ? newValue.toLowerCase() : undefined)
+                    }
+                    sx={{ minWidth: 140 }}
+                    renderInput={(params) => <TextField {...params} label="Status" />}
+                    freeSolo={false}
                 />
 
-                {/* Client Filter */}
                 <Autocomplete
-                    sx={{ width: 250 }}
-                    options={clientsData?.data || []}
-                    loading={isLoadingClients}
-                    getOptionLabel={(option) => option.name || ''}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    value={clientsData?.data.find((cl) => cl.id === clientId) || null}
-                    onChange={(_, newVal) => {
-                        setClientId(newVal?.id || '');
-                        setPage(0);
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Client"
-                            variant="outlined"
-                            size="small"
-                        />
-                    )}
-                />
-
-                {/* Driver Filter */}
-                <Autocomplete
-                    sx={{ width: 250 }}
-                    options={driversData || []}
-                    loading={isLoadingDrivers}
-                    getOptionLabel={(option) => `${option?.user?.firstName} ${option?.user?.lastName}` || ''}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    value={driversData?.find((dr) => dr.id === driverId) || null}
-                    onChange={(_, newVal) => {
-                        setDriverId(newVal?.id || '');
-                        setPage(0);
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Driver"
-                            variant="outlined"
-                            size="small"
-                        />
-                    )}
-                />
-
-                {/* Car Filter */}
-                <Autocomplete
-                    sx={{ width: 250 }}
+                    size="small"
                     options={carsData?.cars || []}
+                    getOptionLabel={(o)=> o.licensePlate}
                     loading={isLoadingCars}
-                    getOptionLabel={(option) => option.licensePlate || ''}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    value={carsData?.cars.find((ca) => ca.id === carId) || null}
-                    onChange={(_, newVal) => {
-                        setCarId(newVal?.id || '');
-                        setPage(0);
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Car"
-                            variant="outlined"
-                            size="small"
-                        />
-                    )}
+                    value={carsData?.cars?.find((c)=>c.id===carId) || null}
+                    onChange={(_,v)=> setCarId(v?.id || '')}
+                    sx={{ minWidth: 160 }}
+                    renderInput={(p)=><TextField {...p} label="Vehicle" />}
                 />
 
-                {/* weekNumber */}
-                <TextField
-                    label="Week Number"
-                    variant="outlined"
+
+                <Autocomplete
                     size="small"
-                    value={weekNumber}
-                    onChange={(e) => {
-                        setWeekNumber(e.target.value);
-                        setPage(0);
-                    }}
-                    sx={{ width: 130 }}
+                    options={driversData || []}
+                    getOptionLabel={(o)=> (o.user?.firstName + ' ' + o.user?.lastName)}
+                    loading={isLoadingDrivers}
+                    value={driversData?.find((d)=>d.id===driverId) || null}
+                    onChange={(_,v)=> setDriverId(v?.id || '')}
+                    sx={{ minWidth: 160 }}
+                    renderInput={(p)=><TextField {...p} label="Driver" />}
                 />
 
-                {/* turnoverMin */}
-                <TextField
-                    label="Turnover Min"
-                    variant="outlined"
+
+                <Autocomplete
                     size="small"
-                    value={turnoverMin}
-                    onChange={(e) => {
-                        setTurnoverMin(e.target.value);
-                        setPage(0);
-                    }}
-                    sx={{ width: 130 }}
+                    options={clientsData?.data || []}
+                    getOptionLabel={(o)=>o.name}
+                    loading={isLoadingClients}
+                    value={clientsData?.data.find((c)=>c.id===clientId) || null}
+                    onChange={(_,v)=> setClientId(v?.id || '')}
+                    sx={{ minWidth: 160 }}
+                    renderInput={(p)=><TextField {...p} label="Client" />}
                 />
 
-                {/* turnoverMax */}
-                <TextField
-                    label="Turnover Max"
-                    variant="outlined"
-                    size="small"
-                    value={turnoverMax}
-                    onChange={(e) => {
-                        setTurnoverMax(e.target.value);
-                        setPage(0);
-                    }}
-                    sx={{ width: 130 }}
-                />
+                {/* Company */}
+                {/*<Autocomplete*/}
+                {/*  size="small"*/}
+                {/*  options={companiesData?.data || []}*/}
+                {/*  getOptionLabel={(o) => o.name}*/}
+                {/*  loading={isLoadingCompanies}*/}
+                {/*  value={companiesData?.data.find((c)=>c.id===companyId) || null}*/}
+                {/*  onChange={(_, v) => {*/}
+                {/*    setCompanyId(v?.id || '');*/}
+                {/*    setCarId(''); // reset dependent*/}
+                {/*  }}*/}
+                {/*  sx={{ minWidth: 160 }}*/}
+                {/*  renderInput={(p)=> <TextField {...p} label="Company" />}*/}
+                {/*/>*/}
 
-                {/* decimalHoursMin */}
-                <TextField
-                    label="Dec.Hrs Min"
-                    variant="outlined"
-                    size="small"
-                    value={decimalHoursMin}
-                    onChange={(e) => {
-                        setDecimalHoursMin(e.target.value);
-                        setPage(0);
-                    }}
-                    sx={{ width: 130 }}
-                />
-
-                {/* decimalHoursMax */}
-                <TextField
-                    label="Dec.Hrs Max"
-                    variant="outlined"
-                    size="small"
-                    value={decimalHoursMax}
-                    onChange={(e) => {
-                        setDecimalHoursMax(e.target.value);
-                        setPage(0);
-                    }}
-                    sx={{ width: 130 }}
-                />
-
-                {/* Clear Button */}
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {
-                        setCompanyId('');
-                        setClientId('');
-                        setDriverId('');
-                        setCarId('');
-                        setWeekNumber('');
-                        setTurnoverMin('');
-                        setTurnoverMax('');
-                        setDecimalHoursMin('');
-                        setDecimalHoursMax('');
-                        setPage(0);
-                    }}
-                >
-                    Clear
-                </Button>
-            </Box>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        slotProps={{ textField: { size: 'small' } }}
+                        label="Start date"
+                        value={startDate ? dayjs(startDate) : null}
+                        onChange={(dt) => setStartDate(dt ? dt.toDate() : null)}
+                    />
+                    <DatePicker
+                        slotProps={{ textField: { size: 'small' } }}
+                        label="End date"
+                        value={endDate ? dayjs(endDate) : null}
+                        onChange={(dt) => setEndDate(dt ? dt.toDate() : null)}
+                    />
+                </LocalizationProvider>
+            </Stack>
 
             {/* Table */}
-            <TableContainer component={Paper}>
-                <Table aria-label="part rides table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Date</TableCell>
-                            <TableCell>Start</TableCell>
-                            <TableCell>End</TableCell>
-                            <TableCell>Company</TableCell>
-                            <TableCell>Client</TableCell>
-                            <TableCell>Driver</TableCell>
-                            <TableCell>Car</TableCell>
-                            <TableCell>Turnover</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {partRidesData?.data.map((ride) => (
-                            <TableRow
-                                key={ride.id}
-                                hover
-                                component={Link}
-                                href={`/partrides/${ride.id}`}
-                                sx={{ textDecoration: 'none', cursor: 'pointer' }}
-                            >
-                                <TableCell>{ride.date?.substring(0, 10)}</TableCell>
-                                <TableCell>{ride.start}</TableCell>
-                                <TableCell>{ride.end}</TableCell>
-                                <TableCell>{ride.company?.name || 'N/A'}</TableCell>
-                                <TableCell>{ride.client?.name || 'N/A'}</TableCell>
-                                <TableCell>{ride.driver ? ride.driver.id : 'N/A'}</TableCell>
-                                <TableCell>{ride.carId || 'N/A'}</TableCell>
-                                <TableCell>{ride.turnover}</TableCell>
+            <Paper variant="outlined">
+                <TableContainer>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        size="small"
+                                        indeterminate={selectedIds.length > 0 && selectedIds.length < (rides?.data.length || 0)}
+                                        checked={!!rides?.data.length && selectedIds.length === rides.data.length}
+                                        onChange={toggleAll}
+                                    />
+                                </TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Driver</TableCell>
+                                <TableCell>Vehicle</TableCell>
+                                <TableCell>Client</TableCell>
+                                <TableCell align="right">Hours</TableCell>
+                                <TableCell>Deviation</TableCell>
+                                <TableCell align="right">Forecasted (€)</TableCell>
+                                <TableCell>Status</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {isLoading ? (
+                                <TableRow>
+                                    <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
+                                        <CircularProgress size={24} />
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                rides?.data.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        hover
+                                        selected={selectedIds.includes(row.id)}
+                                        sx={{ cursor: 'pointer' }}
+                                        onClick={() => toggleRow(row.id)}
+                                    >
+                                        <TableCell padding="checkbox">
+                                            <Checkbox size="small" checked={selectedIds.includes(row.id)} />
+                                        </TableCell>
+                                        <TableCell>{dayjs(row.date).format('DD.MM.YY')}</TableCell>
+                                        <TableCell>John M.</TableCell>
+                                        <TableCell>{row.carId ?? 'N/A'}</TableCell>
+                                        <TableCell>{row.client?.name ?? 'N/A'}</TableCell>
+                                        <TableCell align="right">{row.decimalHours.toFixed(2)}</TableCell>
+                                        <TableCell>N/A</TableCell>
+                                        <TableCell align="right">€{row.turnover.toFixed(2)}</TableCell>
+                                        <TableCell>{statusChip(row)}</TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
                 <TablePagination
                     component="div"
-                    count={partRidesData?.totalCount || 0}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={pageSize}
-                    onRowsPerPageChange={handleChangePageSize}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    count={rides?.totalCount || 0}
+                    rowsPerPage={rowsPerPage}
+                    page={pageNumber - 1}
+                    onPageChange={(_, newPage) => setPageNumber(newPage + 1)}
+                    onRowsPerPageChange={(e) => {
+                      setRowsPerPage(parseInt(e.target.value, 10));
+                      setPageNumber(1);
+                    }}
                 />
-            </TableContainer>
+            </Paper>
+
+            {/* Selection action bar */}
+            {selectedIds.length > 0 && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        left: 80,
+                        top: 120,
+                        backgroundColor: 'background.paper',
+                        boxShadow: 3,
+                        borderRadius: 1,
+                        px: 2,
+                        py: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                    }}
+                >
+                    <Typography variant="body2" fontWeight={600}>{selectedIds.length} selected</Typography>
+                    <Divider orientation="vertical" flexItem />
+                    <IconButton size="small" color="success">
+                        <CheckCircleOutlineIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" color="info">
+                        <ReportProblemOutlinedIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" color="error">
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+            )}
         </Box>
     );
 }
-
-export default function PartRidesPage() {
-    return (
-        <Suspense fallback={<CircularProgress />}>
-            <PartRidesWrapperPage/>
-        </Suspense>
-    );
-}
-
