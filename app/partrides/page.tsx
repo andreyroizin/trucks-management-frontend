@@ -115,6 +115,26 @@ export default function TripsManagementPage() {
         }
     };
 
+    const handleApproveSelected = () => {
+        console.log('Approving selected:', selectedIds);
+        // TODO: Implement bulk approve logic
+    };
+
+    const handleDisputeSelected = () => {
+        console.log('Opening dispute for selected:', selectedIds);
+        // TODO: Implement bulk dispute logic
+    };
+
+    const handleRejectSelected = () => {
+        console.log('Rejecting selected:', selectedIds);
+        // TODO: Implement bulk reject logic
+    };
+
+    const handleDeleteSelected = () => {
+        console.log('Deleting selected:', selectedIds);
+        // TODO: Implement bulk delete logic
+    };
+
     /** ────────────────────────────────────────────────────────────────
      * Helpers
      * ───────────────────────────────────────────────────────────── */
@@ -374,23 +394,37 @@ export default function TripsManagementPage() {
                         <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>
                             {selectedIds.length} selected
                         </Typography>
-                        <Divider orientation="vertical" flexItem />
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            onClick={() => handleApproveSelected()}
+                        >
                             <TaskAltRoundedIcon fontSize="small" />
                             <Typography variant="body2">Approve</Typography>
                         </Box>
-                        <Divider orientation="vertical" flexItem />
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            onClick={() => handleDisputeSelected()}
+                        >
                             <ErrorOutlineIcon fontSize="small" />
                             <Typography variant="body2">Open Dispute</Typography>
                         </Box>
-                        <Divider orientation="vertical" flexItem />
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            onClick={() => handleRejectSelected()}
+                        >
                             <CloseIcon fontSize="small" />
                             <Typography variant="body2">Reject</Typography>
                         </Box>
-                        <Divider orientation="vertical" flexItem />
-                        <DeleteOutlineIcon fontSize="small" />
+                        <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            onClick={() => handleDeleteSelected()}
+                        >
+                            <DeleteOutlineIcon fontSize="small" />
+                        </Box>
                     </Box>
                 </Box>
             )}
