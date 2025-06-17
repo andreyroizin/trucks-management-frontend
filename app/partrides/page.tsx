@@ -321,29 +321,49 @@ export default function TripsManagementPage() {
                                         hover
                                         selected={selectedIds.includes(row.id)}
                                         sx={{ cursor: 'pointer' }}
-                                        onClick={() => toggleRow(row.id)}
+                                        onClick={() => router.push(`/partrides/${row.id}`)}
                                     >
                                         <TableCell padding="checkbox" sx={{ py: 2.6 }}>
-                                            <Checkbox size="small" checked={selectedIds.includes(row.id)} />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>{dayjs(row.date).format('DD.MM.YY')}</TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>John M.</TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>{row.carId ?? 'N/A'}</TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>{row.client?.name ?? 'N/A'}</TableCell>
-                                        <TableCell align="right" sx={{ py: 2.6 }}>{row.decimalHours}</TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>N/A</TableCell>
-                                        <TableCell align="right" sx={{ py: 2. }}>€{row.turnover}</TableCell>
-                                        <TableCell sx={{ py: 2.4 }}>
-                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: .5 }}>
-                                            {statusChip(row)}
-                                            <PartRideActionsMenu
-                                                onApprove={() => handleApprove(row)}
-                                                onOpenDispute={() => handleDispute(row)}
-                                                onReject={() => handleReject(row)}
-                                                onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
-                                                // onExport={() => handleExport(row)}
+                                            <Checkbox
+                                                size="small"
+                                                checked={selectedIds.includes(row.id)}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onChange={() => toggleRow(row.id)}
                                             />
-                                         </Box>
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            {dayjs(row.date).format('DD.MM.YY')}
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            John M.
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            {row.carId ?? 'N/A'}
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            {row.client?.name ?? 'N/A'}
+                                        </TableCell>
+                                        <TableCell align="right" sx={{ py: 2.6 }}>
+                                            {row.decimalHours}
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            N/A
+                                        </TableCell>
+                                        <TableCell align="right" sx={{ py: 2. }}>
+                                            €{row.turnover}
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.4 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: .5 }}>
+                                                {statusChip(row)}
+                                                <Box onClick={(e) => e.stopPropagation()}>
+                                                    <PartRideActionsMenu
+                                                        onApprove={() => handleApprove(row)}
+                                                        onOpenDispute={() => handleDispute(row)}
+                                                        onReject={() => handleReject(row)}
+                                                        onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
+                                                    />
+                                                </Box>
+                                            </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))
