@@ -168,15 +168,10 @@ export default function TripsManagementPage() {
         // TODO: Implement actual API call or logic
     };
 
-    const handleEdit = (row: PartRide) => {
-        console.log('Editing row:', row);
-        // TODO: Navigate or open modal for editing
-    };
-
     // const handleExport = (row: PartRide) => {
     //     console.log('Exporting row:', row);
-    //     // TODO: Export logic
     // };
+
 
     /** ────────────────────────────────────────────────────────────────
      * Render
