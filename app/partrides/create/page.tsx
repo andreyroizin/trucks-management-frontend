@@ -2,17 +2,11 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {Alert, Box, Button, CircularProgress, Divider, FormLabel, TextField, Typography,} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Divider, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -31,10 +25,6 @@ import FileUploadBox from '@/components/FileUploadBox';
 import DateInputField from "@/components/DateInputField";
 
 export default function CreatePartRidePage() {
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-
-    const AMSTERDAM_TZ = "Europe/Amsterdam";
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');

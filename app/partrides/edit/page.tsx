@@ -8,8 +8,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -25,10 +23,7 @@ import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import {useRides} from '@/hooks/useRides';
 import {useCharters} from '@/hooks/useCharters';
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {DatePicker} from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
+import DateInputField from '@/components/DateInputField';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileTile from "@/components/FileTile";
@@ -36,11 +31,6 @@ import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
 import {ApplicationFile} from "@/types/file";
 
 function EditPartRidePageWrapper() {
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-
-    const AMSTERDAM_TZ = "Europe/Amsterdam";
-
     const router = useRouter();
     const searchParams = useSearchParams();
     const partRideId = searchParams.get('id') || '';
@@ -288,39 +278,15 @@ function EditPartRidePageWrapper() {
                 )}
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Box width="100%">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <Controller
-                                name="date"
-                                control={control}
-                                render={({field}) => (
-                                    <DatePicker
-                                        {...field}
-                                        // Convert stored UTC date to Amsterdam time for display
-                                        value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
-                                        onChange={(newDate) => {
-                                            if (newDate) {
-                                                // Convert user-selected date to UTC midnight before saving
-                                                const utcMidnight = dayjs.utc(newDate).startOf("day").toISOString();
-                                                field.onChange(utcMidnight);
-                                            } else {
-                                                field.onChange('');
-                                            }
-                                        }}
-                                        format="DD-MM-YYYY"
-                                        slotProps={{
-                                            textField: {
-                                                fullWidth: true,
-                                                margin: "normal",
-                                                label: "Date (dd-mm-yy)",
-                                                placeholder: "dd-mm-yy",
-                                                error: !!errors.date,
-                                                helperText: errors.date?.message || 'Select the day you worked',
-                                            },
-                                        }}
-                                    />
-                                )}
-                            />
-                        </LocalizationProvider>
+                        <DateInputField
+                            name="date"
+                            control={control}
+                            label="Date (dd-mm-yy)"
+                            placeholder="dd-mm-yy"
+                            helperText="Select the day you worked"
+                            error={!!errors.date}
+                            errorMessage={errors.date?.message}
+                        />
                     </Box>
                     <Controller
                         name="start"
