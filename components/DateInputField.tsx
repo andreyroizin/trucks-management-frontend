@@ -28,6 +28,7 @@ export interface DateInputFieldProps {
     }>;
     value?: dayjs.Dayjs | null;
     onDateChange?: (value: dayjs.Dayjs | null) => void;
+    sx?: React.CSSProperties;
 }
 
 const DateInputField: React.FC<DateInputFieldProps> = ({
@@ -42,6 +43,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
                                                            slotProps,
                                                            value,
                                                            onDateChange,
+                                                           sx,
                                                        }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -59,6 +61,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
                                     onDateChange(newDate);
                                 }
                             }}
+                            sx={sx}
                             format="DD-MM-YYYY"
                             slotProps={{
                                 textField: {
@@ -84,6 +87,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
                         }
                     }}
                     label={label}
+                    sx={sx}
                     format="DD-MM-YYYY"
                     slotProps={{
                         textField: {
