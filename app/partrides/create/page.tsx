@@ -28,6 +28,7 @@ import {useCharters} from '@/hooks/useCharters';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileUploadBox from '@/components/FileUploadBox';
+import DateInputField from "@/components/DateInputField";
 
 export default function CreatePartRidePage() {
     dayjs.extend(utc);
@@ -223,39 +224,15 @@ export default function CreatePartRidePage() {
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Date */}
                 <Box width="100%">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <Controller
-                            name="date"
-                            control={control}
-                            render={({field}) => (
-                                <DatePicker
-                                    {...field}
-                                    // Convert the stored UTC date to Amsterdam time for display
-                                    value={field.value ? dayjs.utc(field.value).tz(AMSTERDAM_TZ) : null}
-                                    onChange={(newDate) => {
-                                        if (newDate) {
-                                            // Convert user-selected date to UTC midnight (00:00:00Z)
-                                            const utcMidnight = dayjs.utc(newDate).startOf("day").toISOString();
-                                            field.onChange(utcMidnight);
-                                        } else {
-                                            field.onChange('');
-                                        }
-                                    }}
-                                    format="DD-MM-YYYY"
-                                    slotProps={{
-                                        textField: {
-                                            fullWidth: true,
-                                            margin: "normal",
-                                            label: "Date (dd-mm-yy)",
-                                            placeholder: "dd-mm-yy",
-                                            error: !!errors.date,
-                                            helperText: errors.date?.message || 'Select the day you worked',
-                                        },
-                                    }}
-                                />
-                            )}
-                        />
-                    </LocalizationProvider>
+                    <DateInputField
+                        name="date"
+                        control={control}
+                        label="Date (dd-mm-yy)"
+                        placeholder="dd-mm-yy"
+                        helperText="Select the day you worked"
+                        error={!!errors.date}
+                        errorMessage={errors.date?.message}
+                    />
                 </Box>
                 {/* Start Time */}
                 <Controller
