@@ -228,7 +228,7 @@ export default function TripsManagementPage() {
 
             {/* Table */}
             <Paper variant="outlined" sx={{p: 3}}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                     <Typography variant="h4" fontWeight={500}>
                         Resent records
                     </Typography>
@@ -279,17 +279,17 @@ export default function TripsManagementPage() {
                                         sx={{ cursor: 'pointer' }}
                                         onClick={() => toggleRow(row.id)}
                                     >
-                                        <TableCell padding="checkbox">
+                                        <TableCell padding="checkbox" sx={{ py: 2.6 }}>
                                             <Checkbox size="small" checked={selectedIds.includes(row.id)} />
                                         </TableCell>
-                                        <TableCell>{dayjs(row.date).format('DD.MM.YY')}</TableCell>
-                                        <TableCell>John M.</TableCell>
-                                        <TableCell>{row.carId ?? 'N/A'}</TableCell>
-                                        <TableCell>{row.client?.name ?? 'N/A'}</TableCell>
-                                        <TableCell align="right">{row.decimalHours.toFixed(2)}</TableCell>
-                                        <TableCell>N/A</TableCell>
-                                        <TableCell align="right">€{row.turnover.toFixed(2)}</TableCell>
-                                        <TableCell>{statusChip(row)}</TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>{dayjs(row.date).format('DD.MM.YY')}</TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>John M.</TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>{row.carId ?? 'N/A'}</TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>{row.client?.name ?? 'N/A'}</TableCell>
+                                        <TableCell align="right" sx={{ py: 2.6 }}>{row.decimalHours}</TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>N/A</TableCell>
+                                        <TableCell align="right" sx={{ py: 2. }}>€{row.turnover}</TableCell>
+                                        <TableCell sx={{ py: 2.4 }}>{statusChip(row)}</TableCell>
                                     </TableRow>
                                 ))
                             )}
@@ -298,7 +298,7 @@ export default function TripsManagementPage() {
                 </TableContainer>
                 <TablePagination
                     component="div"
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[5, 10, 25, 50, 100, 200]}
                     count={rides?.totalCount || 0}
                     rowsPerPage={rowsPerPage}
                     page={pageNumber - 1}
