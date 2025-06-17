@@ -355,38 +355,43 @@ export default function TripsManagementPage() {
                 <Box
                     sx={{
                         position: 'fixed',
-                        left: 80,
-                        top: 120,
+                        top: 16,
+                        right: 16,
+                        zIndex: 1100,
                         backgroundColor: 'background.paper',
                         boxShadow: 3,
                         borderRadius: 1,
                         px: 2,
                         py: 1,
-                        display: 'flex',
+                        display: 'inline-flex',
+                        flexWrap: 'wrap',
                         alignItems: 'center',
                         gap: 3,
+                        maxWidth: 'calc(100% - 32px)',
                     }}
                 >
-                    <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>
-                        {selectedIds.length} selected
-                    </Typography>
-                    <Divider orientation="vertical" flexItem />
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <TaskAltRoundedIcon fontSize="small" />
-                        <Typography variant="body2">Approve</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: .5, flexWrap: 'wrap' }}>
+                        <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>
+                            {selectedIds.length} selected
+                        </Typography>
+                        <Divider orientation="vertical" flexItem />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <TaskAltRoundedIcon fontSize="small" />
+                            <Typography variant="body2">Approve</Typography>
+                        </Box>
+                        <Divider orientation="vertical" flexItem />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <ErrorOutlineIcon fontSize="small" />
+                            <Typography variant="body2">Open Dispute</Typography>
+                        </Box>
+                        <Divider orientation="vertical" flexItem />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CloseIcon fontSize="small" />
+                            <Typography variant="body2">Reject</Typography>
+                        </Box>
+                        <Divider orientation="vertical" flexItem />
+                        <DeleteOutlineIcon fontSize="small" />
                     </Box>
-                    <Divider orientation="vertical" flexItem />
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <ErrorOutlineIcon fontSize="small" />
-                        <Typography variant="body2">Open Dispute</Typography>
-                    </Box>
-                    <Divider orientation="vertical" flexItem />
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <CloseIcon fontSize="small" />
-                        <Typography variant="body2">Reject</Typography>
-                    </Box>
-                    <Divider orientation="vertical" flexItem />
-                    <DeleteOutlineIcon fontSize="small" />
                 </Box>
             )}
         </Box>
