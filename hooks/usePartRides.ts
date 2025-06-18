@@ -45,9 +45,10 @@ export type PartRidesResponse = {
 // --- FETCH FUNCTION ---
 const fetchPartRides = async ({
                                   companyId,
-                                  clientId,
+                                  clientIds,
                                   driverIds,
-                                  carId,
+                                  carIds,
+                                  statusIds,
                                   weekNumber,
                                   turnoverMin,
                                   turnoverMax,
@@ -57,9 +58,10 @@ const fetchPartRides = async ({
                                   pageSize,
                               }: {
     companyId?: string;
-    clientId?: string;
+    clientIds?: string[];
     driverIds?: string[];
-    carId?: string;
+    carIds?: string[];
+    statusIds?: string[];
     weekNumber?: string;
     turnoverMin?: string;
     turnoverMax?: string;
@@ -70,11 +72,10 @@ const fetchPartRides = async ({
 }): Promise<PartRidesResponse> => {
     const queryParams = new URLSearchParams();
     if (companyId) queryParams.set('companyId', companyId);
-    if (clientId) queryParams.set('clientId', clientId);
-    if (driverIds && driverIds.length > 0) {
-        driverIds.forEach(id => queryParams.append('driverIds', id));
-    }
-    if (carId) queryParams.set('carId', carId);
+    clientIds?.forEach(id => queryParams.append('clientIds', id));
+    driverIds?.forEach(id => queryParams.append('driverIds', id));
+    carIds?.forEach(id => queryParams.append('carIds', id));
+    statusIds?.forEach(id => queryParams.append('statusIds', id));
     if (weekNumber) queryParams.set('weekNumber', weekNumber);
     if (turnoverMin) queryParams.set('turnoverMin', turnoverMin);
     if (turnoverMax) queryParams.set('turnoverMax', turnoverMax);
@@ -96,9 +97,10 @@ const fetchPartRides = async ({
 // --- QUERY HOOK ---
 export const usePartRides = ({
                                  companyId,
-                                 clientId,
+                                 clientIds,
                                  driverIds,
-                                 carId,
+                                 carIds,
+                                 statusIds,
                                  weekNumber,
                                  turnoverMin,
                                  turnoverMax,
@@ -108,9 +110,10 @@ export const usePartRides = ({
                                  pageSize,
                              }: {
     companyId?: string;
-    clientId?: string;
+    clientIds?: string[];
     driverIds?: string[];
-    carId?: string;
+    carIds?: string[];
+    statusIds?: string[];
     weekNumber?: string;
     turnoverMin?: string;
     turnoverMax?: string;
@@ -123,9 +126,10 @@ export const usePartRides = ({
         queryKey: [
             'partRides',
             companyId,
-            clientId,
+            clientIds,
             driverIds,
-            carId,
+            carIds,
+            statusIds,
             weekNumber,
             turnoverMin,
             turnoverMax,
@@ -137,9 +141,10 @@ export const usePartRides = ({
         queryFn: () =>
             fetchPartRides({
                 companyId,
-                clientId,
+                clientIds,
                 driverIds,
-                carId,
+                carIds,
+                statusIds,
                 weekNumber,
                 turnoverMin,
                 turnoverMax,

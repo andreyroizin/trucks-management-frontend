@@ -60,10 +60,10 @@ export default function TripsManagementPage() {
 
     // Local states for filters (prefilled from URL)
     // const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
-    const [clientId, setClientId] = useState(searchParams.get('clientId') || '');
+    const [clientIds, setClientIds] = useState<string[]>([]);
     const [driverIds, setDriverIds] = useState<string[]>([]);
-    const [carId, setCarId] = useState(searchParams.get('carId') || '');
-    const [status, setStatus] = useState<string | undefined>();
+    const [carIds, setCarIds] = useState<string[]>([]);
+    const [statusIds, setStatusIds] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
     const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
 
@@ -79,9 +79,10 @@ export default function TripsManagementPage() {
 
     const {data: rides, isLoading, isRefetching} = usePartRides({
         // companyId,
-        clientId,
+        clientIds,
         driverIds,
-        carId,
+        carIds,
+        statusIds,
         pageNumber,
         pageSize: rowsPerPage,
     });
@@ -189,11 +190,14 @@ export default function TripsManagementPage() {
             <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between'}}>
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <Autocomplete
+                        multiple
                         size="small"
                         options={['Pending', 'Approved', 'Changes']}
-                        value={status ? status[0].toUpperCase() + status.slice(1) : null}
-                        onChange={(_, newValue) =>
-                            setStatus(newValue ? newValue.toLowerCase() : undefined)
+                        value={statusIds.map(
+                            s => s[0].toUpperCase() + s.slice(1)
+                        )}
+                        onChange={(_, newValues) =>
+                            setStatusIds(newValues.map(v => v.toLowerCase()))
                         }
                         sx={{minWidth: 160, maxWidth: 160}}
                         renderInput={(params) => <TextField {...params} label="Status"/>}
@@ -201,12 +205,15 @@ export default function TripsManagementPage() {
                     />
 
                     <Autocomplete
+                        multiple
                         size="small"
                         options={carsData?.cars || []}
                         getOptionLabel={(o) => o.licensePlate}
                         loading={isLoadingCars}
-                        value={carsData?.cars?.find((c) => c.id === carId) || null}
-                        onChange={(_, v) => setCarId(v?.id || '')}
+                        value={carsData?.cars?.filter((c) => carIds.includes(c.id)) || []}
+                        onChange={(_, selected) => {
+                            setCarIds(selected.map((c) => c.id));
+                        }}
                         sx={{minWidth: 160, maxWidth: 160}}
                         renderInput={(p) => <TextField {...p} label="Vehicle"/>}
                     />
@@ -227,12 +234,15 @@ export default function TripsManagementPage() {
                     />
 
                     <Autocomplete
+                        multiple
                         size="small"
                         options={clientsData?.data || []}
                         getOptionLabel={(o) => o.name}
                         loading={isLoadingClients}
-                        value={clientsData?.data.find((c) => c.id === clientId) || null}
-                        onChange={(_, v) => setClientId(v?.id || '')}
+                        value={clientsData?.data?.filter((c) => clientIds.includes(c.id)) || []}
+                        onChange={(_, selected) => {
+                            setClientIds(selected.map((c) => c.id));
+                        }}
                         sx={{minWidth: 160, maxWidth: 160}}
                         renderInput={(p) => <TextField {...p} label="Client"/>}
                     />
