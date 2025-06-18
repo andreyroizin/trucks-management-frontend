@@ -56,7 +56,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
                             {...field}
                             value={value ?? (field.value ? dayjs.utc(field.value).tz(timezone) : null)}
                             onChange={(newDate) => {
-                                field.onChange(newDate ? newDate.utc().startOf('day').toISOString() : '');
+                                field.onChange(newDate ? newDate.format('YYYY-MM-DD') : '');
                                 if (onDateChange) {
                                     onDateChange(newDate);
                                 }
