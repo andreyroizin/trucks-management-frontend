@@ -43,19 +43,19 @@ import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 export default function TripsManagementPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { isAuthenticated, loading: authLoading } = useAuth();
+    const {isAuthenticated, loading: authLoading} = useAuth();
 
     const queryClient = useQueryClient();
 
     const handleRefetch = async () => {
-      await queryClient.invalidateQueries({ queryKey: ['partRides'] });
+        await queryClient.invalidateQueries({queryKey: ['partRides']});
     };
 
     // Ensure only authenticated users can access
     useEffect(() => {
-      if (!authLoading && !isAuthenticated) {
-        router.push('/auth/login');
-      }
+        if (!authLoading && !isAuthenticated) {
+            router.push('/auth/login');
+        }
     }, [authLoading, isAuthenticated, router]);
 
     // Local states for filters (prefilled from URL)
@@ -69,33 +69,33 @@ export default function TripsManagementPage() {
 
     // Hooks for filter dropdown data
     // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
-    const { data: clientsData, isLoading: isLoadingClients } = useClients(1, 1000);
-    const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
-    const { data: carsData, isLoading: isLoadingCars } = useCars('', 1, 1000);
+    const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
+    const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
+    const {data: carsData, isLoading: isLoadingCars} = useCars('', 1, 1000);
 
     // Pagination
     const [pageNumber, setPageNumber] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const { data: rides, isLoading, isRefetching } = usePartRides({
-      // companyId,
-      clientId,
-      driverIds,
-      carId,
-      pageNumber,
-      pageSize: rowsPerPage,
+    const {data: rides, isLoading, isRefetching} = usePartRides({
+        // companyId,
+        clientId,
+        driverIds,
+        carId,
+        pageNumber,
+        pageSize: rowsPerPage,
     });
 
-  // useEffect(() => {
-  //     const params = new URLSearchParams();
-  //     // if (companyId) params.set('companyId', companyId);
-  //     if (clientId) params.set('clientId', clientId);
-  //     if (driverId) params.set('driverId', driverId);
-  //     if (carId) params.set('carId', carId);
-  //     if (startDate) params.set('startDate', startDate.toISOString());
-  //     if (endDate) params.set('endDate', endDate.toISOString());
-  //     router.replace(`/partrides?${params.toString()}`);
-  //   }, [clientId, driverId, carId, startDate, endDate, router]);
+    // useEffect(() => {
+    //     const params = new URLSearchParams();
+    //     // if (companyId) params.set('companyId', companyId);
+    //     if (clientId) params.set('clientId', clientId);
+    //     if (driverId) params.set('driverId', driverId);
+    //     if (carId) params.set('carId', carId);
+    //     if (startDate) params.set('startDate', startDate.toISOString());
+    //     if (endDate) params.set('endDate', endDate.toISOString());
+    //     router.replace(`/partrides?${params.toString()}`);
+    //   }, [clientId, driverId, carId, startDate, endDate, router]);
 
     /** ────────────────────────────────────────────────────────────────
      * Row selection handling
@@ -142,12 +142,12 @@ export default function TripsManagementPage() {
         // Placeholder – infer status from hours/remark until real field exists
         const value = (r as any).status ?? 'pending';
         const map: Record<string, { label: string; color: 'success' | 'warning' | 'info' }> = {
-            approved: { label: 'Approved', color: 'success' },
-            changes: { label: 'Changes', color: 'warning' },
-            pending: { label: 'Pending', color: 'info' },
+            approved: {label: 'Approved', color: 'success'},
+            changes: {label: 'Changes', color: 'warning'},
+            pending: {label: 'Pending', color: 'info'},
         };
         const conf = map[value] || map.pending;
-        return <Chip size="small" label={conf.label} color={conf.color} variant="outlined" />;
+        return <Chip size="small" label={conf.label} color={conf.color} variant="outlined"/>;
     };
 
     /** ────────────────────────────────────────────────────────────────
@@ -177,8 +177,8 @@ export default function TripsManagementPage() {
      * Render
      * ───────────────────────────────────────────────────────────── */
     return (
-        <Box sx={{ py: 4 }}>
-            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{py: 4}}>
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h2" fontWeight={500}>
                     Trips Management
                 </Typography>
@@ -186,7 +186,7 @@ export default function TripsManagementPage() {
             </Box>
 
             {/* Filters */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between' }} >
+            <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between'}}>
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <Autocomplete
                         size="small"
@@ -195,46 +195,46 @@ export default function TripsManagementPage() {
                         onChange={(_, newValue) =>
                             setStatus(newValue ? newValue.toLowerCase() : undefined)
                         }
-                        sx={{ minWidth: 160, maxWidth: 160 }}
-                        renderInput={(params) => <TextField {...params} label="Status" />}
+                        sx={{minWidth: 160, maxWidth: 160}}
+                        renderInput={(params) => <TextField {...params} label="Status"/>}
                         freeSolo={false}
                     />
 
                     <Autocomplete
                         size="small"
                         options={carsData?.cars || []}
-                        getOptionLabel={(o)=> o.licensePlate}
+                        getOptionLabel={(o) => o.licensePlate}
                         loading={isLoadingCars}
-                        value={carsData?.cars?.find((c)=>c.id===carId) || null}
-                        onChange={(_,v)=> setCarId(v?.id || '')}
-                        sx={{ minWidth: 160, maxWidth: 160 }}
-                        renderInput={(p)=><TextField {...p} label="Vehicle" />}
+                        value={carsData?.cars?.find((c) => c.id === carId) || null}
+                        onChange={(_, v) => setCarId(v?.id || '')}
+                        sx={{minWidth: 160, maxWidth: 160}}
+                        renderInput={(p) => <TextField {...p} label="Vehicle"/>}
                     />
 
-              <Autocomplete
+                    <Autocomplete
                         multiple
                         size="small"
                         options={driversData || []}
-                        getOptionLabel={(o)=> (o.user?.firstName + ' ' + o.user?.lastName)}
+                        getOptionLabel={(o) => (o.user?.firstName + ' ' + o.user?.lastName)}
                         loading={isLoadingDrivers}
                         value={driversData?.filter((d) => driverIds.includes(d.id)) || []}
                         onChange={(_, selected) => {
-                          const ids = selected.map((d) => d.id);
-                          setDriverIds(ids);
+                            const ids = selected.map((d) => d.id);
+                            setDriverIds(ids);
                         }}
-                        sx={{ minWidth: 160, maxWidth: 160 }}
-                        renderInput={(p)=><TextField {...p} label="Driver" />}
+                        sx={{minWidth: 160, maxWidth: 160}}
+                        renderInput={(p) => <TextField {...p} label="Driver"/>}
                     />
 
                     <Autocomplete
                         size="small"
                         options={clientsData?.data || []}
-                        getOptionLabel={(o)=>o.name}
+                        getOptionLabel={(o) => o.name}
                         loading={isLoadingClients}
-                        value={clientsData?.data.find((c)=>c.id===clientId) || null}
-                        onChange={(_,v)=> setClientId(v?.id || '')}
-                        sx={{ minWidth: 160, maxWidth: 160 }}
-                        renderInput={(p)=><TextField {...p} label="Client" />}
+                        value={clientsData?.data.find((c) => c.id === clientId) || null}
+                        onChange={(_, v) => setClientId(v?.id || '')}
+                        sx={{minWidth: 160, maxWidth: 160}}
+                        renderInput={(p) => <TextField {...p} label="Client"/>}
                     />
 
                     {/* Company */}
@@ -253,38 +253,45 @@ export default function TripsManagementPage() {
                     {/*/>*/}
                 </Box>
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <DateInputField
                         label="Start date"
                         name="startDate"
                         value={startDate}
-                        sx={{ maxWidth: 160 }}
+                        sx={{maxWidth: 160}}
                         onDateChange={setStartDate}
-                        slotProps={{ textField: { size: 'small' } }}
+                        slotProps={{textField: {size: 'small'}}}
                     />
                     -
                     <DateInputField
                         label="End date"
                         name="endDate"
                         value={endDate}
-                        sx={{ maxWidth: 160 }}
+                        sx={{maxWidth: 160}}
                         onDateChange={setEndDate}
-                        slotProps={{ textField: { size: 'small' } }}
+                        slotProps={{textField: {size: 'small'}}}
                     />
                 </Box>
             </Box>
 
             {/* Table */}
             <Paper variant="outlined" sx={{p: 3}}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 1,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mb: 3
+                }}>
                     <Typography variant="h4" fontWeight={500}>
                         Resent records
                     </Typography>
                     {(isLoading || isRefetching) ? (
-                        <CircularProgress size={20} />
+                        <CircularProgress size={20}/>
                     ) : (
                         <IconButton onClick={handleRefetch}>
-                            <SyncIcon sx={{ transform: 'rotate(90deg)' }} />
+                            <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
                         </IconButton>
                     )}
                 </Box>
@@ -314,8 +321,8 @@ export default function TripsManagementPage() {
                         <TableBody>
                             {(isLoading || isRefetching) ? (
                                 <TableRow>
-                                    <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                                        <CircularProgress size={24} />
+                                    <TableCell colSpan={9} align="center" sx={{py: 6}}>
+                                        <CircularProgress size={24}/>
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -324,10 +331,10 @@ export default function TripsManagementPage() {
                                         key={row.id}
                                         hover
                                         selected={selectedIds.includes(row.id)}
-                                        sx={{ cursor: 'pointer' }}
+                                        sx={{cursor: 'pointer'}}
                                         onClick={() => router.push(`/partrides/${row.id}`)}
                                     >
-                                        <TableCell padding="checkbox" sx={{ py: 2.6 }}>
+                                        <TableCell padding="checkbox" sx={{py: 2.6}}>
                                             <Checkbox
                                                 size="small"
                                                 checked={selectedIds.includes(row.id)}
@@ -335,29 +342,29 @@ export default function TripsManagementPage() {
                                                 onChange={() => toggleRow(row.id)}
                                             />
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
+                                        <TableCell sx={{py: 2.6}}>
                                             {dayjs(row.date).format('DD.MM.YY')}
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
+                                        <TableCell sx={{py: 2.6}}>
                                             John M.
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
+                                        <TableCell sx={{py: 2.6}}>
                                             {row.carId ?? 'N/A'}
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
+                                        <TableCell sx={{py: 2.6}}>
                                             {row.client?.name ?? 'N/A'}
                                         </TableCell>
-                                        <TableCell align="right" sx={{ py: 2.6 }}>
+                                        <TableCell align="right" sx={{py: 2.6}}>
                                             {row.decimalHours}
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
+                                        <TableCell sx={{py: 2.6}}>
                                             N/A
                                         </TableCell>
-                                        <TableCell align="right" sx={{ py: 2.6 }}>
+                                        <TableCell align="right" sx={{py: 2.6}}>
                                             €{row.turnover}
                                         </TableCell>
                                         <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: .5 }}>
+                                            <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
                                                 {statusChip(row)}
                                                 <Box onClick={(e) => e.stopPropagation()}>
                                                     <PartRideActionsMenu
@@ -383,8 +390,8 @@ export default function TripsManagementPage() {
                     page={pageNumber - 1}
                     onPageChange={(_, newPage) => setPageNumber(newPage + 1)}
                     onRowsPerPageChange={(e) => {
-                      setRowsPerPage(parseInt(e.target.value, 10));
-                      setPageNumber(1);
+                        setRowsPerPage(parseInt(e.target.value, 10));
+                        setPageNumber(1);
                     }}
                 />
             </Paper>
@@ -409,40 +416,40 @@ export default function TripsManagementPage() {
                         maxWidth: 'calc(100% - 32px)',
                     }}
                 >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: .5, flexWrap: 'wrap' }}>
-                        <Typography variant="body2" fontWeight={500} sx={{ color: 'primary.main' }}>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: .5, flexWrap: 'wrap'}}>
+                        <Typography variant="body2" fontWeight={500} sx={{color: 'primary.main'}}>
                             {selectedIds.length} selected
                         </Typography>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
                             onClick={() => handleApproveSelected()}
                         >
-                            <TaskAltRoundedIcon fontSize="small" />
+                            <TaskAltRoundedIcon fontSize="small"/>
                             <Typography variant="body2">Approve</Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
                             onClick={() => handleDisputeSelected()}
                         >
-                            <ErrorOutlineIcon fontSize="small" />
+                            <ErrorOutlineIcon fontSize="small"/>
                             <Typography variant="body2">Open Dispute</Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
                             onClick={() => handleRejectSelected()}
                         >
-                            <CloseIcon fontSize="small" />
+                            <CloseIcon fontSize="small"/>
                             <Typography variant="body2">Reject</Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+                            sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
                             onClick={() => handleDeleteSelected()}
                         >
-                            <DeleteOutlineIcon fontSize="small" />
+                            <DeleteOutlineIcon fontSize="small"/>
                         </Box>
                     </Box>
                 </Box>
