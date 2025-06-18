@@ -85,8 +85,8 @@ export default function TripsManagementPage() {
         statusIds,
         pageNumber,
         pageSize: rowsPerPage,
-        startDate: startDate?.isValid() ? startDate.toISOString() : undefined,
-        endDate: endDate?.isValid() ? endDate.toISOString() : undefined,
+        startDate: startDate?.isValid() ? startDate.format('YYYY-MM-DD') : undefined,
+        endDate: endDate?.isValid() ? endDate.format('YYYY-MM-DD') : undefined,
     });
 
     // useEffect(() => {
