@@ -77,7 +77,7 @@ export default function TripsManagementPage() {
     const [pageNumber, setPageNumber] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const {data: rides, isLoading, isRefetching} = usePartRides({
+    const {data: rides, isLoading, isRefetching, error} = usePartRides({
         // companyId,
         clientIds,
         driverIds,
@@ -283,6 +283,23 @@ export default function TripsManagementPage() {
                     />
                 </Box>
             </Box>
+
+            {/* Error display */}
+            {error && (
+                <Box sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'error.main', borderRadius: 1 }}>
+                    {(error as any).response?.data?.errors?.length ? (
+                        (error as any).response.data.errors.map((msg: string, i: number) => (
+                            <Typography key={i} variant="body2" color="error">
+                                {msg}
+                            </Typography>
+                        ))
+                    ) : (
+                        <Typography variant="body2" color="error">
+                            {(error as any)?.message || 'An error occurred while fetching data.'}
+                        </Typography>
+                    )}
+                </Box>
+            )}
 
             {/* Table */}
             <Paper variant="outlined" sx={{p: 3}}>
