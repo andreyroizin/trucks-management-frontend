@@ -54,6 +54,8 @@ const fetchPartRides = async ({
                                   turnoverMax,
                                   decimalHoursMin,
                                   decimalHoursMax,
+                                  startDate,
+                                  endDate,
                                   pageNumber,
                                   pageSize,
                               }: {
@@ -67,6 +69,8 @@ const fetchPartRides = async ({
     turnoverMax?: string;
     decimalHoursMin?: string;
     decimalHoursMax?: string;
+    startDate?: string;
+    endDate?: string;
     pageNumber: number;
     pageSize: number;
 }): Promise<PartRidesResponse> => {
@@ -81,6 +85,8 @@ const fetchPartRides = async ({
     if (turnoverMax) queryParams.set('turnoverMax', turnoverMax);
     if (decimalHoursMin) queryParams.set('decimalHoursMin', decimalHoursMin);
     if (decimalHoursMax) queryParams.set('decimalHoursMax', decimalHoursMax);
+    if (startDate) queryParams.set('startDate', startDate);
+    if (endDate) queryParams.set('endDate', endDate);
 
     queryParams.set('pageNumber', pageNumber.toString());
     queryParams.set('pageSize', pageSize.toString());
@@ -106,6 +112,8 @@ export const usePartRides = ({
                                  turnoverMax,
                                  decimalHoursMin,
                                  decimalHoursMax,
+                                 startDate,
+                                 endDate,
                                  pageNumber,
                                  pageSize,
                              }: {
@@ -119,6 +127,8 @@ export const usePartRides = ({
     turnoverMax?: string;
     decimalHoursMin?: string;
     decimalHoursMax?: string;
+    startDate?: string;
+    endDate?: string;
     pageNumber: number;
     pageSize: number;
 }) => {
@@ -135,6 +145,8 @@ export const usePartRides = ({
             turnoverMax,
             decimalHoursMin,
             decimalHoursMax,
+            startDate,
+            endDate,
             pageNumber,
             pageSize,
         ],
@@ -150,6 +162,8 @@ export const usePartRides = ({
                 turnoverMax,
                 decimalHoursMin,
                 decimalHoursMax,
+                startDate,
+                endDate,
                 pageNumber,
                 pageSize,
             }),
