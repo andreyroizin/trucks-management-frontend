@@ -349,10 +349,10 @@ export default function TripsManagementPage() {
                                         <TableCell sx={{ py: 2.6 }}>
                                             N/A
                                         </TableCell>
-                                        <TableCell align="right" sx={{ py: 2. }}>
+                                        <TableCell align="right" sx={{ py: 2.6 }}>
                                             €{row.turnover}
                                         </TableCell>
-                                        <TableCell sx={{ py: 2.4 }}>
+                                        <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: .5 }}>
                                                 {statusChip(row)}
                                                 <Box onClick={(e) => e.stopPropagation()}>
