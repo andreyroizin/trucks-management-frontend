@@ -46,7 +46,7 @@ export type PartRidesResponse = {
 const fetchPartRides = async ({
                                   companyId,
                                   clientId,
-                                  driverId,
+                                  driverIds,
                                   carId,
                                   weekNumber,
                                   turnoverMin,
@@ -58,7 +58,7 @@ const fetchPartRides = async ({
                               }: {
     companyId?: string;
     clientId?: string;
-    driverId?: string;
+    driverIds?: string[];
     carId?: string;
     weekNumber?: string;
     turnoverMin?: string;
@@ -71,7 +71,9 @@ const fetchPartRides = async ({
     const queryParams = new URLSearchParams();
     if (companyId) queryParams.set('companyId', companyId);
     if (clientId) queryParams.set('clientId', clientId);
-    if (driverId) queryParams.set('driverId', driverId);
+    if (driverIds && driverIds.length > 0) {
+        driverIds.forEach(id => queryParams.append('driverIds', id));
+    }
     if (carId) queryParams.set('carId', carId);
     if (weekNumber) queryParams.set('weekNumber', weekNumber);
     if (turnoverMin) queryParams.set('turnoverMin', turnoverMin);
@@ -95,7 +97,7 @@ const fetchPartRides = async ({
 export const usePartRides = ({
                                  companyId,
                                  clientId,
-                                 driverId,
+                                 driverIds,
                                  carId,
                                  weekNumber,
                                  turnoverMin,
@@ -107,7 +109,7 @@ export const usePartRides = ({
                              }: {
     companyId?: string;
     clientId?: string;
-    driverId?: string;
+    driverIds?: string[];
     carId?: string;
     weekNumber?: string;
     turnoverMin?: string;
@@ -122,7 +124,7 @@ export const usePartRides = ({
             'partRides',
             companyId,
             clientId,
-            driverId,
+            driverIds,
             carId,
             weekNumber,
             turnoverMin,
@@ -136,7 +138,7 @@ export const usePartRides = ({
             fetchPartRides({
                 companyId,
                 clientId,
-                driverId,
+                driverIds,
                 carId,
                 weekNumber,
                 turnoverMin,

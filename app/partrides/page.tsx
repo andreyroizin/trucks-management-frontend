@@ -61,7 +61,7 @@ export default function TripsManagementPage() {
     // Local states for filters (prefilled from URL)
     // const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
     const [clientId, setClientId] = useState(searchParams.get('clientId') || '');
-    const [driverId, setDriverId] = useState(searchParams.get('driverId') || '');
+    const [driverIds, setDriverIds] = useState<string[]>([]);
     const [carId, setCarId] = useState(searchParams.get('carId') || '');
     const [status, setStatus] = useState<string | undefined>();
     const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
@@ -80,7 +80,7 @@ export default function TripsManagementPage() {
     const { data: rides, isLoading, isRefetching } = usePartRides({
       // companyId,
       clientId,
-      driverId,
+      driverIds,
       carId,
       pageNumber,
       pageSize: rowsPerPage,
@@ -211,13 +211,17 @@ export default function TripsManagementPage() {
                         renderInput={(p)=><TextField {...p} label="Vehicle" />}
                     />
 
-                    <Autocomplete
+              <Autocomplete
+                        multiple
                         size="small"
                         options={driversData || []}
                         getOptionLabel={(o)=> (o.user?.firstName + ' ' + o.user?.lastName)}
                         loading={isLoadingDrivers}
-                        value={driversData?.find((d)=>d.id===driverId) || null}
-                        onChange={(_,v)=> setDriverId(v?.id || '')}
+                        value={driversData?.filter((d) => driverIds.includes(d.id)) || []}
+                        onChange={(_, selected) => {
+                          const ids = selected.map((d) => d.id);
+                          setDriverIds(ids);
+                        }}
                         sx={{ minWidth: 160, maxWidth: 160 }}
                         renderInput={(p)=><TextField {...p} label="Driver" />}
                     />
