@@ -30,8 +30,14 @@ export type PartRide = {
     driver?: {
         id: string;
         aspNetUserId: string;
+        firstName: string;
+        lastName: string;
     };
-    carId?: string;
+    car?: {
+        id: string;
+        licensePlate: string;
+    };
+    earnings: number
 };
 
 export type PartRidesResponse = {

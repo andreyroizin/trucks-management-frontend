@@ -183,7 +183,7 @@ export default function TripsManagementPage() {
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h2" fontWeight={500}>
-                    Trips Management
+                    Workdays Management
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
@@ -201,7 +201,7 @@ export default function TripsManagementPage() {
                         onChange={(_, newValues) =>
                             setStatusIds(newValues.map(v => v.toLowerCase()))
                         }
-                        sx={{minWidth: 160, maxWidth: 160}}
+                        sx={{minWidth: 200, maxWidth: 200}}
                         renderInput={(params) => <TextField {...params} label="Status"/>}
                         freeSolo={false}
                     />
@@ -216,7 +216,7 @@ export default function TripsManagementPage() {
                         onChange={(_, selected) => {
                             setCarIds(selected.map((c) => c.id));
                         }}
-                        sx={{minWidth: 160, maxWidth: 160}}
+                        sx={{minWidth: 200, maxWidth: 200}}
                         renderInput={(p) => <TextField {...p} label="Vehicle"/>}
                     />
 
@@ -231,7 +231,7 @@ export default function TripsManagementPage() {
                             const ids = selected.map((d) => d.id);
                             setDriverIds(ids);
                         }}
-                        sx={{minWidth: 160, maxWidth: 160}}
+                        sx={{minWidth: 200, maxWidth: 200}}
                         renderInput={(p) => <TextField {...p} label="Driver"/>}
                     />
 
@@ -245,7 +245,7 @@ export default function TripsManagementPage() {
                         onChange={(_, selected) => {
                             setClientIds(selected.map((c) => c.id));
                         }}
-                        sx={{minWidth: 160, maxWidth: 160}}
+                        sx={{minWidth: 200, maxWidth: 200}}
                         renderInput={(p) => <TextField {...p} label="Client"/>}
                     />
 
@@ -270,7 +270,7 @@ export default function TripsManagementPage() {
                         label="Start date"
                         name="startDate"
                         value={startDate}
-                        sx={{maxWidth: 160}}
+                        sx={{maxWidth: 200}}
                         onDateChange={setStartDate}
                         slotProps={{textField: {size: 'small'}}}
                     />
@@ -279,7 +279,7 @@ export default function TripsManagementPage() {
                         label="End date"
                         name="endDate"
                         value={endDate}
-                        sx={{maxWidth: 160}}
+                        sx={{maxWidth: 200}}
                         onDateChange={setEndDate}
                         slotProps={{textField: {size: 'small'}}}
                     />
@@ -375,10 +375,10 @@ export default function TripsManagementPage() {
                                             {dayjs(row.date).format('DD.MM.YY')}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            John M.
+                                            {(row.driver?.firstName && row.driver?.lastName) ? row.driver?.firstName + ' ' + row.driver?.lastName : 'N/A'}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            {row.carId ?? 'N/A'}
+                                            {row.car?.licensePlate ?? 'N/A'}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
                                             {row.client?.name ?? 'N/A'}
@@ -390,7 +390,7 @@ export default function TripsManagementPage() {
                                             N/A
                                         </TableCell>
                                         <TableCell align="right" sx={{py: 2.6}}>
-                                            €{row.turnover}
+                                            €{row.earnings}
                                         </TableCell>
                                         <TableCell>
                                             <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
