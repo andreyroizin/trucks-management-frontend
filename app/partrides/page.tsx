@@ -104,6 +104,35 @@ export default function TripsManagementPage() {
     //   }, [clientId, driverId, carId, startDate, endDate, router]);
 
     /** ────────────────────────────────────────────────────────────────
+     * Bulk delete handler
+     * ───────────────────────────────────────────────────────────── */
+   const handleConfirmBulkDelete = async () => {
+       setIsBulkDeleting(true);
+
+       try {
+           for (const id of selectedIds) {
+               await new Promise<void>((resolve, reject) => {
+                   deletePartRide(id, {
+                       onSuccess: resolve,
+                       onError: (err) => {
+                           console.error('Deletion failed:', err);
+                           alert(err?.message || 'Failed to delete one or more workdays');
+                           reject(err);
+                       },
+                   });
+               });
+           }
+
+           setSelectedIds([]);
+           setConfirmBulkDeleteOpen(false);
+       } catch (err) {
+           console.error('One or more deletions failed', err);
+       } finally {
+           setIsBulkDeleting(false);
+       }
+   };
+
+    /** ────────────────────────────────────────────────────────────────
      * Row selection handling
      * ───────────────────────────────────────────────────────────── */
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -512,29 +541,7 @@ export default function TripsManagementPage() {
                 title="Confirm Bulk Deletion"
                 message={`Are you sure you want to delete ${bulkDeleteCount} workdays?`}
                 onClose={() => setConfirmBulkDeleteOpen(false)}
-                onConfirm={async () => {
-                    setIsBulkDeleting(true);
-                    try {
-                        await Promise.all(
-                            selectedIds.map(id =>
-                                new Promise<void>((resolve, reject) => {
-                                    deletePartRide(id, {
-                                        onSuccess: resolve,
-                                        onError: (err) => {
-                                            alert(err?.message || 'Failed to delete one or more workdays');
-                                            reject(err);
-                                        },
-                                    });
-                                })
-                            )
-                        );
-                        setSelectedIds([]);
-                    } finally {
-                        setIsBulkDeleting(false);
-                        setSelectedIds([]);
-                        setConfirmBulkDeleteOpen(false);
-                    }
-                }}
+                onConfirm={handleConfirmBulkDelete}
             />
         </Box>
     );
