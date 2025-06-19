@@ -131,9 +131,14 @@ export default function TripsManagementPage() {
         // TODO: Implement bulk reject logic
     };
 
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
+    const [bulkDeleteCount, setBulkDeleteCount] = useState(0);
+
     const handleDeleteSelected = () => {
-        console.log('Deleting selected:', selectedIds);
-        // TODO: Implement bulk delete logic
+        if (selectedIds.length === 0) return;
+        setBulkDeleteCount(selectedIds.length);
+        setConfirmBulkDeleteOpen(true);
     };
 
     /** ────────────────────────────────────────────────────────────────
@@ -470,9 +475,14 @@ export default function TripsManagementPage() {
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
                             sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
-                            onClick={() => handleDeleteSelected()}
+                            onClick={handleDeleteSelected}
                         >
-                            <DeleteOutlineIcon fontSize="small"/>
+                            {isBulkDeleting ? (
+                                <CircularProgress size={16} />
+                            ) : (
+                                <DeleteOutlineIcon fontSize="small" />
+                            )}
+                            <Typography variant="body2">Delete</Typography>
                         </Box>
                     </Box>
                 </Box>
@@ -483,11 +493,46 @@ export default function TripsManagementPage() {
                 message="Are you sure you want to delete this ride?"
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={() => {
-                    if (confirmDeleteId) {
-                        deletePartRide(confirmDeleteId, {
-                            onSuccess: () => setConfirmDeleteId(null),
-                            onError: () => setConfirmDeleteId(null),
-                        });
+                    if (!confirmDeleteId) return;
+                    deletePartRide(confirmDeleteId, {
+                        onSettled: () => {
+                            setConfirmDeleteId(null);
+                        },
+                        onSuccess: () => {
+                            setSelectedIds([]);
+                        },
+                        onError: (error) => {
+                            alert(error?.message || 'Failed to delete the workday');
+                        },
+                    });
+                }}
+            />
+            <ConfirmModal
+                open={confirmBulkDeleteOpen}
+                title="Confirm Bulk Deletion"
+                message={`Are you sure you want to delete ${bulkDeleteCount} workdays?`}
+                onClose={() => setConfirmBulkDeleteOpen(false)}
+                onConfirm={async () => {
+                    setIsBulkDeleting(true);
+                    try {
+                        await Promise.all(
+                            selectedIds.map(id =>
+                                new Promise<void>((resolve, reject) => {
+                                    deletePartRide(id, {
+                                        onSuccess: resolve,
+                                        onError: (err) => {
+                                            alert(err?.message || 'Failed to delete one or more workdays');
+                                            reject(err);
+                                        },
+                                    });
+                                })
+                            )
+                        );
+                        setSelectedIds([]);
+                    } finally {
+                        setIsBulkDeleting(false);
+                        setSelectedIds([]);
+                        setConfirmBulkDeleteOpen(false);
                     }
                 }}
             />
