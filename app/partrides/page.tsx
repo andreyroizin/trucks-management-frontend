@@ -190,7 +190,7 @@ export default function TripsManagementPage() {
 
             {/* Filters */}
             <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between'}}>
-                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
                     <Autocomplete
                         multiple
                         size="small"
@@ -202,7 +202,7 @@ export default function TripsManagementPage() {
                             setStatusIds(newValues.map(v => v.toLowerCase()))
                         }
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(params) => <TextField {...params} label="Status"/>}
+                        renderInput={(params) => <TextField {...params} label="Statuses"/>}
                         freeSolo={false}
                     />
 
@@ -217,7 +217,7 @@ export default function TripsManagementPage() {
                             setCarIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Vehicle"/>}
+                        renderInput={(p) => <TextField {...p} label="Vehicles"/>}
                     />
 
                     <Autocomplete
@@ -232,7 +232,7 @@ export default function TripsManagementPage() {
                             setDriverIds(ids);
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Driver"/>}
+                        renderInput={(p) => <TextField {...p} label="Drivers"/>}
                     />
 
                     <Autocomplete
@@ -246,7 +246,7 @@ export default function TripsManagementPage() {
                             setClientIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Client"/>}
+                        renderInput={(p) => <TextField {...p} label="Clients"/>}
                     />
 
                     {/* Company */}
@@ -265,7 +265,7 @@ export default function TripsManagementPage() {
                     {/*/>*/}
                 </Box>
 
-                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
                     <DateInputField
                         label="Start date"
                         name="startDate"
