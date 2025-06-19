@@ -1,5 +1,7 @@
 'use client';
 
+import ConfirmModal from '@/components/ConfirmModal';
+import {useDeletePartRide} from '@/hooks/useDeletePartRide';
 import React, {useEffect, useState} from 'react';
 import {
     Box,
@@ -24,7 +26,6 @@ import {useQueryClient} from '@tanstack/react-query';
 import Autocomplete from '@mui/material/Autocomplete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CloseIcon from '@mui/icons-material/Close';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
@@ -75,6 +76,10 @@ export default function TripsManagementPage() {
     const [pageNumber, setPageNumber] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    // Confirm delete modal state
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const { mutate: deletePartRide} = useDeletePartRide();
+
     const {data: rides, isLoading, isRefetching, error} = usePartRides({
         // companyId,
         clientIds,
@@ -121,11 +126,6 @@ export default function TripsManagementPage() {
         // TODO: Implement bulk approve logic
     };
 
-    const handleDisputeSelected = () => {
-        console.log('Opening dispute for selected:', selectedIds);
-        // TODO: Implement bulk dispute logic
-    };
-
     const handleRejectSelected = () => {
         console.log('Rejecting selected:', selectedIds);
         // TODO: Implement bulk reject logic
@@ -167,6 +167,10 @@ export default function TripsManagementPage() {
     const handleReject = (row: PartRide) => {
         console.log('Rejecting row:', row);
         // TODO: Implement actual API call or logic
+    };
+
+    const handleDelete = (row: PartRide) => {
+        setConfirmDeleteId(row.id);
     };
 
     // const handleExport = (row: PartRide) => {
@@ -398,6 +402,7 @@ export default function TripsManagementPage() {
                                                         onOpenDispute={() => handleDispute(row)}
                                                         onReject={() => handleReject(row)}
                                                         onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
+                                                        onDelete={() => handleDelete(row)}
                                                     />
                                                 </Box>
                                             </Box>
@@ -457,14 +462,6 @@ export default function TripsManagementPage() {
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
                             sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
-                            onClick={() => handleDisputeSelected()}
-                        >
-                            <ErrorOutlineIcon fontSize="small"/>
-                            <Typography variant="body2">Open Dispute</Typography>
-                        </Box>
-                        <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
-                        <Box
-                            sx={{display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer'}}
                             onClick={() => handleRejectSelected()}
                         >
                             <CloseIcon fontSize="small"/>
@@ -480,6 +477,20 @@ export default function TripsManagementPage() {
                     </Box>
                 </Box>
             )}
+            <ConfirmModal
+                open={!!confirmDeleteId}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this ride?"
+                onClose={() => setConfirmDeleteId(null)}
+                onConfirm={() => {
+                    if (confirmDeleteId) {
+                        deletePartRide(confirmDeleteId, {
+                            onSuccess: () => setConfirmDeleteId(null),
+                            onError: () => setConfirmDeleteId(null),
+                        });
+                    }
+                }}
+            />
         </Box>
     );
 }

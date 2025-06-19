@@ -8,6 +8,7 @@ interface RowActionsMenuProps {
     onReject?: () => void;
     onEdit?: () => void;
     onExport?: () => void;
+    onDelete?: () => void;
 }
 
 const RowActionsMenu: React.FC<RowActionsMenuProps> = ({
@@ -15,7 +16,8 @@ const RowActionsMenu: React.FC<RowActionsMenuProps> = ({
                                                            onOpenDispute,
                                                            onReject,
                                                            onEdit,
-                                                           onExport,
+                                                           onDelete,
+                                                           onExport
                                                        }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -35,7 +37,8 @@ const RowActionsMenu: React.FC<RowActionsMenuProps> = ({
                 <MenuItem onClick={() => { onApprove?.(); handleClose(); }}>Approve</MenuItem>
                 <MenuItem onClick={() => { onOpenDispute?.(); handleClose(); }}>Open Dispute</MenuItem>
                 <MenuItem onClick={() => { onReject?.(); handleClose(); }}>Reject</MenuItem>
-                <MenuItem onClick={() => { onEdit?.(); handleClose(); }}>Edit</MenuItem>
+                <MenuItem onClick={() => { onEdit?.(); handleClose(); }}>Edit Workday</MenuItem>
+                <MenuItem onClick={() => { onDelete?.(); handleClose(); }}>Delete Workday</MenuItem>
                 {/*<MenuItem onClick={() => { onExport?.(); handleClose(); }}>Export</MenuItem>*/}
             </Menu>
         </>
