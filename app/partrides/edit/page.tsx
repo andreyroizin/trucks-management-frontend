@@ -113,7 +113,7 @@ function EditPartRidePageWrapper() {
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
-    const {data: carsData, isLoading: isLoadingCars} = useCars(companyId, 1, 1000);
+    const {data: carsData, isLoading: isLoadingCars} = useCars(companyId ? [companyId] : [], 1, 1000);
     const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
     const {data: chartersData, isLoading: isLoadingCharters} = useCharters(companyId, clientId, 1, 1000);
     const downloadFile = useDownloadPartRideFile();

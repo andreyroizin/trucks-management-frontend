@@ -33,7 +33,7 @@ function CarsList() {
     const [pageSize, setPageSize] = useState(10);
 
     // Fetch cars
-    const { data: carsData, isLoading, isError, error } = useCars(companyId, page + 1, pageSize);
+    const { data: carsData, isLoading, isError, error } = useCars(companyId ? [companyId] : [], page + 1, pageSize);
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant'];

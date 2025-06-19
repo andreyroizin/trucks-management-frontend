@@ -71,7 +71,7 @@ export default function TripsManagementPage() {
     // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
-    const {data: carsData, isLoading: isLoadingCars} = useCars('', 1, 1000);
+    const {data: carsData, isLoading: isLoadingCars} = useCars([], 1, 1000);
 
     // Pagination
     const [pageNumber, setPageNumber] = useState(1);

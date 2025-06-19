@@ -87,7 +87,7 @@ export default function CreatePartRidePage() {
     const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(/* e.g. pass companyId if needed */);
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
-    const {data: carsData, isLoading: isLoadingCars} = useCars(selectedCompanyId || '', 1, 1000);
+    const {data: carsData, isLoading: isLoadingCars} = useCars(selectedCompanyId ? [selectedCompanyId] : [], 1, 1000);
     const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
     const {
         data: chartersData,

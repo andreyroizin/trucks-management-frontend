@@ -19,8 +19,13 @@ export type CarsResponse = {
 };
 
 // --- API CALL ---
-const fetchCars = async (companyId: string, page: number, pageSize: number): Promise<CarsResponse> => {
-    const response = await api.get<ApiResponse<CarsResponse>>(`/cars?companyId=${companyId}&pageNumber=${page}&pageSize=${pageSize}`);
+const fetchCars = async (companyIds: string[], page: number, pageSize: number): Promise<CarsResponse> => {
+    const queryParams = new URLSearchParams();
+    companyIds.forEach(id => queryParams.append('companyIds', id));
+    queryParams.set('pageNumber', page.toString());
+    queryParams.set('pageSize', pageSize.toString());
+
+    const response = await api.get<ApiResponse<CarsResponse>>(`/cars?${queryParams.toString()}`);
     if (!response.data.isSuccess) {
         throw new Error(response.data.errors?.[0] || 'Failed to fetch cars');
     }
@@ -28,11 +33,10 @@ const fetchCars = async (companyId: string, page: number, pageSize: number): Pro
 };
 
 // --- HOOK ---
-export const useCars = (companyId: string, page: number, pageSize: number) => {
+export const useCars = (companyIds: string[], page: number, pageSize: number) => {
     return useQuery({
-        queryKey: ['cars', companyId, page, pageSize],
-        queryFn: () => fetchCars(companyId, page, pageSize),
-        enabled: !!companyId, // Ensure query runs only if companyId is present
+        queryKey: ['cars', companyIds, page, pageSize],
+        queryFn: () => fetchCars(companyIds, page, pageSize),
         placeholderData: keepPreviousData,
     });
 };
