@@ -1,4 +1,3 @@
-// app/trips/page.tsx
 'use client';
 
 import React, {useEffect, useState} from 'react';
@@ -30,7 +29,7 @@ import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
 
-import {useRouter, useSearchParams} from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
 // import { useCompanies } from '@/hooks/useCompanies';
 import {useClients} from '@/hooks/useClients';
@@ -42,7 +41,6 @@ import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 
 export default function TripsManagementPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const {isAuthenticated, loading: authLoading} = useAuth();
 
     const queryClient = useQueryClient();
@@ -174,7 +172,6 @@ export default function TripsManagementPage() {
     // const handleExport = (row: PartRide) => {
     //     console.log('Exporting row:', row);
     // };
-
 
     /** ────────────────────────────────────────────────────────────────
      * Render
