@@ -386,11 +386,19 @@ export default function TripsManagementPage() {
                             {(isLoading || isRefetching) ? (
                                 <TableRow>
                                     <TableCell colSpan={9} align="center" sx={{py: 6}}>
-                                        <CircularProgress size={24}/>
+                                        <CircularProgress size={24} />
+                                    </TableCell>
+                                </TableRow>
+                            ) : rides?.data.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={9} align="center" sx={{py: 6}}>
+                                        <Typography variant="body1">
+                                            No records found.
+                                        </Typography>
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                rides?.data.map((row) => (
+                                rides?.data?.map((row) => (
                                     <TableRow
                                         key={row.id}
                                         hover
