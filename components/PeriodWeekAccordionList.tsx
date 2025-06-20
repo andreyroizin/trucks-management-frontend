@@ -13,9 +13,11 @@ import {
     TableHead,
     TableRow,
     Chip,
-    Divider
+    Divider,
+    Button
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CheckIcon from '@mui/icons-material/Check';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 
@@ -96,42 +98,59 @@ export default function PeriodWeekAccordionList({ weeks }: { weeks: Week[] }) {
                                     No records for this week.
                                 </Typography>
                             ) : (
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 500 }}>Date</TableCell>
-                                            <TableCell sx={{ fontWeight: 500 }}>Hours</TableCell>
-                                            <TableCell sx={{ fontWeight: 500 }}>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {week.partRides.map((pr, prIndex) => {
-                                            const isLast = prIndex === week.partRides.length - 1;
-                                            return (
-                                                <TableRow
-                                                    key={pr.id}
-                                                    hover
-                                                    sx={{ cursor: 'pointer' }}
-                                                    onClick={() => router.push(`/partrides/${pr.id}`)}
-                                                >
-                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                        {dayjs(pr.date).format('DD.MM.YY')}
-                                                    </TableCell>
-                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                        {pr.decimalHours.toString().replace('.', ',')} h.
-                                                    </TableCell>
-                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                        <Chip
-                                                            label={approvalLabel(pr.status)}
-                                                            size="small"
-                                                            color={approvalColor(pr.status)}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
+                                <>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell sx={{ fontWeight: 500 }}>Date</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Hours</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Status</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {week.partRides.map((pr, prIndex) => {
+                                                const isLast = prIndex === week.partRides.length - 1;
+                                                return (
+                                                    <TableRow
+                                                        key={pr.id}
+                                                        hover
+                                                        sx={{ cursor: 'pointer' }}
+                                                        onClick={() => router.push(`/partrides/${pr.id}`)}
+                                                    >
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            {dayjs(pr.date).format('DD.MM.YY')}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            {pr.decimalHours.toString().replace('.', ',')} h.
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            <Chip
+                                                                label={approvalLabel(pr.status)}
+                                                                size="small"
+                                                                color={approvalColor(pr.status)}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                    {week.status === 1 && (
+                                        <Box display="flex" justifyContent="flex-end" mt={2}>
+                                            <Button
+                                                variant="contained"
+                                                fullWidth
+                                                color="success"
+                                                size="large"
+                                                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
+                                                startIcon={<CheckIcon />}
+                                                onClick={() => router.push(`/driver/sign/${week.weekNumber}`)}
+                                            >
+                                                Sign Work Week
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </>
                             )}
                         </AccordionDetails>
                     </Accordion>
