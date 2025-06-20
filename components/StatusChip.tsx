@@ -3,7 +3,7 @@
 import React from 'react';
 import { Chip } from '@mui/material';
 
-export type StatusChipVariant = 'info' | 'success' | 'warning' | 'danger';
+export type StatusChipVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
 
 interface StatusChipProps {
     label: string;
@@ -12,10 +12,11 @@ interface StatusChipProps {
 }
 
 const colorMap: Record<StatusChipVariant, { bg: string; text: string }> = {
-    info:    { bg: '#e3f2fd', text: '#1976d2' },
-    success: { bg: '#e8f5e9', text: '#2e7d32' },
-    warning: { bg: '#fff8e1', text: '#f9a825' },
-    danger:  { bg: '#ffebee', text: '#c62828' },
+    default: { bg: '#F5F5F5', text: '#9E9E9E' },
+    info:    { bg: '#E4F6FD', text: '#0588D1' },
+    success: { bg: '#EDF7ED', text: '#2e7d32' },
+    warning: { bg: '#FFF4E5', text: '#ef6c02' },
+    danger:  { bg: '#FEEDEE', text: '#D32F2F' },
 };
 
 export default function StatusChip({
