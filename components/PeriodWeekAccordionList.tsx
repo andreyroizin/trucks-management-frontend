@@ -38,6 +38,7 @@ const approvalColor = (s?: number) =>
 export type Week = {
     weekInPeriod: number;
     weekNumber: number;
+    status: number;
     totalDecimalHours: number;
     partRides: {
         id: string;
@@ -49,6 +50,16 @@ export type Week = {
         remark: string;
         status?: number;
     }[];
+};
+
+const getWeekChip = (status?: number) => {
+    if (status === 0) {
+        return <Chip label="On-going" color="info" size="small" />;
+    }
+    if (status === 1) {
+        return <Chip label="Ready To Sign" color="success" size="small" />;
+    }
+    return null;
 };
 
 export default function PeriodWeekAccordionList({ weeks }: { weeks: Week[] }) {
@@ -69,7 +80,10 @@ export default function PeriodWeekAccordionList({ weeks }: { weeks: Week[] }) {
                     >
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
                             <Box>
-                                <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
+                                    {getWeekChip(week.status)}
+                                </Box>
                                 <Typography variant="body2" color="text.secondary">
                                     {week.totalDecimalHours} hours worked
                                 </Typography>
@@ -100,13 +114,13 @@ export default function PeriodWeekAccordionList({ weeks }: { weeks: Week[] }) {
                                                     sx={{ cursor: 'pointer' }}
                                                     onClick={() => router.push(`/partrides/${pr.id}`)}
                                                 >
-                                                    <TableCell sx={isLast ? { borderBottom: 'none' } : undefined}>
+                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                         {dayjs(pr.date).format('DD.MM.YY')}
                                                     </TableCell>
-                                                    <TableCell sx={isLast ? { borderBottom: 'none' } : undefined}>
+                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                         {pr.decimalHours.toString().replace('.', ',')} h.
                                                     </TableCell>
-                                                    <TableCell sx={isLast ? { borderBottom: 'none' } : undefined}>
+                                                    <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                         <Chip
                                                             label={approvalLabel(pr.status)}
                                                             size="small"
