@@ -20,6 +20,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import StatusChip from "@/components/StatusChip";
 
 // --- Helpers ---
 const approvalLabel = (s?: number) =>
@@ -55,12 +56,8 @@ export type Week = {
 };
 
 const getWeekChip = (status?: number) => {
-    if (status === 0) {
-        return <Chip label="On-going" color="info" size="small" />;
-    }
-    if (status === 1) {
-        return <Chip label="Ready To Sign" color="success" size="small" />;
-    }
+    if (status === 0) return <StatusChip label="On-going" variant="info" />;
+    if (status === 1) return <StatusChip label="Ready To Sign" variant="success" />;
     return null;
 };
 
