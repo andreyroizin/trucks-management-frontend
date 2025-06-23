@@ -134,7 +134,7 @@ export default function DriverPeriodDetailPage() {
             {/*    />*/}
             {/*)}*/}
 
-            <PeriodWeekAccordionList weeks={data.weeks} />
+            <PeriodWeekAccordionList weeks={data.weeks} year={data.year} />
         </Box>
     );
 }

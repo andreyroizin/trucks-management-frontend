@@ -44,7 +44,7 @@ const getWeekChip = (status?: number) => {
     return null;
 };
 
-export default function PeriodWeekAccordionList({ weeks }: { weeks: WeekInPeriod[] }) {
+export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekInPeriod[], year: number }) {
     const router = useRouter();
 
     return (
@@ -115,19 +115,33 @@ export default function PeriodWeekAccordionList({ weeks }: { weeks: WeekInPeriod
                                             })}
                                         </TableBody>
                                     </Table>
-                                    {week.status === 1 && (
-                                        <Box display="flex" justifyContent="flex-end" mt={2}>
-                                            <Button
-                                                variant="contained"
-                                                fullWidth
-                                                color="success"
-                                                size="large"
-                                                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
-                                                startIcon={<CheckIcon />}
-                                                onClick={() => router.push(`/driver/sign/${week.weekNumber}`)}
-                                            >
-                                                Sign Work Week
-                                            </Button>
+                                    {(week.status === 1 || week.status === 2) && (
+                                        <Box display="flex" justifyContent="flex-end" mt={2} gap={1}>
+                                            {week.status === 1 && (
+                                                <Button
+                                                    variant="contained"
+                                                    fullWidth
+                                                    color="success"
+                                                    size="large"
+                                                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
+                                                    startIcon={<CheckIcon />}
+                                                    onClick={() => router.push(`/driver/sign/${year}-${week.weekNumber}`)}
+                                                >
+                                                    Sign Work Week
+                                                </Button>
+                                            )}
+                                            {week.status === 2 && (
+                                                <Button
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    color="primary"
+                                                    size="large"
+                                                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
+                                                    onClick={() => router.push(`/driver/signed/${year}-${week.weekNumber}`)}
+                                                >
+                                                    View Signed Period
+                                                </Button>
+                                            )}
                                         </Box>
                                     )}
                                 </>
