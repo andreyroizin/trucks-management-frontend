@@ -64,7 +64,7 @@ export default function CurrentPeriod() {
 
             <PeriodWeekAccordionList weeks={period.weeks} year={period.year} />
 
-            <RoundedButton label="View Older Periods" colorType="gray"
+            <RoundedButton label="View Older Periods" colorType="gray" sx={{marginTop: 3}}
                            onClick={() => router.push('/periods/driver/archived')}/>
         </Box>
     );
