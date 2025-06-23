@@ -125,7 +125,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                     size="large"
                                                     sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
                                                     startIcon={<CheckIcon />}
-                                                    onClick={() => router.push(`/driver/sign/${year}-${week.weekNumber}`)}
+                                                    onClick={() => router.push(`/weeks/sign/${year}-${week.weekNumber}`)}
                                                 >
                                                     Sign Work Week
                                                 </Button>
@@ -137,7 +137,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                     color="primary"
                                                     size="large"
                                                     sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
-                                                    onClick={() => router.push(`/driver/signed/${year}-${week.weekNumber}`)}
+                                                    onClick={() => router.push(`/weeks/signed/${year}-${week.weekNumber}`)}
                                                 >
                                                     View Signed Period
                                                 </Button>
