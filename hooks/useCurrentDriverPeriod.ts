@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
+import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
 
 /* ----------  Types returned by the endpoint  ---------- */
 export type PartRide = {
@@ -12,13 +13,6 @@ export type PartRide = {
     decimalHours: number;
     remark: string;
     status: number;
-};
-
-export type WeekInPeriod = {
-    weekInPeriod: number;   // 1-4
-    weekNumber: number;     // ISO week number (21, 22, …)
-    totalDecimalHours: number;
-    partRides: PartRide[];
 };
 
 export type CurrentDriverPeriod = {
