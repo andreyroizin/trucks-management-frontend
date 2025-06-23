@@ -1,23 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-    Box,
-    Button,
-    CircularProgress,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Typography,
-} from '@mui/material';
+import React, {useState} from 'react';
+import {Box, Button, CircularProgress, Typography,} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import dayjs from 'dayjs';
 import {useParams, useRouter} from 'next/navigation';
 import {useDriverWeekDetails} from '@/hooks/useDriverWeekDetails';
-import { useSignDriverWeek } from '@/hooks/useSignDriverWeek';
+import {useSignDriverWeek} from '@/hooks/useSignDriverWeek';
 import WeekSummary from "@/components/WeekSummary";
 
 export default function SignWorkWeekPage() {
@@ -54,7 +42,7 @@ export default function SignWorkWeekPage() {
         setSignError(null);
         try {
             await mutateAsync({ year, weekNumber });
-            router.push('/weeks/sign/success');
+            router.push(`/weeks/sign/success/${year}-${weekNumber}`);
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to sign the week';
             setSignError(message);
@@ -100,6 +88,23 @@ export default function SignWorkWeekPage() {
                         onClick={handleSignClick}
                     >
                         Sign Work Week
+                    </Button>
+                </>
+            )}
+            {data.status === 2 && (
+                <>
+                    <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2, marginBottom: 2 }}>
+                        This week has already been signed. You can view it below.
+                    </Typography>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        color="primary"
+                        size="large"
+                        sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
+                        onClick={() => router.push(`/weeks/signed/${year}-${weekNumber}`)}
+                    >
+                        View Signed Week
                     </Button>
                 </>
             )}

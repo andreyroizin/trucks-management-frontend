@@ -1,0 +1,60 @@
+'use client';
+
+import React from 'react';
+import {Box, Button, CircularProgress, Typography,} from '@mui/material';
+import {useParams} from 'next/navigation';
+import {useDriverWeekDetails} from '@/hooks/useDriverWeekDetails';
+import WeekSummary from "@/components/WeekSummary";
+
+export default function SignWorkWeekPage() {
+    const params = useParams<{ key: string }>();
+    const [yearStr, weekStr] = params.key.split('-');
+    const year = parseInt(yearStr, 10);
+    const weekNumber = parseInt(weekStr, 10);
+
+    const {data, isLoading, error} = useDriverWeekDetails(year, weekNumber);
+
+    // ─── Loading / Error ──────────────────────────────────────────────
+    if (isLoading) {
+        return (
+            <Box display="flex" justifyContent="center" mt={6}>
+                <CircularProgress/>
+            </Box>
+        );
+    }
+
+    if (!data || error) {
+        return (
+            <Typography color="error" mt={4} textAlign="center">
+                {error instanceof Error ? error.message : 'Failed to load week details'}
+            </Typography>
+        );
+    }
+
+    return (
+        <Box maxWidth="600px" mx="auto" py={4}>
+            <Typography variant="h4" sx={{ fontWeight: 500 }}>
+                Week {data.week}
+            </Typography>
+            {data.status !== 2 ? (
+                <Box mt={4} display="flex" flexDirection="column" alignItems="center" gap={2}>
+                    <Typography variant="body1" color="warning.main">
+                        This week hasn’t been signed yet.
+                    </Typography>
+                    <Button variant="contained" color="primary" href="/periods/driver/current">
+                        Go to current period
+                    </Button>
+                </Box>
+            ) : (
+                <WeekSummary
+                    startDate={data.startDate}
+                    endDate={data.endDate}
+                    vacationHoursTaken={data.vacationHoursTaken}
+                    vacationHoursLeft={data.vacationHoursLeft}
+                    rides={data.rides}
+                    totalHoursWorked={data.totalHoursWorked}
+                />
+            )}
+        </Box>
+    );
+}

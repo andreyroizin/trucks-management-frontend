@@ -9,7 +9,7 @@ type Ride = {
 };
 
 type WeekSummaryProps = {
-    week: number;
+    week?: number;
     startDate: string;
     endDate: string;
     vacationHoursTaken: number;
@@ -32,9 +32,11 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
 
     return (
         <>
-            <Typography variant="h5" sx={{ fontWeight: 500 }}>
-                Week {week}
-            </Typography>
+            {week && (
+                <Typography variant="h5" sx={{ fontWeight: 500 }}>
+                    Week {week}
+                </Typography>
+            )}
             <Typography variant="body2" color="text.secondary" mb={1}>
                 {start} — {end}
             </Typography>
