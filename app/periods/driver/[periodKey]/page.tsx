@@ -2,16 +2,12 @@
 
 import React, {useEffect} from 'react';
 import {Alert, Box, CircularProgress, Paper, Typography,} from '@mui/material';
-import {Download} from '@mui/icons-material';
 import {useParams, useRouter} from 'next/navigation';
 
 import {useAuth} from '@/hooks/useAuth';
 import {useDriverPeriodDetail} from '@/hooks/useDriverPeriodDetail';
-import DownloadCardButton from "@/components/DownloadCardButton";
 import PeriodWeekAccordionList from "@/components/PeriodWeekAccordionList";
 import dayjs from "dayjs";
-import RoundedButton from "@/components/RoundedButton";
-import CheckIcon from "@mui/icons-material/Check";
 
 export default function DriverPeriodDetailPage() {
     const router = useRouter();
@@ -126,34 +122,17 @@ export default function DriverPeriodDetailPage() {
                 </Box>
             </Box>
 
-            {data.status === 0 && (
-                <>
-                    <Typography variant="body2" mb={2}>
-                        All records in this period are approved. Please review and sign to confirm.
-                    </Typography>
-                    <RoundedButton
-                        label="Sign This Period"
-                        colorType="green"
-                        icon={<CheckIcon/>}
-                        sx={{mb: 2}}
-                        onClick={() => {
-                            router.push('/workdays/sign')
-                        }}
-                    />
-                </>
-            )}
-
-            {/* Download link (optional – shown for *signed* periods only) */}
-            {data.status === 2 && (
-                <DownloadCardButton
-                    label={`${period} Expanded file with salary`}
-                    icon={<Download color="primary" />}
-                    sx={{ mb: 3, mx: 'auto' }} // <-- margin-top & horizontal center
-                    onClick={() => {
-                        // download logic here
-                    }}
-                />
-            )}
+            {/*/!* Download link (optional – shown for *signed* periods only) *!/*/}
+            {/*{data.status === 2 && (*/}
+            {/*    <DownloadCardButton*/}
+            {/*        label={`${period} Expanded file with salary`}*/}
+            {/*        icon={<Download color="primary" />}*/}
+            {/*        sx={{ mb: 3, mx: 'auto' }} // <-- margin-top & horizontal center*/}
+            {/*        onClick={() => {*/}
+            {/*            // download logic here*/}
+            {/*        }}*/}
+            {/*    />*/}
+            {/*)}*/}
 
             <PeriodWeekAccordionList weeks={data.weeks} />
         </Box>

@@ -20,6 +20,7 @@ export type WeekInPeriod = {
     weekInPeriod: number;   // 1-4
     weekNumber: number;     // ISO week number (21, 22, …)
     totalDecimalHours: number;
+    status: number;
     partRides: PartRide[];
 };
 

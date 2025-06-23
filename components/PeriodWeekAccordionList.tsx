@@ -3,24 +3,25 @@
 import React from 'react';
 import {
     Accordion,
-    AccordionSummary,
     AccordionDetails,
-    Typography,
+    AccordionSummary,
     Box,
+    Button,
+    Chip,
+    Divider,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
-    Chip,
-    Divider,
-    Button
+    Typography
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import StatusChip from "@/components/StatusChip";
+import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
 
 // --- Helpers ---
 const approvalLabel = (s?: number) =>
@@ -37,31 +38,13 @@ const approvalColor = (s?: number) =>
                 : s === 3 ? 'error'
                     : 'default';
 
-// --- Types ---
-export type Week = {
-    weekInPeriod: number;
-    weekNumber: number;
-    status: number;
-    totalDecimalHours: number;
-    partRides: {
-        id: string;
-        date: string;
-        start: string;
-        end: string;
-        kilometers: number;
-        decimalHours: number;
-        remark: string;
-        status?: number;
-    }[];
-};
-
 const getWeekChip = (status?: number) => {
     if (status === 0) return <StatusChip label="On-going" variant="info" />;
     if (status === 1) return <StatusChip label="Ready To Sign" variant="success" />;
     return null;
 };
 
-export default function PeriodWeekAccordionList({ weeks }: { weeks: Week[] }) {
+export default function PeriodWeekAccordionList({ weeks }: { weeks: WeekInPeriod[] }) {
     const router = useRouter();
 
     return (
