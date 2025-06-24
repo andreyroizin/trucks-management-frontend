@@ -62,7 +62,7 @@ export default function WeekSignedSuccess() {
                     color="primary"
                     onClick={() => router.push('/periods/driver/current')}
                 >
-                    Go&nbsp;To&nbsp;All&nbsp;Periods
+                    Go&nbsp;To&nbsp;The Current&nbsp;Period
                 </Button>
             </Box>
         </Box>
