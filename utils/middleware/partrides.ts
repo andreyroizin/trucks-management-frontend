@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
     DRIVER_ROLE,
     CONTACT_PERSON_ROLES,
-    SHARED_ROLES,
+    ALL_ROLES,
 } from '@/utils/constants/roles';
 
 /**
@@ -24,7 +24,7 @@ export function handlePartridesRoutes(
     const isEdit   = pathname === '/partrides/edit';
 
     if (isCreate || isEdit) {
-        if (roles?.some(r => SHARED_ROLES.includes(r))) {
+        if (roles?.some(r => ALL_ROLES.includes(r))) {
             return NextResponse.next();
         }
         return NextResponse.redirect(new URL('/403', req.url));
