@@ -2,6 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
+type PartRide = {
+    id: string;
+    date: string;
+    decimalHours: number;
+    newDecimalHours: number;
+};
+
 export type DisputeComment = {
     id: string;
     body: string;
@@ -16,7 +23,7 @@ export type DisputeComment = {
 
 export type DisputeDetail = {
     id: string;
-    partRideId: string;
+    partRide: PartRide;
     correctionHours: number;
     status: number;
     createdAtUtc: string;
