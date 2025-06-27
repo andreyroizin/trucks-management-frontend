@@ -75,7 +75,7 @@ export default function DriverHomePage() {
                     <DriverDashboardCardButton
                         title="Disputes"
                         subtitle="Follow up on records with changes or issues"
-                        onClick={() => router.push('/workdays/disputes')}
+                        onClick={() => router.push('/disputes')}
                     />
                     <DriverDashboardCardButton
                         title="Archived Periods"
