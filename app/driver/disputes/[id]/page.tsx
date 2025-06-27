@@ -21,6 +21,8 @@ import {useParams, useRouter} from 'next/navigation';
 import {useDisputeById} from '@/hooks/useDisputeById';
 import {DisputeStatus} from '@/utils/disputeStatus';
 import DisputeComment from "@/components/DisputeComment"; // ← helper we created earlier
+import { useAddDisputeComment } from '@/hooks/useAddDisputeComment';
+import { useAcceptDispute } from '@/hooks/useAcceptDispute';
 
 /* ───────────────────────────── Banner helper ────────────────────────── */
 const bannerConfig: Record<
@@ -60,13 +62,38 @@ export default function DisputeDetailPage() {
 
     const [showDisputeForm, setShowDisputeForm] = useState(false);
     const [explanation, setExplanation] = useState('');
+    const [hasError, setHasError] = useState(false);
+    const [acceptError, setAcceptError] = useState<string | null>(null);
+    const [commentError, setCommentError] = useState<string | null>(null);
 
-    const handleDisputeSubmit = () => {
-        // TODO: send the explanation via API or handle submission
-        console.log('Dispute explanation submitted:', explanation);
-        // Optionally reset form and hide it
-        setExplanation('');
-        setShowDisputeForm(false);
+    const { mutateAsync: postComment, isPending: posting } = useAddDisputeComment(id);
+    const { mutateAsync: acceptDispute } = useAcceptDispute(id);
+
+    const handleAccept = async () => {
+        try {
+            await acceptDispute();
+            router.push('/disputes/success-accept/' + partRideDate);
+        } catch (error) {
+            console.error('Failed to accept dispute', error);
+            setAcceptError('Failed to accept the correction. Please try again.');
+        }
+    };
+
+    const handleDisputeSubmit = async () => {
+        if (!explanation.trim()) {
+            setHasError(true);
+            return;
+        }
+        setHasError(false);
+        try {
+            await postComment(explanation);
+            setExplanation('');
+            setShowDisputeForm(false);
+            router.push('/disputes/success-comment/' + partRideDate);
+        } catch (e) {
+            console.error('Failed to submit comment', e);
+            setCommentError('Failed to submit the comment. Please try again.');
+        }
     };
 
     /* ── loading / error ─────────────────────────────────────────────── */
@@ -85,14 +112,14 @@ export default function DisputeDetailPage() {
         );
 
     /* ── derived info ────────────────────────────────────────────────── */
-    const disputeDate = dayjs(data.createdAtUtc).format('DD.MM.YY');
+    const partRideDate = dayjs(data.partRide.date).format('DD.MM.YY');
     const banner = bannerConfig[data.status as DisputeStatus];
 
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             {/* heading */}
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                {disputeDate} Dispute
+                {partRideDate} Dispute
             </Typography>
             <Typography variant="body1" mb={2}>
                 View all comments for this workday correction.
@@ -118,6 +145,19 @@ export default function DisputeDetailPage() {
                     </TableRow>
                 </TableBody>
             </Table>
+
+            {/* error alerts */}
+            {acceptError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {acceptError}
+                </Alert>
+            )}
+
+            {commentError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {commentError}
+                </Alert>
+            )}
 
             {/* go-to workday */}
             {(data.status === DisputeStatus.PendingDriver || data.status === DisputeStatus.PendingAdmin) && (
@@ -153,9 +193,7 @@ export default function DisputeDetailPage() {
                                 color="success"
                                 fullWidth
                                 sx={{ flex: 1 }}
-                                onClick={() => {
-                                    /* TODO: accept mutation */
-                                }}
+                                onClick={handleAccept}
                             >
                                 Accept Correction
                             </Button>
@@ -181,10 +219,13 @@ export default function DisputeDetailPage() {
                                 <TextField
                                     label="Explain the issue"
                                     multiline
+                                    required
                                     fullWidth
                                     rows={4}
                                     value={explanation}
                                     onChange={(e) => setExplanation(e.target.value)}
+                                    error={hasError}
+                                    helperText={hasError ? 'This field is required.' : ''}
                                     sx={{mb: 2}}
                                 />
                                 <Button
@@ -192,6 +233,7 @@ export default function DisputeDetailPage() {
                                     color="primary"
                                     fullWidth
                                     onClick={handleDisputeSubmit}
+                                    disabled={posting || !explanation.trim()}
                                 >
                                     Submit
                                 </Button>
