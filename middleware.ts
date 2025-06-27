@@ -1,73 +1,43 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
-import {
-    CONTACT_PERSON_ROLES,
-    DRIVER_ROLE,
-    SHARED_ROLES
-} from "@/utils/constants/roles";
+import { handlePartridesRoutes } from '@/utils/middleware/partrides';
 
-// --- helper to read roles from auth cookie ---
+/* helper – get roles from JWT cookie */
 function getRoles(req: NextRequest): string[] | null {
     const jwt = req.cookies.get('auth')?.value;
     if (!jwt) return null;
     try {
         const decoded = jwtDecode(jwt) as any;
-        const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
-
-        if (decoded[roleClaim]) {
-            const raw = decoded[roleClaim];
-            return Array.isArray(raw) ? raw : [raw]; // handle both string and array cases
-        }
-
-        return null;
+        const claim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+        const raw = decoded[claim];
+        return raw ? (Array.isArray(raw) ? raw : [raw]) : null;
     } catch {
         return null;
     }
 }
 
-// --- main middleware handler ---
+/* main middleware */
 export function middleware(req: NextRequest) {
     const roles = getRoles(req);
 
-    // 1 ▸ No token at all → redirect to login
+    // no token at all → login
     if (!roles) {
         return NextResponse.redirect(new URL('/auth/login', req.url));
     }
 
-    const path = req.nextUrl.pathname;
+    /* delegate /partrides sub-router */
+    const partrides = handlePartridesRoutes(req, roles);
+    if (partrides) return partrides;
 
-    // 2 ▸ Shared pages: /partrides/create and /partrides/edit
-    const isCreate = path === '/partrides/create';
-    const isEdit = path === '/partrides/edit';
+    // ── add other route groups here (e.g. expenses, reports) ──
 
-    if (isCreate || isEdit) {
-        if (roles.some(role => SHARED_ROLES.includes(role))) {
-            return NextResponse.next(); // Access granted
-        }
-        return NextResponse.redirect(new URL('/403', req.url)); // Forbidden
-    }
-
-    // 3 ▸ Detail pages: rewrite /partrides/[id] → /driver/... or /contact-person/...
-    if (path.startsWith('/partrides/')) {
-        const url = req.nextUrl.clone();
-
-        if (roles.includes(DRIVER_ROLE)) {
-            url.pathname = `/driver${path}`;
-        } else if (roles.some(role => CONTACT_PERSON_ROLES.includes(role))) {
-            url.pathname = `/contact-person${path}`;
-        } else {
-            return NextResponse.redirect(new URL('/403', req.url));
-        }
-
-        return NextResponse.rewrite(url); // Internal rewrite only
-    }
-
-    return NextResponse.next(); // All other routes untouched
+    return NextResponse.next();            // default allow
 }
 
-// 4 ▸ Only run middleware on these route patterns
+/* run only on patterns we care about */
 export const config = {
     matcher: [
-        '/partrides/:path*',  // includes create/edit/detail
+        '/partrides/:path*',
+        // '/expenses/:path*', … add more groups later
     ],
 };
