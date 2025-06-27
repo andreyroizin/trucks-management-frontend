@@ -20,23 +20,7 @@ import dayjs from 'dayjs';
 import { useDisputes } from '@/hooks/useDisputes';
 import StatusChip from '@/components/StatusChip';
 import { useRouter } from 'next/navigation';
-
-const mapStatus = (code: number) => {
-    switch (code) {
-        case 0:
-            return { label: 'Dispute', variant: 'warning' } as const;
-        case 1:
-            return { label: 'Dispute', variant: 'warning' } as const;
-        case 2:
-            return { label: 'Approved', variant: 'success' } as const;
-        case 3:
-            return { label: 'Approved', variant: 'success' } as const;
-        case 4:
-            return { label: 'Closed', variant: 'default' } as const;
-        default:
-            return { label: 'Unknown', variant: 'default' } as const;
-    }
-};
+import {DisputeStatus, getDisputeStatusInfo} from "@/utils/disputeStatus";
 
 export default function DisputeHistoryPage() {
     const [page, setPage] = useState(1);
@@ -85,7 +69,7 @@ export default function DisputeHistoryPage() {
                     </TableHead>
                     <TableBody>
                         {data.data.map((d) => {
-                            const chip = mapStatus(d.status);
+                            const chip = getDisputeStatusInfo(d.status as DisputeStatus);
                             return (
                                 <TableRow
                                     key={d.id}
