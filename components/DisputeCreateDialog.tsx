@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Link from 'next/link';
 import {
     Alert,
@@ -53,10 +53,13 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
         defaultValues: { correctionHours: 0, comment: '' },
     });
 
+    useEffect(() => {
+        if (open) {
+            setSubmitError(null);
+            reset(); // also reset form fields
+        }
+    }, [open, reset]);
 
-    /* -------------------------------------------------- */
-    /* Submit handler                                     */
-    /* -------------------------------------------------- */
     const onSubmit = async (values: { correctionHours: number; comment?: string }) => {
         try {
             setSubmitError(null);
