@@ -39,6 +39,7 @@ import {useCars} from '@/hooks/useCars';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import DateInputField from '@/components/DateInputField';
 import PartRideActionsMenu from "@/components/PartRideActionsMenu";
+import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 
 export default function TripsManagementPage() {
     const router = useRouter();
@@ -65,6 +66,8 @@ export default function TripsManagementPage() {
     const [statusIds, setStatusIds] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
     const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+    const [openCreateDispute, setOpenCreateDispute] = useState(false);
+    const [disputePartRideId, setDisputePartRideId] = useState<string | null>(null);
 
     // Hooks for filter dropdown data
     // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
@@ -194,8 +197,8 @@ export default function TripsManagementPage() {
     };
 
     const handleDispute = (row: PartRide) => {
-        console.log('Opening dispute for row:', row);
-        // TODO: Implement actual API call or logic
+        setDisputePartRideId(row.id);     // remember which ride we’re disputing
+        setOpenCreateDispute(true);
     };
 
     const handleReject = (row: PartRide) => {
@@ -550,6 +553,14 @@ export default function TripsManagementPage() {
                 message={`Are you sure you want to delete ${bulkDeleteCount} workdays?`}
                 onClose={() => setConfirmBulkDeleteOpen(false)}
                 onConfirm={handleConfirmBulkDelete}
+            />
+            <DisputeCreateDialog
+                open={openCreateDispute}
+                onClose={() => {
+                    setOpenCreateDispute(false);
+                    setDisputePartRideId(null);
+                }}
+                partRideId={disputePartRideId}
             />
         </Box>
     );
