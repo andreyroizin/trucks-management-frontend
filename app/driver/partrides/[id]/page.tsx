@@ -7,6 +7,7 @@ import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import FileTile from '@/components/FileTile';
 import {useAuth} from '@/hooks/useAuth';
 import { useDownloadPartRideFile } from '@/hooks/useDownloadPartRideFile';
+import { usePartRideDisputes } from '@/hooks/usePartRideDisputes';
 
 const WorkdayDetailPage = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ const WorkdayDetailPage = () => {
   const { data, isLoading, error } = usePartRideDetail(id);
   const { user, isAuthenticated, loading } = useAuth();
   const downloadFile = useDownloadPartRideFile();
+  const { data: disputesData, isLoading: disputesLoading } = usePartRideDisputes(id);
 
   // ────────────────────────────────────────────────────────────────────────────
   // Authorisation
@@ -28,31 +30,28 @@ const WorkdayDetailPage = () => {
   }, [user, loading, router, isAuthenticated]);
   // ────────────────────────────────────────────────────────────────────────────
 
-  if (isLoading) return <Typography>Loading...</Typography>;
+  if (isLoading || disputesLoading) return <Typography>Loading...</Typography>;
   if (error || !data) return <Typography>Error loading data</Typography>;
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // TEMPORARY FIELDS – change to real ones when backend supplies them
-  // status   : 'changesRequested' | 'approved' | 'pending' | undefined
-  // remark   : string | undefined
-  // ────────────────────────────────────────────────────────────────────────────
-  const status = (data as any).status ?? 'disputeAnswered';
+  // Load all disputes for this Part‑Ride
+  const latestDispute = disputesData?.disputes?.[0];
+  const disputeStatus = latestDispute?.status; // 0‑4 from enum
+
+  const disputeStatusLabel =
+    disputeStatus === 0
+      ? 'Dispute'
+      : disputeStatus === 1
+      ? 'Dispute'
+      : 'Unknown';
+
+  const disputeStatusColor =
+    disputeStatus === 0
+      ? 'warning'
+      : disputeStatus === 1
+      ? 'warning'
+      : 'default'
+
   const remark = data.remark;
-  // ────────────────────────────────────────────────────────────────────────────
-
-  const statusLabel =
-    status === 'approved'
-      ? 'Approved'
-      : status === 'pending'
-      ? 'Pending'
-      : 'Changes Requested';
-
-  const statusColor =
-    status === 'approved'
-      ? 'success'
-      : status === 'pending'
-      ? 'info'
-      : 'warning';
 
   return (
     <Box sx={{ py: 4, maxWidth: 600, mx: 'auto' }}>
@@ -121,28 +120,41 @@ const WorkdayDetailPage = () => {
             <Typography variant="body1">Current Status</Typography>
           </Box>
           <Box sx={{ width: '50%' }}>
-            <Chip label={statusLabel} color={statusColor as any} variant="filled" />
+            <Chip label={disputeStatusLabel} color={disputeStatusColor as any} variant="filled" />
           </Box>
         </Box>
       </Box>
 
-      {/* Alert and action button when changes requested */}
-      {status === 'changesRequested' && (
+      {/* Alert and action button when dispute exists */}
+      {latestDispute && disputeStatus === 0 && (
         <Box mt={3}>
           <Alert severity="warning" sx={{ mb: 2 }}>
-            This trip is not approved by Admin, click to see the comment. You can
-            dispute the decision or agree with it.
+            This trip is not approved by Admin, click to see the comment. You can dispute decision or agree with it.
           </Alert>
-          <Button fullWidth variant="contained" color="warning">
-            See The Admin Comment
+          <Button
+            fullWidth
+            variant="contained"
+            color="warning"
+            onClick={() => router.push(`/disputes/${latestDispute.id}`)}
+          >
+            Go To This Dispute
           </Button>
         </Box>
       )}
-      {status === 'disputeAnswered' && (
+
+      {latestDispute && disputeStatus === 1 && (
         <Box mt={3}>
           <Alert severity="info" sx={{ mb: 2 }}>
             Your dispute was sent to Admin. Please, check later.
           </Alert>
+          <Button
+            fullWidth
+            variant="contained"
+            color="info"
+            onClick={() => router.push(`/disputes/${latestDispute.id}`)}
+          >
+            Go To The Dispute
+          </Button>
         </Box>
       )}
       <Divider sx={{ my: 2 }} />
