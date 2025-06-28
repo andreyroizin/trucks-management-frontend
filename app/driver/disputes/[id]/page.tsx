@@ -130,7 +130,10 @@ export default function DisputeDetailPage() {
                     <TableRow>
                         <TableCell sx={{pl: 0, border: 'none', py: 1}}>Admin’s Adjustment</TableCell>
                         <TableCell sx={{border: 'none', py: 1}}>
-                            {data.correctionHours} h&nbsp;(total hours = {data.partRide.newDecimalHours}&nbsp;h)
+                            {data.correctionHours} h
+                            {['PendingDriver', 'PendingAdmin'].includes(DisputeStatus[data.status]) && (
+                                <>&nbsp;(total hours = {data.partRide.newDecimalHours}&nbsp;h)</>
+                            )}
                         </TableCell>
                     </TableRow>
                 </TableBody>
