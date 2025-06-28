@@ -13,7 +13,6 @@ import {
     TableCell,
     TableRow,
     Typography,
-    TextField,
 } from '@mui/material';
 import dayjs from 'dayjs';
 import {useParams, useRouter} from 'next/navigation';
@@ -21,8 +20,9 @@ import {useParams, useRouter} from 'next/navigation';
 import {useDisputeById} from '@/hooks/useDisputeById';
 import {DisputeStatus} from '@/utils/disputeStatus';
 import DisputeComment from "@/components/DisputeComment"; // ← helper we created earlier
-import { useAddDisputeComment } from '@/hooks/useAddDisputeComment';
-import { useAcceptDispute } from '@/hooks/useAcceptDispute';
+import {useAddDisputeComment} from '@/hooks/useAddDisputeComment';
+import {useAcceptDispute} from '@/hooks/useAcceptDispute';
+import SingleDisputeCommentBlock from "@/components/SingleDisputeCommentBlock";
 
 /* ───────────────────────────── Banner helper ────────────────────────── */
 const bannerConfig: Record<
@@ -60,14 +60,11 @@ export default function DisputeDetailPage() {
 
     const {data, isLoading, error} = useDisputeById(id);
 
-    const [showDisputeForm, setShowDisputeForm] = useState(false);
-    const [explanation, setExplanation] = useState('');
-    const [hasError, setHasError] = useState(false);
     const [acceptError, setAcceptError] = useState<string | null>(null);
     const [commentError, setCommentError] = useState<string | null>(null);
 
-    const { mutateAsync: postComment, isPending: posting } = useAddDisputeComment(id);
-    const { mutateAsync: acceptDispute } = useAcceptDispute(id);
+    const {mutateAsync: postComment, isPending: posting} = useAddDisputeComment(id);
+    const {mutateAsync: acceptDispute} = useAcceptDispute(id);
 
     const handleAccept = async () => {
         try {
@@ -79,16 +76,9 @@ export default function DisputeDetailPage() {
         }
     };
 
-    const handleDisputeSubmit = async () => {
-        if (!explanation.trim()) {
-            setHasError(true);
-            return;
-        }
-        setHasError(false);
+    const handleDisputeSubmit = async (value: string) => {
         try {
-            await postComment(explanation);
-            setExplanation('');
-            setShowDisputeForm(false);
+            await postComment(value);
             router.push('/disputes/success-comment/' + partRideDate);
         } catch (e) {
             console.error('Failed to submit comment', e);
@@ -148,13 +138,13 @@ export default function DisputeDetailPage() {
 
             {/* error alerts */}
             {acceptError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert severity="error" sx={{mb: 2}}>
                     {acceptError}
                 </Alert>
             )}
 
             {commentError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert severity="error" sx={{mb: 2}}>
                     {commentError}
                 </Alert>
             )}
@@ -174,94 +164,47 @@ export default function DisputeDetailPage() {
 
             <Divider sx={{my: 2}}/>
 
-            {/* show last comment and actions if PendingDriver */}
-            {data.status === DisputeStatus.PendingDriver && (
-                <>
-                    {/* show last comment */}
-                    {data.comments.length > 0 && (
-                        <DisputeComment
+            {data.status === DisputeStatus.PendingDriver &&
+                data.comments.length > 1 && (
+                    <>
+                        <SingleDisputeCommentBlock
                             comment={data.comments[data.comments.length - 1]}
-                            isLast={true}
+                            onAccept={handleAccept}
+                            onSubmit={handleDisputeSubmit}
+                            posting={posting}
                         />
-                    )}
-
-                    {/* action buttons */}
-                    {!showDisputeForm && (
-                        <Box sx={{ display: 'flex', gap: 2, mt: 3, flexWrap: 'wrap' }}>
-                            <Button
-                                variant="contained"
-                                color="success"
-                                fullWidth
-                                sx={{ flex: 1 }}
-                                onClick={handleAccept}
-                            >
-                                Accept Correction
-                            </Button>
-                            <Button
-                                variant="text"
-                                color="primary"
-                                fullWidth
-                                sx={{ flex: 1 }}
-                                onClick={() => {
-                                    setShowDisputeForm(true);
-                                }}
-                            >
-                                Dispute
-                            </Button>
-                        </Box>
-                    )}
-
-                    {showDisputeForm && (
-                        <>
-                            <Divider sx={{my: 2}}/>
-                            <Box mt={2}>
-                                <Typography variant="h5" sx={{mb:2}}>Explain why it’s wrong</Typography>
-                                <TextField
-                                    label="Explain the issue"
-                                    multiline
-                                    required
-                                    fullWidth
-                                    rows={4}
-                                    value={explanation}
-                                    onChange={(e) => setExplanation(e.target.value)}
-                                    error={hasError}
-                                    helperText={hasError ? 'This field is required.' : ''}
-                                    sx={{mb: 2}}
-                                />
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    onClick={handleDisputeSubmit}
-                                    disabled={posting || !explanation.trim()}
-                                >
-                                    Submit
-                                </Button>
-                            </Box>
-                        </>
-                    )}
-                    <Divider sx={{my: 2}}/>
-                </>
-            )}
+                        <Divider sx={{my: 2}}/>
+                    </>
+                )
+            }
 
             {/* comments */}
             <Typography variant="h5" sx={{mb: 2}}>
                 Comments
             </Typography>
 
-            {data.comments
-                .filter((_, index) =>
-                    data.status === DisputeStatus.PendingDriver
-                        ? index !== data.comments.length - 1
-                        : true
-                )
-                .map((c, index, arr) => (
-                    <DisputeComment
-                        key={c.id}
-                        comment={c}
-                        isLast={index === arr.length - 1}
-                    />
-                ))}
+            {data.status === DisputeStatus.PendingDriver && data.comments.length === 1 ? (
+                <SingleDisputeCommentBlock
+                    comment={data.comments[0]}
+                    onAccept={handleAccept}
+                    onSubmit={handleDisputeSubmit}
+                    posting={posting}
+                />
+            ) : (
+                data.comments
+                    .filter((_, index) =>
+                        data.status === DisputeStatus.PendingDriver
+                            ? index !== data.comments.length - 1
+                            : true
+                    )
+                    .map((c, index, arr) => (
+                        <DisputeComment
+                            key={c.id}
+                            comment={c}
+                            isLast={index === arr.length - 1}
+                        />
+                    ))
+            )}
         </Box>
     );
 }
