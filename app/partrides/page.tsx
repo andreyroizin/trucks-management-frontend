@@ -303,7 +303,7 @@ export default function TripsManagementPage() {
                     {/*/>*/}
                 </Box>
 
-                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <DateInputField
                         label="Start date"
                         name="startDate"
