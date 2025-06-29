@@ -220,7 +220,7 @@ export default function TripsManagementPage() {
     return (
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                <Typography variant="h2" fontWeight={500}>
+                <Typography variant="h3" fontWeight={500}>
                     Workdays Management
                 </Typography>
                 <LanguageSelectDesktop/>
@@ -352,7 +352,7 @@ export default function TripsManagementPage() {
                     mb: 3
                 }}>
                     <Typography variant="h4" fontWeight={500}>
-                        Resent records
+                        Overview List
                     </Typography>
                     {(isLoading || isRefetching) ? (
                         <CircularProgress size={20}/>
