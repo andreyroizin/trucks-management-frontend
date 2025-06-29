@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {
     Alert,
@@ -16,9 +16,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import dayjs from 'dayjs';
 
 import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import {useCreatePartRideDispute} from '@/hooks/useCreatePartRideDispute';
+import SuccessDisputeDialog from '@/components/SuccessDisputeDialog';
 
 type Props = {
     open: boolean;
@@ -32,11 +34,15 @@ const schema = yup.object({
         .min(-10)
         .max(10)
         .required(),
-    comment: yup.string(),
+    comment: yup.string().optional()
 });
 
 export default function DisputeCreateDialog({ open, onClose, partRideId }: Props) {
     const [submitError, setSubmitError] = React.useState<string | null>(null);
+    const [successInfo, setSuccessInfo] = useState<
+      | { id: string; dateLabel: string }
+      | null
+    >(null);
     const errorRef = React.useRef<HTMLDivElement>(null);
     const { data: partRide, isLoading } = usePartRideDetail(partRideId!);
     const { mutateAsync: createDispute, isPending } =
@@ -63,8 +69,11 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
     const onSubmit = async (values: { correctionHours: number; comment?: string }) => {
         try {
             setSubmitError(null);
-            await createDispute(values); // hook expects { correctionHours, comment }
-            reset(); // clear form
+            const result = await createDispute(values); // result has .id, .createdAtUtc
+            setSuccessInfo({
+                id: result.id,
+                dateLabel: dayjs(partRide?.date).format('DD.MM.YY'),
+            });
             onClose();
         } catch (e: any) {
             console.error(e);
@@ -76,6 +85,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
     };
 
     return (
+        <>
         <Dialog
             open={open}
             onClose={onClose}
@@ -305,5 +315,14 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                 </Button>
             </DialogActions>
         </Dialog>
+        {successInfo && (
+            <SuccessDisputeDialog
+                open={true}
+                onClose={() => setSuccessInfo(null)}
+                disputeId={successInfo.id}
+                dateLabel={successInfo.dateLabel}
+            />
+        )}
+        </>
     );
 }
