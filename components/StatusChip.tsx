@@ -6,7 +6,7 @@ import { Chip } from '@mui/material';
 export type StatusChipVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
 
 interface StatusChipProps {
-    label: string;
+    label?: string;
     variant?: StatusChipVariant;
     sx?: object;        // optional extra styling overrides
 }
