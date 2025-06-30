@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import SyncIcon from '@mui/icons-material/Sync';
 import {useQueryClient} from '@tanstack/react-query';
+import { useCloseDispute } from '@/hooks/useCloseDispute';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Dispute, useDisputes} from '@/hooks/useDisputes';
 import dayjs from 'dayjs';
@@ -45,6 +46,7 @@ export default function TripsManagementPage() {
     const [editDisputeDialogId, setEditDisputeDialogId] = useState<string | null>(null);
 
     const queryClient = useQueryClient();
+    const { mutateAsync: closeDispute } = useCloseDispute();
 
     const handleRefetch = async () => {
         await queryClient.invalidateQueries({queryKey: ['disputes']});
@@ -321,16 +323,23 @@ export default function TripsManagementPage() {
                                         <TableCell>
                                             <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
                                                 <Box onClick={(e) => e.stopPropagation()}>
-                                                    <DisputesActionsMenu
-                                                        onEdit={() => {
-                                                            setEditDisputeDialogId(row.id);
-                                                        }}
-                                                        onDelete={() => handleDelete(row)}
-                                                        onCloseDispute={() => {
-                                                            console.log('onCloseDispute', row.id)
-                                                            snack({ text: 'Closed successfully!', severity: 'success' })
-                                                        }}
-                                                    />
+                                                <DisputesActionsMenu
+                                                    onEdit={() => {
+                                                        setEditDisputeDialogId(row.id);
+                                                    }}
+                                                    onDelete={() => handleDelete(row)}
+                                                    onCloseDispute={async () => {
+                                                        try {
+                                                            if (!row.id) return;
+                                                            await closeDispute(row.id);
+                                                            snack({ text: 'Dispute closed successfully!', severity: 'success' });
+                                                            await queryClient.invalidateQueries({ queryKey: ['disputes'] });
+                                                        } catch (error: any) {
+                                                            console.error(error);
+                                                            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to close dispute.', severity: 'error' });
+                                                        }
+                                                    }}
+                                                />
                                                 </Box>
                                             </Box>
                                         </TableCell>

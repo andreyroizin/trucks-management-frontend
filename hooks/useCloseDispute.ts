@@ -19,12 +19,12 @@ const closeDispute = async (id: string): Promise<CloseResponse> => {
     return data.data;
 };
 
-export const useCloseDispute = (id: string) => {
+export const useCloseDispute = () => {
     const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: () => closeDispute(id),
-        onSuccess: () => {
+        mutationFn: (id: string) => closeDispute(id),
+        onSuccess: (_, id) => {
             qc.invalidateQueries({ queryKey: ['dispute', id] });
             qc.invalidateQueries({ queryKey: ['disputes'] });
         },
