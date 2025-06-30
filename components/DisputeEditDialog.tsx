@@ -69,7 +69,7 @@ export default function DisputeEditDialog({ open, onClose, disputeId }: Props) {
         } catch (e: any) {
             console.error(e);
             setSubmitError(e?.response?.data?.errors?.[0] ?? 'Failed to update dispute. Please try again.');
-            showSnack({ text: 'Failed to update dispute', severity: 'error' });
+            showSnack({ text: e?.response?.data?.errors?.[0] ?? 'Failed to update dispute', severity: 'error' });
             setTimeout(() => {
                 errorRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, 100);

@@ -139,6 +139,17 @@ export default function TripsManagementPage() {
         setConfirmDeleteId(row.id);
     };
 
+    const handleCloseDispute = async (disputeId: string) => {
+        try {
+            await closeDispute(disputeId);
+            snack({ text: 'Dispute closed successfully!', severity: 'success' });
+            await queryClient.invalidateQueries({ queryKey: ['disputes'] });
+        } catch (error: any) {
+            console.error(error);
+            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to close dispute.', severity: 'error' });
+        }
+    };
+
     /** ────────────────────────────────────────────────────────────────
      * Render
      * ───────────────────────────────────────────────────────────── */
@@ -345,17 +356,7 @@ export default function TripsManagementPage() {
                                                         setEditDisputeDialogId(row.id);
                                                     }}
                                                     onDelete={() => handleDelete(row)}
-                                                    onCloseDispute={async () => {
-                                                        try {
-                                                            if (!row.id) return;
-                                                            await closeDispute(row.id);
-                                                            snack({ text: 'Dispute closed successfully!', severity: 'success' });
-                                                            await queryClient.invalidateQueries({ queryKey: ['disputes'] });
-                                                        } catch (error: any) {
-                                                            console.error(error);
-                                                            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to close dispute.', severity: 'error' });
-                                                        }
-                                                    }}
+                                                    onCloseDispute={() => handleCloseDispute(row.id)}
                                                 />
                                                 </Box>
                                             </Box>
