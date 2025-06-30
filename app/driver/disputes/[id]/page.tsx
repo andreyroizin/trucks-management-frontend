@@ -167,26 +167,25 @@ export default function DisputeDetailPage() {
 
             <Divider sx={{my: 2}}/>
 
-            {data.status === DisputeStatus.PendingDriver &&
-                data.comments.length > 1 && (
-                    <>
-                        <SingleDisputeCommentBlock
-                            comment={data.comments[data.comments.length - 1]}
-                            onAccept={handleAccept}
-                            onSubmit={handleDisputeSubmit}
-                            posting={posting}
-                        />
-                        <Divider sx={{my: 2}}/>
-                    </>
-                )
-            }
+            {data.status === DisputeStatus.PendingDriver && data.comments.length > 1 && (
+                <>
+                    <SingleDisputeCommentBlock
+                        comment={data.comments[0]}          // newest comment is now the first
+                        onAccept={handleAccept}
+                        onSubmit={handleDisputeSubmit}
+                        posting={posting}
+                    />
+                    <Divider sx={{ my: 2 }} />
+                </>
+            )}
 
-            {/* comments */}
-            <Typography variant="h5" sx={{mb: 2}}>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
                 Comments
             </Typography>
 
             {data.status === DisputeStatus.PendingDriver && data.comments.length === 1 ? (
+                /* only one comment → show block */
                 <SingleDisputeCommentBlock
                     comment={data.comments[0]}
                     onAccept={handleAccept}
@@ -194,11 +193,10 @@ export default function DisputeDetailPage() {
                     posting={posting}
                 />
             ) : (
+                /* render all comments except the newest (index 0) when PendingDriver */
                 data.comments
                     .filter((_, index) =>
-                        data.status === DisputeStatus.PendingDriver
-                            ? index !== data.comments.length - 1
-                            : true
+                        data.status === DisputeStatus.PendingDriver ? index !== 0 : true
                     )
                     .map((c, index, arr) => (
                         <DisputeComment
