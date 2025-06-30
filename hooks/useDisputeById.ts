@@ -2,11 +2,38 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
+// Basic shared entity
+type NamedEntity = {
+    id: string;
+    name: string;
+};
+
+// Driver object inside part‑ride
+type PartRideDriver = {
+    driverId: string;
+    firstName: string;
+    lastName: string;
+    aspNetUserId: string;
+};
+
+// Car object
+type PartRideCar = {
+    id: string;
+    licensePlate: string;
+};
+
 type PartRide = {
     id: string;
-    date: string;
+    date: string;           // ISO date
+    start: string;
+    end: string;
+    rest: string;
     decimalHours: number;
     newDecimalHours: number;
+    driver: PartRideDriver;
+    company: NamedEntity;
+    client: NamedEntity | null;
+    car: PartRideCar | null;
 };
 
 export type DisputeComment = {
