@@ -134,7 +134,7 @@ export default function DisputeDetailPage() {
                 <LanguageSelectDesktop/>
             </Box>
 
-            <Paper sx={{p: 3,  mx: 'auto'}}>
+            <Paper variant="outlined" sx={{p: 3,  mx: 'auto'}}>
                 {/* Title bar */}
                 <Box
                     sx={{
