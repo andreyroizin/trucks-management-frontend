@@ -19,6 +19,7 @@ import * as yup from 'yup';
 
 import {useDisputeById} from '@/hooks/useDisputeById';
 import {useSnack} from "@/providers/SnackProvider";
+import {useUpdateDispute} from "@/hooks/useUpdateDispute";
 
 type Props = {
     open: boolean;
