@@ -23,10 +23,12 @@ import {useDisputeById} from '@/hooks/useDisputeById';
 import {useAcceptDispute} from '@/hooks/useAcceptDispute';
 import {useAddDisputeComment} from '@/hooks/useAddDisputeComment';
 import {useSnack} from '@/providers/SnackProvider';
+import { useCloseDispute } from '@/hooks/useCloseDispute';
 
 import DisputeComment from '@/components/DisputeComment';
 import SingleDisputeCommentBlock from '@/components/SingleDisputeCommentBlock';
 import StatusChip from '@/components/StatusChip';
+import DisputeDetialActionBar from "@/components/DisputeDetailActionBar";
 
 export default function DisputeDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -46,6 +48,7 @@ export default function DisputeDetailPage() {
         mutateAsync: addComment,
         isPending: posting,
     } = useAddDisputeComment(id);
+    const { mutateAsync: closeDispute } = useCloseDispute();
 
     /* ── local state ─────────────────────────────────── */
     const [apiError, setApiError] = useState<string | null>(null);
@@ -71,6 +74,16 @@ export default function DisputeDetailPage() {
         } catch (e: any) {
             setApiError(e?.response?.data?.errors?.[0] ?? 'Failed to send comment.');
             snack({text: e?.response?.data?.errors?.[0] ?? 'Failed to send comment.', severity: 'error'});
+        }
+    };
+
+    // Handle closing a dispute
+    const handleCloseDispute = async () => {
+        try {
+            await closeDispute(id);
+            snack({ text: 'Dispute closed', severity: 'success' });
+        } catch (e: any) {
+            snack({ text: e?.response?.data?.errors?.[0] ?? 'Close failed', severity: 'error' });
         }
     };
 
@@ -109,6 +122,11 @@ export default function DisputeDetailPage() {
                 <Typography variant="h4" fontWeight={500}>
                     {dayjs(pr.date).format('DD.MM.YYYY')} Dispute
                 </Typography>
+                <DisputeDetialActionBar
+                    onCloseDispute={handleCloseDispute}
+                    onEdit={() => setEditDisputeDialogId(disputeId)}
+                    onDelete={() => setConfirmDeleteId(disputeId)}
+                />
 
             </Box>
 
