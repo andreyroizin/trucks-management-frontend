@@ -57,7 +57,7 @@ export default function DisputeDetailPage() {
     const handleAccept = async () => {
         try {
             await acceptDispute();
-            snack({text: 'Workday approved', severity: 'success'});
+            snack({text: 'Dispute approved', severity: 'success'});
         } catch (e: any) {
             setApiError(e?.response?.data?.errors?.[0] ?? 'Failed to approve.');
             snack({text: 'Failed to approve', severity: 'error'});
@@ -91,7 +91,6 @@ export default function DisputeDetailPage() {
 
     /* ── render ──────────────────────────────────────── */
     const pr = dispute.partRide;
-    const latestComment = dispute.comments[dispute.comments.length - 1];
 
     return (
         <Paper sx={{p: 3, maxWidth: 900, mx: 'auto'}}>
