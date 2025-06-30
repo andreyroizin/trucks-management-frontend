@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useMemo} from 'react';
+import React, {useState} from 'react';
 import {
     Alert,
     Box,
@@ -16,14 +16,15 @@ import {
     Typography,
 } from '@mui/material';
 import dayjs from 'dayjs';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {useParams, useRouter} from 'next/navigation';
 
 import {useDisputeById} from '@/hooks/useDisputeById';
 import {useAcceptDispute} from '@/hooks/useAcceptDispute';
 import {useAddDisputeComment} from '@/hooks/useAddDisputeComment';
 import {useSnack} from '@/providers/SnackProvider';
-import { useCloseDispute } from '@/hooks/useCloseDispute';
+import {useCloseDispute} from '@/hooks/useCloseDispute';
+import {useDeleteDispute} from '@/hooks/useDeleteDispute';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import DisputeComment from '@/components/DisputeComment';
 import SingleDisputeCommentBlock from '@/components/SingleDisputeCommentBlock';
@@ -49,9 +50,11 @@ export default function DisputeDetailPage() {
         isPending: posting,
     } = useAddDisputeComment(id);
     const { mutateAsync: closeDispute } = useCloseDispute();
+    const { mutateAsync: deleteDispute } = useDeleteDispute();
 
     /* ── local state ─────────────────────────────────── */
     const [apiError, setApiError] = useState<string | null>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     /* ── helpers ─────────────────────────────────────── */
     const isPendingAdmin = dispute?.status === 1; // PendingAdmin
@@ -84,6 +87,19 @@ export default function DisputeDetailPage() {
             snack({ text: 'Dispute closed', severity: 'success' });
         } catch (e: any) {
             snack({ text: e?.response?.data?.errors?.[0] ?? 'Close failed', severity: 'error' });
+        }
+    };
+
+    // Handle deleting a dispute
+    const handleDeleteDispute = async () => {
+        if (!confirmDeleteId) return;
+
+        try {
+            await deleteDispute(confirmDeleteId);
+            snack({ text: 'Dispute deleted', severity: 'success' });
+            router.push('/disputes');
+        } catch (e: any) {
+            snack({ text: e?.response?.data?.errors?.[0] ?? 'Delete failed', severity: 'error' });
         }
     };
 
@@ -124,8 +140,8 @@ export default function DisputeDetailPage() {
                 </Typography>
                 <DisputeDetialActionBar
                     onCloseDispute={handleCloseDispute}
-                    onEdit={() => setEditDisputeDialogId(disputeId)}
-                    onDelete={() => setConfirmDeleteId(disputeId)}
+                    onEdit={() => setEditDisputeDialogId(dispute.id)}
+                    onDelete={() => setConfirmDeleteId(dispute.id)}
                 />
 
             </Box>
@@ -350,6 +366,14 @@ export default function DisputeDetailPage() {
                     />
                 ))
             )}
+
+            <ConfirmModal
+                open={!!confirmDeleteId}
+                title="Delete Dispute"
+                message="Are you sure you want to delete this dispute? This action cannot be undone."
+                onClose={() => setConfirmDeleteId(null)}
+                onConfirm={handleDeleteDispute}
+            />
         </Paper>
     );
 }
