@@ -26,7 +26,7 @@ export default function ConfirmModal({
             </DialogContent>
             <DialogActions sx={{pb: 3, pl: 3, pr: 3}}>
                 <Button fullWidth onClick={onConfirm} color="error" variant="contained">
-                    Confirm
+                    Delete
                 </Button>
                 <Button fullWidth onClick={onClose} color="inherit">
                     Cancel
