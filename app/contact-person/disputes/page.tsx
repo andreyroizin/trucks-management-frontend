@@ -30,9 +30,9 @@ import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import DateInputField from '@/components/DateInputField';
-import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 import StatusChip from "@/components/StatusChip";
+import DisputesActionsMenu from "@/components/DisputesActionsMenu";
 
 export default function TripsManagementPage() {
     const router = useRouter();
@@ -323,10 +323,10 @@ export default function TripsManagementPage() {
                                         <TableCell>
                                             <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
                                                 <Box onClick={(e) => e.stopPropagation()}>
-                                                    <PartRideActionsMenu
-                                                        onApprove={() => handleApprove(row)}
+                                                    <DisputesActionsMenu
                                                         onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
                                                         onDelete={() => handleDelete(row)}
+                                                        onCloseDispute={() => console.log('onCloseDispute', row.id)}
                                                     />
                                                 </Box>
                                             </Box>
@@ -352,7 +352,6 @@ export default function TripsManagementPage() {
             </Paper>
 
             {/* Selection action bar */}
-
             <ConfirmModal
                 open={!!confirmDeleteId}
                 title="Confirm Deletion"
