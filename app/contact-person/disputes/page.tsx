@@ -20,6 +20,7 @@ import {
 import SyncIcon from '@mui/icons-material/Sync';
 import {useQueryClient} from '@tanstack/react-query';
 import { useCloseDispute } from '@/hooks/useCloseDispute';
+import { useDeleteDispute } from '@/hooks/useDeleteDispute';
 import Autocomplete from '@mui/material/Autocomplete';
 import {Dispute, useDisputes} from '@/hooks/useDisputes';
 import dayjs from 'dayjs';
@@ -47,6 +48,7 @@ export default function TripsManagementPage() {
 
     const queryClient = useQueryClient();
     const { mutateAsync: closeDispute } = useCloseDispute();
+    const { mutateAsync: deleteDispute } = useDeleteDispute();
 
     const handleRefetch = async () => {
         await queryClient.invalidateQueries({queryKey: ['disputes']});
@@ -102,6 +104,21 @@ export default function TripsManagementPage() {
         pageNumber,
         pageSize: rowsPerPage,
     });
+
+    // Handle confirm delete logic
+    const handleConfirmDelete = async () => {
+        if (!confirmDeleteId) return;
+        try {
+            await deleteDispute(confirmDeleteId);
+            snack({ text: 'Dispute deleted successfully!', severity: 'success' });
+            await queryClient.invalidateQueries({ queryKey: ['disputes'] });
+        } catch (error: any) {
+            console.error(error);
+            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to delete dispute.', severity: 'error' });
+        } finally {
+            setConfirmDeleteId(null);
+        }
+    };
 
     /** ────────────────────────────────────────────────────────────────
      * Helpers
@@ -369,9 +386,7 @@ export default function TripsManagementPage() {
                 title="Confirm Deletion"
                 message="Are you sure you want to delete this dispute?"
                 onClose={() => setConfirmDeleteId(null)}
-                onConfirm={() => {
-                    // TODO: Implement actual deletion logic
-                }}
+                onConfirm={handleConfirmDelete}
             />
             <DisputeCreateDialog
                 open={openCreateDispute}
