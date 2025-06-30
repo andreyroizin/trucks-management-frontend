@@ -27,15 +27,15 @@ const updateDispute = async (
 };
 
 /* ---------- Hook ---------- */
-export const useUpdateDispute = (id: string) => {
+export const useUpdateDispute = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (correctionHours: number) =>
+        mutationFn: ({ id, correctionHours }: { id: string; correctionHours: number }) =>
             updateDispute(id, { correctionHours }),
 
         // Optimistic: update the cache right away
-        onMutate: async (correctionHours) => {
+        onMutate: async ({ id, correctionHours }: { id: string; correctionHours: number }) => {
             await queryClient.cancelQueries({ queryKey: ['dispute', id] });
             const previous = queryClient.getQueryData<DisputeDetail>(['dispute', id]);
             if (previous) {
@@ -48,18 +48,18 @@ export const useUpdateDispute = (id: string) => {
                     },
                 });
             }
-            return { previous };
+            return { previous, id };
         },
 
         onError: (_err, _vars, ctx) => {
-            if (ctx?.previous) {
-                queryClient.setQueryData(['dispute', id], ctx.previous);
+            if (ctx?.previous && ctx?.id) {
+                queryClient.setQueryData(['dispute', ctx.id], ctx.previous);
             }
         },
 
         onSuccess: (updated) => {
             // Ensure fresh data
-            queryClient.setQueryData(['dispute', id], updated);
+            queryClient.setQueryData(['dispute', updated.id], updated);
             // Invalidate any lists that include disputes
             queryClient.invalidateQueries({ queryKey: ['disputes'] });
         },

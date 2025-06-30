@@ -39,7 +39,7 @@ export default function DisputeEditDialog({ open, onClose, disputeId }: Props) {
     const [submitError, setSubmitError] = React.useState<string | null>(null);
     const errorRef = React.useRef<HTMLDivElement>(null);
     const { data: dispute, isLoading } = useDisputeById(disputeId!);
-    const { mutateAsync: updateDispute, isPending } = useUpdateDispute(disputeId!);
+    const { mutateAsync: updateDispute, isPending } = useUpdateDispute();
     const showSnack = useSnack();
 
     /* RHF setup */
@@ -63,7 +63,7 @@ export default function DisputeEditDialog({ open, onClose, disputeId }: Props) {
     const onSubmit = async (values: { correctionHours: number }) => {
         try {
             setSubmitError(null);
-            await updateDispute(values.correctionHours);
+            await updateDispute({id: disputeId!, correctionHours: values.correctionHours});
             showSnack({ text: 'Dispute updated successfully', severity: 'success' });
             onClose();
         } catch (e: any) {

@@ -24,8 +24,8 @@ const DisputesActionsMenu: React.FC<DisputeRowActionsMenuProps> = ({onDelete, on
                 <MoreVertIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                <MenuItem onClick={() => { onCloseDispute?.(); handleClose(); }}>Close Dispute</MenuItem>
                 <MenuItem onClick={() => { onEdit?.(); handleClose(); }}>Edit Dispute</MenuItem>
+                <MenuItem onClick={() => { onCloseDispute?.(); handleClose(); }}>Close Dispute</MenuItem>
                 <MenuItem onClick={() => { onDelete?.(); handleClose(); }}>Delete Dispute</MenuItem>
             </Menu>
         </>
