@@ -22,6 +22,14 @@ export type Dispute = {
         date: string;
         decimalHours: number;
     };
+    car: {
+        id: string;
+        licensePlate: string;
+    },
+    client: {
+        id: string;
+        name: string;
+    }
 };
 
 export type DisputesResponse = {
@@ -34,15 +42,23 @@ export type DisputesResponse = {
 
 /* ───────────────── Fetcher ─────────────────── */
 const fetchDisputes = async ({
-                                 driverId,
+                                 driverIds,
                                  companyIds,
+                                 clientIds,
+                                 carIds,
+                                 statuses,
+                                 date,
                                  dateFrom,
                                  dateTo,
                                  pageNumber,
                                  pageSize,
                              }: {
-    driverId?: string;
+    driverIds?: string[];
     companyIds?: string[];
+    clientIds?: string[];
+    carIds?: string[];
+    statuses?: string[];
+    date?: string;
     dateFrom?: string;
     dateTo?: string;
     pageNumber: number;
@@ -50,10 +66,16 @@ const fetchDisputes = async ({
 }): Promise<DisputesResponse> => {
     const qp = new URLSearchParams();
 
-    if (driverId) qp.set('driverId', driverId);
-    companyIds?.forEach((id) => qp.append('companyIds', id));
+    driverIds?.forEach(id => qp.append('driverIds', id));
+    companyIds?.forEach(id => qp.append('companyIds', id));
+    clientIds?.forEach(id => qp.append('clientIds', id));
+    carIds?.forEach(id => qp.append('carIds', id));
+    statuses?.forEach(s => qp.append('statuses', s));
+
+    if (date) qp.set('date', date);
     if (dateFrom) qp.set('dateFrom', dateFrom);
     if (dateTo) qp.set('dateTo', dateTo);
+
     qp.set('pageNumber', pageNumber.toString());
     qp.set('pageSize', pageSize.toString());
 
@@ -68,15 +90,23 @@ const fetchDisputes = async ({
 
 /* ───────────────── Hook ─────────────────────── */
 export const useDisputes = ({
-                                driverId,
+                                driverIds,
                                 companyIds,
+                                clientIds,
+                                carIds,
+                                statuses,
+                                date,
                                 dateFrom,
                                 dateTo,
                                 pageNumber,
                                 pageSize,
                             }: {
-    driverId?: string;
+    driverIds?: string[];
     companyIds?: string[];
+    clientIds?: string[];
+    carIds?: string[];
+    statuses?: string[];
+    date?: string;
     dateFrom?: string;
     dateTo?: string;
     pageNumber: number;
@@ -85,8 +115,12 @@ export const useDisputes = ({
     useQuery({
         queryKey: [
             'disputes',
-            driverId,
+            driverIds,
             companyIds,
+            clientIds,
+            carIds,
+            statuses,
+            date,
             dateFrom,
             dateTo,
             pageNumber,
@@ -94,8 +128,12 @@ export const useDisputes = ({
         ],
         queryFn: () =>
             fetchDisputes({
-                driverId,
+                driverIds,
                 companyIds,
+                clientIds,
+                carIds,
+                statuses,
+                date,
                 dateFrom,
                 dateTo,
                 pageNumber,
@@ -103,4 +141,3 @@ export const useDisputes = ({
             }),
         placeholderData: (prev) => prev,
     });
-
