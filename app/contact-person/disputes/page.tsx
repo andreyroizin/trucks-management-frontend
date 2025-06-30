@@ -33,9 +33,11 @@ import DateInputField from '@/components/DateInputField';
 import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 import StatusChip from "@/components/StatusChip";
 import DisputesActionsMenu from "@/components/DisputesActionsMenu";
+import {useSnack} from "@/providers/SnackProvider";
 
 export default function TripsManagementPage() {
     const router = useRouter();
+    const snack = useSnack();
     const {isAuthenticated, loading: authLoading, user} = useAuth();
 
     const queryClient = useQueryClient();
@@ -326,7 +328,10 @@ export default function TripsManagementPage() {
                                                     <DisputesActionsMenu
                                                         onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
                                                         onDelete={() => handleDelete(row)}
-                                                        onCloseDispute={() => console.log('onCloseDispute', row.id)}
+                                                        onCloseDispute={() => {
+                                                            console.log('onCloseDispute', row.id)
+                                                            snack({ text: 'Closed successfully!', severity: 'success' })
+                                                        }}
                                                     />
                                                 </Box>
                                             </Box>
