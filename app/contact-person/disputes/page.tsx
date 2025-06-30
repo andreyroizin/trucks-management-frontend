@@ -34,11 +34,15 @@ import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 import StatusChip from "@/components/StatusChip";
 import DisputesActionsMenu from "@/components/DisputesActionsMenu";
 import {useSnack} from "@/providers/SnackProvider";
+import DisputeEditDialog from "@/components/DisputeEditDialog";
 
 export default function TripsManagementPage() {
     const router = useRouter();
     const snack = useSnack();
     const {isAuthenticated, loading: authLoading, user} = useAuth();
+
+    // For editing disputes dialog
+    const [editDisputeDialogId, setEditDisputeDialogId] = useState<string | null>(null);
 
     const queryClient = useQueryClient();
 
@@ -110,14 +114,6 @@ export default function TripsManagementPage() {
         };
         const conf = map[d.status] ?? map[1];
         return <StatusChip label={conf.label} variant={conf.color} />;
-    };
-
-    /** ────────────────────────────────────────────────────────────────
-     * Row-level actions
-     * ───────────────────────────────────────────────────────────── */
-    const handleApprove = (row: Dispute) => {
-        console.log('Approving row:', row);
-        // TODO: Implement actual API call or logic
     };
 
     const handleDelete = (row: Dispute) => {
@@ -326,7 +322,9 @@ export default function TripsManagementPage() {
                                             <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
                                                 <Box onClick={(e) => e.stopPropagation()}>
                                                     <DisputesActionsMenu
-                                                        onEdit={() => router.push(`/partrides/edit?id=${row.id}`)}
+                                                        onEdit={() => {
+                                                            setEditDisputeDialogId(row.id);
+                                                        }}
                                                         onDelete={() => handleDelete(row)}
                                                         onCloseDispute={() => {
                                                             console.log('onCloseDispute', row.id)
@@ -374,6 +372,13 @@ export default function TripsManagementPage() {
                 }}
                 partRideId={disputePartRideId}
             />
+            {editDisputeDialogId && (
+                <DisputeEditDialog
+                    disputeId={editDisputeDialogId}
+                    open={!!editDisputeDialogId}
+                    onClose={() => setEditDisputeDialogId(null)}
+                />
+            )}
         </Box>
     );
 }
