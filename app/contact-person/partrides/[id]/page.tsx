@@ -2,12 +2,13 @@
 
 import React from 'react';
 import {
+    Alert,
     Box,
     Button,
     CircularProgress,
     Divider,
     Link,
-    Paper,
+    Paper, Stack,
     Table,
     TableBody,
     TableCell,
@@ -20,15 +21,19 @@ import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 import FileTile from '@/components/FileTile';
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
+import {usePartRideDisputes} from "@/hooks/usePartRideDisputes";
+import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
 
 export default function PartRideDetailPage() {
     const {id} = useParams<{ id: string }>();
     const router = useRouter();
 
     const {data, isLoading, error} = usePartRideDetail(id);
+    const {data: disputesData, isLoading: disputesLoading} = usePartRideDisputes(id);
+    const downloadFile = useDownloadPartRideFile();
 
     /* ────────── loading / error ────────── */
-    if (isLoading) {
+    if (isLoading || disputesLoading) {
         return (
             <Box display="flex" justifyContent="center" mt={6}>
                 <CircularProgress/>
@@ -46,10 +51,14 @@ export default function PartRideDetailPage() {
 
     const pr = data;
 
+    // Load all disputes for this Part‑Ride
+    const latestDispute = disputesData?.disputes?.[0];
+    const disputeStatus = latestDispute?.status; // 0‑4 from enum
+
     return (
         <Box sx={{py: 4}}>
             {/* top bar */}
-            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
                     Workdays Management
                 </Typography>
@@ -61,7 +70,7 @@ export default function PartRideDetailPage() {
                 <Box
                     sx={{
                         mt: 1,
-                        mb: 4,
+                        mb: 3,
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -119,14 +128,16 @@ export default function PartRideDetailPage() {
                 </Table>
 
                 {/* Example: go-to dispute button if you have a separate dispute page */}
-                <Button
-                    variant="contained"
-                    color="warning"
-                    sx={{mt: 4, width: '100%', maxWidth: 500}}
-                    onClick={() => router.push(`/disputes/from-ride/${pr.id}`)}
-                >
-                    Go To This Dispute
-                </Button>
+                {latestDispute && (disputeStatus === 0 || disputeStatus === 1) && (
+                    <Button
+                        variant="contained"
+                        color="warning"
+                        sx={{mt: 4, width: '100%', maxWidth: 500}}
+                        onClick={() => router.push(`/disputes/${latestDispute.id}`)}
+                    >
+                        Go To This Dispute
+                    </Button>
+                )}
 
                 <Divider sx={{my: 3}}/>
 
@@ -289,11 +300,15 @@ export default function PartRideDetailPage() {
                     Additional Information
                 </Typography>
                 {pr.files?.length ? (
-                    pr.files.map((f) => (
-                        <Box key={f.id} mb={1}>
-                            <FileTile file={f}/>
-                        </Box>
-                    ))
+                    <Stack spacing={2}>
+                        {pr.files.map((file) => (
+                            <FileTile
+                                key={file.id}
+                                file={file}
+                                onClick={() => downloadFile(file)}
+                            />
+                        ))}
+                    </Stack>
                 ) : (
                     <Typography variant="body2" color="text.secondary">
                         No receipts uploaded.
