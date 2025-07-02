@@ -39,10 +39,12 @@ import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import DateInputField from '@/components/DateInputField';
 import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 import DisputeCreateDialog from "@/components/DisputeCreateDialog";
+import {useSnack} from "@/providers/SnackProvider";
 
 export default function TripsManagementPage() {
     const router = useRouter();
     const {isAuthenticated, loading: authLoading} = useAuth();
+    const showSnack = useSnack();
 
     const queryClient = useQueryClient();
 
@@ -118,12 +120,14 @@ export default function TripsManagementPage() {
                         onSuccess: resolve,
                         onError: (err) => {
                             console.error('Deletion failed:', err);
-                            alert(err?.message || 'Failed to delete one or more workdays');
+                            showSnack({ text: err?.response?.data?.errors?.[0] ?? 'Failed to delete one or more workdays', severity: 'error' });
                             reject(err);
                         },
                     });
                 });
             }
+
+            showSnack({ text: 'Deleted workdays', severity: 'success' });
 
             setSelectedIds([]);
             setConfirmBulkDeleteOpen(false);
@@ -546,10 +550,11 @@ export default function TripsManagementPage() {
                             setConfirmDeleteId(null);
                         },
                         onSuccess: () => {
+                            showSnack({ text: 'Deleted the workday', severity: 'success' });
                             setSelectedIds([]);
                         },
                         onError: (error) => {
-                            alert(error?.message || 'Failed to delete the workday');
+                            showSnack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to delete the workday', severity: 'error' });
                         },
                     });
                 }}
