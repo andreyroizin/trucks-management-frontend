@@ -30,7 +30,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 import DisputeComment from '@/components/DisputeComment';
 import SingleDisputeCommentBlock from '@/components/SingleDisputeCommentBlock';
 import StatusChip from '@/components/StatusChip';
-import DisputeDetialActionBar from "@/components/DisputeDetailActionBar";
+import DisputeDetailActionBar from "@/components/DisputeDetailActionBar";
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 
 export default function DisputeDetailPage() {
@@ -150,12 +150,11 @@ export default function DisputeDetailPage() {
                     <Typography variant="h4" fontWeight={500}>
                         {dayjs(pr?.date).format('DD.MM.YYYY')} Dispute
                     </Typography>
-                    <DisputeDetialActionBar
+                    <DisputeDetailActionBar
                         onCloseDispute={handleCloseDispute}
                         onEdit={() => setEditDisputeDialogId(dispute.id)}
                         onDelete={() => setConfirmDeleteId(dispute.id)}
                     />
-
                 </Box>
 
                 {/* Error */}

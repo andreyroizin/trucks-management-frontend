@@ -20,7 +20,7 @@ type Props = {
     disabled?: boolean;
 };
 
-export default function DisputeDetialActionBar({
+export default function DisputeDetailActionBar({
                                              onCloseDispute,
                                              onEdit,
                                              onDelete,
