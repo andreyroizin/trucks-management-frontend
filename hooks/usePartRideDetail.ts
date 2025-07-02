@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
+import {PartRideStatus} from "@/utils/partRideStatus";
 
 // --- TYPES ---
 export type PartRideDetail = {
@@ -73,6 +74,7 @@ export type PartRideDetail = {
     numberOfHours?: number;
     sundayHolidayHours?: number;
     variousCompensation?: number;
+    status: PartRideStatus;
     approvals?: {
         id: string;
         status: number;
