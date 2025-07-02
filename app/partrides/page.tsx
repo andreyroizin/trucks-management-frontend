@@ -28,7 +28,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
-import {statusChip} from '@/components/partRideStatusChip'; // or from '@/utils/statusChip'
+import {PartRideStatusChip} from '@/components/PartRideStatusChip'; // or from '@/utils/statusChip'
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
 // import { useCompanies } from '@/hooks/useCompanies';
@@ -443,7 +443,7 @@ export default function TripsManagementPage() {
                                         </TableCell>
                                         <TableCell>
                                             <Box>
-                                                {statusChip(row.status)}
+                                                {PartRideStatusChip(row.status)}
                                             </Box>
                                         </TableCell>
                                         <TableCell>

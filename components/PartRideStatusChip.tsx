@@ -2,7 +2,7 @@ import React from 'react';
 import StatusChip from '@/components/StatusChip';
 import { PartRideStatus } from '@/utils/partRideStatus';
 
-export const statusChip = (status: PartRideStatus) => {
+export const PartRideStatusChip = (status: PartRideStatus) => {
     const map: Record<PartRideStatus, { label: string; variant: 'info' | 'warning' | 'success' | 'danger' }> = {
         [PartRideStatus.PendingAdmin]: { label: 'Pending Admin', variant: 'info' },
         [PartRideStatus.Dispute]:      { label: 'Dispute',       variant: 'warning' },
