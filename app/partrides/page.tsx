@@ -6,7 +6,6 @@ import React, {useEffect, useState} from 'react';
 import {
     Box,
     Checkbox,
-    Chip,
     CircularProgress,
     Divider,
     IconButton,
@@ -29,7 +28,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
-
+import {statusChip} from '@/components/partRideStatusChip'; // or from '@/utils/statusChip'
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
 // import { useCompanies } from '@/hooks/useCompanies';
@@ -81,7 +80,7 @@ export default function TripsManagementPage() {
 
     // Confirm delete modal state
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-    const { mutate: deletePartRide} = useDeletePartRide();
+    const {mutate: deletePartRide} = useDeletePartRide();
 
     const {data: rides, isLoading, isRefetching, error} = usePartRides({
         // companyId,
@@ -109,31 +108,31 @@ export default function TripsManagementPage() {
     /** ────────────────────────────────────────────────────────────────
      * Bulk delete handler
      * ───────────────────────────────────────────────────────────── */
-   const handleConfirmBulkDelete = async () => {
-       setIsBulkDeleting(true);
+    const handleConfirmBulkDelete = async () => {
+        setIsBulkDeleting(true);
 
-       try {
-           for (const id of selectedIds) {
-               await new Promise<void>((resolve, reject) => {
-                   deletePartRide(id, {
-                       onSuccess: resolve,
-                       onError: (err) => {
-                           console.error('Deletion failed:', err);
-                           alert(err?.message || 'Failed to delete one or more workdays');
-                           reject(err);
-                       },
-                   });
-               });
-           }
+        try {
+            for (const id of selectedIds) {
+                await new Promise<void>((resolve, reject) => {
+                    deletePartRide(id, {
+                        onSuccess: resolve,
+                        onError: (err) => {
+                            console.error('Deletion failed:', err);
+                            alert(err?.message || 'Failed to delete one or more workdays');
+                            reject(err);
+                        },
+                    });
+                });
+            }
 
-           setSelectedIds([]);
-           setConfirmBulkDeleteOpen(false);
-       } catch (err) {
-           console.error('One or more deletions failed', err);
-       } finally {
-           setIsBulkDeleting(false);
-       }
-   };
+            setSelectedIds([]);
+            setConfirmBulkDeleteOpen(false);
+        } catch (err) {
+            console.error('One or more deletions failed', err);
+        } finally {
+            setIsBulkDeleting(false);
+        }
+    };
 
     /** ────────────────────────────────────────────────────────────────
      * Row selection handling
@@ -173,20 +172,6 @@ export default function TripsManagementPage() {
         setConfirmBulkDeleteOpen(true);
     };
 
-    /** ────────────────────────────────────────────────────────────────
-     * Helpers
-     * ───────────────────────────────────────────────────────────── */
-    const statusChip = (r: PartRide) => {
-        // Placeholder – infer status from hours/remark until real field exists
-        const value = (r as any).status ?? 'pending';
-        const map: Record<string, { label: string; color: 'success' | 'warning' | 'info' }> = {
-            approved: {label: 'Approved', color: 'success'},
-            changes: {label: 'Changes', color: 'warning'},
-            pending: {label: 'Pending', color: 'info'},
-        };
-        const conf = map[value] || map.pending;
-        return <Chip size="small" label={conf.label} color={conf.color} variant="outlined"/>;
-    };
 
     /** ────────────────────────────────────────────────────────────────
      * Row-level actions
@@ -232,13 +217,30 @@ export default function TripsManagementPage() {
                     <Autocomplete
                         multiple
                         size="small"
-                        options={['Pending', 'Approved', 'Changes']}
-                        value={statusIds.map(
-                            s => s[0].toUpperCase() + s.slice(1)
-                        )}
-                        onChange={(_, newValues) =>
-                            setStatusIds(newValues.map(v => v.toLowerCase()))
-                        }
+                        options={[
+                            {label: 'Pending Admin', value: 'pendingadmin'},
+                            {label: 'Dispute', value: 'dispute'},
+                            {label: 'Accepted', value: 'accepted'},
+                            {label: 'Rejected', value: 'rejected'},
+                        ]}
+                        value={statusIds.map((id) => ({
+                            label:
+                                id === 'pendingadmin'
+                                    ? 'Pending Admin'
+                                    : id === 'dispute'
+                                        ? 'Dispute'
+                                        : id === 'accepted'
+                                            ? 'Accepted'
+                                            : id === 'rejected'
+                                                ? 'Rejected'
+                                                : id,
+                            value: id,
+                        }))}
+                        onChange={(_, newValues) => {
+                            setStatusIds(newValues.map((v) => v.value));
+                        }}
+                        getOptionLabel={(option) => option.label}
+                        isOptionEqualToValue={(option, value) => option.value === value.value}
                         sx={{minWidth: 200, maxWidth: 200}}
                         renderInput={(params) => <TextField {...params} label="Statuses"/>}
                         freeSolo={false}
@@ -326,7 +328,7 @@ export default function TripsManagementPage() {
 
             {/* Error display */}
             {error && (
-                <Box sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'error.main', borderRadius: 1 }}>
+                <Box sx={{mb: 2, p: 2, border: '1px solid', borderColor: 'error.main', borderRadius: 1}}>
                     {(error as any).response?.data?.errors?.length ? (
                         (error as any).response.data.errors.map((msg: string, i: number) => (
                             <Typography key={i} variant="body2" color="error">
@@ -382,14 +384,15 @@ export default function TripsManagementPage() {
                                 <TableCell align="right">Hours</TableCell>
                                 <TableCell>Deviation</TableCell>
                                 <TableCell align="right">Forecasted (€)</TableCell>
-                                <TableCell>Statuses & Actions</TableCell>
+                                <TableCell>Statuses</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {(isLoading || isRefetching) ? (
                                 <TableRow>
                                     <TableCell colSpan={9} align="center" sx={{py: 6}}>
-                                        <CircularProgress size={24} />
+                                        <CircularProgress size={24}/>
                                     </TableCell>
                                 </TableRow>
                             ) : rides?.data.length === 0 ? (
@@ -439,8 +442,12 @@ export default function TripsManagementPage() {
                                             €{row.earnings}
                                         </TableCell>
                                         <TableCell>
-                                            <Box sx={{display: 'flex', alignItems: 'center', gap: .5}}>
-                                                {statusChip(row)}
+                                            <Box>
+                                                {statusChip(row.status)}
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box>
                                                 <Box onClick={(e) => e.stopPropagation()}>
                                                     <PartRideActionsMenu
                                                         onApprove={() => handleApprove(row)}
@@ -518,9 +525,9 @@ export default function TripsManagementPage() {
                             onClick={handleDeleteSelected}
                         >
                             {isBulkDeleting ? (
-                                <CircularProgress size={16} />
+                                <CircularProgress size={16}/>
                             ) : (
-                                <DeleteOutlineIcon fontSize="small" />
+                                <DeleteOutlineIcon fontSize="small"/>
                             )}
                             <Typography variant="body2">Delete</Typography>
                         </Box>

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
+import {PartRideStatus} from "@/utils/partRideStatus";
 
 // --- TYPES ---
 export type PartRide = {
@@ -33,6 +34,7 @@ export type PartRide = {
         firstName: string;
         lastName: string;
     };
+    status: PartRideStatus;
     car?: {
         id: string;
         licensePlate: string;

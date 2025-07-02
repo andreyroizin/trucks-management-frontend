@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import {
     Alert,
@@ -48,6 +49,8 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
     const { mutateAsync: createDispute, isPending } =
         useCreatePartRideDispute(partRideId!);
 
+    const queryClient = useQueryClient();
+
     /* RHF setup */
     const {
         control,
@@ -74,6 +77,10 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                 id: result.id,
                 dateLabel: dayjs(partRide?.date).format('DD.MM.YY'),
             });
+            reset();
+            await queryClient.invalidateQueries({ queryKey: ['partRideDetail', partRideId ?? ''] });
+            await queryClient.invalidateQueries({ queryKey: ['partRides'] });
+            await queryClient.invalidateQueries({ queryKey: ['disputes'] });
             onClose();
         } catch (e: any) {
             console.error(e);
