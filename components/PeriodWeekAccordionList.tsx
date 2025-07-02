@@ -7,7 +7,6 @@ import {
     AccordionSummary,
     Box,
     Button,
-    Chip,
     Divider,
     Table,
     TableBody,
@@ -22,6 +21,7 @@ import dayjs from 'dayjs';
 import {useRouter} from 'next/navigation';
 import StatusChip from "@/components/StatusChip";
 import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
+import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 
 // --- Helpers ---
 const approvalLabel = (s?: number) =>
@@ -104,11 +104,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                             {pr.decimalHours.toString().replace('.', ',')} h.
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            <Chip
-                                                                label={approvalLabel(pr.status)}
-                                                                size="small"
-                                                                color={approvalColor(pr.status)}
-                                                            />
+                                                            {PartRideStatusChip(pr.status)}
                                                         </TableCell>
                                                     </TableRow>
                                                 );
