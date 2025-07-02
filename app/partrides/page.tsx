@@ -222,20 +222,20 @@ export default function TripsManagementPage() {
                         multiple
                         size="small"
                         options={[
-                            {label: 'Pending Admin', value: 'pendingadmin'},
-                            {label: 'Dispute', value: 'dispute'},
-                            {label: 'Accepted', value: 'accepted'},
-                            {label: 'Rejected', value: 'rejected'},
+                            {label: 'Pending Admin', value: '0'},
+                            {label: 'Dispute', value: '1'},
+                            {label: 'Accepted', value: '2'},
+                            {label: 'Rejected', value: '3'},
                         ]}
                         value={statusIds.map((id) => ({
                             label:
-                                id === 'pendingadmin'
+                                id === '0'
                                     ? 'Pending Admin'
-                                    : id === 'dispute'
+                                    : id === '1'
                                         ? 'Dispute'
-                                        : id === 'accepted'
+                                        : id === '2'
                                             ? 'Accepted'
-                                            : id === 'rejected'
+                                            : id === '3'
                                                 ? 'Rejected'
                                                 : id,
                             value: id,
