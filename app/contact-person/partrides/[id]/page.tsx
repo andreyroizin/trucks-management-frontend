@@ -1,14 +1,20 @@
 'use client';
 
 import React from 'react';
+import ConfirmModal from '@/components/ConfirmModal';
+import {useSnack} from '@/providers/SnackProvider';
+// import { useApprovePartRide } from '@/hooks/useApprovePartRide';
+// import { useRejectPartRide } from '@/hooks/useRejectPartRide';
+import {useDeletePartRide} from '@/hooks/useDeletePartRide';
+import {useQueryClient} from '@tanstack/react-query';
 import {
-    Alert,
     Box,
     Button,
     CircularProgress,
     Divider,
     Link,
-    Paper, Stack,
+    Paper,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -23,6 +29,7 @@ import FileTile from '@/components/FileTile';
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 import {usePartRideDisputes} from "@/hooks/usePartRideDisputes";
 import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
+import PartrideDetailActionBar from "@/components/PartRideDetailActionBar";
 
 export default function PartRideDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -31,6 +38,55 @@ export default function PartRideDetailPage() {
     const {data, isLoading, error} = usePartRideDetail(id);
     const {data: disputesData, isLoading: disputesLoading} = usePartRideDisputes(id);
     const downloadFile = useDownloadPartRideFile();
+
+    const queryClient = useQueryClient();
+    const showSnack = useSnack();
+
+    // const { mutateAsync: approveRide, isPending: approving } = useApprovePartRide();
+    // const { mutateAsync: rejectRide,   isPending: rejecting } = useRejectPartRide();
+    const {mutateAsync: deleteRide, isPending: deleting} = useDeletePartRide();
+
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
+
+    const handleApprove = async () => {
+        try {
+            await approveRide(id);
+            showSnack({text: 'Workday approved', severity: 'success'});
+            queryClient.invalidateQueries(['partRideDetail', id]);
+        } catch (e: any) {
+            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Approve failed', severity: 'error'});
+        }
+    };
+
+    const handleReject = async () => {
+        try {
+            await rejectRide(id);
+            showSnack({text: 'Workday rejected', severity: 'success'});
+            queryClient.invalidateQueries(['partRideDetail', id]);
+        } catch (e: any) {
+            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Reject failed', severity: 'error'});
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteRide(id);
+            showSnack({text: 'Workday deleted', severity: 'success'});
+            router.push('/partrides');
+        } catch (e: any) {
+            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Delete failed', severity: 'error'});
+        } finally {
+            setDeleteConfirmOpen(false);
+        }
+    };
+
+    const handleEdit = () => {
+        router.push(`/partrides/edit?id=${id}`);
+    };
+
+    const handleOpenDispute = () => {
+        router.push(`/partrides/dispute?id=${id}`);
+    };
 
     /* ────────── loading / error ────────── */
     if (isLoading || disputesLoading) {
@@ -81,7 +137,13 @@ export default function PartRideDetailPage() {
                     <Typography variant="h4" fontWeight={500}>
                         {dayjs(pr.date).format('DD.MM.YYYY')} Workday Details
                     </Typography>
-                    {/* placeholder for future action bar */}
+                    <PartrideDetailActionBar
+                        onReject={handleReject}
+                        onApprove={handleApprove}
+                        onEdit={handleEdit}
+                        onOpenDispute={handleOpenDispute}
+                        onDelete={() => setDeleteConfirmOpen(true)}
+                    />
                 </Box>
 
                 <Table size="small">
@@ -142,7 +204,7 @@ export default function PartRideDetailPage() {
                 <Divider sx={{my: 3}}/>
 
                 {/* Driver & Vehicle */}
-                <Typography variant="h6" sx={{mt: 4, mb: 1}}>
+                <Typography variant="h6" fontWeight={500} sx={{ mb: 2}}>
                     Driver &amp; Vehicle Info
                 </Typography>
                 <Table size="small">
@@ -183,7 +245,7 @@ export default function PartRideDetailPage() {
                 <Divider sx={{my: 3}}/>
 
                 {/* Logged time */}
-                <Typography variant="h6" sx={{mb: 2}}>
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Logged Time &amp; Distance
                 </Typography>
                 <Table size="small">
@@ -245,7 +307,7 @@ export default function PartRideDetailPage() {
 
                 {/* Financial overview */}
                 <Divider sx={{my: 3}}/>
-                <Typography variant="h6" sx={{mb: 2}}>
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Financial Overview
                 </Typography>
 
@@ -296,7 +358,7 @@ export default function PartRideDetailPage() {
 
                 {/* Files */}
                 <Divider sx={{my: 3}}/>
-                <Typography variant="h6" sx={{mb: 2}}>
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Additional Information
                 </Typography>
                 {pr.files?.length ? (
@@ -310,21 +372,25 @@ export default function PartRideDetailPage() {
                         ))}
                     </Stack>
                 ) : (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body1" color="">
                         No receipts uploaded.
                     </Typography>
                 )}
 
                 {/* Comment */}
-                {pr.remark && (
-                    <>
-                        <Divider sx={{my: 3}}/>
-                        <Typography variant="h6" sx={{mb: 1}}>
-                            Record Comment
-                        </Typography>
-                        <Typography variant="body2">{pr.remark}</Typography>
-                    </>
-                )}
+                <Divider sx={{my: 3}}/>
+                <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
+                    Record Comment
+                </Typography>
+                <Typography variant="body1">{pr.remark || "No comment posted."}</Typography>
+
+                <ConfirmModal
+                    open={deleteConfirmOpen}
+                    title="Delete Workday"
+                    message="Are you sure you want to delete this workday? This action cannot be undone."
+                    onClose={() => setDeleteConfirmOpen(false)}
+                    onConfirm={handleDelete}
+                />
             </Paper>
         </Box>
     );
