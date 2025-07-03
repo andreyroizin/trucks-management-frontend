@@ -132,7 +132,7 @@ export default function PartRideDetailPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        {dayjs(pr.date).format('DD.MM.YYYY')} Workday Details
+                        {dayjs(pr?.date).format('DD.MM.YYYY')} Workday Details
                     </Typography>
                     <PartRideDetailActionBar
                         onReject={handleReject}
@@ -149,26 +149,26 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
                                 Workday&nbsp;ID
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.id}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.id}</TableCell>
                         </TableRow>
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Date</TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {dayjs(pr.date).format('DD.MM.YYYY')}
+                                {dayjs(pr?.date).format('DD.MM.YYYY')}
                             </TableCell>
                         </TableRow>
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Client</TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {pr.client ? (
+                                {pr?.client ? (
                                     <Link
-                                        href={`/clients/${pr.client.id}`}
+                                        href={`/clients/${pr?.client?.id}`}
                                         underline="hover"
                                         style={{textDecoration: 'underline'}}
                                     >
-                                        {pr.client.name}
+                                        {pr?.client?.name}
                                     </Link>
                                 ) : (
                                     '—'
@@ -180,7 +180,7 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>Status</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {/* TODO: Replace with real status mapping when available */}
-                                {PartRideStatusChip(pr.status)}
+                                {PartRideStatusChip(pr?.status)}
                             </TableCell>
                         </TableRow>
                     </TableBody>
@@ -211,12 +211,12 @@ export default function PartRideDetailPage() {
                                 Assigned Driver
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {pr.driver ? (
+                                {pr?.driver ? (
                                     <Link
-                                        href={`/drivers/${pr.driver.aspNetUserId}`}
+                                        href={`/drivers/${pr?.driver?.aspNetUserId}`}
                                         underline="hover"
                                     >
-                                        {pr.driver.firstName} {pr.driver.lastName}
+                                        {pr?.driver?.firstName} {pr?.driver?.lastName}
                                     </Link>
                                 ) : (
                                     '—'
@@ -227,9 +227,9 @@ export default function PartRideDetailPage() {
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Auto</TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {pr.car ? (
-                                    <Link href={`/cars/${pr.car.id}`} underline="hover">
-                                        {pr.car.licensePlate}
+                                {pr?.car ? (
+                                    <Link href={`/cars/${pr?.car?.id}`} underline="hover">
+                                        {pr?.car?.licensePlate}
                                     </Link>
                                 ) : (
                                     '—'
@@ -252,7 +252,7 @@ export default function PartRideDetailPage() {
                                 Total Hours
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {pr.decimalHours} h
+                                {pr?.decimalHours} h
                             </TableCell>
                         </TableRow>
 
@@ -261,23 +261,23 @@ export default function PartRideDetailPage() {
                                 Correction Hours
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {pr.correctionTotalHours} h
+                                {pr?.correctionTotalHours} h
                             </TableCell>
                         </TableRow>
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Start</TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.start}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.start}</TableCell>
                         </TableRow>
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>End</TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.end}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.end}</TableCell>
                         </TableRow>
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Rest Time</TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.rest ?? '—'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.rest ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Hours Code</TableCell>
@@ -291,13 +291,13 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>
                                 Kilometers Driven
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.kilometers}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.kilometers}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>
                                 Extra Kilometers
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr.kilometers}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.kilometers}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -358,9 +358,9 @@ export default function PartRideDetailPage() {
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Additional Information
                 </Typography>
-                {pr.files?.length ? (
+                {pr?.files?.length ? (
                     <Stack spacing={2}>
-                        {pr.files.map((file) => (
+                        {pr?.files.map((file) => (
                             <FileTile
                                 key={file.id}
                                 file={file}
@@ -379,7 +379,7 @@ export default function PartRideDetailPage() {
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
                     Record Comment
                 </Typography>
-                <Typography variant="body1">{pr.remark || "No comment posted."}</Typography>
+                <Typography variant="body1">{pr?.remark || "No comment posted."}</Typography>
 
                 <ConfirmModal
                     open={deleteConfirmOpen}
