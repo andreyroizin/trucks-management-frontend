@@ -9,8 +9,10 @@ export type PartRideDetail = {
     date: string;        // e.g. "2024-03-06T00:00:00Z"
     start: string;       // e.g. "08:00:00"
     end: string;         // e.g. "16:30:00"
-    rest?: string;
-    kilometers?: number;
+    rest: string;
+    restCalculated?: string;
+    totalKilometers?: number;
+    extraKilometers?: number;
     costs?: number;
     client?: {
         id: string;

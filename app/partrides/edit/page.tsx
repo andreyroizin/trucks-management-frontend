@@ -44,7 +44,9 @@ function EditPartRidePageWrapper() {
             date: yup.string().required("Date is required"),
             start: yup.string().required("Start time is required"),
             end: yup.string().required("End time is required"),
-            kilometers: yup.number().optional(),
+            rest: yup.string().required("Break time is required"),
+            totalKilometers: yup.number().optional(),
+            extraKilometers: yup.number().optional(),
             costs: yup.number().optional(),
             clientId: yup.string().optional(),
             companyId: yup.string().optional(),
@@ -106,7 +108,6 @@ function EditPartRidePageWrapper() {
     const [companyId, setCompanyId] = useState(partRide?.company?.id || '');
     const [clientId, setClientId] = useState(partRide?.client?.id || '');
     const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
-    console.log(newUploads);
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
@@ -143,8 +144,10 @@ function EditPartRidePageWrapper() {
             date: '',
             start: '',
             end: '',
+            rest: '',
             rideId: '',
-            kilometers: 0,
+            totalKilometers: 0,
+            extraKilometers: 0,
             costs: 0,
             weekNumber: 0,
             costsDescription: '',
@@ -169,7 +172,9 @@ function EditPartRidePageWrapper() {
             setValue('date', partRide.date);
             setValue('start', partRide.start);
             setValue('end', partRide.end);
-            setValue('kilometers', partRide.kilometers || 0);
+            setValue('rest', partRide.rest);
+            setValue('totalKilometers', partRide.totalKilometers || 0);
+            setValue('extraKilometers', partRide.extraKilometers || 0);
             setValue('costs', partRide.costs || 0);
             setValue('weekNumber', partRide.weekNumber || 0);
             setValue('hoursCorrection', partRide.correctionTotalHours || 0);
@@ -319,6 +324,23 @@ function EditPartRidePageWrapper() {
                                 placeholder="17:30"
                                 error={!!errors.end}
                                 helperText={errors.end?.message || 'What time did you end work?'}
+                            />
+                        )}
+                    />
+                    <Controller
+                        name="rest"
+                        control={control}
+                        render={({field}) => (
+                            <TextField
+                                {...field}
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                sx={{mt: 2}}
+                                label="Rest Time (e.g. 01:30)"
+                                placeholder="01:30"
+                                error={!!errors.rest}
+                                helperText={errors.rest?.message || 'How much rest have you had?'}
                             />
                         )}
                     />
@@ -667,10 +689,10 @@ function EditPartRidePageWrapper() {
                                 </>
                             )}
                             {/* Distance/ Kilometers */}
-                            <Box mb={2}>
+                            <Box>
                                 <Typography variant="h6">Distance</Typography>
                                 <Controller
-                                    name="kilometers"
+                                    name="totalKilometers"
                                     control={control}
                                     render={({field}) => (
                                         <TextField
@@ -681,8 +703,25 @@ function EditPartRidePageWrapper() {
                                             margin="normal"
                                             label="Total Distance / km (e.g. 135)"
                                             placeholder="135"
-                                            error={!!errors.kilometers}
-                                            helperText={errors.kilometers?.message || 'How many kilometers did you drive today?'}
+                                            error={!!errors.totalKilometers}
+                                            helperText={errors.totalKilometers?.message || 'How many kilometers did you drive today?'}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name="extraKilometers"
+                                    control={control}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            type="number"
+                                            variant="outlined"
+                                            fullWidth
+                                            margin="normal"
+                                            label="Extra Distance / km (e.g. 10)"
+                                            placeholder="10"
+                                            error={!!errors.extraKilometers}
+                                            helperText={errors.extraKilometers?.message || 'Did you drive any extra distance not included in your planned route? (e.g. to pick up a car, detour, or return)?'}
                                         />
                                     )}
                                 />
