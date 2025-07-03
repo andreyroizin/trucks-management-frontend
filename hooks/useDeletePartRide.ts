@@ -17,8 +17,8 @@ export const useDeletePartRide = () => {
 
     return useMutation({
         mutationFn: (id: string) => deletePartRideRequest(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['partRides'] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['partRides'] });
         },
     });
 };
