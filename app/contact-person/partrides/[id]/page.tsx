@@ -3,10 +3,9 @@
 import React from 'react';
 import ConfirmModal from '@/components/ConfirmModal';
 import {useSnack} from '@/providers/SnackProvider';
-// import { useApprovePartRide } from '@/hooks/useApprovePartRide';
-// import { useRejectPartRide } from '@/hooks/useRejectPartRide';
+import {useApprovePartRide} from '@/hooks/useApprovePartRide';
+import {useRejectPartRide} from '@/hooks/useRejectPartRide';
 import {useDeletePartRide} from '@/hooks/useDeletePartRide';
-import {useQueryClient} from '@tanstack/react-query';
 import {
     Box,
     Button,
@@ -29,7 +28,7 @@ import FileTile from '@/components/FileTile';
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 import {usePartRideDisputes} from "@/hooks/usePartRideDisputes";
 import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
-import PartrideDetailActionBar from "@/components/PartRideDetailActionBar";
+import PartRideDetailActionBar from "@/components/PartRideDetailActionBar";
 
 export default function PartRideDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -38,13 +37,11 @@ export default function PartRideDetailPage() {
     const {data, isLoading, error} = usePartRideDetail(id);
     const {data: disputesData, isLoading: disputesLoading} = usePartRideDisputes(id);
     const downloadFile = useDownloadPartRideFile();
-
-    const queryClient = useQueryClient();
     const showSnack = useSnack();
 
-    // const { mutateAsync: approveRide, isPending: approving } = useApprovePartRide();
-    // const { mutateAsync: rejectRide,   isPending: rejecting } = useRejectPartRide();
-    const {mutateAsync: deleteRide, isPending: deleting} = useDeletePartRide();
+    const {mutateAsync: approveRide} = useApprovePartRide();
+    const {mutateAsync: rejectRide} = useRejectPartRide();
+    const {mutateAsync: deleteRide} = useDeletePartRide();
 
     const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
 
@@ -52,7 +49,6 @@ export default function PartRideDetailPage() {
         try {
             await approveRide(id);
             showSnack({text: 'Workday approved', severity: 'success'});
-            queryClient.invalidateQueries(['partRideDetail', id]);
         } catch (e: any) {
             showSnack({text: e?.response?.data?.errors?.[0] ?? 'Approve failed', severity: 'error'});
         }
@@ -62,7 +58,6 @@ export default function PartRideDetailPage() {
         try {
             await rejectRide(id);
             showSnack({text: 'Workday rejected', severity: 'success'});
-            queryClient.invalidateQueries(['partRideDetail', id]);
         } catch (e: any) {
             showSnack({text: e?.response?.data?.errors?.[0] ?? 'Reject failed', severity: 'error'});
         }
@@ -137,7 +132,7 @@ export default function PartRideDetailPage() {
                     <Typography variant="h4" fontWeight={500}>
                         {dayjs(pr.date).format('DD.MM.YYYY')} Workday Details
                     </Typography>
-                    <PartrideDetailActionBar
+                    <PartRideDetailActionBar
                         onReject={handleReject}
                         onApprove={handleApprove}
                         onEdit={handleEdit}
@@ -204,7 +199,7 @@ export default function PartRideDetailPage() {
                 <Divider sx={{my: 3}}/>
 
                 {/* Driver & Vehicle */}
-                <Typography variant="h6" fontWeight={500} sx={{ mb: 2}}>
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Driver &amp; Vehicle Info
                 </Typography>
                 <Table size="small">

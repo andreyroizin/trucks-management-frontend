@@ -22,7 +22,7 @@ type Props = {
     disabled?: boolean;
 };
 
-export default function PartrideDetailActionBar({
+export default function PartRideDetailActionBar({
                                              onReject,
                                              onApprove,
                                              onOpenDispute,
@@ -63,10 +63,26 @@ export default function PartrideDetailActionBar({
                 <MenuItem
                     onClick={() => {
                         setAnchorEl(null);
+                        onApprove();
+                    }}
+                >
+                    Approve Workday
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setAnchorEl(null);
                         onReject();
                     }}
                 >
-                    Close Dispute
+                    Reject Workday
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setAnchorEl(null);
+                        onOpenDispute();
+                    }}
+                >
+                    Open Dispute
                 </MenuItem>
             </Menu>
 

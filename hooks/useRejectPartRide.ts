@@ -18,10 +18,10 @@ export const useRejectPartRide = () => {
 
     return useMutation({
         mutationFn: (id: string) => rejectPartRideRequest(id),
-        onSuccess: (_data, id) => {
+        onSuccess: async (_data, id) => {
             // Refresh this ride’s detail + any list queries
-            queryClient.invalidateQueries({ queryKey: ['partRideDetail', id] });
-            queryClient.invalidateQueries({ queryKey: ['partRides'] });
+            await queryClient.invalidateQueries({queryKey: ['partRideDetail', id]});
+            await queryClient.invalidateQueries({queryKey: ['partRides']});
         },
     });
 };
