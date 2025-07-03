@@ -1,13 +1,14 @@
 'use client';
 
 import React, {useEffect} from 'react';
-import {Alert, Box, Button, Chip, Divider, Stack, Typography,} from '@mui/material';
+import {Alert, Box, Button, Divider, Stack, Typography,} from '@mui/material';
 import {useParams, useRouter} from 'next/navigation';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import FileTile from '@/components/FileTile';
 import {useAuth} from '@/hooks/useAuth';
-import { useDownloadPartRideFile } from '@/hooks/useDownloadPartRideFile';
-import { usePartRideDisputes } from '@/hooks/usePartRideDisputes';
+import {useDownloadPartRideFile} from '@/hooks/useDownloadPartRideFile';
+import {usePartRideDisputes} from '@/hooks/usePartRideDisputes';
+import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 
 const WorkdayDetailPage = () => {
   const router = useRouter();
@@ -36,20 +37,6 @@ const WorkdayDetailPage = () => {
   // Load all disputes for this Part‑Ride
   const latestDispute = disputesData?.disputes?.[0];
   const disputeStatus = latestDispute?.status; // 0‑4 from enum
-
-  const disputeStatusLabel =
-    disputeStatus === 0
-      ? 'Dispute'
-      : disputeStatus === 1
-      ? 'Dispute'
-      : 'Unknown';
-
-  const disputeStatusColor =
-    disputeStatus === 0
-      ? 'warning'
-      : disputeStatus === 1
-      ? 'warning'
-      : 'default'
 
   const remark = data.remark;
 
@@ -120,7 +107,7 @@ const WorkdayDetailPage = () => {
             <Typography variant="body1">Current Status</Typography>
           </Box>
           <Box sx={{ width: '50%' }}>
-            <Chip label={disputeStatusLabel} color={disputeStatusColor as any} variant="filled" />
+            {PartRideStatusChip(data?.status)}
           </Box>
         </Box>
       </Box>
