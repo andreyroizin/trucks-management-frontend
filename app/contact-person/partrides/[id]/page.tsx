@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import ConfirmModal from '@/components/ConfirmModal';
 import {useSnack} from '@/providers/SnackProvider';
 import {useApprovePartRide} from '@/hooks/useApprovePartRide';
@@ -29,6 +29,7 @@ import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 import {usePartRideDisputes} from "@/hooks/usePartRideDisputes";
 import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
 import PartRideDetailActionBar from "@/components/PartRideDetailActionBar";
+import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 
 export default function PartRideDetailPage() {
     const {id} = useParams<{ id: string }>();
@@ -44,6 +45,7 @@ export default function PartRideDetailPage() {
     const {mutateAsync: deleteRide} = useDeletePartRide();
 
     const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
+    const [openCreateDispute, setOpenCreateDispute] = useState(false);
 
     const handleApprove = async () => {
         try {
@@ -80,7 +82,7 @@ export default function PartRideDetailPage() {
     };
 
     const handleOpenDispute = () => {
-        router.push(`/partrides/dispute?id=${id}`);
+        setOpenCreateDispute(true);
     };
 
     /* ────────── loading / error ────────── */
@@ -385,6 +387,11 @@ export default function PartRideDetailPage() {
                     message="Are you sure you want to delete this workday? This action cannot be undone."
                     onClose={() => setDeleteConfirmOpen(false)}
                     onConfirm={handleDelete}
+                />
+                <DisputeCreateDialog
+                    open={openCreateDispute}
+                    onClose={() => setOpenCreateDispute(false)}
+                    partRideId={id}
                 />
             </Paper>
         </Box>
