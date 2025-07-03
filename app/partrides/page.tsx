@@ -40,6 +40,8 @@ import DateInputField from '@/components/DateInputField';
 import PartRideActionsMenu from "@/components/PartRideActionsMenu";
 import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 import {useSnack} from "@/providers/SnackProvider";
+import {useApprovePartRide} from "@/hooks/useApprovePartRide";
+import {useRejectPartRide} from "@/hooks/useRejectPartRide";
 
 export default function TripsManagementPage() {
     const router = useRouter();
@@ -69,20 +71,25 @@ export default function TripsManagementPage() {
     const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
     const [openCreateDispute, setOpenCreateDispute] = useState(false);
     const [disputePartRideId, setDisputePartRideId] = useState<string | null>(null);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
+    const [bulkDeleteCount, setBulkDeleteCount] = useState(0);
 
     // Hooks for filter dropdown data
     // const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars([], 1, 1000);
+    const {mutateAsync: approveRide} = useApprovePartRide();
+    const {mutateAsync: rejectRide} = useRejectPartRide();
+    const {mutate: deletePartRide} = useDeletePartRide();
 
     // Pagination
     const [pageNumber, setPageNumber] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     // Confirm delete modal state
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-    const {mutate: deletePartRide} = useDeletePartRide();
 
     const {data: rides, isLoading, isRefetching, error} = usePartRides({
         // companyId,
@@ -111,23 +118,24 @@ export default function TripsManagementPage() {
      * Bulk delete handler
      * ───────────────────────────────────────────────────────────── */
     const handleConfirmBulkDelete = async () => {
-        setIsBulkDeleting(true);
-
         try {
             for (const id of selectedIds) {
                 await new Promise<void>((resolve, reject) => {
                     deletePartRide(id, {
                         onSuccess: resolve,
-                        onError: (err) => {
+                        onError: (err: any) => {
                             console.error('Deletion failed:', err);
-                            showSnack({ text: err?.response?.data?.errors?.[0] ?? 'Failed to delete one or more workdays', severity: 'error' });
+                            showSnack({
+                                text: err?.response?.data?.errors?.[0] ?? 'Failed to delete one or more workdays',
+                                severity: 'error'
+                            });
                             reject(err);
                         },
                     });
                 });
             }
 
-            showSnack({ text: 'Deleted workdays', severity: 'success' });
+            showSnack({text: 'Deleted workdays', severity: 'success'});
 
             setSelectedIds([]);
             setConfirmBulkDeleteOpen(false);
@@ -156,19 +164,42 @@ export default function TripsManagementPage() {
         }
     };
 
-    const handleApproveSelected = () => {
-        console.log('Approving selected:', selectedIds);
-        // TODO: Implement bulk approve logic
+    const handleApproveSelected = async () => {
+        if (!selectedIds.length) return;
+        try {
+            for (const id of selectedIds) {
+                await approveRide(id);               // <-- mutation hook (await!)
+            }
+            showSnack({text: 'Approved selected workdays', severity: 'success'});
+            setSelectedIds([]);
+        } catch (e: any) {
+            showSnack({
+                text: e?.response?.data?.errors?.[0] ?? 'Failed to approve one or more workdays',
+                severity: 'error',
+            });
+        } finally {
+            await handleRefetch();                 // refresh list
+        }
     };
 
-    const handleRejectSelected = () => {
-        console.log('Rejecting selected:', selectedIds);
-        // TODO: Implement bulk reject logic
-    };
+    const handleRejectSelected = async () => {
+        if (!selectedIds.length) return;
 
-    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-    const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
-    const [bulkDeleteCount, setBulkDeleteCount] = useState(0);
+        try {
+            for (const id of selectedIds) {
+                await rejectRide(id);                // <-- mutation hook (await!)
+            }
+            showSnack({text: 'Rejected selected workdays', severity: 'success'});
+            setSelectedIds([]);
+        } catch (e: any) {
+            showSnack({
+                text: e?.response?.data?.errors?.[0] ?? 'Failed to reject one or more workdays',
+                severity: 'error',
+            });
+        } finally {
+            await handleRefetch();
+        }
+    };
 
     const handleDeleteSelected = () => {
         if (selectedIds.length === 0) return;
@@ -176,13 +207,21 @@ export default function TripsManagementPage() {
         setConfirmBulkDeleteOpen(true);
     };
 
-
     /** ────────────────────────────────────────────────────────────────
      * Row-level actions
      * ───────────────────────────────────────────────────────────── */
-    const handleApprove = (row: PartRide) => {
-        console.log('Approving row:', row);
-        // TODO: Implement actual API call or logic
+    const handleApprove = async (row: PartRide) => {
+        try {
+            await approveRide(row.id);
+            showSnack({text: 'Workday approved', severity: 'success'});
+        } catch (e: any) {
+            showSnack({
+                text: e?.response?.data?.errors?.[0] ?? 'Approve failed',
+                severity: 'error',
+            });
+        } finally {
+            await handleRefetch();           // refresh list
+        }
     };
 
     const handleDispute = (row: PartRide) => {
@@ -190,18 +229,23 @@ export default function TripsManagementPage() {
         setOpenCreateDispute(true);
     };
 
-    const handleReject = (row: PartRide) => {
-        console.log('Rejecting row:', row);
-        // TODO: Implement actual API call or logic
+    const handleReject = async (row: PartRide) => {
+        try {
+            await rejectRide(row.id);
+            showSnack({text: 'Workday rejected', severity: 'success'});
+        } catch (e: any) {
+            showSnack({
+                text: e?.response?.data?.errors?.[0] ?? 'Reject failed',
+                severity: 'error',
+            });
+        } finally {
+            await handleRefetch();
+        }
     };
 
     const handleDelete = (row: PartRide) => {
         setConfirmDeleteId(row.id);
     };
-
-    // const handleExport = (row: PartRide) => {
-    //     console.log('Exporting row:', row);
-    // };
 
     /** ────────────────────────────────────────────────────────────────
      * Render
@@ -550,11 +594,14 @@ export default function TripsManagementPage() {
                             setConfirmDeleteId(null);
                         },
                         onSuccess: () => {
-                            showSnack({ text: 'Deleted the workday', severity: 'success' });
+                            showSnack({text: 'Deleted the workday', severity: 'success'});
                             setSelectedIds([]);
                         },
-                        onError: (error) => {
-                            showSnack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to delete the workday', severity: 'error' });
+                        onError: (error: any) => {
+                            showSnack({
+                                text: error?.response?.data?.errors?.[0] ?? 'Failed to delete the workday',
+                                severity: 'error'
+                            });
                         },
                     });
                 }}
