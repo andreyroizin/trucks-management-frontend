@@ -34,10 +34,12 @@ export default function CreatePartRidePage() {
         return yup.object().shape({
             date: yup.string().required('Date is required (e.g. "24-06-2025")'),
             start: yup.string().required('Start time is required (e.g. "20:00")'),
+            rest: yup.string().required('Break is required (e.g. "01:30")'),
             end: yup.string().required('End time is required (e.g. "05:00")'),
             // If driver => hide or not required
             rideId: yup.string().optional(),
-            kilometers: yup.number().optional(),
+            totalKilometers: yup.number().optional(),
+            extraKilometers: yup.number().optional(),
             carId: yup.string().optional(),
             driverId: yup.string().when([], {
                 is: () => !isDriverRole,
@@ -116,7 +118,9 @@ export default function CreatePartRidePage() {
             date: '',
             start: '',
             end: '',
-            kilometers: 0,
+            rest: '',
+            totalKilometers: 0,
+            extraKilometers: 0,
             costs: 0,
             driverId: '',
             hoursCodeId: '',
@@ -143,8 +147,9 @@ export default function CreatePartRidePage() {
 
         setApiError(null);
         try {
-            await createPartRide(data);
-            router.push('/partrides'); // Go to list page or any route you prefer
+            const createdPartRide = await createPartRide(data);
+            const createdPartRideId = createdPartRide?.data?.id;
+            router.push(`/partrides/${createdPartRideId}`); // Go to list page or any route you prefer
         } catch (err: any) {
             console.error(err)
             setApiError(err.response?.data?.errors?.[0] || err.message);
@@ -262,19 +267,19 @@ export default function CreatePartRidePage() {
                 />
                 {/* Break Duration */}
                 <Controller
-                    name="hoursOptionId"
+                    name="rest"
                     control={control}
                     render={({field}) => (
                         <TextField
                             {...field}
                             variant="outlined"
-                            fullWidth
                             sx={{mt: 2}}
+                            fullWidth
                             margin="normal"
-                            label="Break Duration (e.g. 01:00)"
-                            placeholder="01:00"
-                            error={!!errors.hoursOptionId}
-                            helperText={errors.hoursOptionId?.message || 'Enter total break time (automatically checked by system).'}
+                            label="Break duration (e.g. 01:30)"
+                            placeholder="01:30"
+                            error={!!errors.rest}
+                            helperText={errors.rest?.message || 'How much rest have you had?'}
                         />
                     )}
                 />
@@ -640,10 +645,10 @@ export default function CreatePartRidePage() {
                             </>
                         )}
                         {/* Distance */}
-                        <Box mb={2}>
+                        <Box>
                             <Typography variant="h6">Distance</Typography>
                             <Controller
-                                name="kilometers"
+                                name="totalKilometers"
                                 control={control}
                                 render={({field}) => (
                                     <TextField
@@ -654,12 +659,30 @@ export default function CreatePartRidePage() {
                                         margin="normal"
                                         label="Total Distance / km (e.g. 135)"
                                         placeholder="135"
-                                        error={!!errors.kilometers}
-                                        helperText={errors.kilometers?.message || 'How many kilometers did you drive today?'}
+                                        error={!!errors.totalKilometers}
+                                        helperText={errors.totalKilometers?.message || 'How many kilometers did you drive today?'}
+                                    />
+                                )}
+                            />
+                            <Controller
+                                name="extraKilometers"
+                                control={control}
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        type="number"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        label="Extra Distance / km (e.g. 10)"
+                                        placeholder="0"
+                                        error={!!errors.extraKilometers}
+                                        helperText={errors.extraKilometers?.message || 'Did you drive any extra distance not included in your planned route? (e.g. to pick up a car, detour, or return)?'}
                                     />
                                 )}
                             />
                         </Box>
+                        <Divider sx={{my: 2}} />
                         {/* Expenses */}
                         <Box mb={2}>
                             <Typography variant="h6">Expenses</Typography>
