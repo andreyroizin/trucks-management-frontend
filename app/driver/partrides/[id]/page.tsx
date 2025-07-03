@@ -63,8 +63,8 @@ const WorkdayDetailPage = () => {
     return (
         <Box sx={{py: 4, maxWidth: 600, mx: 'auto'}}>
             {/* Header */}
-            <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                <Typography variant="h4" fontWeight={500} mb={1}>
+            <Box sx={{display: 'flex', justifyContent: 'space-between', mb:1}}>
+                <Typography variant="h4" fontWeight={500}>
                     Workday Details
                 </Typography>
                 <PartRideDetailActionsMenuDriver
