@@ -276,8 +276,12 @@ export default function PartRideDetailPage() {
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Rest Time</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Actual Rest Time</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.rest ?? '—'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Calculated Rest Time</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.restCalculated ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Hours Code</TableCell>
@@ -291,13 +295,13 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>
                                 Kilometers Driven
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr?.kilometers}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.totalKilometers}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>
                                 Extra Kilometers
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{pr?.kilometers}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{pr?.extraKilometers}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
