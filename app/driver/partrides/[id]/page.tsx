@@ -112,10 +112,19 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Distance</Typography>
+                        <Typography variant="body1">Total Distance</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">{`${data.kilometers ?? 0} km`}</Typography>
+                        <Typography variant="body1">{`${data.totalKilometers ?? 0} km`}</Typography>
+                    </Box>
+                </Box>
+
+                <Box sx={{display: 'flex'}}>
+                    <Box sx={{width: '50%'}}>
+                        <Typography variant="body1">Extra Distance</Typography>
+                    </Box>
+                    <Box sx={{width: '50%'}}>
+                        <Typography variant="body1">{`${data.extraKilometers ?? 0} km`}</Typography>
                     </Box>
                 </Box>
 
