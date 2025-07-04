@@ -28,6 +28,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 import {PartRide, usePartRides} from '@/hooks/usePartRides';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 import {PartRideStatusChip} from '@/components/PartRideStatusChip'; // or from '@/utils/statusChip'
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
@@ -484,7 +486,19 @@ export default function TripsManagementPage() {
                                             {row.decimalHours}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            N/A
+                                            {(() => {
+                                                const rest = dayjs(row.rest, 'HH:mm:ss');
+                                                const restCalc = dayjs(row.restCalculated, 'HH:mm:ss');
+                                                const diff = rest.diff(restCalc);
+
+                                                if (isNaN(diff)) return 'N/A';
+
+                                                const duration = dayjs.duration(diff);
+                                                const hours = Math.floor(duration.asHours());
+                                                const minutes = duration.minutes();
+                                                const prefix = diff >= 0 ? '+' : '-';
+                                                return `${prefix}${Math.abs(hours)}h ${Math.abs(minutes)}m`;
+                                            })()}
                                         </TableCell>
                                         <TableCell align="right" sx={{py: 2.6}}>
                                             €{row.earnings}

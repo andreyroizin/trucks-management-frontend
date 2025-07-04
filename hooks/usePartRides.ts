@@ -10,7 +10,9 @@ export type PartRide = {
     start: string;
     end: string;
     rest?: string;
-    kilometers: number;
+    restCalculated?: string;
+    totalKilometers: number;
+    extraKilometers: number;
     costs: number;
     employer?: string;
     client?: {
