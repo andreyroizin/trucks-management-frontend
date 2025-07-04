@@ -3,7 +3,8 @@ import "./styles/fonts"
 import "./styles/globals.css";
 import Providers from "@/app/providers";
 import Menu from "@/components/Menu";
-import ThemeRegistry from "@/app/ThemeRegistry"; // adjust path if needed
+import ThemeRegistry from "@/app/ThemeRegistry";
+import SideNavigation from "@/components/SideNavigation"; // adjust path if needed
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -21,8 +22,11 @@ export default function RootLayout({
             <body>
                 <ThemeRegistry>
                     <Providers>
-                        <Menu/>
-                        <main className="p-4">{children}</main>
+                        {/*<Menu/>*/}
+                        <div style={{ display: 'flex', height: '100vh' }}>
+                            <SideNavigation />
+                            <main className="p-4" style={{ flexGrow: 1, overflowY: 'auto' }}>{children}</main>
+                        </div>
                     </Providers>
                 </ThemeRegistry>
             </body>
