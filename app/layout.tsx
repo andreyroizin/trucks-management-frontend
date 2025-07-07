@@ -4,7 +4,8 @@ import "./styles/globals.css";
 import Providers from "@/app/providers";
 import Menu from "@/components/Menu";
 import ThemeRegistry from "@/app/ThemeRegistry";
-import SideNavigation from "@/components/SideNavigation"; // adjust path if needed
+import SideNavigation from "@/components/SideNavigation";
+import MobileNavigationDriver from "@/components/MobileNavigationDriver"; // adjust path if needed
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -23,6 +24,7 @@ export default function RootLayout({
                 <ThemeRegistry>
                     <Providers>
                         {/*<Menu/>*/}
+                        <MobileNavigationDriver/>
                         <div style={{ display: 'flex', height: '100vh' }}>
                             <SideNavigation />
                             <main className="p-4" style={{ flexGrow: 1, overflowY: 'auto' }}>{children}</main>
