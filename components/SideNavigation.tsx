@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {Box, Button, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, styled,} from '@mui/material';
+import {Box, Button, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, styled, Menu, MenuItem, IconButton} from '@mui/material';
 import {usePathname, useRouter} from 'next/navigation';
 
 // ── MUI Icons ────────────────────────────────
@@ -14,32 +14,51 @@ import LocalShippingIcon from '@mui/icons-material/LocalShippingRounded';
 import TargetIcon from '@mui/icons-material/ExploreRounded';
 import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AddIcon from '@mui/icons-material/AddRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
 
 // small helper for active styling
 const NavItem = styled(ListItemButton, {
-    shouldForwardProp: (prop) => prop !== 'active',
-})<{ active?: boolean }>(({theme, active}) => ({
+    shouldForwardProp: (prop) => prop !== 'active' && prop !== 'main',
+})<{ active?: boolean; main?: boolean }>(({theme, active, main}) => ({
     borderRadius: 8,
     paddingLeft: theme.spacing(2),
     marginBottom: theme.spacing(0.5),
-    ...(active
+    ...(active && main
         ? {
-            backgroundColor: '#1976D214',
-            '&:hover': {backgroundColor: '#1976D214'},
+            backgroundColor: '#333',
+            color: '#fff',
+            '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+                color: '#fff',
+            },
+            '&:hover': {
+                backgroundColor: '#333',
+            },
         }
-        : {
-            '&:hover': {backgroundColor: '#1976D214'},
-        }),
+        : active
+            ? {
+                backgroundColor: '#1976D214',
+                '&:hover': {
+                    backgroundColor: '#1976D214',
+                },
+            }
+            : {
+                '&:hover': { backgroundColor: '#1976D214' },
+            }),
 }));
 
 // ─────────────────────────────────────────────
 export default function SideNavigation() {
     const router = useRouter();
     const pathname = usePathname();
-    const {user} = useAuth();         // { firstName, lastName, roles }
+    const { isAuthenticated, user, logout } = useAuth(); // { firstName, lastName, roles }
+
+    const allowedToView = user?.roles?.some(role =>
+        ['globalAdmin', 'customerAdmin', 'employer', 'customerAccountant', 'customer'].includes(role)
+    );
+
     const initials = user
         ? `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
         : '??';
@@ -48,9 +67,31 @@ export default function SideNavigation() {
     const [workdaysOpen, setWorkdaysOpen] = React.useState<boolean>(true);
     const [reportsOpen, setReportsOpen] = React.useState<boolean>(false);
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleGoToProfile = () => {
+        router.push('/profile');
+        handleClose();
+    };
+
+    const handleLogout = () => {
+        logout();
+    };
+
     /* helpers */
     const go = (href: string) => router.push(href);
     const isActive = (href: string) => pathname === href;
+
+    if (!isAuthenticated || !allowedToView) return null;
 
     return (
         <Box
@@ -73,14 +114,15 @@ export default function SideNavigation() {
 
             <List disablePadding sx={{flexGrow: 1}}>
                 {/* Dashboard */}
-                <NavItem active={isActive('/')} onClick={() => go('/')}>
+                <NavItem active={isActive('/')} main onClick={() => go('/')}>
                     <ListItemIcon><DashboardIcon/></ListItemIcon>
                     <ListItemText primary="Dashboard"/>
                 </NavItem>
 
                 {/* Workdays parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
-                         active={pathname.startsWith('/partrides') || pathname.startsWith('/disputes')}>
+                         active={pathname.startsWith('/partrides') || pathname.startsWith('/disputes')}
+                         main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
                     <ListItemText primary="Workdays"/>
                     <KeyboardArrowDown
@@ -104,25 +146,25 @@ export default function SideNavigation() {
                 </Collapse>
 
                 {/* Drivers */}
-                <NavItem active={isActive('/drivers')} onClick={() => go('/drivers')}>
+                <NavItem active={isActive('/drivers')} main onClick={() => go('/drivers')}>
                     <ListItemIcon><PersonIcon/></ListItemIcon>
                     <ListItemText primary="Drivers"/>
                 </NavItem>
 
                 {/* Vehicles */}
-                <NavItem active={isActive('/cars')} onClick={() => go('/cars')}>
+                <NavItem active={isActive('/cars')} main onClick={() => go('/cars')}>
                     <ListItemIcon><LocalShippingIcon/></ListItemIcon>
                     <ListItemText primary="Vehicles"/>
                 </NavItem>
 
                 {/* Clients */}
-                <NavItem active={isActive('/clients')} onClick={() => go('/clients')}>
+                <NavItem active={isActive('/clients')} main onClick={() => go('/clients')}>
                     <ListItemIcon><TargetIcon/></ListItemIcon>
                     <ListItemText primary="Clients"/>
                 </NavItem>
 
                 {/* Reports parent */}
-                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathname.startsWith('/reports')}>
+                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathname.startsWith('/reports')} main>
                     <ListItemIcon><AssessmentIcon/></ListItemIcon>
                     <ListItemText primary="Reports"/>
                     <KeyboardArrowDown
@@ -145,7 +187,7 @@ export default function SideNavigation() {
                 <Divider sx={{my: 3}}/>
 
                 {/* Settings */}
-                <NavItem active={isActive('/settings')} onClick={() => go('/')}>
+                <NavItem active={isActive('/settings')} main onClick={() => go('/')}>
                     <ListItemIcon><SettingsIcon/></ListItemIcon>
                     <ListItemText primary="Settings"/>
                 </NavItem>
@@ -168,27 +210,42 @@ export default function SideNavigation() {
                 <Divider sx={{my: 3}}/>
 
                 {/* Profile */}
-                <NavItem
-                    onClick={() => router.push('/profile')}
-                    sx={{p: 0}}
-                >
-                    <ListItemIcon>
-                        <Avatar sx={{width: 40, height: 40, bgcolor: 'grey.300'}}>{initials}</Avatar>
-                        {/*<CircleIcon*/}
-                        {/*    sx={{color: 'success.main', fontSize: 10, position: 'absolute', left: 30, bottom: 4}}/>*/}
+                <NavItem sx={{ p: 0 }}>
+                    <ListItemIcon sx={{ minWidth: 'unset', mr: 1 }}>
+                        <Avatar sx={{ width: 40, height: 40, bgcolor: 'grey.300' }}>{initials}</Avatar>
                     </ListItemIcon>
 
-                    <Box sx={{flexGrow: 1}}>
+                    <Box
+                        onClick={() => router.push('/profile')}
+                        sx={{ flexGrow: 1, cursor: 'pointer' }}
+                    >
                         <ListItemText
                             primary={fullName}
                             secondary={user?.roles?.[0] ?? 'Profile'}
-                            primaryTypographyProps={{sx: {fontSize: 12, fontWeight: 600}}}
-                            secondaryTypographyProps={{fontSize: 10}}
+                            primaryTypographyProps={{ sx: { fontSize: 12, fontWeight: 600 } }}
+                            secondaryTypographyProps={{ fontSize: 10 }}
                         />
-                        {/* green online indicator */}
-
                     </Box>
-                    {/*<MoreHorizIcon fontSize="small"/>*/}
+
+                    <IconButton onClick={handleMenuClick} size="small">
+                        <MoreHorizIcon fontSize="small" />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                    >
+                        <MenuItem onClick={handleGoToProfile}>Profile</MenuItem>
+                        <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                    </Menu>
                 </NavItem>
             </Box>
         </Box>
