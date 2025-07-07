@@ -26,16 +26,15 @@ export default function LanguageDialogDriver({ open, onClose }: Props) {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-            <DialogTitle>
-                <Typography variant="h5" fontWeight={600}>Choose&nbsp;Your&nbsp;Language</Typography>
+            <DialogTitle sx={{pt: 4}}>
+                <Typography variant="h5" fontWeight={500}>Choose&nbsp;Your&nbsp;Language</Typography>
             </DialogTitle>
 
-            <DialogContent dividers>
+            <DialogContent>
                 <List dense disablePadding>
                     {LANGS.map(l => (
                         <ListItemButton
                             key={l.code}
-                            selected={selected === l.code}
                             onClick={() => setSelected(l.code)}
                             sx={{ px: 0.5 }}
                         >
