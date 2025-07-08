@@ -136,6 +136,7 @@ export default function MobileNavigationDriver() {
                         <ListItemButton onClick={() => {
                             logout();
                             setOpen(false);
+                            go('/auth/login')
                         }} sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
                             <ListItemText primary="Log out"/>
                             <ArrowRightIcon fontSize="small"/>

@@ -96,6 +96,7 @@ export default function SideNavigation() {
 
     const handleLogout = () => {
         logout();
+        router.push('/auth/login');
     };
 
     /* helpers */

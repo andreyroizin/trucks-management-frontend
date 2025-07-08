@@ -33,7 +33,6 @@ export default function DriverHomePage() {
 
     const name = user?.firstName ? `Hello, ${user.firstName} ${user.lastName}` : 'Hello';
 
-
     return (
         <Box pb={7}>
             <Box
