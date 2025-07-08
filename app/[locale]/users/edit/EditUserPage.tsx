@@ -159,7 +159,7 @@ export default function EditUserPage() {
 
             {/* Conditional Navigation Buttons with Link */}
             {userDetails.driverInfo && (
-                <Link href={`/app/%5Blocale%5D/users/edit/${userId}/driver`} passHref>
+                <Link href={`/users/edit/${userId}/driver`} passHref>
                     <Button
                         variant="contained"
                         color="primary"
@@ -172,7 +172,7 @@ export default function EditUserPage() {
             )}
 
             {userDetails.contactPersonInfo && (
-                <Link href={`/app/%5Blocale%5D/users/edit/${userId}/contact-person`} passHref>
+                <Link href={`/users/edit/${userId}/contact-person`} passHref>
                     <Button
                         variant="contained"
                         color="primary"

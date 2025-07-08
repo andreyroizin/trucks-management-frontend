@@ -78,7 +78,7 @@ export default function ClientsPage() {
                 Clients
             </Typography>
             {(isCustomerAdmin || isGlobalAdmin) &&
-                <Link href="/[locale]/clients/create" passHref>
+                <Link href="/clients/create" passHref>
                     <Button variant="contained" color="primary">
                         Add Client
                     </Button>

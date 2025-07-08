@@ -79,7 +79,7 @@ export default function CarDetailPage() {
                         <Typography variant="h5">Car Detail</Typography>
                         {(isCustomerAdmin || isGlobalAdmin) && (
                             <Box>
-                                <Link href={`/app/%5Blocale%5D/cars/edit/${car.id}`} passHref>
+                                <Link href={`/cars/edit/${car.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                         Edit
                                     </Button>
@@ -106,7 +106,7 @@ export default function CarDetailPage() {
                     {/* Company Link */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Company:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/companies/${car.company.id}`} passHref>
+                        <Link href={`/companies/${car.company.id}`} passHref>
                             <Button variant="text" size="small">
                                 {car.company.name}
                             </Button>

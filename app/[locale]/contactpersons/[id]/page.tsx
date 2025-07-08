@@ -81,7 +81,7 @@ export default function ContactPersonDetailPage() {
                         <Typography variant="h5">
                             {firstName} {lastName}
                         </Typography>
-                        {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/app/%5Blocale%5D/users/edit?id=${id}`} passHref>
+                        {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/users/edit?id=${id}`} passHref>
                                 <Button variant="contained" color="primary">
                                     Edit
                                 </Button>

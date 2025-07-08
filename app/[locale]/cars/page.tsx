@@ -78,7 +78,7 @@ function CarsList() {
             </Typography>
             {(isGlobalAdmin || isCustomerAdmin) && (
                 <Box display="flex" mb={2}>
-                    <Link href={`/app/%5Blocale%5D/cars/create?companyId=${companyId}`} passHref>
+                    <Link href={`/cars/create?companyId=${companyId}`} passHref>
                         <Button variant="contained" color="primary">
                             Create New Car
                         </Button>

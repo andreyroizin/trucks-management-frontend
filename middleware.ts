@@ -38,7 +38,7 @@ export function middleware(req: NextRequest) {
 
     const roles = getRoles(req);
 
-    if (!roles && !path.startsWith('/auth/login')) return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
+    // if (!roles && !path.startsWith('/auth/login')) return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
 
     /* 3️⃣  Delegate to route-group helpers              */
     let routed: NextResponse | null = null;

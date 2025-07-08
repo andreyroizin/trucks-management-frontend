@@ -62,7 +62,7 @@ export default function UnitsPage() {
             <Typography variant="h4" gutterBottom>
                 Units
             </Typography>
-            {isGlobalAdmin && <Link href={`/app/%5Blocale%5D/units/create`} passHref>
+            {isGlobalAdmin && <Link href={`/units/create`} passHref>
                 <Button variant="contained" color="primary">
                     Create new unit
                 </Button>

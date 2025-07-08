@@ -75,7 +75,7 @@ export default function RatesPage() {
                 Rates for Client
             </Typography>
 
-            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/app/%5Blocale%5D/rates/create?clientId=${clientId}`} passHref>
+            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/rates/create?clientId=${clientId}`} passHref>
                 <Button variant="contained" color="primary">
                     Create new rate
                 </Button>

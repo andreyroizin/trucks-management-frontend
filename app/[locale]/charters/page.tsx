@@ -94,7 +94,7 @@ function ChartersInner() {
                 </Typography>
 
                 {(isCustomerAdmin || isGlobalAdmin) &&
-                    <Link href="/[locale]/charters/create" passHref>
+                    <Link href="/charters/create" passHref>
                         <Button variant="contained" color="primary">
                             Create Charter
                         </Button>

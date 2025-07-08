@@ -93,7 +93,7 @@ export default function RideDetailPage() {
                         <Typography variant="h5">Ride Detail</Typography>
                         {isGlobalAdmin && (
                             <Box>
-                                <Link href={`/app/%5Blocale%5D/rides/edit/${ride.id}`} passHref>
+                                <Link href={`/rides/edit/${ride.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                         Edit
                                     </Button>
@@ -119,7 +119,7 @@ export default function RideDetailPage() {
                     {/* Company Link */}
                     <Typography variant="body1" gutterBottom>
                         <strong>Company:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/companies/${ride.companyId}`} passHref>
+                        <Link href={`/companies/${ride.companyId}`} passHref>
                             <Button variant="text" size="small">
                                 {ride.companyName}
                             </Button>
@@ -160,7 +160,7 @@ export default function RideDetailPage() {
                                         <TableCell>{partRide.turnover}</TableCell>
                                         <TableCell>
                                             {partRide.client ? (
-                                                <Link href={`/app/%5Blocale%5D/clients/${partRide.client.id}`} passHref>
+                                                <Link href={`/clients/${partRide.client.id}`} passHref>
                                                     <Button variant="text" size="small">
                                                         {partRide.client.name}
                                                     </Button>

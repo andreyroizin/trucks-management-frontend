@@ -192,7 +192,7 @@ export default function EditDriverPage() {
                     {isUpdatingDriver ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
                 </Button>
 
-                <Link href={`/app/%5Blocale%5D/users/edit/${userId}/driver/compensations`} passHref>
+                <Link href={`/users/edit/${userId}/driver/compensations`} passHref>
                     <Button
                         variant="contained"
                         color="primary"

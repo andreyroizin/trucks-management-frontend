@@ -164,7 +164,7 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.client ? (
                                     <Link
-                                        href={`/app/%5Blocale%5D/clients/${pr?.client?.id}`}
+                                        href={`/clients/${pr?.client?.id}`}
                                         underline="hover"
                                         style={{textDecoration: 'underline'}}
                                     >
@@ -213,7 +213,7 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.driver ? (
                                     <Link
-                                        href={`/app/%5Blocale%5D/drivers/${pr?.driver?.aspNetUserId}`}
+                                        href={`/drivers/${pr?.driver?.aspNetUserId}`}
                                         underline="hover"
                                     >
                                         {pr?.driver?.firstName} {pr?.driver?.lastName}
@@ -228,7 +228,7 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>Auto</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.car ? (
-                                    <Link href={`/app/%5Blocale%5D/cars/${pr?.car?.id}`} underline="hover">
+                                    <Link href={`/cars/${pr?.car?.id}`} underline="hover">
                                         {pr?.car?.licensePlate}
                                     </Link>
                                 ) : (

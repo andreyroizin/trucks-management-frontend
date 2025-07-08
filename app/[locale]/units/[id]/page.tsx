@@ -81,7 +81,7 @@ export default function UnitDetailPage() {
                     </Typography>
                     {isGlobalAdmin && (
                         <Box display="flex" gap={1} mb={2}>
-                            <Link href={`/app/%5Blocale%5D/units/edit/${unit.id}`} passHref>
+                            <Link href={`/units/edit/${unit.id}`} passHref>
                                 <Button variant="contained" color="primary">Edit</Button>
                             </Link>
                             <Button

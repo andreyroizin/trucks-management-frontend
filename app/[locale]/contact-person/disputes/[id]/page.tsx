@@ -178,7 +178,7 @@ export default function DisputeDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>Client</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.client ? (
-                                    <Link href={`/app/%5Blocale%5D/clients/${pr?.client?.id}`}
+                                    <Link href={`/clients/${pr?.client?.id}`}
                                           style={{textDecoration: 'underline'}}>
                                         {pr?.client?.name}
                                     </Link>
@@ -239,7 +239,7 @@ export default function DisputeDetailPage() {
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 <Link
-                                    href={`/app/%5Blocale%5D/drivers/${pr?.driver?.aspNetUserId}`}
+                                    href={`/drivers/${pr?.driver?.aspNetUserId}`}
                                     style={{textDecoration: 'underline'}}
                                 >
                                     {pr?.driver?.firstName} {pr?.driver?.lastName}
@@ -250,7 +250,7 @@ export default function DisputeDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>Auto</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.car ? (
-                                    <Link href={`/app/%5Blocale%5D/cars/${pr?.car?.id}`} underline="hover"
+                                    <Link href={`/cars/${pr?.car?.id}`} underline="hover"
                                           style={{textDecoration: 'underline'}}>
                                         {pr?.car?.licensePlate}
                                     </Link>

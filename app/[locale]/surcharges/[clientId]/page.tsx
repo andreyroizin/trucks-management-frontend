@@ -72,7 +72,7 @@ export default function SurchargesPage() {
             <Typography variant="h4" gutterBottom>
                 Surcharges
             </Typography>
-            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/app/%5Blocale%5D/surcharges/create?clientId=${clientId}`} passHref>
+            {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/surcharges/create?clientId=${clientId}`} passHref>
                 <Button variant="contained" color="primary">
                     Create new surcharge
                 </Button>
@@ -96,7 +96,7 @@ export default function SurchargesPage() {
                             >
                                 <TableCell>{surcharge.value}</TableCell>
                                 <TableCell>
-                                    <Link href={`/app/%5Blocale%5D/companies/${surcharge.company.id}`} style={{ textDecoration: 'none', color: 'blue' }}>
+                                    <Link href={`/companies/${surcharge.company.id}`} style={{ textDecoration: 'none', color: 'blue' }}>
                                         {surcharge.company.name}
                                     </Link>
                                 </TableCell>

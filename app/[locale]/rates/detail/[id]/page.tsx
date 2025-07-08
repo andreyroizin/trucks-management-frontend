@@ -74,7 +74,7 @@ export default function RateDetailPage() {
                         <Typography variant="h5">Rate Detail</Typography>
                         {(isGlobalAdmin || isCustomerAdmin) && (
                             <Box>
-                                <Link href={`/app/%5Blocale%5D/rates/edit/${rate.id}`} passHref>
+                                <Link href={`/rates/edit/${rate.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                         Edit
                                     </Button>
@@ -98,7 +98,7 @@ export default function RateDetailPage() {
                     </Typography>
                     <Typography variant="body1">
                         <strong>Receiver:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/clients/${rate.clientId}`} passHref>
+                        <Link href={`/clients/${rate.clientId}`} passHref>
                             <Button variant="text" size="small">
                                 {rate.clientName}
                             </Button>
@@ -107,7 +107,7 @@ export default function RateDetailPage() {
 
                     <Typography variant="body1">
                         <strong>Transporter:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/companies/${rate.companyId}`} passHref>
+                        <Link href={`/companies/${rate.companyId}`} passHref>
                             <Button variant="text" size="small">
                                 {rate.companyName}
                             </Button>

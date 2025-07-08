@@ -114,7 +114,7 @@ export default function CompanyDetailPage() {
                                             {isApproving ? 'Approving...' : 'Approve'}
                                         </Button>
                                     )}
-                                    <Link href={`/app/%5Blocale%5D/companies/edit?id=${company?.id}`} passHref>
+                                    <Link href={`/companies/edit?id=${company?.id}`} passHref>
                                         <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                             Edit Company
                                         </Button>

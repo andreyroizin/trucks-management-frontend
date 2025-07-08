@@ -79,7 +79,7 @@ export default function SurchargeDetailPage() {
 
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box display="flex" justifyContent="flex-end" mb={2} gap={2}>
-                            <Link href={`/app/%5Blocale%5D/surcharges/edit/${surcharge.id}`} passHref>
+                            <Link href={`/surcharges/edit/${surcharge.id}`} passHref>
                                 <Button variant="contained" color="primary">Edit</Button>
                             </Link>
                             <Button variant="contained" color="error" onClick={() => setOpenModal(true)}>
@@ -95,7 +95,7 @@ export default function SurchargeDetailPage() {
                     {/* Client Information */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Client:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/clients/${surcharge.client.id}`} passHref>
+                        <Link href={`/clients/${surcharge.client.id}`} passHref>
                             <Button variant="text" size="small">
                                 {surcharge.client.name}
                             </Button>
@@ -105,7 +105,7 @@ export default function SurchargeDetailPage() {
                     {/* Company Information */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Company:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/companies/${surcharge.company.id}`} passHref>
+                        <Link href={`/companies/${surcharge.company.id}`} passHref>
                             <Button variant="text" size="small">
                                 {surcharge.company.name}
                             </Button>

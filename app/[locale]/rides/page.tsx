@@ -71,7 +71,7 @@ export default function RidesPage() {
                 <Typography variant="h4" gutterBottom>
                     Rides
                 </Typography>
-                <Link href="/[locale]/rides/create" passHref>
+                <Link href="/rides/create" passHref>
                     <Button variant="contained" color="primary">
                         Create Ride
                     </Button>

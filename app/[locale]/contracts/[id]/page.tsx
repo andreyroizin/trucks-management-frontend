@@ -120,7 +120,7 @@ export default function ContractDetailPage() {
                             {downloading ? 'Downloading…' : 'Download Signed Contract'}
                         </Button>
                     )}
-                    <Link href={`/app/%5Blocale%5D/contracts/edit/${contract.id}`} passHref>
+                    <Link href={`/contracts/edit/${contract.id}`} passHref>
                         <Button variant="contained" color="primary">
                             Edit
                         </Button>
@@ -144,7 +144,7 @@ export default function ContractDetailPage() {
                             <TableCell><strong>Driver</strong></TableCell>
                             <TableCell>
                                 {contract.driver ? (
-                                    <Link href={`/app/%5Blocale%5D/drivers/${contract.driver.aspNetUserId}`}>
+                                    <Link href={`/drivers/${contract.driver.aspNetUserId}`}>
                                         {contract.driver.fullName}
                                     </Link>
                                 ) : 'N/A'}
@@ -156,7 +156,7 @@ export default function ContractDetailPage() {
                             <TableCell><strong>Company</strong></TableCell>
                             <TableCell>
                                 {contract.company ? (
-                                    <Link href={`/app/%5Blocale%5D/companies/${contract.company.id}`}>
+                                    <Link href={`/companies/${contract.company.id}`}>
                                         {contract.company.name}
                                     </Link>
                                 ) : 'N/A'}

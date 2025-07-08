@@ -100,7 +100,7 @@ export default function ResetPasswordPage() {
                         </Alert>
                         <MuiLink
                             component={Link}
-                            href="/[locale]/auth/login"
+                            href="/auth/login"
                             variant="body2"
                             sx={{
                                 display: 'block',

@@ -31,6 +31,9 @@ export default function DriverHomePage() {
         ? t('driver.greetingName', {first: user.firstName, last: user.lastName})
         : t('driver.greeting');
 
+    const name = user?.firstName ? `Hello, ${user.firstName} ${user.lastName}` : 'Hello';
+
+
     return (
         <Box pb={7}>
             <Box
@@ -50,7 +53,7 @@ export default function DriverHomePage() {
                 }}
             >
                 <Typography variant="h3" fontWeight={500}>
-                    {t('hello')}
+                    {greeting}
                 </Typography>
                 <Typography mt={2} variant="body2">
                     Keep track of your workdays and add new ones when needed.

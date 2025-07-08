@@ -79,7 +79,7 @@ export default function CharterDetailPage() {
                         {/* Edit / Delete for admins */}
                         {(isGlobalAdmin || isCustomerAdmin) && (
                             <Box>
-                                <Link href={`/app/%5Blocale%5D/charters/edit/${charter.id}`} passHref>
+                                <Link href={`/charters/edit/${charter.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
                                         Edit
                                     </Button>
@@ -107,7 +107,7 @@ export default function CharterDetailPage() {
                     {/* Client link */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Client:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/clients/${charter.clientId}`} passHref>
+                        <Link href={`/clients/${charter.clientId}`} passHref>
                             <Button variant="text" size="small">
                                 {charter.clientName}
                             </Button>
@@ -117,7 +117,7 @@ export default function CharterDetailPage() {
                     {/* Company link */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Company:</strong>{' '}
-                        <Link href={`/app/%5Blocale%5D/companies/${charter.companyId}`} passHref>
+                        <Link href={`/companies/${charter.companyId}`} passHref>
                             <Button variant="text" size="small">
                                 {charter.companyName}
                             </Button>
