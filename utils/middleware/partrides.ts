@@ -12,9 +12,10 @@ import {
  */
 export function handlePartridesRoutes(
     req: NextRequest,
-    roles: string[] | null
+    roles: string[] | null,
+    locale: string,
+    pathname: string
 ): NextResponse | null {
-    const { pathname } = req.nextUrl;
 
     // only care about /partrides
     if (!pathname.startsWith('/partrides')) return null;
@@ -27,6 +28,7 @@ export function handlePartridesRoutes(
         if (roles?.some(r => ALL_ROLES.includes(r))) {
             return NextResponse.next();
         }
+        console.log(`Unauthorized access to ${pathname} by roles: ${roles}`);
         return NextResponse.redirect(new URL('/403', req.url));
     }
 
@@ -35,9 +37,9 @@ export function handlePartridesRoutes(
         const url = req.nextUrl.clone();
 
         if (roles?.includes(DRIVER_ROLE)) {
-            url.pathname = `/driver${pathname}`;
+            url.pathname = `/${locale}/driver${pathname}`;
         } else if (roles?.some(r => CONTACT_PERSON_ROLES.includes(r))) {
-            url.pathname = `/contact-person${pathname}`;
+            url.pathname = `/${locale}/contact-person${pathname}`;
         } else {
             return NextResponse.redirect(new URL('/403', req.url));
         }

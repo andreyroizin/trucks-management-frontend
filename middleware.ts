@@ -1,48 +1,65 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { jwtDecode } from 'jwt-decode';
-import { handlePartridesRoutes } from '@/utils/middleware/partrides';
-import {handleDisputesRoutes} from "@/utils/middleware/disputes";
+import {NextRequest, NextResponse}  from 'next/server';
+import createIntlMiddleware         from 'next-intl/middleware';
+import { routing }                  from '@/i18n/routing';
 
-/* helper – get roles from JWT cookie */
+import {handlePartridesRoutes}      from '@/utils/middleware/partrides';
+import {handleDisputesRoutes}       from '@/utils/middleware/disputes';
+import {jwtDecode}                  from 'jwt-decode';
+
+const intl = createIntlMiddleware(routing);
+const SUPPORTED_LOCALES = ['en', 'nl', 'bg'] as const;
+
+/* -------- helper -------- */
 function getRoles(req: NextRequest): string[] | null {
     const jwt = req.cookies.get('auth')?.value;
     if (!jwt) return null;
     try {
-        const decoded = jwtDecode(jwt) as any;
-        const claim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
-        const raw = decoded[claim];
+        const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+        const raw = (jwtDecode(jwt) as any)[roleClaim];
         return raw ? (Array.isArray(raw) ? raw : [raw]) : null;
-    } catch {
-        return null;
-    }
+    } catch { return null; }
 }
 
-/* main middleware */
+/* -------- middleware -------- */
 export function middleware(req: NextRequest) {
-    const roles = getRoles(req);
+    /* 1️⃣  next-intl */
+    const res: NextResponse = intl(req);
 
-    // no token at all → login
-    if (!roles) {
-        return NextResponse.redirect(new URL('/auth/login', req.url));
+    // If intl issued a redirect (Location header) → return immediately
+    if (res.headers.has('location')) {
+        return res;
     }
 
-    /* delegate /partrides sub-router */
-    const partrides = handlePartridesRoutes(req, roles);
-    if (partrides) return partrides;
+    /* 2️⃣  Your auth / role logic continues */
+    const { pathname } = req.nextUrl;            // e.g. "/en/partrides/123"
+    const [, locale, ...segments] = pathname.split('/');
+    const path = '/' + segments.join('/');       // "/partrides/123"
 
-    const disputes  = handleDisputesRoutes(req, roles);
-    if (disputes)  return disputes;
+    if (!SUPPORTED_LOCALES.includes(locale as any)) {
+        const newUrl = new URL(`/${SUPPORTED_LOCALES[0]}${pathname}`, origin); // default 'en'
+        return NextResponse.redirect(newUrl);
+    }
 
-    // ── add other route groups here (e.g. expenses, reports) ──
+    const roles = getRoles(req);
+    if (!roles && !path.startsWith('/auth/login')) {
+        return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
+    }
 
-    return NextResponse.next();            // default allow
+    /* 3️⃣  Delegate to route-group helpers              */
+    let routed: NextResponse | null = null;
+
+    if (path.startsWith('/partrides')) {
+        routed = handlePartridesRoutes(req, roles, locale, path);
+    } else if (path.startsWith('/disputes')) {
+        routed = handleDisputesRoutes(req, roles, locale, path);
+    }
+
+    /* 4️⃣  Return whichever response we got first
+           – routed one, otherwise the intl response         */
+    return routed ?? res;
 }
 
-/* run only on patterns we care about */
+/* -------- matcher (same as next-intl example) -------- */
 export const config = {
-    matcher: [
-        '/partrides/:path*',
-        '/disputes/:path*',
-        // '/expenses/:path*', … add more groups later
-    ],
+    matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
 };

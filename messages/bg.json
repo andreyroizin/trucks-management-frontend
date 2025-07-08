@@ -1,0 +1,13 @@
+{
+  "nav.dashboard": "Dashboard",
+  "nav.workdays":  "Workdays",
+  "nav.disputes":  "Disputes",
+  "dialog.save":   "Save Changes",
+  "dialog.cancel": "Cancel",
+  "language.en":   "English",
+  "language.nl":   "Nederlands (Netherlands)",
+  "language.bg":   "Български (Bulgarian)",
+  "driver.greeting": "Goede dag",
+  "driver.greetingName": "Goede dag, {first} {last}",
+  "hello": "фвфаыва в. ыва"
+}

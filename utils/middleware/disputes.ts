@@ -11,9 +11,10 @@ import {
  */
 export function handleDisputesRoutes(
     req: NextRequest,
-    roles: string[] | null
+    roles: string[] | null,
+    locale: string,
+    pathname: string
 ): NextResponse | null {
-    const { pathname } = req.nextUrl;
     if (!pathname.startsWith('/disputes')) return null;   // not our route group
 
     /* ── shared pages (/create, /edit) ───────────────────────────── */
@@ -28,9 +29,9 @@ export function handleDisputesRoutes(
     if (pathname === '/disputes') {
         const url = req.nextUrl.clone();
         if (roles?.includes(DRIVER_ROLE)) {
-            url.pathname = '/driver/disputes';               // driver list page
+            url.pathname = `/${locale}/driver/disputes`;               // driver list page
         } else if (roles?.some(r => CONTACT_PERSON_ROLES.includes(r))) {
-            url.pathname = '/contact-person/disputes';       // contact-person list page
+            url.pathname = `/${locale}/contact-person/disputes`;       // contact-person list page
         } else {
             return NextResponse.redirect(new URL('/403', req.url));
         }
@@ -41,9 +42,9 @@ export function handleDisputesRoutes(
     if (pathname.startsWith('/disputes/')) {
         const url = req.nextUrl.clone();
         if (roles?.includes(DRIVER_ROLE)) {
-            url.pathname = `/driver${pathname}`;             // /driver/disputes/[id]
+            url.pathname = `/${locale}/driver${pathname}`;             // /driver/disputes/[id]
         } else if (roles?.some(r => CONTACT_PERSON_ROLES.includes(r))) {
-            url.pathname = `/contact-person${pathname}`;     // /contact-person/disputes/[id]
+            url.pathname = `/${locale}/contact-person${pathname}`;     // /contact-person/disputes/[id]
         } else {
             return NextResponse.redirect(new URL('/403', req.url));
         }
