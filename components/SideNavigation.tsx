@@ -18,6 +18,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AddIcon from '@mui/icons-material/AddRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
+import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
 
 // small helper for active styling
 const NavItem = styled(ListItemButton, {
@@ -53,6 +54,16 @@ const NavItem = styled(ListItemButton, {
 export default function SideNavigation() {
     const router = useRouter();
     const pathname = usePathname();
+    // Helper to remove the leading locale segment (e.g. "/en/...")
+    const stripLocale = (path: string) => {
+        const parts = path.split('/');
+        if (parts.length > 2 && SUPPORTED_LOCALES.includes(parts[1] as any)) {
+            return '/' + parts.slice(2).join('/');
+        }
+        return path;
+    };
+
+    const pathNoLocale = React.useMemo(() => stripLocale(pathname), [pathname]);
     const { isAuthenticated, user, logout } = useAuth(); // { firstName, lastName, roles }
 
     const allowedToView = user?.roles?.some(role =>
@@ -89,7 +100,7 @@ export default function SideNavigation() {
 
     /* helpers */
     const go = (href: string) => router.push(href);
-    const isActive = (href: string) => pathname === href;
+    const isActive = (href: string) => pathNoLocale === href;
 
     if (!isAuthenticated || !allowedToView) return null;
 
@@ -121,7 +132,7 @@ export default function SideNavigation() {
 
                 {/* Workdays parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
-                         active={pathname.startsWith('/partrides') || pathname.startsWith('/disputes')}
+                         active={pathNoLocale.startsWith('/partrides') || pathNoLocale.startsWith('/disputes')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
                     <ListItemText primary="Workdays"/>
@@ -164,7 +175,7 @@ export default function SideNavigation() {
                 </NavItem>
 
                 {/* Reports parent */}
-                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathname.startsWith('/reports')} main>
+                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathNoLocale.startsWith('/reports')} main>
                     <ListItemIcon><AssessmentIcon/></ListItemIcon>
                     <ListItemText primary="Reports"/>
                     <KeyboardArrowDown

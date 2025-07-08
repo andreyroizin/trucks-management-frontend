@@ -1,13 +1,9 @@
-import {NextRequest, NextResponse}  from 'next/server';
-import createIntlMiddleware         from 'next-intl/middleware';
-import { routing }                  from '@/i18n/routing';
-
-import {handlePartridesRoutes}      from '@/utils/middleware/partrides';
-import {handleDisputesRoutes}       from '@/utils/middleware/disputes';
-import {jwtDecode}                  from 'jwt-decode';
-
-const intl = createIntlMiddleware(routing);
-const SUPPORTED_LOCALES = ['en', 'nl', 'bg'] as const;
+import {NextRequest, NextResponse} from 'next/server';
+import {handlePartridesRoutes} from '@/utils/middleware/partrides';
+import {handleDisputesRoutes} from '@/utils/middleware/disputes';
+import {jwtDecode} from 'jwt-decode';
+import {intlMiddleware} from "@/i18n/intl-middleware";
+import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
 
 /* -------- helper -------- */
 function getRoles(req: NextRequest): string[] | null {
@@ -17,21 +13,21 @@ function getRoles(req: NextRequest): string[] | null {
         const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
         const raw = (jwtDecode(jwt) as any)[roleClaim];
         return raw ? (Array.isArray(raw) ? raw : [raw]) : null;
-    } catch { return null; }
+    } catch {
+        return null;
+    }
 }
 
 /* -------- middleware -------- */
 export function middleware(req: NextRequest) {
     /* 1️⃣  next-intl */
-    const res: NextResponse = intl(req);
+    const res: NextResponse = intlMiddleware(req);
 
     // If intl issued a redirect (Location header) → return immediately
-    if (res.headers.has('location')) {
-        return res;
-    }
+    if (res.headers.has('location')) return res;
 
     /* 2️⃣  Your auth / role logic continues */
-    const { pathname } = req.nextUrl;            // e.g. "/en/partrides/123"
+    const {pathname} = req.nextUrl;            // e.g. "/en/partrides/123"
     const [, locale, ...segments] = pathname.split('/');
     const path = '/' + segments.join('/');       // "/partrides/123"
 
@@ -41,18 +37,15 @@ export function middleware(req: NextRequest) {
     }
 
     const roles = getRoles(req);
-    if (!roles && !path.startsWith('/auth/login')) {
-        return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
-    }
+
+    if (!roles && !path.startsWith('/auth/login')) return NextResponse.redirect(new URL(`/${locale}/auth/login`, req.url));
 
     /* 3️⃣  Delegate to route-group helpers              */
     let routed: NextResponse | null = null;
 
-    if (path.startsWith('/partrides')) {
-        routed = handlePartridesRoutes(req, roles, locale, path);
-    } else if (path.startsWith('/disputes')) {
-        routed = handleDisputesRoutes(req, roles, locale, path);
-    }
+    if (path.startsWith('/partrides')) routed = handlePartridesRoutes(req, roles, locale, path);
+
+    if (path.startsWith('/disputes')) routed = handleDisputesRoutes(req, roles, locale, path);
 
     /* 4️⃣  Return whichever response we got first
            – routed one, otherwise the intl response         */
