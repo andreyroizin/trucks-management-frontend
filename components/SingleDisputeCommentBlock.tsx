@@ -15,7 +15,6 @@ export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit,
     const [error, setError] = useState(false);
 
     const handleSubmit = () => {
-        console.log("Submitting comment:", value);
         if (!value.trim()) {
             setError(true);
             return;

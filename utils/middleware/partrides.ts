@@ -28,7 +28,6 @@ export function handlePartridesRoutes(
         if (roles?.some(r => ALL_ROLES.includes(r))) {
             return NextResponse.next();
         }
-        console.log(`Unauthorized access to ${pathname} by roles: ${roles}`);
         return NextResponse.redirect(new URL('/403', req.url));
     }
 

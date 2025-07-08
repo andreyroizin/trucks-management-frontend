@@ -28,7 +28,6 @@ export default async function LocaleLayout({children, params}: {
     if (!hasLocale(routing.locales, locale)) {
         notFound();
     }
-    console.log("locale: ", locale);
 
     return (
         <html lang={locale}>

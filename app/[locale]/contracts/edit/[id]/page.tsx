@@ -109,13 +109,12 @@ export default function EditEmployeeContractPage() {
 
     // On Submit
     const onSubmit: SubmitHandler<EmployeeContractDetail> = async (data) => {
-        console.log('Form data:', data);
         setApiError(null);
         try {
             await updateContract(data);
             router.push(`/contracts/${id}`);
         } catch (err: any) {
-            console.log(err)
+            console.error(err)
             setApiError(err.response?.data?.errors?.[0] || err.message || 'Failed to update contract');
         }
     };

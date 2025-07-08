@@ -39,8 +39,6 @@ export default function EditContactPersonPage() {
         },
         [userDetails]);
 
-    console.log(contactPersonIsGlobalAdmin);
-
     const {
         mutateAsync: deleteContactPerson,
         isPending: isDeleting,

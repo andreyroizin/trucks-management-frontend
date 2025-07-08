@@ -41,7 +41,6 @@ export default function ContractsPage() {
     const [pageSize, setPageSize] = useState(10);
     const [driverId, setDriverId] = useState('');
     const [companyId, setCompanyId] = useState('');
-    console.log(pageNumber)
 
     // Fetch data for drivers + companies
     const { data: driversData, isLoading: loadingDrivers } = useDrivers();
