@@ -1,13 +1,21 @@
 {
-  "nav.dashboard": "Dashboard NL",
-  "nav.workdays":  "Workdays NL",
-  "nav.disputes":  "Disputes NL",
-  "dialog.save":   "Save Changes NL",
-  "dialog.cancel": "Cancel NL",
-  "language.en":   "English NL",
-  "language.nl":   "Nederlands (Netherlands) NL",
-  "language.bg":   "Български (Bulgarian) NL",
-  "driver.greeting": "Hello",
-  "driver.greetingName": "Hello, {first} {last}",
-  "hello": "Hello World"
+  "nav": {
+    "dashboard": "Dashboard",
+    "workdays": "Workdays",
+    "disputes": "Disputes"
+  },
+  "dialog": {
+    "save": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "language": {
+    "en": "English",
+    "nl": "Nederlands (Netherlands)",
+    "bg": "Български (Bulgarian)"
+  },
+  "driver": {
+    "greeting": "Hello",
+    "greetingName": "Hello, {first} {last}"
+  },
+  "hello": "Goede dag werld"
 }
