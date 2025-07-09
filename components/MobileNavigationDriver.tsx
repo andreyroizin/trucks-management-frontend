@@ -3,7 +3,7 @@
 import {
     AppBar,
     Badge,
-    Box,
+    Box, Button,
     Divider,
     Drawer,
     IconButton,
@@ -21,8 +21,9 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import ArrowRightIcon from '@mui/icons-material/ChevronRightRounded';
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
-import {useState} from "react";
-import LanguageDialogDriver from "@/components/LanguageDialogDriver"; // adjust path to your auth hook
+import React, {useState} from "react";
+import LanguageDialogDriver from "@/components/LanguageDialogDriver";
+import Link from "next/link"; // adjust path to your auth hook
 
 /* ------------------------------------------------- */
 export default function MobileNavigationDriver() {
@@ -45,9 +46,12 @@ export default function MobileNavigationDriver() {
             {/* TOP BAR ------------------------------------------------ */}
             <AppBar position="static" sx={{bgcolor: '#0D243F', boxShadow: 'none'}}>
                 <Toolbar sx={{justifyContent: 'space-between', minHeight: 56, py: 1, px: 2}}>
-                    <Typography variant="h6" fontWeight={500}>
-                        Vervoer-Manager
-                    </Typography>
+
+                    <Link href={`/dashboard/driver`} passHref>
+                        <Typography variant="h6" fontWeight={500}>
+                            Vervoer-Manager
+                        </Typography>
+                    </Link>
 
                     <Box sx={{display: 'flex', gap: 1}}>
                         <IconButton color="inherit" onClick={() => setLangOpen(true)}>
