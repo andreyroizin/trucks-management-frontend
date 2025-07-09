@@ -7,6 +7,7 @@ import {useParams, useRouter} from 'next/navigation';
 import {useDriverWeekDetails} from '@/hooks/useDriverWeekDetails';
 import {useSignDriverWeek} from '@/hooks/useSignDriverWeek';
 import WeekSummary from "@/components/WeekSummary";
+import { useTranslations } from 'next-intl';
 
 export default function SignWorkWeekPage() {
     const router = useRouter();
@@ -14,6 +15,8 @@ export default function SignWorkWeekPage() {
     const [yearStr, weekStr] = params.key.split('-');
     const year = parseInt(yearStr, 10);
     const weekNumber = parseInt(weekStr, 10);
+
+    const t = useTranslations('weeks.driver.sign');
 
     const { data, isLoading, error } = useDriverWeekDetails(year, weekNumber);
 
@@ -32,7 +35,7 @@ export default function SignWorkWeekPage() {
     if (!data || error) {
         return (
             <Typography color="error" mt={4} textAlign="center">
-                {error instanceof Error ? error.message : 'Failed to load week details'}
+                {t('errorLoad')}
             </Typography>
         );
     }
@@ -44,14 +47,14 @@ export default function SignWorkWeekPage() {
             await mutateAsync({ year, weekNumber });
             router.push(`/weeks/sign/success/${year}-${weekNumber}`);
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to sign the week';
+            const message = t('errorSign');
             setSignError(message);
         }
     };
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             <Typography variant="h4" sx={{fontWeight: 500, marginBottom: 2}} gutterBottom>
-                Sign Work Week
+                {t('title')}
             </Typography>
 
             <WeekSummary
@@ -68,8 +71,7 @@ export default function SignWorkWeekPage() {
             {data.status === 1 && (
                 <>
                     <Typography variant="body2" color="text.secondary" sx={{marginTop: 2, marginBottom: 2}}>
-                        Make sure everything looks correct before signing. Once submitted, your workdays will be
-                        locked and sent for final processing.
+                        {t('warning')}
                     </Typography>
 
                     {signError && (
@@ -87,14 +89,14 @@ export default function SignWorkWeekPage() {
                         sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
                         onClick={handleSignClick}
                     >
-                        Sign Work Week
+                        {t('submit')}
                     </Button>
                 </>
             )}
             {data.status === 2 && (
                 <>
                     <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2, marginBottom: 2 }}>
-                        This week has already been signed. You can view it below.
+                        {t('alreadySigned')}
                     </Typography>
                     <Button
                         fullWidth
@@ -104,7 +106,7 @@ export default function SignWorkWeekPage() {
                         sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
                         onClick={() => router.push(`/weeks/signed/${year}-${weekNumber}`)}
                     >
-                        View Signed Week
+                        {t('viewSigned')}
                     </Button>
                 </>
             )}

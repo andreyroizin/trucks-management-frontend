@@ -140,5 +140,38 @@
         }
       }
     }
+  },
+  "weeks": {
+    "driver": {
+      "common": {
+        "week": "Week",
+        "vacationTaken": "Vacation Hours Taken",
+        "vacationLeft": "Vacation Hours Left",
+        "date": "Date",
+        "hours": "Hours",
+        "total": "Total"
+      },
+      "signed": {
+        "title": "Week {week}",
+        "notSigned": "This week hasn’t been signed yet.",
+        "goToCurrent": "Go to current period"
+      },
+      "sign": {
+        "success": {
+          "title": "Sign Work Week",
+          "warning": "Make sure everything looks correct before signing. Once submitted, your workdays will be locked and sent for final processing.",
+          "submit": "Sign Work Week",
+          "alreadySigned": "This week has already been signed. You can view it below.",
+          "viewSigned": "View Signed Week",
+          "errorLoad": "Failed to load week details",
+          "errorSign": "Failed to sign the week"
+        },
+        "title": "Review and Sign Your Work Week",
+        "review": "Please review the summary below before signing.",
+        "button": "Sign Week",
+        "already": "You have already signed this work week.",
+        "view": "View Signed Week"
+      }
+    }
   }
 }

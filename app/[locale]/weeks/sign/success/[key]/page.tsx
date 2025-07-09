@@ -4,6 +4,7 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useRouter, useParams } from 'next/navigation';
+import {useTranslations} from 'next-intl';
 
 export default function WeekSignedSuccess() {
     const router = useRouter();
@@ -11,6 +12,8 @@ export default function WeekSignedSuccess() {
     const [yearStr, weekStr] = (params.key ?? '').split('-');
     const year = yearStr || '----';
     const weekNumber = weekStr || '--';
+
+    const t = useTranslations('weeks.driver.sign.success');
 
     return (
         <Box
@@ -33,18 +36,15 @@ export default function WeekSignedSuccess() {
 
             {/* Heading */}
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                Success! Your Week&nbsp;Has
-                <br />
-                Been Signed
+                {t('title')}
             </Typography>
 
             {/* Informational paragraphs */}
             <Typography variant="body1" maxWidth="500px" mb={3}>
-                Week {weekNumber} ({year}) has been successfully signed and submitted.
+                {t('submitted', {week: weekNumber, year})}
             </Typography>
             <Typography variant="body1" maxWidth="500px" mb={6}>
-                You’ll receive a notification once it’s processed by the Admin. A summary of this week
-                is now available via the link below.
+                {t('processed')}
             </Typography>
 
             {/* Buttons */}
@@ -54,7 +54,7 @@ export default function WeekSignedSuccess() {
                     color="success"
                     onClick={() => router.push(`/weeks/signed/${year}-${weekNumber}`)}
                 >
-                    View Signed Week
+                    {t('view')}
                 </Button>
 
                 <Button
@@ -62,7 +62,7 @@ export default function WeekSignedSuccess() {
                     color="primary"
                     onClick={() => router.push('/periods/driver/current')}
                 >
-                    Go&nbsp;To&nbsp;The Current&nbsp;Period
+                    {t('back')}
                 </Button>
             </Box>
         </Box>

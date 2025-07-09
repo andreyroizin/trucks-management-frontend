@@ -5,8 +5,10 @@ import {Box, Button, CircularProgress, Typography,} from '@mui/material';
 import {useParams} from 'next/navigation';
 import {useDriverWeekDetails} from '@/hooks/useDriverWeekDetails';
 import WeekSummary from "@/components/WeekSummary";
+import { useTranslations } from 'next-intl';
 
 export default function SignWorkWeekPage() {
+    const t = useTranslations('weeks.driver.signed');
     const params = useParams<{ key: string }>();
     const [yearStr, weekStr] = params.key.split('-');
     const year = parseInt(yearStr, 10);
@@ -34,15 +36,15 @@ export default function SignWorkWeekPage() {
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             <Typography variant="h4" sx={{ fontWeight: 500 }}>
-                Week {data.week}
+                {t('title', { week: data.week })}
             </Typography>
             {data.status !== 2 ? (
                 <Box mt={4} display="flex" flexDirection="column" alignItems="center" gap={2}>
                     <Typography variant="body1" color="warning.main">
-                        This week hasn’t been signed yet.
+                        {t('notSigned')}
                     </Typography>
                     <Button variant="contained" color="primary" href="/periods/driver/current">
-                        Go to current period
+                        {t('goToCurrent')}
                     </Button>
                 </Box>
             ) : (

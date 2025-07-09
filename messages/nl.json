@@ -136,5 +136,38 @@
         }
       }
     }
+  },
+  "weeks": {
+    "driver": {
+      "common": {
+        "week": "Week",
+        "vacationTaken": "Opgenomen vakantie-uren",
+        "vacationLeft": "Resterende vakantie-uren",
+        "date": "Datum",
+        "hours": "Uren",
+        "total": "Totaal"
+      },
+      "signed": {
+        "title": "Week {week}",
+        "notSigned": "Deze week is nog niet ondertekend.",
+        "goToCurrent": "Ga naar de huidige periode"
+      },
+      "sign": {
+        "success": {
+          "title": "Succes! Je week is ondertekend",
+          "submitted": "Week {week} ({year}) is succesvol ondertekend en ingediend.",
+          "processed": "Je ontvangt een melding zodra het is verwerkt door de beheerder. Een samenvatting van deze week is nu beschikbaar via de onderstaande link.",
+          "view": "Bekijk Ondertekende Week",
+          "back": "Ga naar de Huidige Periode"
+        },
+        "title": "Week ondertekenen",
+        "warning": "Zorg ervoor dat alles correct is voordat je ondertekent. Na verzending worden je werkdagen vergrendeld en doorgestuurd voor definitieve verwerking.",
+        "submit": "Week ondertekenen",
+        "alreadySigned": "Deze week is al ondertekend. Je kunt het hieronder bekijken.",
+        "viewSigned": "Bekijk ondertekende week",
+        "errorLoad": "Kon weekdetails niet laden",
+        "errorSign": "Kon de week niet ondertekenen"
+      }
+    }
   }
 }
