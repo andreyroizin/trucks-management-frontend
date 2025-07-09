@@ -17,5 +17,31 @@
     "greeting": "Hello",
     "greetingName": "Hello, {first} {last}"
   },
-  "hello": "Goede dag werld"
+  "dashboard": {
+    "driver": {
+      "greeting": "Hello",
+      "greetingName": "Hello, {first} {last}",
+      "description": "Keep track of your workdays and add new ones when needed.",
+      "submit": {
+        "title": "Submit Workday",
+        "subtitle": "Register a new workday quickly and easily"
+      },
+      "myWorkdays": {
+        "title": "My Workdays",
+        "subtitle": "View and manage all your registered workdays"
+      },
+      "disputes": {
+        "title": "Disputes",
+        "subtitle": "Track your workdays with unresolved issues"
+      },
+      "pending": {
+        "title": "Under Review Periods",
+        "subtitle": "Check past periods that may need your confirmation"
+      },
+      "archived": {
+        "title": "Archived Periods",
+        "subtitle": "See full summaries of your signed periods"
+      }
+    }
+  }
 }

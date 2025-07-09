@@ -26,10 +26,9 @@ export default function DriverHomePage() {
         }
     }, [loading, isAuthenticated, user, router]);
 
-    // const name = user?.firstName ? `Hello, ${user.firstName} ${user.lastName}` : 'Hello';
     const greeting = user?.firstName
-        ? t('driver.greetingName', {first: user.firstName, last: user.lastName})
-        : t('driver.greeting');
+        ? t('dashboard.driver.greetingName', {first: user.firstName, last: user.lastName})
+        : t('dashboard.driver.greeting');
 
     return (
         <Box pb={7}>
@@ -53,7 +52,7 @@ export default function DriverHomePage() {
                     {greeting}
                 </Typography>
                 <Typography mt={2} variant="body2">
-                    Keep track of your workdays and add new ones when needed.
+                    {t('dashboard.driver.description')}
                 </Typography>
             </Box>
 
@@ -66,30 +65,30 @@ export default function DriverHomePage() {
                     gap={1.5}
                     px={{xs: 2, md: 0}} // optional: adds side padding on small screens
                 > <DriverDashboardCardButton
-                    title="Submit Workday"
-                    subtitle="Register a new workday quickly and easily"
+                    title={t('dashboard.driver.submit.title')}
+                    subtitle={t('dashboard.driver.submit.subtitle')}
                     icon={<AddIcon fontSize="medium"/>}
                     highlight
                     onClick={() => router.push('/partrides/create')}
                 />
                     <DriverDashboardCardButton
-                        title="My Workdays"
-                        subtitle="View and manage all your registered workdays"
+                        title={t('dashboard.driver.myWorkdays.title')}
+                        subtitle={t('dashboard.driver.myWorkdays.subtitle')}
                         onClick={() => router.push('/periods/driver/current')}
                     />
                     <DriverDashboardCardButton
-                        title="Disputes"
-                        subtitle="Follow up on records with changes or issues"
+                        title={t('dashboard.driver.disputes.title')}
+                        subtitle={t('dashboard.driver.disputes.subtitle')}
                         onClick={() => router.push('/disputes')}
                     />
                     <DriverDashboardCardButton
-                        title="Under Review Periods"
-                        subtitle="Check past periods that may need your confirmation"
+                        title={t('dashboard.driver.pending.title')}
+                        subtitle={t('dashboard.driver.pending.subtitle')}
                         onClick={() => router.push('/periods/driver/pending')}
                     />
                     <DriverDashboardCardButton
-                        title="Archived Periods"
-                        subtitle="See full summaries of your signed periods"
+                        title={t('dashboard.driver.archived.title')}
+                        subtitle={t('dashboard.driver.archived.subtitle')}
                         onClick={() => router.push('/periods/driver/archived')}
                     />
                 </Box>

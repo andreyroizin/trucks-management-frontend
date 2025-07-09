@@ -17,5 +17,31 @@
     "greeting": "Goede dag",
     "greetingName": "Goede dag, {first} {last}"
   },
-  "hello": "Goede dag werld"
+  "dashboard": {
+    "driver": {
+      "greeting": "Hallo",
+      "greetingName": "Hallo, {first} {last}",
+      "description": "Houd je werkdagen bij en voeg indien nodig nieuwe toe.",
+      "submit": {
+        "title": "Werkdag Indienen",
+        "subtitle": "Registreer eenvoudig en snel een nieuwe werkdag"
+      },
+      "myWorkdays": {
+        "title": "Mijn Werkdagen",
+        "subtitle": "Bekijk en beheer al je geregistreerde werkdagen"
+      },
+      "disputes": {
+        "title": "Conflicten",
+        "subtitle": "Volg uw werkdagen met onopgeloste problemen"
+      },
+      "pending": {
+        "title": "Te Beoordelen Periodes",
+        "subtitle": "Bekijk eerdere periodes die nog jouw bevestiging nodig hebben"
+      },
+      "archived": {
+        "title": "Gearchiveerde Periodes",
+        "subtitle": "Bekijk volledige samenvattingen van je ondertekende periodes"
+      }
+    }
+  }
 }
