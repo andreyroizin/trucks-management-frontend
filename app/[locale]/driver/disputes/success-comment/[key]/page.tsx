@@ -4,10 +4,12 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function WeekSignedSuccess() {
     const router = useRouter();
     const { key } = useParams<{ key: string }>();
+    const t = useTranslations('disputes.driver.success.comment');
 
     return (
         <Box
@@ -30,17 +32,13 @@ export default function WeekSignedSuccess() {
 
             {/* Heading */}
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                Your comment sent
+                {t('heading')}
             </Typography>
 
             {/* Informational paragraphs */}
             <Typography variant="body1" maxWidth="500px" mb={5}>
-                Your comment for {key} has been successfully sent to the Transport Admin.
-                <br/>
-                <br/>
-                You will get a notification if the admin approved your comment or not.
+                {t('description', { key })}
             </Typography>
-
 
             {/* Buttons */}
             <Button
@@ -48,7 +46,7 @@ export default function WeekSignedSuccess() {
                 fullWidth
                 onClick={() => router.back()}
             >
-                Go to Dispute
+                {t('goBack')}
             </Button>
         </Box>
     );

@@ -4,10 +4,12 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function WeekSignedSuccess() {
     const router = useRouter();
     const { key } = useParams<{ key: string }>();
+    const t = useTranslations('disputes.driver.success.accept');
 
     return (
         <Box
@@ -30,12 +32,12 @@ export default function WeekSignedSuccess() {
 
             {/* Heading */}
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                Your workday has been approved
+                {t('heading')}
             </Typography>
 
             {/* Informational paragraphs */}
             <Typography variant="body1" maxWidth="500px" mb={5}>
-                You’ve accepted the correction for <strong>{key}</strong>. The workday is now approved and included in your totals.
+                {t('description', { key })}
             </Typography>
 
             {/* Buttons */}
@@ -44,7 +46,7 @@ export default function WeekSignedSuccess() {
                     fullWidth
                     onClick={() => router.push('/dashboard/driver')}
                 >
-                    Go to Home Page
+                    {t('goHome')}
                 </Button>
         </Box>
     );

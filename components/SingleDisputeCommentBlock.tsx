@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Box, Button, Divider, TextField, Typography } from '@mui/material';
 import DisputeComment from '@/components/DisputeComment';
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit, posting }: Props) {
+    const t = useTranslations('disputes.comment');
     const [showForm, setShowForm] = useState(false);
     const [value, setValue] = useState('');
     const [error, setError] = useState(false);
@@ -35,7 +37,7 @@ export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit,
                         sx={{ flex: 1 }}
                         onClick={onAccept}
                     >
-                        Accept Correction
+                        {t('acceptCorrection')}
                     </Button>
                     <Button
                         variant="text"
@@ -44,17 +46,17 @@ export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit,
                         sx={{ flex: 1 }}
                         onClick={() => setShowForm(true)}
                     >
-                        Dispute
+                        {t('dispute')}
                     </Button>
                 </Box>
             ) : (
                 <Box mt={2}>
                     <Divider sx={{ my: 2 }} />
                     <Typography variant="h5" sx={{ mb: 2 }}>
-                        Explain why it’s wrong
+                        {t('explainTitle')}
                     </Typography>
                     <TextField
-                        label="Explain the issue"
+                        label={t('explainLabel')}
                         multiline
                         required
                         fullWidth
@@ -62,7 +64,7 @@ export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit,
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         error={error}
-                        helperText={error ? 'This field is required.' : ''}
+                        helperText={error ? t('explainRequired') : ''}
                         sx={{ mb: 2 }}
                     />
                     <Button
@@ -72,7 +74,7 @@ export default function SingleDisputeCommentBlock({ comment, onAccept, onSubmit,
                         onClick={handleSubmit}
                         disabled={posting}
                     >
-                        Submit
+                        {t('submit')}
                     </Button>
                 </Box>
             )}

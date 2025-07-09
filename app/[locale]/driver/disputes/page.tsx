@@ -20,13 +20,15 @@ import dayjs from 'dayjs';
 import { useDisputes } from '@/hooks/useDisputes';
 import StatusChip from '@/components/StatusChip';
 import { useRouter } from 'next/navigation';
-import {DisputeStatus, getDisputeStatusInfo} from "@/utils/disputeStatus";
+import { DisputeStatus, getDisputeStatusInfo } from "@/utils/disputeStatus";
+import { useTranslations } from 'next-intl';
 
 export default function DisputeHistoryPage() {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const router = useRouter();
+    const t = useTranslations('disputes.driver');
 
     const params = {
         pageNumber: page,
@@ -45,26 +47,26 @@ export default function DisputeHistoryPage() {
     if (!data)
         return (
             <Typography mt={6} textAlign="center" color="error">
-                Failed to load disputes.
+                {t('error.load')}
             </Typography>
         );
 
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                Dispute History
+                {t('title')}
             </Typography>
             <Typography variant="body1" mb={2}>
-                View all your disputes.
+                {t('subtitle')}
             </Typography>
 
             <TableContainer>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 500, py: 2 }}>Date</TableCell>
-                            <TableCell sx={{ fontWeight: 500, py: 2 }}>Hours</TableCell>
-                            <TableCell sx={{ fontWeight: 500, py: 2 }}>Status</TableCell>
+                            <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('table.date')}</TableCell>
+                            <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('table.hours')}</TableCell>
+                            <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('table.status')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -112,7 +114,7 @@ export default function DisputeHistoryPage() {
                     startIcon={<ArrowBackIosIcon />}
                     onClick={() => router.push(`/dashboard/driver`)}
                 >
-                    Back To Home Page
+                    {t('back')}
                 </Button>
             </Box>
         </Box>

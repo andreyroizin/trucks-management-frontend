@@ -13,10 +13,6 @@
     "nl": "Nederlands (Netherlands)",
     "bg": "Български (Bulgarian)"
   },
-  "driver": {
-    "greeting": "Goede dag",
-    "greetingName": "Goede dag, {first} {last}"
-  },
   "dashboard": {
     "driver": {
       "greeting": "Hallo",
@@ -63,6 +59,62 @@
         },
         "signButton": "Week ondertekenen",
         "viewSignedButton": "Ondertekende week bekijken"
+      }
+    }
+  },
+  "disputes": {
+    "comment": {
+      "acceptCorrection": "Correctie accepteren",
+      "dispute": "Betwisten",
+      "explainTitle": "Leg uit waarom het fout is",
+      "explainLabel": "Leg het probleem uit",
+      "explainRequired": "Dit veld is verplicht.",
+      "submit": "Indienen"
+    },
+    "driver": {
+      "title": "Geschiedenis van geschillen",
+      "subtitle": "Bekijk al je geschillen.",
+      "table": {
+        "date": "Datum",
+        "hours": "Uren",
+        "status": "Status"
+      },
+      "error": {
+        "load": "Fout bij het laden van geschillen."
+      },
+      "back": "Terug naar startpagina",
+      "detail": {
+        "banner": {
+          "pendingDriver": "Deze rit is niet goedgekeurd door de Admin. Je kunt het besluit betwisten of ermee instemmen.",
+          "pendingAdmin": "Je betwisting is naar de Admin verzonden. Controleer later opnieuw.",
+          "accepted": "Dit geschil is opgelost.",
+          "closed": "Dit geschil is gesloten door de Admin."
+        },
+        "title": "Geschil",
+        "subtitle": "Bekijk alle opmerkingen voor deze correctie van de werkdag.",
+        "hours": {
+          "driver": "Totale uren van de chauffeur",
+          "admin": "Aanpassing door Admin"
+        },
+        "goToWorkday": "Ga naar deze werkdag",
+        "comments": "Opmerkingen",
+        "error": {
+          "load": "Het laden van het geschil is mislukt.",
+          "accept": "Het accepteren van de correctie is mislukt. Probeer het opnieuw.",
+          "comment": "Het verzenden van de opmerking is mislukt. Probeer het opnieuw."
+        }
+      },
+      "success": {
+        "accept": {
+          "heading": "Geschil Succesvol Geaccepteerd",
+          "description": "Het geschil met ID {key} is succesvol geaccepteerd. Je kunt nu terugkeren naar je dashboard.",
+          "goHome": "Ga naar Dashboard"
+        },
+        "comment": {
+          "heading": "Je opmerking is verzonden",
+          "description": "Je opmerking voor {key} is succesvol verzonden naar de Transportbeheerder.\n\nJe ontvangt een melding of de beheerder je opmerking heeft goedgekeurd of niet.",
+          "goBack": "Ga naar Geschil"
+        }
       }
     }
   }

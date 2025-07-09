@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import {useParams, useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 
 import {useDisputeById} from '@/hooks/useDisputeById';
 import {DisputeStatus} from '@/utils/disputeStatus';
@@ -24,39 +25,10 @@ import {useAddDisputeComment} from '@/hooks/useAddDisputeComment';
 import {useAcceptDispute} from '@/hooks/useAcceptDispute';
 import SingleDisputeCommentBlock from "@/components/SingleDisputeCommentBlock";
 
-/* ───────────────────────────── Banner helper ────────────────────────── */
-const bannerConfig: Record<
-    DisputeStatus,
-    { severity: 'warning' | 'success' | 'info' | 'error'; text: string }
-> = {
-    [DisputeStatus.PendingDriver]: {
-        severity: 'warning',
-        text: 'This trip is not approved by Admin. You can dispute the decision or agree with it.',
-    },
-    [DisputeStatus.PendingAdmin]: {
-        severity: 'info',
-        text: 'Your dispute was sent to Admin. Please, check later.',
-    },
-    [DisputeStatus.AcceptedByDriver]: {
-        severity: 'success',
-        text: 'This dispute is solved.',
-    },
-    [DisputeStatus.AcceptedByAdmin]: {
-        severity: 'success',
-        text: 'This dispute is solved.',
-    },
-    [DisputeStatus.Closed]: {
-        severity: 'info',
-        text: 'This dispute was closed by Admin.',
-    },
-};
-
-// ── DisputeComment component ─────────────────────────────────────
-
-
 export default function DisputeDetailPage() {
     const {id} = useParams<{ id: string }>();
     const router = useRouter();
+    const t = useTranslations('disputes.driver.detail');
 
     const {data, isLoading, error} = useDisputeById(id);
 
@@ -66,13 +38,42 @@ export default function DisputeDetailPage() {
     const {mutateAsync: postComment, isPending: posting} = useAddDisputeComment(id);
     const {mutateAsync: acceptDispute} = useAcceptDispute(id);
 
+    /* ── derived info ────────────────────────────────────────────────── */
+    const partRideDate = data ? dayjs(data.partRide.date).format('DD.MM.YY') : '';
+    const bannerConfig: Record<
+        DisputeStatus,
+        { severity: 'warning' | 'success' | 'info' | 'error'; text: string }
+    > = {
+        [DisputeStatus.PendingDriver]: {
+            severity: 'warning',
+            text: t('banner.pendingDriver'),
+        },
+        [DisputeStatus.PendingAdmin]: {
+            severity: 'info',
+            text: t('banner.pendingAdmin'),
+        },
+        [DisputeStatus.AcceptedByDriver]: {
+            severity: 'success',
+            text: t('banner.accepted'),
+        },
+        [DisputeStatus.AcceptedByAdmin]: {
+            severity: 'success',
+            text: t('banner.accepted'),
+        },
+        [DisputeStatus.Closed]: {
+            severity: 'info',
+            text: t('banner.closed'),
+        },
+    };
+    const banner = data ? bannerConfig[data.status as DisputeStatus] : undefined;
+
     const handleAccept = async () => {
         try {
             await acceptDispute();
             router.push('/disputes/success-accept/' + partRideDate);
         } catch (error) {
             console.error('Failed to accept dispute', error);
-            setAcceptError('Failed to accept the correction. Please try again.');
+            setAcceptError(t('error.accept'));
         }
     };
 
@@ -82,7 +83,7 @@ export default function DisputeDetailPage() {
             router.push('/disputes/success-comment/' + partRideDate);
         } catch (e) {
             console.error('Failed to submit comment', e);
-            setCommentError('Failed to submit the comment. Please try again.');
+            setCommentError(t('error.comment'));
         }
     };
 
@@ -97,38 +98,34 @@ export default function DisputeDetailPage() {
     if (!data || error)
         return (
             <Typography mt={6} textAlign="center" color="error">
-                Failed to load dispute.
+                {t('error.load')}
             </Typography>
         );
-
-    /* ── derived info ────────────────────────────────────────────────── */
-    const partRideDate = dayjs(data.partRide.date).format('DD.MM.YY');
-    const banner = bannerConfig[data.status as DisputeStatus];
 
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             {/* heading */}
             <Typography variant="h4" fontWeight={500} gutterBottom>
-                {partRideDate} Dispute
+                {`${partRideDate} ${t('title')}`}
             </Typography>
             <Typography variant="body1" mb={2}>
-                View all comments for this workday correction.
+                {t('subtitle')}
             </Typography>
 
             {/* banner */}
-            <Alert severity={banner.severity} sx={{mb: 3}} icon={<InfoOutlinedIcon fontSize="inherit"/>}>
-                {banner.text}
+            <Alert severity={banner?.severity} sx={{mb: 3}} icon={<InfoOutlinedIcon fontSize="inherit"/>}>
+                {banner?.text}
             </Alert>
 
             {/* quick facts */}
             <Table size="small">
                 <TableBody>
                     <TableRow>
-                        <TableCell sx={{pl: 0, py: 1, border: 'none'}}>Driver’s Total Hours</TableCell>
+                        <TableCell sx={{pl: 0, py: 1, border: 'none'}}>{t('hours.driver')}</TableCell>
                         <TableCell sx={{border: 'none', py: 1}}>{data.partRide.decimalHours} h</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell sx={{pl: 0, border: 'none', py: 1}}>Admin’s Adjustment</TableCell>
+                        <TableCell sx={{pl: 0, border: 'none', py: 1}}>{t('hours.admin')}</TableCell>
                         <TableCell sx={{border: 'none', py: 1}}>
                             {data.correctionHours} h
                             {['PendingDriver', 'PendingAdmin'].includes(DisputeStatus[data.status]) && (
@@ -161,7 +158,7 @@ export default function DisputeDetailPage() {
                     sx={{mt: 3}}
                     onClick={() => router.push(`/partrides/${data?.partRide.id}`)}
                 >
-                    Go To This Workday
+                    {t('goToWorkday')}
                 </Button>
             )}
 
@@ -179,9 +176,8 @@ export default function DisputeDetailPage() {
                 </>
             )}
 
-
             <Typography variant="h5" sx={{ mb: 2 }}>
-                Comments
+                {t('comments')}
             </Typography>
 
             {data.status === DisputeStatus.PendingDriver && data.comments.length === 1 ? (

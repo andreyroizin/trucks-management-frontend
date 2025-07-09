@@ -65,5 +65,61 @@
         "viewSignedButton": "View Signed Week"
       }
     }
+  },
+  "disputes": {
+    "comment": {
+      "acceptCorrection": "Accept Correction",
+      "dispute": "Dispute",
+      "explainTitle": "Explain why it’s wrong",
+      "explainLabel": "Explain the issue",
+      "explainRequired": "This field is required.",
+      "submit": "Submit"
+    },
+    "driver": {
+      "title": "Dispute History",
+      "subtitle": "View all your disputes.",
+      "table": {
+        "date": "Date",
+        "hours": "Hours",
+        "status": "Status"
+      },
+      "error": {
+        "load": "Failed to load disputes."
+      },
+      "back": "Back To Home Page",
+      "detail": {
+        "banner": {
+          "pendingDriver": "This trip is not approved by Admin. You can dispute the decision or agree with it.",
+          "pendingAdmin": "Your dispute was sent to Admin. Please, check later.",
+          "accepted": "This dispute is solved.",
+          "closed": "This dispute was closed by Admin."
+        },
+        "title": "Dispute",
+        "subtitle": "View all comments for this workday correction.",
+        "hours": {
+          "driver": "Driver’s Total Hours",
+          "admin": "Admin’s Adjustment"
+        },
+        "goToWorkday": "Go To This Workday",
+        "comments": "Comments",
+        "error": {
+          "load": "Failed to load dispute.",
+          "accept": "Failed to accept the correction. Please try again.",
+          "comment": "Failed to submit the comment. Please try again."
+        }
+      },
+      "success": {
+        "accept": {
+          "heading": "Dispute Successfully Accepted",
+          "description": "The dispute with ID {key} has been accepted successfully. You can now return to your dashboard.",
+          "goHome": "Go to Dashboard"
+        },
+        "comment": {
+          "heading": "Your comment sent",
+          "description": "Your comment for {key} has been successfully sent to the Transport Admin.\n\nYou will get a notification if the admin approved your comment or not.",
+          "goBack": "Go to Dispute"
+        }
+      }
+    }
   }
 }
