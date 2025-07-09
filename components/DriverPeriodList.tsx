@@ -14,6 +14,7 @@ import {
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
+import { useTranslations } from 'next-intl';
 
 export type Period = {
     year: number;
@@ -42,6 +43,7 @@ type Props = {
 };
 
 export default function DriverPeriodListContent({ title, description, pagination, fetchState }: Props) {
+    const t = useTranslations('periods.driver.common');
     const router = useRouter();
 
     const {
@@ -70,13 +72,13 @@ export default function DriverPeriodListContent({ title, description, pagination
     if (isError) {
         return (
             <Box minHeight="50vh" display="flex" alignItems="center" justifyContent="center">
-                <Alert severity="error">{error?.message || 'Failed to load periods'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
 
     const formatTitle = (p: { year: number; periodNr: number }) =>
-        `${p.year}-${p.periodNr.toString().padStart(2, '0')} Period`;
+        `${p.year}-${p.periodNr.toString().padStart(2, '0')} ${t('period')}`;
 
     return (
         <Box maxWidth="700px" mx="auto" my={4}>
@@ -117,7 +119,7 @@ export default function DriverPeriodListContent({ title, description, pagination
                     onPageSizeChange(parseInt(e.target.value, 10));
                     onPageChange(1);
                 }}
-                labelRowsPerPage="Rows per page:"
+                labelRowsPerPage={t('labelRowsPerPage')}
                 sx={{ mt: 2 }}
             />
         </Box>

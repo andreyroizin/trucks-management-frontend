@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useArchivedDriverPeriods } from '@/hooks/useArchivedDriverPeriods';
 import DriverPeriodListContent from '@/components/DriverPeriodList';
+import { useTranslations } from 'next-intl';
 
 export default function ArchivedPeriodsPage() {
     const router = useRouter();
@@ -19,10 +20,12 @@ export default function ArchivedPeriodsPage() {
             router.push(isAuthenticated ? '/403' : '/auth/login');
     }, [loading, isAuthenticated, user, router]);
 
+    const t = useTranslations('periods.driver.archived');
+
     return (
         <DriverPeriodListContent
-            title="Archived Periods"
-            description="Browse your signed and completed work periods."
+            title={t('title')}
+            description={t('description')}
             pagination={{
                 pageNumber: page,
                 pageSize: size,

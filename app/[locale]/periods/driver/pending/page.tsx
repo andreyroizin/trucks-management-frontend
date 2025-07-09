@@ -1,11 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useArchivedDriverPeriods } from '@/hooks/useArchivedDriverPeriods';
+import {useRouter} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {useAuth} from '@/hooks/useAuth';
 import DriverPeriodListContent from '@/components/DriverPeriodList';
 import {usePendingDriverPeriods} from "@/hooks/usePendingDriverPeriods";
+import {useTranslations} from "next-intl";
 
 export default function ArchivedPeriodsPage() {
     const router = useRouter();
@@ -15,6 +15,8 @@ export default function ArchivedPeriodsPage() {
     const [size, setSize] = useState(10);
     const { data, isLoading, isError, error } = usePendingDriverPeriods(page, size);
 
+    const t = useTranslations('periods.driver.pending');
+
     useEffect(() => {
         if (!loading && (!isAuthenticated || !user?.roles.some(r => ['driver', 'globalAdmin'].includes(r))))
             router.push(isAuthenticated ? '/403' : '/auth/login');
@@ -22,8 +24,8 @@ export default function ArchivedPeriodsPage() {
 
     return (
         <DriverPeriodListContent
-            title="Pending Periods"
-            description="These periods are waiting for your approval."
+            title={t('title')}
+            description={t('description')}
             pagination={{
                 pageNumber: page,
                 pageSize: size,

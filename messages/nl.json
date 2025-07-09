@@ -42,11 +42,30 @@
   },
   "periods": {
     "driver": {
+      "common": {
+        "labelRowsPerPage": "Rijen per pagina:",
+        "period": "Periode",
+        "loadError": "Failed to load periods"
+      },
       "current": {
         "title": "Mijn Werkdagen",
         "subtitle": "Houd je ingediende werkdagen bij en onderteken perioden wanneer ze klaar zijn.",
         "error": "Laden van werkdagen mislukt",
         "viewOlder": "Bekijk Oudere Perioden"
+      },
+      "pending": {
+        "title": "In afwachting zijnde periodes",
+        "description": "Deze periodes wachten op jouw goedkeuring."
+      },
+      "detail": {
+        "title": "{period} Periode",
+        "summary": "Hier is een overzicht van je werk en verdiensten voor deze periode.",
+        "forecasted": "Verwachte Verdiensten",
+        "totalHoursWorked": "Totaal Gewerkte Uren"
+      },
+      "archived": {
+        "title": "Gearchiveerde Periodes",
+        "description": "Bekijk je ondertekende en afgeronde werkperiodes."
       },
       "weeks": {
         "weekLabel": "Week",

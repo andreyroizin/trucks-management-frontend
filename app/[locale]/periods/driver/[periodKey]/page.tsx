@@ -8,11 +8,13 @@ import {useAuth} from '@/hooks/useAuth';
 import {useDriverPeriodDetail} from '@/hooks/useDriverPeriodDetail';
 import PeriodWeekAccordionList from "@/components/PeriodWeekAccordionList";
 import dayjs from "dayjs";
+import { useTranslations } from 'next-intl';
 
 export default function DriverPeriodDetailPage() {
     const router = useRouter();
     const {periodKey} = useParams();                 // URL: …/periods/driver/[periodKey]
     const periodId = periodKey as string;
+    const t = useTranslations('periods.driver.detail');
 
     /* ---------- access guard (drivers & globalAdmins only) ---------- */
     const {user, isAuthenticated, loading: authLoading} = useAuth();
@@ -55,7 +57,7 @@ export default function DriverPeriodDetailPage() {
 
     /* ---------- helpers --------------------------------------------- */
     const period = `${data.year}-${data.periodNr.toString().padStart(2, '0')}`;
-    const periodLabel = `${period} Period`;
+    const periodLabel = t('title', { period });
     const from = dayjs(data.fromDate).format('DD.MM.YYYY');
     const to = dayjs(data.toDate).format('DD.MM.YYYY');
 
@@ -71,7 +73,7 @@ export default function DriverPeriodDetailPage() {
             </Typography>
 
             <Typography color="text.secondary" mb={3}>
-                Here’s a breakdown of your work and earnings for this period.
+                {t('summary')}
             </Typography>
 
             {/* KPI cards */}
@@ -93,7 +95,7 @@ export default function DriverPeriodDetailPage() {
                         }}
                     >
                         <Typography color="text.secondary" gutterBottom>
-                            Forecasted
+                            {t('forecasted')}
                         </Typography>
                         <Typography variant="h5" fontWeight={500}>
                             €{data.totalEarnings.toFixed(2)}
@@ -113,7 +115,7 @@ export default function DriverPeriodDetailPage() {
                         }}
                     >
                         <Typography color="text.secondary" gutterBottom>
-                            Total Hours Worked
+                            {t('totalHoursWorked')}
                         </Typography>
                         <Typography variant="h5" fontWeight={500}>
                             {data.totalDecimalHours}

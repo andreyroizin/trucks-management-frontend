@@ -46,11 +46,30 @@
   },
   "periods": {
     "driver": {
+      "common": {
+        "labelRowsPerPage": "Rows per page:",
+        "period": "Period",
+        "loadError": "Het laden van periodes is mislukt."
+      },
       "current": {
         "title": "My Workdays",
         "subtitle": "Keep track of your submitted workdays and sign periods when ready.",
         "error": "Failed to load workdays",
         "viewOlder": "View Older Periods"
+      },
+      "pending": {
+        "title": "Pending Periods",
+        "description": "These periods are waiting for your approval."
+      },
+      "archived": {
+        "title": "Archived Periods",
+        "description": "Browse your signed and completed work periods."
+      },
+      "detail": {
+        "title": "{period} Period",
+        "summary": "Here’s a breakdown of your work and earnings for this period.",
+        "forecasted": "Forecasted",
+        "totalHoursWorked": "Total Hours Worked"
       },
       "weeks": {
         "weekLabel": "Week",
