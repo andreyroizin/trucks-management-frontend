@@ -29,11 +29,13 @@ export default async function LocaleLayout({children, params}: {
         notFound();
     }
 
+    const messages = (await import(`@/messages/${locale}.json`)).default;
+
     return (
         <html lang={locale}>
         <body>
         {/* Intl provider first so every subtree can call useTranslations() */}
-        <NextIntlClientProvider locale={locale}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
             <ThemeRegistry>
                 <Providers>
                     <MobileNavigationDriver/>
