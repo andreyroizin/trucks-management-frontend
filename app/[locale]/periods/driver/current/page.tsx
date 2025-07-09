@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {Alert, Box, CircularProgress, Typography,} from '@mui/material';
 import dayjs from 'dayjs';
 import {useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 
 import {useAuth} from '@/hooks/useAuth';
 import {useCurrentDriverPeriod} from '@/hooks/useCurrentDriverPeriod';
@@ -13,6 +14,7 @@ import PeriodWeekAccordionList from "@/components/PeriodWeekAccordionList";
 export default function CurrentPeriod() {
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
+    const t = useTranslations('periods.driver.current');
 
     useEffect(() => {
         if (!authLoading) {
@@ -39,7 +41,7 @@ export default function CurrentPeriod() {
     if (isError || !period) {
         return (
             <Box minHeight="50vh" display="flex" justifyContent="center" alignItems="center">
-                <Alert severity="error">{error?.message || 'Failed to load workdays'}</Alert>
+                <Alert severity="error">{error?.message || t('error')}</Alert>
             </Box>
         );
     }
@@ -50,9 +52,9 @@ export default function CurrentPeriod() {
 
     return (
         <Box maxWidth="700px" mx="auto" my={4}>
-            <Typography variant="h4" mb={2}>My Workdays</Typography>
+            <Typography variant="h4" mb={2}>{t('title')}</Typography>
             <Typography color="text.secondary" mb={3}>
-                Keep track of your submitted workdays and sign periods when ready.
+                {t('subtitle')}
             </Typography>
 
             <Box display="flex" alignItems="center" mb={1}>
@@ -64,7 +66,7 @@ export default function CurrentPeriod() {
 
             <PeriodWeekAccordionList weeks={period.weeks} year={period.year} />
 
-            <RoundedButton label="View Older Periods" colorType="gray" sx={{marginTop: 3}}
+            <RoundedButton label={t('viewOlder')} colorType="gray" sx={{marginTop: 3}}
                            onClick={() => router.push('/periods/driver/archived')}/>
         </Box>
     );

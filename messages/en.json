@@ -43,5 +43,27 @@
         "subtitle": "See full summaries of your signed periods"
       }
     }
+  },
+  "periods": {
+    "driver": {
+      "current": {
+        "title": "My Workdays",
+        "subtitle": "Keep track of your submitted workdays and sign periods when ready.",
+        "error": "Failed to load workdays",
+        "viewOlder": "View Older Periods"
+      },
+      "weeks": {
+        "weekLabel": "Week",
+        "hoursWorked": "hours worked",
+        "noRecords": "No records for this week.",
+        "table": {
+          "date": "Date",
+          "hours": "Hours",
+          "status": "Status"
+        },
+        "signButton": "Sign Work Week",
+        "viewSignedButton": "View Signed Week"
+      }
+    }
   }
 }

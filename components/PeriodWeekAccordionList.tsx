@@ -22,6 +22,7 @@ import {useRouter} from 'next/navigation';
 import StatusChip from "@/components/StatusChip";
 import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
+import { useTranslations } from 'next-intl';
 
 const getWeekChip = (status?: number) => {
     if (status === 0) return <StatusChip label="On-going" variant="info" />;
@@ -31,6 +32,7 @@ const getWeekChip = (status?: number) => {
 
 export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekInPeriod[], year: number }) {
     const router = useRouter();
+    const t = useTranslations('periods.driver.weeks');
 
     return (
         <>
@@ -48,11 +50,11 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
                             <Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Typography variant="subtitle1">Week {week.weekNumber}</Typography>
+                                    <Typography variant="subtitle1">{t('weekLabel')} {week.weekNumber}</Typography>
                                     {getWeekChip(week.status)}
                                 </Box>
                                 <Typography variant="body2" color="text.secondary">
-                                    {week.totalDecimalHours} hours worked
+                                    {week.totalDecimalHours} {t('hoursWorked')}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
@@ -60,16 +62,16 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                         <AccordionDetails sx={{ px: 0 }}>
                             {week.partRides.length === 0 ? (
                                 <Typography color="text.secondary" px={2} pb={1}>
-                                    No records for this week.
+                                    {t('noRecords')}
                                 </Typography>
                             ) : (
                                 <>
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ fontWeight: 500 }}>Date</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Hours</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Status</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.date')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.hours')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.status')}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -108,7 +110,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                     startIcon={<CheckIcon />}
                                                     onClick={() => router.push(`/weeks/sign/${year}-${week.weekNumber}`)}
                                                 >
-                                                    Sign Work Week
+                                                    {t('signButton')}
                                                 </Button>
                                             )}
                                             {week.status === 2 && (
@@ -120,7 +122,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                     sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 500 }}
                                                     onClick={() => router.push(`/weeks/signed/${year}-${week.weekNumber}`)}
                                                 >
-                                                    View Signed Period
+                                                    {t('viewSignedButton')}
                                                 </Button>
                                             )}
                                         </Box>

@@ -43,5 +43,27 @@
         "subtitle": "Bekijk volledige samenvattingen van je ondertekende periodes"
       }
     }
+  },
+  "periods": {
+    "driver": {
+      "current": {
+        "title": "Mijn Werkdagen",
+        "subtitle": "Houd je ingediende werkdagen bij en onderteken perioden wanneer ze klaar zijn.",
+        "error": "Laden van werkdagen mislukt",
+        "viewOlder": "Bekijk Oudere Perioden"
+      },
+      "weeks": {
+        "weekLabel": "Week",
+        "hoursWorked": "uur gewerkt",
+        "noRecords": "Geen registraties voor deze week.",
+        "table": {
+          "date": "Datum",
+          "hours": "Uren",
+          "status": "Status"
+        },
+        "signButton": "Week ondertekenen",
+        "viewSignedButton": "Ondertekende week bekijken"
+      }
+    }
   }
 }
