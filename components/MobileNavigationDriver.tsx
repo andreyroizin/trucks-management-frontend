@@ -44,7 +44,7 @@ export default function MobileNavigationDriver() {
     return (
         <>
             {/* TOP BAR ------------------------------------------------ */}
-            <AppBar position="static" sx={{bgcolor: '#0D243F', boxShadow: 'none'}}>
+            <AppBar position="static" sx={{bgcolor: '#0C203B', boxShadow: 'none'}}>
                 <Toolbar sx={{justifyContent: 'space-between', minHeight: 56, py: 1, px: 2}}>
 
                     <Link href={`/dashboard/driver`} passHref>

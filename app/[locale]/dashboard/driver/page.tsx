@@ -31,8 +31,6 @@ export default function DriverHomePage() {
         ? t('driver.greetingName', {first: user.firstName, last: user.lastName})
         : t('driver.greeting');
 
-    const name = user?.firstName ? `Hello, ${user.firstName} ${user.lastName}` : 'Hello';
-
     return (
         <Box pb={7}>
             <Box
@@ -83,6 +81,11 @@ export default function DriverHomePage() {
                         title="Disputes"
                         subtitle="Follow up on records with changes or issues"
                         onClick={() => router.push('/disputes')}
+                    />
+                    <DriverDashboardCardButton
+                        title="Under Review Periods"
+                        subtitle="Check past periods that may need your confirmation"
+                        onClick={() => router.push('/periods/driver/pending')}
                     />
                     <DriverDashboardCardButton
                         title="Archived Periods"
