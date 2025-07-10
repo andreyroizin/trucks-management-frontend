@@ -1,21 +1,16 @@
 {
   "nav": {
-    "dashboard": "Dashboard",
-    "workdays": "Workdays",
-    "disputes": "Disputes"
-  },
-  "dialog": {
-    "save": "Save Changes",
-    "cancel": "Cancel"
-  },
-  "language": {
-    "en": "English",
-    "nl": "Nederlands (Netherlands)",
-    "bg": "Български (Bulgarian)"
-  },
-  "driver": {
-    "greeting": "Hello",
-    "greetingName": "Hello, {first} {last}"
+    "driver": {
+      "title": "Vervoer-Manager",
+      "account": "My Account",
+      "submit": "Submit Workday",
+      "current": "My Workdays",
+      "pending": "Pending Periods",
+      "disputes": "Disputes",
+      "archived": "Archived Periods",
+      "logout": "Log out",
+      "support": "If something is wrong with the app, please let us know by email <email>support@vervoer-manager.com</email>"
+    }
   },
   "dashboard": {
     "driver": {
@@ -84,7 +79,7 @@
         "viewSignedButton": "View Signed Week",
         "weekChip": {
           "ongoing": "On-going",
-          "ready":   "Ready To Sign"
+          "ready": "Ready To Sign"
         }
       }
     }

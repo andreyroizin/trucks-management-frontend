@@ -24,11 +24,13 @@ import {useAuth} from '@/hooks/useAuth';
 import React, {useState} from "react";
 import LanguageDialogDriver from "@/components/LanguageDialogDriver";
 import Link from "next/link"; // adjust path to your auth hook
+import {useTranslations} from 'next-intl';
 
 /* ------------------------------------------------- */
 export default function MobileNavigationDriver() {
     const router = useRouter();
     const {isAuthenticated, user, logout} = useAuth();
+    const t = useTranslations('nav.driver');
 
     const [open, setOpen] = useState(false);
     const toggle = (state: boolean) => () => setOpen(state);
@@ -49,7 +51,7 @@ export default function MobileNavigationDriver() {
 
                     <Link href={`/dashboard/driver`} passHref>
                         <Typography variant="h6" fontWeight={500}>
-                            Vervoer-Manager
+                            {t('title')}
                         </Typography>
                     </Link>
 
@@ -96,7 +98,7 @@ export default function MobileNavigationDriver() {
                                     borderRadius: '50%',
                                     p: 0.5
                                 }}/>
-                                <ListItemText primary="My Account"/>
+                                <ListItemText primary={t('account')}/>
                             </Box>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
@@ -104,35 +106,35 @@ export default function MobileNavigationDriver() {
 
                         <ListItemButton onClick={() => go('/partrides/create')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="Submit Workday"/>
+                            <ListItemText primary={t('submit')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
 
                         <ListItemButton onClick={() => go('/periods/driver/current')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="My Workdays"/>
+                            <ListItemText primary={t('current')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
 
                         <ListItemButton onClick={() => go('/periods/driver/pending')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="Pending Periods"/>
+                            <ListItemText primary={t('pending')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
 
                         <ListItemButton onClick={() => go('/disputes')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="Disputes"/>
+                            <ListItemText primary={t('disputes')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
 
                         <ListItemButton onClick={() => go('/periods/driver/archived')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="Archived Periods"/>
+                            <ListItemText primary={t('archived')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
@@ -142,7 +144,7 @@ export default function MobileNavigationDriver() {
                             setOpen(false);
                             go('/auth/login')
                         }} sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary="Log out"/>
+                            <ListItemText primary={t('logout')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
@@ -150,10 +152,13 @@ export default function MobileNavigationDriver() {
 
                     {/* footer */}
                     <Box sx={{px: 3, py: 2}}>
-                        <Typography variant="body1" fontWeight={500} sx={{mb: 1}}>© Vervoer-Manager</Typography>
+                        <Typography variant="body1" fontWeight={500} sx={{mb: 1}}>© {t('title')}</Typography>
                         <Typography variant="body2">
-                            If something is wrong with the app, please let us know by email&nbsp;
-                            <a href="mailto:support@vervoer-manager.com">support@vervoer-manager.com</a>
+                            {t.rich('support', {
+                                email: () => (
+                                    <a href="mailto:support@vervoer-manager.com">support@vervoer-manager.com</a>
+                                )
+                            })}
                         </Typography>
                     </Box>
                 </Box>

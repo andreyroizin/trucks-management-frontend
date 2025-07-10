@@ -1,17 +1,16 @@
 {
   "nav": {
-    "dashboard": "Dashboard",
-    "workdays": "Workdays",
-    "disputes": "Disputes"
-  },
-  "dialog": {
-    "save": "Save Changes",
-    "cancel": "Cancel"
-  },
-  "language": {
-    "en": "English",
-    "nl": "Nederlands (Netherlands)",
-    "bg": "Български (Bulgarian)"
+    "driver": {
+      "title": "Vervoer-Manager",
+      "account": "Mijn Account",
+      "submit": "Werkdag Indienen",
+      "current": "Mijn Werkdagen",
+      "pending": "Openstaande Periodes",
+      "disputes": "Geschillen",
+      "archived": "Gearchiveerde Periodes",
+      "logout": "Uitloggen",
+      "support": "Als er iets mis is met de app, laat het ons weten via e-mail <email>support@vervoer-manager.com</email>"
+    }
   },
   "dashboard": {
     "driver": {
