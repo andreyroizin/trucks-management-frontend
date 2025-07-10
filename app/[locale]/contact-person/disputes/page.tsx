@@ -277,7 +277,7 @@ export default function TripsManagementPage() {
                     mb: 3
                 }}>
                     <Typography variant="h4" fontWeight={500}>
-                        Dipsutes List
+                        Disputes List
                     </Typography>
                     {(isLoading || isRefetching) ? (
                         <CircularProgress size={20}/>
