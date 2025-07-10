@@ -24,15 +24,16 @@ import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 import { useTranslations } from 'next-intl';
 
-const getWeekChip = (status?: number) => {
-    if (status === 0) return <StatusChip label="On-going" variant="info" />;
-    if (status === 1) return <StatusChip label="Ready To Sign" variant="success" />;
-    return null;
-};
 
 export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekInPeriod[], year: number }) {
     const router = useRouter();
     const t = useTranslations('periods.driver.weeks');
+
+    const getWeekChip = (status?: number) => {
+      if (status === 0) return <StatusChip label={t('weekChip.ongoing')}   variant="info"    />;
+      if (status === 1) return <StatusChip label={t('weekChip.ready')}     variant="success" />;
+      return null;
+    };
 
     return (
         <>

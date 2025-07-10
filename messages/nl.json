@@ -77,7 +77,11 @@
           "status": "Status"
         },
         "signButton": "Week ondertekenen",
-        "viewSignedButton": "Ondertekende week bekijken"
+        "viewSignedButton": "Ondertekende week bekijken",
+        "weekChip": {
+          "ongoing": "Gaande",
+          "ready":   "Klaar om te ondertekenen"
+        }
       }
     }
   },

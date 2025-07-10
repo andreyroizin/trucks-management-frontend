@@ -81,7 +81,11 @@
           "status": "Status"
         },
         "signButton": "Sign Work Week",
-        "viewSignedButton": "View Signed Week"
+        "viewSignedButton": "View Signed Week",
+        "weekChip": {
+          "ongoing": "On-going",
+          "ready":   "Ready To Sign"
+        }
       }
     }
   },
