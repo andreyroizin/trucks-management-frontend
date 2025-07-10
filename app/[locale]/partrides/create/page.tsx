@@ -1,5 +1,7 @@
 'use client';
 
+import {useTranslations} from 'next-intl';
+
 import React, {useEffect, useMemo, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, Divider, TextField, Typography,} from '@mui/material';
@@ -25,6 +27,7 @@ import FileUploadBox from '@/components/FileUploadBox';
 import DateInputField from "@/components/DateInputField";
 
 export default function CreatePartRidePage() {
+    const t = useTranslations('partrides.create');
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');
@@ -200,10 +203,10 @@ export default function CreatePartRidePage() {
     return (
         <Box maxWidth="700px" mx="auto" sx={{ pt: 4, pb: 5}}>
             <Typography variant="h4" gutterBottom>
-                Submit Workday
+                {t('submitTitle')}
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
-                Fill in your work time and trip details — your entry will be saved and reviewed.
+                {t('subtitle')}
             </Typography>
             {apiError && (
                 <Alert severity="error" sx={{mb: 2}}>
@@ -213,7 +216,7 @@ export default function CreatePartRidePage() {
             <Divider sx={{my: 2}} />
 
             <Box>
-                <Typography variant="h5">Workday Date & Time</Typography>
+                <Typography variant="h5">{t('form.section.dateTime')}</Typography>
             </Box>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -222,9 +225,9 @@ export default function CreatePartRidePage() {
                     <DateInputField
                         name="date"
                         control={control}
-                        label="Date (dd-mm-yy)"
-                        placeholder="dd-mm-yy"
-                        helperText="Select the day you worked"
+                        label={t('form.date.label')}
+                        placeholder={t('form.date.placeholder')}
+                        helperText={t('form.date.helperText')}
                         error={!!errors.date}
                         errorMessage={errors.date?.message}
                     />
@@ -240,10 +243,10 @@ export default function CreatePartRidePage() {
                             sx={{mt: 2}}
                             fullWidth
                             margin="normal"
-                            label="Start Time (e.g. 07:30)"
-                            placeholder="07:30"
+                            label={t('form.startTime.label')}
+                            placeholder={t('form.startTime.placeholder')}
                             error={!!errors.start}
-                            helperText={errors.start?.message || 'What time did you start work?'}
+                            helperText={errors.start?.message || t('form.startTime.helperText')}
                         />
                     )}
                 />
@@ -258,10 +261,10 @@ export default function CreatePartRidePage() {
                             fullWidth
                             sx={{mt: 2}}
                             margin="normal"
-                            label="End Time (e.g. 17:45)"
-                            placeholder="17:45"
+                            label={t('form.endTime.label')}
+                            placeholder={t('form.endTime.placeholder')}
                             error={!!errors.end}
-                            helperText={errors.end?.message || 'What time did you finish?'}
+                            helperText={errors.end?.message || t('form.endTime.helperText')}
                         />
                     )}
                 />
@@ -276,10 +279,10 @@ export default function CreatePartRidePage() {
                             sx={{mt: 2}}
                             fullWidth
                             margin="normal"
-                            label="Break duration (e.g. 01:30)"
-                            placeholder="01:30"
+                            label={t('form.rest.label')}
+                            placeholder={t('form.rest.placeholder')}
                             error={!!errors.rest}
-                            helperText={errors.rest?.message || 'How much rest have you had?'}
+                            helperText={errors.rest?.message || t('form.rest.helperText')}
                         />
                     )}
                 />
@@ -308,10 +311,10 @@ export default function CreatePartRidePage() {
                                             {...params}
                                             variant="outlined"
                                             margin="normal"
-                                            label="Driver"
-                                            placeholder="Select driver"
+                                            label={t('form.driver.label')}
+                                            placeholder={t('form.driver.placeholder')}
                                             error={!!errors.driverId}
-                                            helperText={errors.driverId?.message || 'Select the driver for this workday.'}
+                                            helperText={errors.driverId?.message || t('form.driver.helperText')}
                                         />
                                     )}
                                 />
@@ -333,7 +336,7 @@ export default function CreatePartRidePage() {
                                 expandIcon={<ExpandMoreIcon/>}
                                 sx={{ p: 0, minHeight: 0 }}
                             >
-                                <Typography>Special hours</Typography>
+                                <Typography>{t('form.section.specialHours')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails sx={{ p: 0 }}>
                                 {/* HOURS CODE FIELD */}
@@ -353,8 +356,8 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
-                                                    label="Hours Code"
-                                                    placeholder="Select hours code"
+                                                    label={t('form.hoursCode.label')}
+                                                    placeholder={t('form.hoursCode.placeholder')}
                                                     error={!!errors.hoursCodeId}
                                                     helperText={errors.hoursCodeId?.message}
                                                 />
@@ -379,8 +382,8 @@ export default function CreatePartRidePage() {
                                                     {...params}
                                                     variant="outlined"
                                                     margin="normal"
-                                                    label="Hours Option"
-                                                    placeholder="Select hours option"
+                                                    label={t('form.hoursOption.label')}
+                                                    placeholder={t('form.hoursOption.placeholder')}
                                                     error={!!errors.hoursOptionId}
                                                     helperText={errors.hoursOptionId?.message}
                                                 />
@@ -403,7 +406,7 @@ export default function CreatePartRidePage() {
                         id="panel1-header"
                         sx={{ p: 0, minHeight: 0 }}
                     >
-                        <Typography component="span">Additional Fields</Typography>
+                        <Typography component="span">{t('form.section.additionalFields')}</Typography>
                     </AccordionSummary>
                     <AccordionDetails sx={{ p: 0 }}>
                     {!isDriverRole && (
@@ -419,10 +422,10 @@ export default function CreatePartRidePage() {
                                             fullWidth
                                             margin="normal"
                                             sx={{mt: 2}}
-                                            label="Correction time (e.g. 0.5)"
-                                            placeholder="0.5"
+                                            label={t('form.hoursCorrection.label')}
+                                            placeholder={t('form.hoursCorrection.placeholder')}
                                             error={!!errors.hoursCorrection}
-                                            helperText={errors.hoursCorrection?.message || 'Enter any correction time in hours.'}
+                                            helperText={errors.hoursCorrection?.message || t('form.hoursCorrection.helperText')}
                                         />
                                     )}
                                 />
@@ -453,10 +456,10 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Company"
-                                                    placeholder="Select company"
+                                                    label={t('form.company.label')}
+                                                    placeholder={t('form.company.placeholder')}
                                                     error={!!errors.companyId}
-                                                    helperText={errors.companyId?.message || 'Select your company for this workday.'}
+                                                    helperText={errors.companyId?.message || t('form.company.helperText')}
                                                 />
                                             )}
                                         />
@@ -477,10 +480,10 @@ export default function CreatePartRidePage() {
                                                     fullWidth
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Week Number (e.g. 23)"
-                                                    placeholder="23"
+                                                    label={t('form.weekNumber.label')}
+                                                    placeholder={t('form.weekNumber.placeholder')}
                                                     error={!!errors.weekNumber}
-                                                    helperText={errors.weekNumber?.message || 'Enter the week number for this workday.'}
+                                                    helperText={errors.weekNumber?.message || t('form.weekNumber.helperText')}
                                                 />
                                             )}
                                         />
@@ -508,10 +511,10 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Client"
-                                                    placeholder="Select client"
+                                                    label={t('form.client.label')}
+                                                    placeholder={t('form.client.placeholder')}
                                                     error={!!errors.clientId}
-                                                    helperText={errors.clientId?.message || 'Select the client for this workday.'}
+                                                    helperText={errors.clientId?.message || t('form.client.helperText')}
                                                 />
                                             )}
                                         />
@@ -536,10 +539,10 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Car"
-                                                    placeholder="Select car"
+                                                    label={t('form.car.label')}
+                                                    placeholder={t('form.car.placeholder')}
                                                     error={!!errors.carId}
-                                                    helperText={errors.carId?.message || 'Select the car used for this workday.'}
+                                                    helperText={errors.carId?.message || t('form.car.helperText')}
                                                 />
                                             )}
                                         />
@@ -564,10 +567,10 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Ride"
-                                                    placeholder="Select ride"
+                                                    label={t('form.ride.label')}
+                                                    placeholder={t('form.ride.placeholder')}
                                                     error={!!errors.rideId}
-                                                    helperText={errors.rideId?.message || 'Select the ride for this workday.'}
+                                                    helperText={errors.rideId?.message || t('form.ride.helperText')}
                                                 />
                                             )}
                                         />
@@ -592,10 +595,10 @@ export default function CreatePartRidePage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     sx={{mt: 2}}
-                                                    label="Charter"
-                                                    placeholder="Select charter"
+                                                    label={t('form.charter.label')}
+                                                    placeholder={t('form.charter.placeholder')}
                                                     error={!!errors.charterId}
-                                                    helperText={errors.charterId?.message || 'Select the charter for this workday.'}
+                                                    helperText={errors.charterId?.message || t('form.charter.helperText')}
                                                 />
                                             )}
                                         />
@@ -612,10 +615,10 @@ export default function CreatePartRidePage() {
                                             fullWidth
                                             margin="normal"
                                             sx={{mt: 2}}
-                                            label="Various Compensation (e.g. 10)"
-                                            placeholder="10"
+                                            label={t('form.variousCompensation.label')}
+                                            placeholder={t('form.variousCompensation.placeholder')}
                                             error={!!errors.variousCompensation}
-                                            helperText={errors.variousCompensation?.message || 'Enter any additional compensation.'}
+                                            helperText={errors.variousCompensation?.message || t('form.variousCompensation.helperText')}
                                         />
                                     )}
                                 />
@@ -646,7 +649,7 @@ export default function CreatePartRidePage() {
                         )}
                         {/* Distance */}
                         <Box>
-                            <Typography variant="h6">Distance</Typography>
+                            <Typography variant="h6">{t('form.section.distance')}</Typography>
                             <Controller
                                 name="totalKilometers"
                                 control={control}
@@ -657,10 +660,10 @@ export default function CreatePartRidePage() {
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
-                                        label="Total Distance / km (e.g. 135)"
-                                        placeholder="135"
+                                        label={t('form.totalKilometers.label')}
+                                        placeholder={t('form.totalKilometers.placeholder')}
                                         error={!!errors.totalKilometers}
-                                        helperText={errors.totalKilometers?.message || 'How many kilometers did you drive today?'}
+                                        helperText={errors.totalKilometers?.message || t('form.totalKilometers.helperText')}
                                     />
                                 )}
                             />
@@ -674,10 +677,10 @@ export default function CreatePartRidePage() {
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
-                                        label="Extra Distance / km (e.g. 10)"
-                                        placeholder="0"
+                                        label={t('form.extraKilometers.label')}
+                                        placeholder={t('form.extraKilometers.placeholder')}
                                         error={!!errors.extraKilometers}
-                                        helperText={errors.extraKilometers?.message || 'Did you drive any extra distance not included in your planned route? (e.g. to pick up a car, detour, or return)?'}
+                                        helperText={errors.extraKilometers?.message || t('form.extraKilometers.helperText')}
                                     />
                                 )}
                             />
@@ -685,7 +688,7 @@ export default function CreatePartRidePage() {
                         <Divider sx={{my: 2}} />
                         {/* Expenses */}
                         <Box mb={2}>
-                            <Typography variant="h6">Expenses</Typography>
+                        <Typography variant="h6">{t('form.section.expenses')}</Typography>
                             <Controller
                                 name="costs"
                                 control={control}
@@ -696,27 +699,28 @@ export default function CreatePartRidePage() {
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
-                                        label="Total Expenses (€) (e.g. 40)"
-                                        placeholder="40"
+                                        label={t('form.costs.label')}
+                                        placeholder={t('form.costs.placeholder')}
                                         error={!!errors.costs}
-                                        helperText={errors.costs?.message || 'Enter the full amount you spent today (fuel, tolls, meals, tunnels, AdBlue, etc.)'}
+                                        helperText={errors.costs?.message || t('form.costs.helperText')}
                                     />
                                 )}
                             />
                         </Box>
                         {/* Upload Receipts (modular) */}
                         <Box mb={2}>
-                            <Typography variant="h6">Upload Receipts</Typography>
+                            <Typography variant="h6">{t('form.section.uploadReceipts')}</Typography>
                             <Typography variant="body1" mb={1}>
-                                Add any files related to today's trip (fuel, toll, hotel, etc.)
+                                {t('form.uploadReceipts.helperText')}
                             </Typography>
-                            <FileUploadBox uploadUrl="/temporary-uploads" onFilesChange={setTempFiles} />                        </Box>
-            
+                            <FileUploadBox uploadUrl="/temporary-uploads" onFilesChange={setTempFiles} />
+                        </Box>
+
                         <Divider sx={{my: 2}} />
 
                         {/* Comments */}
                         <Box mb={0}>
-                            <Typography variant="h6">Comments</Typography>
+                            <Typography variant="h6">{t('form.section.comments')}</Typography>
                             <Controller
                                 name="remark"
                                 control={control}
@@ -728,10 +732,10 @@ export default function CreatePartRidePage() {
                                         margin="normal"
                                         multiline
                                         minRows={3}
-                                        label="Your comment"
-                                        placeholder="Optional — add any notes for Transport Admin"
+                                        label={t('form.remark.label')}
+                                        placeholder={t('form.remark.placeholder')}
                                         error={!!errors.remark}
-                                        helperText={errors.remark?.message || "Use if there's something important about this workday."}
+                                        helperText={errors.remark?.message || t('form.remark.helperText')}
                                     />
                                 )}
                             />
@@ -746,7 +750,7 @@ export default function CreatePartRidePage() {
                         fullWidth
                         disabled={isPending}
                     >
-                        {isPending ? <CircularProgress size={20} color="inherit"/> : 'Submit Workday'}
+                        {isPending ? <CircularProgress size={20} color="inherit"/> : t('submitButton')}
                     </Button>
                     {apiError && (
                         <Alert severity="error" sx={{mt: 2}}>

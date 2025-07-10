@@ -174,6 +174,138 @@
     }
   },
   "partrides": {
+    "create": {
+      "submitTitle": "Werkdag indienen",
+      "subtitle": "Vul je werktijd en ritgegevens in — je invoer wordt opgeslagen en beoordeeld.",
+      "submitButton": "Werkdag indienen",
+      "form": {
+        "section": {
+          "dateTime":        "Werkdag datum & tijd",
+          "specialHours":    "Speciale uren",
+          "additionalFields":"Aanvullende velden",
+          "distance":        "Afstand",
+          "expenses":        "Kosten",
+          "uploadReceipts":  "Bonnetjes uploaden",
+          "comments":        "Opmerkingen"
+        },
+
+        "date": {
+          "label":       "Datum (dd-mm-jj)",
+          "placeholder": "dd-mm-jj",
+          "helperText":  "Selecteer de dag waarop je hebt gewerkt"
+        },
+
+        "startTime": {
+          "label":       "Begintijd (bijv. 07:30)",
+          "placeholder": "07:30",
+          "helperText":  "Hoe laat ben je begonnen met werken?"
+        },
+
+        "endTime": {
+          "label":       "Eindtijd (bijv. 17:45)",
+          "placeholder": "17:45",
+          "helperText":  "Hoe laat was je klaar?"
+        },
+
+        "rest": {
+          "label":       "Pauzeduur (bijv. 01:30)",
+          "placeholder": "01:30",
+          "helperText":  "Voer de totale pauzetijd in (wordt automatisch gecontroleerd door het systeem)."
+        },
+
+        "driver": {
+          "label":       "Chauffeur",
+          "placeholder": "Selecteer chauffeur",
+          "helperText":  "Selecteer de chauffeur voor deze werkdag."
+        },
+
+        "hoursCode": {
+          "label":       "Uurcode",
+          "placeholder": "Selecteer uurcode"
+        },
+
+        "hoursOption": {
+          "label":       "Uuroptie",
+          "placeholder": "Selecteer uuroptie"
+        },
+
+        "hoursCorrection": {
+          "label":       "Correctietijd (bijv. 0.5)",
+          "placeholder": "0.5",
+          "helperText":  "Vul eventuele correctietijd in uren in."
+        },
+
+        "company": {
+          "label":       "Bedrijf",
+          "placeholder": "Selecteer bedrijf",
+          "helperText":  "Selecteer je bedrijf voor deze werkdag."
+        },
+
+        "weekNumber": {
+          "label":       "Weeknummer (bijv. 23)",
+          "placeholder": "23",
+          "helperText":  "Voer het weeknummer voor deze werkdag in."
+        },
+
+        "client": {
+          "label":       "Klant",
+          "placeholder": "Selecteer klant",
+          "helperText":  "Selecteer de klant voor deze werkdag."
+        },
+
+        "car": {
+          "label":       "Auto",
+          "placeholder": "Selecteer auto",
+          "helperText":  "Selecteer de auto die is gebruikt voor deze werkdag."
+        },
+
+        "ride": {
+          "label":       "Rit",
+          "placeholder": "Selecteer rit",
+          "helperText":  "Selecteer de rit voor deze werkdag."
+        },
+
+        "charter": {
+          "label":       "Charter",
+          "placeholder": "Selecteer charter",
+          "helperText":  "Selecteer de charter voor deze werkdag."
+        },
+
+        "variousCompensation": {
+          "label":       "Overige vergoeding (bijv. 10)",
+          "placeholder": "10",
+          "helperText":  "Voer eventuele extra vergoeding in."
+        },
+
+        "totalKilometers": {
+          "label":       "Totale afstand / km (bijv. 135)",
+          "placeholder": "135",
+          "helperText":  "Hoeveel kilometer heb je vandaag gereden?"
+        },
+
+        "extraKilometers": {
+          "label":       "Extra afstand / km (bijv. 10)",
+          "placeholder": "0",
+          "helperText":  "Heb je extra afstand gereden buiten je geplande route? (bijv. om een auto op te halen, omrijden of terugrit)"
+        },
+
+        "costs": {
+          "label":       "Totale kosten (€) (bijv. 40)",
+          "placeholder": "40",
+          "helperText":  "Voer het volledige bedrag in dat je vandaag hebt uitgegeven (brandstof, tol, maaltijden, tunnels, AdBlue, enz.)"
+        },
+
+        "uploadReceipts": {
+          "helperText": "Voeg bestanden toe die betrekking hebben op de rit van vandaag (brandstof, tol, hotel, enz.)"
+        },
+
+        "remark": {
+          "label":       "Je opmerking",
+          "placeholder": "Optioneel — voeg notities toe voor Transport Admin",
+          "helperText":  "Gebruik dit als er iets belangrijks is over deze werkdag."
+        }
+      }
+    },
     "driver": {
       "detail": {
         "title": "Werkdagdetails",
