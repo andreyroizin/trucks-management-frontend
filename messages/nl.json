@@ -173,5 +173,40 @@
         "errorSign": "Kon de week niet ondertekenen"
       }
     }
+  },
+  "partrides": {
+    "driver": {
+      "detail": {
+        "title": "Werkdagdetails",
+        "detailsForDay": "Details voor je registratie op {date}",
+        "recordDate": "Registratiedatum",
+        "workHours": "Werkuren",
+        "restTime": "Rusttijd",
+        "notAvailable": "N/B",
+        "totalDistance": "Totale afstand",
+        "extraDistance": "Extra afstand",
+        "earnings": "Verdiensten",
+        "currentStatus": "Huidige status",
+        "tripNotApproved": "Deze rit is niet goedgekeurd door Admin, klik om de opmerking te bekijken. Je kunt de beslissing betwisten of ermee akkoord gaan.",
+        "goToThisDispute": "Ga naar dit geschil",
+        "disputeSent": "Je geschil is naar Admin verzonden. Controleer later opnieuw.",
+        "goToTheDispute": "Ga naar het geschil",
+        "workdayComment": "Werkdagopmerking",
+        "noCommentProvided": "Geen opmerking gegeven.",
+        "receiptsAttachments": "Bonnen & Bijlagen",
+        "uploadedReceipts": "Geüploade bonnen en ondersteunende documenten.",
+        "noReceiptsProvided": "Geen bonnen of bijlagen toegevoegd.",
+        "confirmDeletion": "Verwijdering bevestigen",
+        "confirmDeleteMessage": "Weet je zeker dat je deze werkdag wilt verwijderen?",
+        "workdayDeleted": "Werkdag verwijderd",
+        "deleteFailed": "Verwijderen mislukt",
+        "loading": "Laden...",
+        "errorLoadingData": "Fout bij laden van gegevens",
+        "actions": {
+          "edit": "Bewerk werkdag",
+          "delete": "Verwijder werkdag"
+        }
+      }
+    }
   }
 }

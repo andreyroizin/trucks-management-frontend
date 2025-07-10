@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useTranslations } from 'next-intl';
 
 interface PartRideDetailActionsMenuDriverProps {
     onEdit?: () => void;
@@ -20,14 +21,16 @@ const PartRideDetailActionsMenuDriver: React.FC<PartRideDetailActionsMenuDriverP
         setAnchorEl(null);
     };
 
+    const t = useTranslations('partrides.driver.detail.actions');
+
     return (
         <>
             <IconButton onClick={handleClick}>
                 <MoreVertIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                <MenuItem onClick={() => { onEdit?.(); handleClose(); }}>Edit Workday</MenuItem>
-                <MenuItem onClick={() => { onDelete?.(); handleClose(); }}>Delete Workday</MenuItem>
+                <MenuItem onClick={() => { onEdit?.(); handleClose(); }}>{t('edit')}</MenuItem>
+                <MenuItem onClick={() => { onDelete?.(); handleClose(); }}>{t('delete')}</MenuItem>
                 {/*<MenuItem onClick={() => { onExport?.(); handleClose(); }}>Export</MenuItem>*/}
             </Menu>
         </>

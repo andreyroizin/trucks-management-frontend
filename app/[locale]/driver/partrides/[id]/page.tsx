@@ -13,6 +13,7 @@ import PartRideDetailActionsMenuDriver from "@/components/PartRideDetailActionsM
 import ConfirmModal from '@/components/ConfirmModal';
 import {useDeletePartRide} from "@/hooks/useDeletePartRide";
 import {useSnack} from "@/providers/SnackProvider";
+import {useTranslations} from 'next-intl';
 
 const WorkdayDetailPage = () => {
     const router = useRouter();
@@ -24,16 +25,17 @@ const WorkdayDetailPage = () => {
     const {data: disputesData, isLoading: disputesLoading} = usePartRideDisputes(id);
     const {mutateAsync: deleteRide} = useDeletePartRide();
     const showSnack = useSnack();
+    const t = useTranslations('partrides.driver.detail');
 
     const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
     const handleConfirmDelete = async () => {
         try {
             await deleteRide(id);
-            showSnack({text: 'Workday deleted', severity: 'success'});
+            showSnack({text: t('workdayDeleted'), severity: 'success'});
             router.push('/dashboard/driver');
         } catch (e: any) {
-            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Delete failed', severity: 'error'});
+            showSnack({text: e?.response?.data?.errors?.[0] ?? t('deleteFailed'), severity: 'error'});
         } finally {
             setConfirmDeleteOpen(false);
         }
@@ -51,8 +53,8 @@ const WorkdayDetailPage = () => {
     }, [user, loading, router, isAuthenticated]);
     // ────────────────────────────────────────────────────────────────────────────
 
-    if (isLoading || disputesLoading) return <Typography>Loading...</Typography>;
-    if (error || !data) return <Typography>Error loading data</Typography>;
+    if (isLoading || disputesLoading) return <Typography>{t('loading')}</Typography>;
+    if (error || !data) return <Typography>{t('errorLoadingData')}</Typography>;
 
     // Load all disputes for this Part‑Ride
     const latestDispute = disputesData?.disputes?.[0];
@@ -65,7 +67,7 @@ const WorkdayDetailPage = () => {
             {/* Header */}
             <Box sx={{display: 'flex', justifyContent: 'space-between', mb:1}}>
                 <Typography variant="h4" fontWeight={500}>
-                    Workday Details
+                    {t('title')}
                 </Typography>
                 <PartRideDetailActionsMenuDriver
                     onEdit={() => router.push(`/partrides/edit?id=${id}`)}
@@ -73,8 +75,7 @@ const WorkdayDetailPage = () => {
                 />
             </Box>
             <Typography variant="body1">
-                Details for your record on{' '}
-                {new Date(data.date).toLocaleDateString('en-GB')}
+                {t('detailsForDay', {date: new Date(data.date).toLocaleDateString('en-GB')})}
             </Typography>
 
             <Divider sx={{my: 2}}/>
@@ -83,7 +84,7 @@ const WorkdayDetailPage = () => {
             <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, mb: 3}}>
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Record Date</Typography>
+                        <Typography variant="body1">{t('recordDate')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         <Typography variant="body1">
@@ -94,7 +95,7 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Work Hours</Typography>
+                        <Typography variant="body1">{t('workHours')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         <Typography variant="body1">{data.decimalHours}</Typography>
@@ -103,16 +104,16 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Rest Time</Typography>
+                        <Typography variant="body1">{t('restTime')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">{data.rest || 'N/A'}</Typography>
+                        <Typography variant="body1">{data.rest || t('notAvailable')}</Typography>
                     </Box>
                 </Box>
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Total Distance</Typography>
+                        <Typography variant="body1">{t('totalDistance')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         <Typography variant="body1">{`${data.totalKilometers ?? 0} km`}</Typography>
@@ -121,7 +122,7 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Extra Distance</Typography>
+                        <Typography variant="body1">{t('extraDistance')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         <Typography variant="body1">{`${data.extraKilometers ?? 0} km`}</Typography>
@@ -130,7 +131,7 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Earnings</Typography>
+                        <Typography variant="body1">{t('earnings')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         <Typography variant="body1">{`€${data.turnover ?? 0}`}</Typography>
@@ -139,7 +140,7 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
-                        <Typography variant="body1">Current Status</Typography>
+                        <Typography variant="body1">{t('currentStatus')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
                         {PartRideStatusChip(data?.status)}
@@ -151,8 +152,7 @@ const WorkdayDetailPage = () => {
             {latestDispute && disputeStatus === 0 && (
                 <Box mt={3}>
                     <Alert severity="warning" sx={{mb: 2}}>
-                        This trip is not approved by Admin, click to see the comment. You can dispute decision or agree
-                        with it.
+                        {t('tripNotApproved')}
                     </Alert>
                     <Button
                         fullWidth
@@ -160,7 +160,7 @@ const WorkdayDetailPage = () => {
                         color="warning"
                         onClick={() => router.push(`/disputes/${latestDispute.id}`)}
                     >
-                        Go To This Dispute
+                        {t('goToThisDispute')}
                     </Button>
                 </Box>
             )}
@@ -168,7 +168,7 @@ const WorkdayDetailPage = () => {
             {latestDispute && disputeStatus === 1 && (
                 <Box mt={3}>
                     <Alert severity="info" sx={{mb: 2}}>
-                        Your dispute was sent to Admin. Please, check later.
+                        {t('disputeSent')}
                     </Alert>
                     <Button
                         fullWidth
@@ -176,7 +176,7 @@ const WorkdayDetailPage = () => {
                         color="info"
                         onClick={() => router.push(`/disputes/${latestDispute.id}`)}
                     >
-                        Go To The Dispute
+                        {t('goToTheDispute')}
                     </Button>
                 </Box>
             )}
@@ -184,9 +184,9 @@ const WorkdayDetailPage = () => {
 
             {/* Workday comment */}
             <Box>
-                <Typography variant="h5" sx={{fontWeight: 500}}>Workday Comment</Typography>
+                <Typography variant="h5" sx={{fontWeight: 500}}>{t('workdayComment')}</Typography>
                 <Typography variant="body1" mt={1}>
-                    {remark ? remark : 'No comment provided.'}
+                    {remark ? remark : t('noCommentProvided')}
                 </Typography>
             </Box>
 
@@ -194,9 +194,9 @@ const WorkdayDetailPage = () => {
 
             {/* Files */}
             <Box>
-                <Typography variant="h5" sx={{fontWeight: 500, marginBottom: 1}}>Receipts & Attachments</Typography>
+                <Typography variant="h5" sx={{fontWeight: 500, marginBottom: 1}}>{t('receiptsAttachments')}</Typography>
                 <Typography variant="body1" mb={2}>
-                    Uploaded receipts and supporting documents.
+                    {t('uploadedReceipts')}
                 </Typography>
                 {data.files?.length ? (
                     <Stack spacing={2}>
@@ -209,15 +209,15 @@ const WorkdayDetailPage = () => {
                         ))}
                     </Stack>
                 ) : (
-                    <Typography variant="body1">No receipts or attachments provided.</Typography>
+                    <Typography variant="body1">{t('noReceiptsProvided')}</Typography>
                 )}
             </Box>
             <Divider sx={{my: 2}}/>
 
             <ConfirmModal
                 open={confirmDeleteOpen}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this workday?"
+                title={t('confirmDeletion')}
+                message={t('confirmDeleteMessage')}
                 onClose={() => setConfirmDeleteOpen(false)}
                 onConfirm={handleConfirmDelete}
             />

@@ -177,5 +177,40 @@
         "view": "View Signed Week"
       }
     }
+  },
+  "partrides": {
+    "driver": {
+      "detail": {
+        "title": "Workday Details",
+        "detailsForDay": "Details for your record on {date}",
+        "recordDate": "Record Date",
+        "workHours": "Work Hours",
+        "restTime": "Rest Time",
+        "notAvailable": "N/A",
+        "totalDistance": "Total Distance",
+        "extraDistance": "Extra Distance",
+        "earnings": "Earnings",
+        "currentStatus": "Current Status",
+        "tripNotApproved": "This trip is not approved by Admin, click to see the comment. You can dispute decision or agree with it.",
+        "goToThisDispute": "Go To This Dispute",
+        "disputeSent": "Your dispute was sent to Admin. Please, check later.",
+        "goToTheDispute": "Go To The Dispute",
+        "workdayComment": "Workday Comment",
+        "noCommentProvided": "No comment provided.",
+        "receiptsAttachments": "Receipts & Attachments",
+        "uploadedReceipts": "Uploaded receipts and supporting documents.",
+        "noReceiptsProvided": "No receipts or attachments provided.",
+        "confirmDeletion": "Confirm Deletion",
+        "confirmDeleteMessage": "Are you sure you want to delete this workday?",
+        "workdayDeleted": "Workday deleted",
+        "deleteFailed": "Delete failed",
+        "loading": "Loading...",
+        "errorLoadingData": "Error loading data",
+        "actions": {
+          "edit": "Edit Workday",
+          "delete": "Delete Workday"
+        }
+      }
+    }
   }
 }
