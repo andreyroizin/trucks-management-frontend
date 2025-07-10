@@ -286,6 +286,117 @@
         }
       }
     },
+    "edit": {
+      "title": "Edit Part Ride",
+      "button": "Save Changes",
+      "section": {
+        "specialHours": "Special hours",
+        "additionalInputs": "Additional inputs",
+        "distance": "Distance",
+        "expenses": "Expenses",
+        "receipts": "Receipts",
+        "uploadReceipts": "Upload Receipts",
+        "comments": "Comments"
+      },
+      "date": {
+        "label": "Date (dd-mm-yy)",
+        "placeholder": "dd-mm-yy",
+        "helperText": "Select the day you worked"
+      },
+      "start": {
+        "label": "Start Time (e.g. 07:30)",
+        "placeholder": "07:30",
+        "helperText": "What time did you start work?"
+      },
+      "end": {
+        "label": "End Time (e.g. 17:30)",
+        "placeholder": "17:30",
+        "helperText": "What time did you end work?"
+      },
+      "rest": {
+        "label": "Rest Time (e.g. 01:30)",
+        "placeholder": "01:30",
+        "helperText": "How much rest have you had?"
+      },
+      "driver": {
+        "label": "Driver",
+        "placeholder": "Select driver",
+        "helperText": "Select the driver for this workday."
+      },
+      "hoursCode": {
+        "label": "Hours Code",
+        "placeholder": "Select hours code"
+      },
+      "hoursOption": {
+        "label": "Hours Option",
+        "placeholder": "Select hours option"
+      },
+      "hoursCorrection": {
+        "label": "Correction time",
+        "placeholder": "00:00"
+      },
+      "weekNumber": {
+        "label": "Week Number (e.g. 23)",
+        "placeholder": "23",
+        "helperText": "Enter the week number for this workday."
+      },
+      "company": {
+        "label": "Company",
+        "placeholder": "Select company",
+        "helperText": "Select your company for this workday."
+      },
+      "client": {
+        "label": "Client",
+        "placeholder": "Select client",
+        "helperText": "Select the client for this workday."
+      },
+      "car": {
+        "label": "Car",
+        "placeholder": "Select car",
+        "helperText": "Select the car used for this workday."
+      },
+      "ride": {
+        "label": "Ride",
+        "placeholder": "Select ride",
+        "helperText": "Select the ride for this workday."
+      },
+      "charter": {
+        "label": "Charter",
+        "placeholder": "Select charter",
+        "helperText": "Select the charter for this workday."
+      },
+      "variousCompensation": {
+        "label": "Various Compensation (e.g. 10)",
+        "placeholder": "10",
+        "helperText": "Enter any additional compensation."
+      },
+      "totalKilometers": {
+        "label": "Total Distance / km (e.g. 135)",
+        "placeholder": "135",
+        "helperText": "How many kilometers did you drive today?"
+      },
+      "extraKilometers": {
+        "label": "Extra Distance / km (e.g. 10)",
+        "placeholder": "10",
+        "helperText": "Did you drive any extra distance not included in your planned route? (e.g. to pick up a car, detour, or return)?"
+      },
+      "costs": {
+        "label": "Total Expenses (€) (e.g. 40)",
+        "placeholder": "40",
+        "helperText": "Enter the full amount you spent today (fuel, tolls, meals, tunnels, AdBlue, etc.)"
+      },
+      "uploadReceipts": {
+        "helperText": "Add any files related to the trip (fuel, toll, hotel, etc.)"
+      },
+      "remark": {
+        "label": "Your comment",
+        "placeholder": "Optional — add any notes for Transport Admin",
+        "helperText": "Use if there's something important about this workday."
+      },
+      "actions" : {
+        "save": "Save Changes"
+      }
+    },
     "driver": {
       "detail": {
         "title": "Workday Details",

@@ -1,6 +1,7 @@
 'use client';
 
 import React, {Suspense, useEffect, useMemo, useState} from 'react';
+import {useTranslations} from 'next-intl';
 import FileUploadBox from '@/components/FileUploadBox';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, Divider, TextField, Typography,} from '@mui/material';
@@ -36,6 +37,8 @@ function EditPartRidePageWrapper() {
     const partRideId = searchParams.get('id') || '';
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');
+
+    const t = useTranslations('partrides.edit');
 
     // --- VALIDATION SCHEMA ---
     const schema = useMemo(() => {
@@ -264,7 +267,7 @@ function EditPartRidePageWrapper() {
     if (!partRide) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load part ride detail'}</Alert>
+                <Alert severity="error">{error?.message || t('error')}</Alert>
             </Box>
         );
     }
@@ -273,7 +276,7 @@ function EditPartRidePageWrapper() {
         <Suspense fallback={<CircularProgress/>}>
             <Box maxWidth="700px" mx="auto" sx={{ pt: 4, pb: 5}}>
                 <Typography variant="h4" gutterBottom>
-                    Edit Part Ride
+                    {t('title')}
                 </Typography>
 
                 {apiError && (
@@ -286,9 +289,9 @@ function EditPartRidePageWrapper() {
                         <DateInputField
                             name="date"
                             control={control}
-                            label="Date (dd-mm-yy)"
-                            placeholder="dd-mm-yy"
-                            helperText="Select the day you worked"
+                            label={t('date.label')}
+                            placeholder={t('date.placeholder')}
+                            helperText={errors.date?.message || t('date.helperText')}
                             error={!!errors.date}
                             errorMessage={errors.date?.message}
                         />
@@ -303,10 +306,10 @@ function EditPartRidePageWrapper() {
                                 fullWidth
                                 margin="normal"
                                 sx={{mt: 2}}
-                                label="Start Time (e.g. 07:30)"
-                                placeholder="07:30"
+                                label={t('start.label')}
+                                placeholder={t('start.placeholder')}
                                 error={!!errors.start}
-                                helperText={errors.start?.message || 'What time did you start work?'}
+                                helperText={errors.start?.message || t('start.helperText')}
                             />
                         )}
                     />
@@ -320,10 +323,10 @@ function EditPartRidePageWrapper() {
                                 fullWidth
                                 margin="normal"
                                 sx={{mt: 2}}
-                                label="End Time (e.g. 17:30)"
-                                placeholder="17:30"
+                                label={t('end.label')}
+                                placeholder={t('end.placeholder')}
                                 error={!!errors.end}
-                                helperText={errors.end?.message || 'What time did you end work?'}
+                                helperText={errors.end?.message || t('end.helperText')}
                             />
                         )}
                     />
@@ -337,10 +340,10 @@ function EditPartRidePageWrapper() {
                                 fullWidth
                                 margin="normal"
                                 sx={{mt: 2}}
-                                label="Rest Time (e.g. 01:30)"
-                                placeholder="01:30"
+                                label={t('rest.label')}
+                                placeholder={t('rest.placeholder')}
                                 error={!!errors.rest}
-                                helperText={errors.rest?.message || 'How much rest have you had?'}
+                                helperText={errors.rest?.message || t('rest.helperText')}
                             />
                         )}
                     />
@@ -370,10 +373,10 @@ function EditPartRidePageWrapper() {
                                                        variant="outlined"
                                                        margin="normal"
                                                        sx={{mt: 2}}
-                                                       label="Driver"
-                                                       placeholder="Select driver"
+                                                       label={t('driver.label')}
+                                                       placeholder={t('driver.placeholder')}
                                                        error={!!errors.driverId}
-                                                       helperText={errors.driverId?.message || 'Select the driver for this workday.'}
+                                                       helperText={errors.driverId?.message || t('driver.helperText')}
                                             />}
                                     />
                                 )}
@@ -418,7 +421,7 @@ function EditPartRidePageWrapper() {
                                                         margin="normal"
                                                         sx={{mt: 2}}
                                                         label="Hours Code"
-                                                        placeholder="Select hours code"
+                                                        placeholder={t('hoursCode.placeholder')}
                                                         error={!!errors.hoursCodeId}
                                                         helperText={errors.hoursCodeId?.message}
                                                     />
@@ -445,7 +448,7 @@ function EditPartRidePageWrapper() {
                                                         margin="normal"
                                                         sx={{mt: 2}}
                                                         label="Hours Option"
-                                                        placeholder="Select hours option"
+                                                        placeholder={t('hoursOption.placeholder')}
                                                         error={!!errors.hoursOptionId}
                                                         helperText={errors.hoursOptionId?.message}
                                                     />
@@ -486,8 +489,8 @@ function EditPartRidePageWrapper() {
                                                 type="number"
                                                 variant="outlined"
                                                 fullWidth
-                                                label="Correction time"
-                                                placeholder="00:00"
+                                                    label={t('correction.label')}
+                                                    placeholder={t('correction.placeholder')}
                                                 margin="normal"
                                                 sx={{mt: 2}}
                                                 error={!!errors.hoursCorrection}
@@ -512,11 +515,11 @@ function EditPartRidePageWrapper() {
                                                 variant="outlined"
                                                 fullWidth
                                                 sx={{mt: 2}}
-                                                label="Week Number (e.g. 23)"
-                                                placeholder="23"
-                                                error={!!errors.weekNumber}
-                                                helperText={errors.weekNumber?.message || 'Enter the week number for this workday.'}
-                                                margin="normal"
+                                                        label={t('weekNumber.label')}
+                                                        placeholder={t('weekNumber.placeholder')}
+                                                        error={!!errors.weekNumber}
+                                                        helperText={errors.weekNumber?.message || t('weekNumber.helperText')}
+                                                        margin="normal"
 
                                             />
                                         )}
@@ -558,10 +561,10 @@ function EditPartRidePageWrapper() {
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
                                                                                     margin="normal"
                                                                                     sx={{mt: 2}}
-                                                                                    label="Company"
-                                                                                    placeholder="Select company"
+                                                                                        label={t('company.label')}
+                                                                                        placeholder={t('company.placeholder')}
                                                                                     error={!!errors.companyId}
-                                                                                    helperText={errors.companyId?.message || 'Select your company for this workday.'}
+                                                                                        helperText={errors.companyId?.message || t('company.helperText')}
                                                 />}
                                             />
                                         )}
@@ -585,10 +588,10 @@ function EditPartRidePageWrapper() {
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
                                                                                     margin="normal"
                                                                                     sx={{mt: 2}}
-                                                                                    label="Client"
-                                                                                    placeholder="Select client"
+                                                                                        label={t('client.label')}
+                                                                                        placeholder={t('client.placeholder')}
                                                                                     error={!!errors.clientId}
-                                                                                    helperText={errors.clientId?.message || 'Select the client for this workday.'}
+                                                                                        helperText={errors.clientId?.message || t('client.helperText')}
                                                 />}
                                             />
                                         )}
@@ -609,10 +612,10 @@ function EditPartRidePageWrapper() {
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
                                                                                     margin="normal"
                                                                                     sx={{mt: 2}}
-                                                                                    label="Car"
-                                                                                    placeholder="Select car"
+                                                                                        label={t('car.label')}
+                                                                                        placeholder={t('car.placeholder')}
                                                                                     error={!!errors.carId}
-                                                                                    helperText={errors.carId?.message || 'Select the car used for this workday.'}
+                                                                                        helperText={errors.carId?.message || t('car.helperText')}
                                                 />}
                                             />
                                         )}
@@ -633,10 +636,10 @@ function EditPartRidePageWrapper() {
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
                                                                                     margin="normal"
                                                                                     sx={{mt: 2}}
-                                                                                    label="Ride"
-                                                                                    placeholder="Select ride"
+                                                                                        label={t('ride.label')}
+                                                                                        placeholder={t('ride.placeholder')}
                                                                                     error={!!errors.rideId}
-                                                                                    helperText={errors.rideId?.message || 'Select the ride for this workday.'}
+                                                                                        helperText={errors.rideId?.message || t('ride.helperText')}
                                                 />}
                                             />
                                         )}
@@ -657,10 +660,10 @@ function EditPartRidePageWrapper() {
                                                 renderInput={(params) => <TextField {...params} variant="outlined"
                                                                                     margin="normal"
                                                                                     sx={{mt: 2}}
-                                                                                    label="Charter"
-                                                                                    placeholder="Select charter"
+                                                                                        label={t('charter.label')}
+                                                                                        placeholder={t('charter.placeholder')}
                                                                                     error={!!errors.charterId}
-                                                                                    helperText={errors.charterId?.message || 'Select the charter for this workday.'}
+                                                                                        helperText={errors.charterId?.message || t('charter.helperText')}
                                                 />}
                                             />
                                         )}
@@ -678,10 +681,10 @@ function EditPartRidePageWrapper() {
                                                 fullWidth
                                                 margin="normal"
                                                 sx={{mt: 2}}
-                                                label="Various Compensation (e.g. 10)"
-                                                placeholder="10"
-                                                error={!!errors.variousCompensation}
-                                                helperText={errors.variousCompensation?.message || 'Enter any additional compensation.'}
+                                                    label={t('variousCompensation.label')}
+                                                    placeholder={t('variousCompensation.placeholder')}
+                                                    error={!!errors.variousCompensation}
+                                                    helperText={errors.variousCompensation?.message || t('variousCompensation.helperText')}
 
                                             />
                                         )}
@@ -701,10 +704,10 @@ function EditPartRidePageWrapper() {
                                             variant="outlined"
                                             fullWidth
                                             margin="normal"
-                                            label="Total Distance / km (e.g. 135)"
-                                            placeholder="135"
+                                            label={t('totalKilometers.label')}
+                                            placeholder={t('totalKilometers.placeholder')}
                                             error={!!errors.totalKilometers}
-                                            helperText={errors.totalKilometers?.message || 'How many kilometers did you drive today?'}
+                                            helperText={errors.totalKilometers?.message || t('totalKilometers.helperText')}
                                         />
                                     )}
                                 />
@@ -718,10 +721,10 @@ function EditPartRidePageWrapper() {
                                             variant="outlined"
                                             fullWidth
                                             margin="normal"
-                                            label="Extra Distance / km (e.g. 10)"
-                                            placeholder="10"
+                                            label={t('extraKilometers.label')}
+                                            placeholder={t('extraKilometers.placeholder')}
                                             error={!!errors.extraKilometers}
-                                            helperText={errors.extraKilometers?.message || 'Did you drive any extra distance not included in your planned route? (e.g. to pick up a car, detour, or return)?'}
+                                            helperText={errors.extraKilometers?.message || t('extraKilometers.helperText')}
                                         />
                                     )}
                                 />
@@ -740,10 +743,10 @@ function EditPartRidePageWrapper() {
                                             variant="outlined"
                                             fullWidth
                                             margin="normal"
-                                            label="Total Expenses (€) (e.g. 40)"
-                                            placeholder="40"
-                                            error={!!errors.costs}
-                                            helperText={errors.costs?.message || 'Enter the full amount you spent today (fuel, tolls, meals, tunnels, AdBlue, etc.)'}
+                                        label={t('costs.label')}
+                                        placeholder={t('costs.placeholder')}
+                                        error={!!errors.costs}
+                                        helperText={errors.costs?.message || t('costs.helperText')}
                                         />
                                     )}
                                 />
@@ -765,7 +768,7 @@ function EditPartRidePageWrapper() {
                             <Box mb={2}>
                                 <Typography variant="h6">Upload Receipts</Typography>
                                 <Typography variant="body1" mb={1}>
-                                    Add any files related to the trip (fuel, toll, hotel, etc.)
+                                {t('uploadReceipts.helperText')}
                                 </Typography>
                                 <FileUploadBox uploadUrl="/temporary-uploads" onFilesChange={setNewUploads} />
                             </Box>
@@ -786,10 +789,10 @@ function EditPartRidePageWrapper() {
                                             margin="normal"
                                             multiline
                                             minRows={3}
-                                            label="Your comment"
-                                            placeholder="Optional — add any notes for Transport Admin"
-                                            error={!!errors.remark}
-                                            helperText={errors.remark?.message || "Use if there's something important about this workday."}
+                                        label={t('remark.label')}
+                                        placeholder={t('remark.placeholder')}
+                                        error={!!errors.remark}
+                                        helperText={errors.remark?.message || t('remark.helperText')}
                                         />
                                     )}
                                 />
@@ -806,7 +809,7 @@ function EditPartRidePageWrapper() {
                             disabled={isPending || someDataIsLoading}
                         >
                             {isPending || someDataIsLoading ?
-                                <CircularProgress size={20} color="inherit"/> : 'Save Changes'}
+                                <CircularProgress size={20} color="inherit"/> : t('actions.save')}
                         </Button>
                     </Box>
                 </form>
