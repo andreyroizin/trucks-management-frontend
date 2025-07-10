@@ -39,15 +39,16 @@ function EditPartRidePageWrapper() {
     const isDriverRole = user?.roles.includes('driver');
 
     const t = useTranslations('partrides.edit');
+    const tValidation = useTranslations('partrides.common');
 
     // --- VALIDATION SCHEMA ---
     const schema = useMemo(() => {
         return yup.object().shape({
-            id: yup.string().required("ID is required"),
-            date: yup.string().required("Date is required"),
-            start: yup.string().required("Start time is required"),
-            end: yup.string().required("End time is required"),
-            rest: yup.string().required("Break time is required"),
+            id: yup.string().required(tValidation('formValidation.id')),
+            date: yup.string().required(tValidation('formValidation.date')),
+            start: yup.string().required(tValidation('formValidation.start')),
+            end: yup.string().required(tValidation('formValidation.end')),
+            rest: yup.string().required(tValidation('formValidation.rest')),
             totalKilometers: yup.number().optional(),
             extraKilometers: yup.number().optional(),
             costs: yup.number().optional(),
@@ -55,7 +56,7 @@ function EditPartRidePageWrapper() {
             companyId: yup.string().optional(),
             driverId: yup.string().when([], {
                 is: () => !isDriverRole,
-                then: (schema) => schema.required("Driver is required"),
+                then: (schema) => schema.required(tValidation('formValidation.driver')),
                 otherwise: (schema) => schema.optional(),
             }),
             carId: yup.string().optional(),
@@ -69,7 +70,7 @@ function EditPartRidePageWrapper() {
                         end === '1.00:00:00' ||
                         end === '1.00:00'
                     )),
-                then: (schema) => schema.required('Hours Code is required for this time range'),
+                then: (schema) => schema.required(tValidation('formValidation.hoursCode')),
                 otherwise: (schema) => schema.optional(),
             }),
             hoursOptionId: yup.string().optional(),
@@ -93,7 +94,7 @@ function EditPartRidePageWrapper() {
             ).optional(),
             fileIdsToDelete: yup.array().optional(),
         });
-    }, [isDriverRole]);
+    }, [isDriverRole, tValidation]);
 
     // Only logged-in users
     useEffect(() => {

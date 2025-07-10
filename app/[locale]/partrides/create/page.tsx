@@ -28,6 +28,8 @@ import DateInputField from "@/components/DateInputField";
 
 export default function CreatePartRidePage() {
     const t = useTranslations('partrides.create');
+    // For validation messages, use translations from partrides.common
+    const tValidation = useTranslations('partrides.common');
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isDriverRole = user?.roles.includes('driver');
@@ -35,10 +37,10 @@ export default function CreatePartRidePage() {
     // --- VALIDATION SCHEMA ---
     const schema = useMemo(() => {
         return yup.object().shape({
-            date: yup.string().required('Date is required (e.g. "24-06-2025")'),
-            start: yup.string().required('Start time is required (e.g. "20:00")'),
-            rest: yup.string().required('Break is required (e.g. "01:30")'),
-            end: yup.string().required('End time is required (e.g. "05:00")'),
+            date: yup.string().required(tValidation('formValidation.date')),
+            start: yup.string().required(tValidation('formValidation.start')),
+            rest: yup.string().required(tValidation('formValidation.rest')),
+            end: yup.string().required(tValidation('formValidation.end')),
             // If driver => hide or not required
             rideId: yup.string().optional(),
             totalKilometers: yup.number().optional(),
@@ -46,7 +48,7 @@ export default function CreatePartRidePage() {
             carId: yup.string().optional(),
             driverId: yup.string().when([], {
                 is: () => !isDriverRole,
-                then: (schema) => schema.required("Driver is required"),
+                then: (schema) => schema.required(tValidation('formValidation.driver')),
                 otherwise: (schema) => schema.optional(),
             }),
             costs: yup.number().optional(),
@@ -60,7 +62,7 @@ export default function CreatePartRidePage() {
                         end === '1.00:00:00' ||
                         end === '1.00:00'
                     )),
-                then: (schema) => schema.required('Hours Code is required for this time range'),
+                then: (schema) => schema.required(tValidation('formValidation.hoursCode')),
                 otherwise: (schema) => schema.optional(),
             }),
             hoursOptionId: yup.string().optional(),
@@ -75,7 +77,7 @@ export default function CreatePartRidePage() {
             charterId: yup.string().optional(),
             newUploads: yup.array().optional(),
         });
-    }, [isDriverRole]);
+    }, [isDriverRole, tValidation]);
 
     // Ensure user is logged in
     useEffect(() => {
