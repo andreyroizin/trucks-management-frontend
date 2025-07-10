@@ -24,9 +24,9 @@ export default function DriverDashboardCardButton({
             variant={'outlined'}
             sx={{
                 p: 3,
-                borderRadius: 3,
-                backgroundColor: highlight ? '#0C203B' : '#f9f9f9',
-                color: highlight ? 'common.white' : '#424242',
+                borderRadius: 4,
+                backgroundColor: highlight ? '#0C203B' : 'common.white',
+                color: highlight ? 'common.white' : 'inherit',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
