@@ -3,6 +3,7 @@
 import React, {createContext, useContext, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import Cookies from 'js-cookie';
+import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
 
 type Lang = 'en' | 'nl' | 'bg';
 
@@ -14,12 +15,25 @@ interface LangCtx {
 const LanguageContext = createContext<LangCtx | undefined>(undefined);
 
 export function LanguageProvider({children}: {children: React.ReactNode}) {
-    /* 1️⃣  initial value from cookie (or fallback 'en') */
+    /* 1️⃣  initial value from URL segment, cookie (or fallback 'en') */
+    const pathname   = usePathname();                // e.g. "/en/dashboard"
+    const segLocale  = pathname.split('/')[1] as Lang | undefined;  // "en" | "nl" | "bg" | undefined
     const cookieLocale = Cookies.get('NEXT_LOCALE') as Lang | undefined;
-    const [lang, setLangState] = useState<Lang>(cookieLocale ?? 'en');
+
+    const initialLang: Lang =
+      (segLocale && SUPPORTED_LOCALES.includes(segLocale)) ? segLocale :
+      (cookieLocale ?? 'en');
+
+    const [lang, setLangState] = useState<Lang>(initialLang);
 
     const router   = useRouter();
-    const pathname = usePathname();                  // e.g. "/en/dashboard"
+
+    /*  🚦  keep cookie in sync with URL segment on first render */
+    React.useEffect(() => {
+        if (segLocale && SUPPORTED_LOCALES.includes(segLocale) && segLocale !== cookieLocale) {
+            Cookies.set('NEXT_LOCALE', segLocale, { path: '/' });
+        }
+    }, [segLocale, cookieLocale]);
 
     /* 2️⃣  Change language = cookie + URL swap */
     const setLang = (l: Lang) => {

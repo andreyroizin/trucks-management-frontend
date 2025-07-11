@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import {ApiResponse, ChangePasswordPayload, LoginResponse, ResetPasswordPayload} from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -11,9 +12,14 @@ export const api = axios.create({
     },
 });
 
-// Attach the token to requests if available
 api.interceptors.request.use((config) => {
+    // Attach the token to requests if available
     const token = localStorage.getItem('authToken');
+
+    // Attach the preferred locale from cookie as Accept‑Language header
+    const locale = Cookies.get('NEXT_LOCALE') || 'en';
+    config.headers['Accept-Language'] = locale;
+
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
