@@ -1,137 +1,95 @@
-// app/clients/page.tsx
-
 'use client';
 
-import React, {useState, useEffect} from 'react';
-import {
-    Box,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    CircularProgress,
-    Alert,
-    TablePagination, Button,
-} from '@mui/material';
-import {useClients} from '@/hooks/useClients';
-import {useAuth} from '@/hooks/useAuth';
-import {useRouter} from 'next/navigation';
-import Link from 'next/link';
+import React, {useState} from 'react';
+import {Box, Grid, IconButton, TextField, Typography, Menu, MenuItem} from '@mui/material';
+import ClientCard from '@/components/ClientCard';
+import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+import SyncIcon from "@mui/icons-material/Sync";
+// import {useClients} from '@/hooks/useClients'; // ← your real data hook
 
-export default function ClientsPage() {
-    const router = useRouter();
-    const {user, isAuthenticated, loading: authLoading} = useAuth();
+/* ------------------------------------------------------------------ */
+/* Fake data while wiring – replace with real hook                     */
+/* ------------------------------------------------------------------ */
+const DUMMY = Array.from({length: 15}).map((_, i) => ({
+    id: `client-${i}`,
+    name: ['Simon Loos Winkeldistributie Zuid BV', 'E.T.E. Transport B.V.', 'ABC Logistics'][i % 3],
+    tav: 'Administration',
+    lastWorkday: '02.02.2025',
+    lastDriver: 'John Doe'
+}));
+/* ------------------------------------------------------------------ */
 
-    // Pagination state
-    const [page, setPage] = useState(0); // MUI's TablePagination starts at 0
-    const [pageSize, setPageSize] = useState(10);
+export default function ClientsOverviewPage() {
+    /* example local state for filters */
+    const [search, setSearch] = useState('');
+    const [sort1, setSort1] = useState('TAV');
+    const [sort2, setSort2] = useState('Last Workday');
+    const [sort3, setSort3] = useState('Last Driver');
 
-    // Fetch clients with pagination
-    const {data: clientsData, isLoading, isError, error} = useClients(page + 1, pageSize); // API pages start at 1
-    const isCustomerAdmin = user?.roles.includes('customerAdmin');
-    const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    // const {data, isLoading, refetch} = useClients({ ...filters });
+    const data = DUMMY; // stand-in
 
-    // *** Access Control ***
-    useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
-        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
-
-        if (!authLoading && (!isAuthenticated || !hasAccess)) {
-            router.push('/auth/login'); // Redirect unauthorized users
-        }
-    }, [user, isAuthenticated, authLoading, router]);
-
-    // Handle page change
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    // Handle page size change
-    const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPageSize(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    if (authLoading || isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress/>
-            </Box>
-        );
+    const handleRefetch = () => {
+        console.log('Refetching data...');
     }
 
-    if (isError) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error.message || 'Failed to load clients.'}</Alert>
-            </Box>
-        );
-    }
+    const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+
+    const handleMenuClose = () => {
+        setSelectedClientId(null);
+    };
+
+    const handleEdit = () => {
+        console.log(`Edit client ${selectedClientId}`);
+        handleMenuClose();
+    };
+
+    const handleDelete = (id: string) => {
+        console.log(`Delete client ${id}`);
+        handleMenuClose();
+    };
 
     return (
-        <Box maxWidth="lg" mx="auto" p={4}>
-            <Typography variant="h4" gutterBottom>
-                Clients
-            </Typography>
-            {(isCustomerAdmin || isGlobalAdmin) &&
-                <Link href="/clients/create" passHref>
-                    <Button variant="contained" color="primary">
-                        Add Client
-                    </Button>
-                </Link>
-            }
-            <TableContainer component={Paper}>
-                <Table aria-label="clients table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>TAV</TableCell>
-                            <TableCell>Address</TableCell>
-                            <TableCell>City</TableCell>
-                            <TableCell>Country</TableCell>
-                            <TableCell>Phone</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Remark</TableCell>
-                            <TableCell>Company</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {clientsData?.data.map(client => (
-                            <TableRow
-                                key={client.id}
-                                hover
-                                component={Link}
-                                href={`/clients/${client.id}`}
-                                sx={{textDecoration: 'none', cursor: 'pointer'}}
-                            >
-                                <TableCell>{client.name}</TableCell>
-                                <TableCell>{client.tav}</TableCell>
-                                <TableCell>{client.address}</TableCell>
-                                <TableCell>{client.city}</TableCell>
-                                <TableCell>{client.country}</TableCell>
-                                <TableCell>{client.phoneNumber}</TableCell>
-                                <TableCell>{client.email}</TableCell>
-                                <TableCell>{client.remark}</TableCell>
-                                <TableCell>{client.company.name}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <TablePagination
-                    component="div"
-                    count={clientsData?.totalClients || 0}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={pageSize}
-                    onRowsPerPageChange={handleChangePageSize}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
-                />
-            </TableContainer>
+        <Box sx={{py: 4}}>
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Clients management
+                </Typography>
+                <LanguageSelectDesktop/>
+            </Box>
+
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h4" fontWeight={500}>
+                    Clients overview
+                </Typography>
+                <IconButton onClick={handleRefetch}>
+                    <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
+                </IconButton>
+            </Box>
+
+
+            <TextField
+                size="small"
+                placeholder="Client Name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{mb: 4, maxWidth: 260}}
+            />
+
+            <Grid container spacing={2}>
+                {data.map((c) => (
+                    <Grid item xs={12} sm={6} md={4} key={c.id}>
+                        <ClientCard
+                            {...c}
+                            onDelete={handleDelete}
+                            onEdit={(id) => {
+                                setSelectedClientId(id);
+                                handleEdit()
+                            }}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
         </Box>
     );
 }
