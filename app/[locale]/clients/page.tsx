@@ -1,36 +1,32 @@
 'use client';
 
 import React, {useState} from 'react';
-import {Box, Grid, IconButton, TextField, Typography, Menu, MenuItem} from '@mui/material';
+import {useQueryClient} from '@tanstack/react-query';
+import {Alert, Box, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
 import ClientCard from '@/components/ClientCard';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import SyncIcon from "@mui/icons-material/Sync";
-// import {useClients} from '@/hooks/useClients'; // ← your real data hook
-
-/* ------------------------------------------------------------------ */
-/* Fake data while wiring – replace with real hook                     */
-/* ------------------------------------------------------------------ */
-const DUMMY = Array.from({length: 15}).map((_, i) => ({
-    id: `client-${i}`,
-    name: ['Simon Loos Winkeldistributie Zuid BV', 'E.T.E. Transport B.V.', 'ABC Logistics'][i % 3],
-    tav: 'Administration',
-    lastWorkday: '02.02.2025',
-    lastDriver: 'John Doe'
-}));
-/* ------------------------------------------------------------------ */
+import {useClients} from '@/hooks/useClients';
+import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
 
 export default function ClientsOverviewPage() {
-    /* example local state for filters */
-    const [search, setSearch] = useState('');
-    const [sort1, setSort1] = useState('TAV');
-    const [sort2, setSort2] = useState('Last Workday');
-    const [sort3, setSort3] = useState('Last Driver');
+    // Debounced search state
+    const [debouncedSearch, setDebouncedSearch] = useState('');
 
-    // const {data, isLoading, refetch} = useClients({ ...filters });
-    const data = DUMMY; // stand-in
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(12);
+
+    const {
+      data: clientsData,
+      isLoading,
+      isError
+    } = useClients(page, pageSize, debouncedSearch);
+
+    const queryClient = useQueryClient();
 
     const handleRefetch = () => {
-        console.log('Refetching data...');
+        queryClient.invalidateQueries({ queryKey: ['clients'] });
     }
 
     const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
@@ -48,6 +44,10 @@ export default function ClientsOverviewPage() {
         console.log(`Delete client ${id}`);
         handleMenuClose();
     };
+
+    // Loading & error states
+    if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load clients</Alert>;
 
     return (
         <Box sx={{py: 4}}>
@@ -67,20 +67,20 @@ export default function ClientsOverviewPage() {
                 </IconButton>
             </Box>
 
-
-            <TextField
-                size="small"
-                placeholder="Client Name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{mb: 4, maxWidth: 260}}
-            />
+            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Client Name"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
 
             <Grid container spacing={2}>
-                {data.map((c) => (
+                {(clientsData?.data || []).map((c) => (
                     <Grid item xs={12} sm={6} md={4} key={c.id}>
                         <ClientCard
-                            {...c}
+                            id={c.id}
+                            name={c.name}
+                            tav={c.tav}
+                            lastDriver={
+                                c.lastDriver
+                                    ? `${c.lastDriver.firstName ?? ''} ${c.lastDriver.lastName ?? ''}`.trim()
+                                    : undefined
+                            }
                             onDelete={handleDelete}
                             onEdit={(id) => {
                                 setSelectedClientId(id);
@@ -90,6 +90,20 @@ export default function ClientsOverviewPage() {
                     </Grid>
                 ))}
             </Grid>
+
+            <TablePagination
+                sx={{mt: 4}}
+                component="div"
+                count={clientsData?.totalClients || 0}
+                page={page - 1}
+                onPageChange={(event, newPage) => setPage(newPage + 1)}
+                rowsPerPage={pageSize}
+                onRowsPerPageChange={(event) => {
+                  setPage(1);
+                  setPageSize(parseInt(event.target.value, 10));
+                }}
+                rowsPerPageOptions={[6, 9, 12, 15]}
+            />
         </Box>
     );
 }

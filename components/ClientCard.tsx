@@ -12,14 +12,14 @@ import {
     Menu,
     MenuItem
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 
 export type ClientCardProps = {
     id: string;
     name: string;
     tav: string;
-    lastWorkday: string;
-    lastDriver: string;
+    lastWorkday?: string;
+    lastDriver?: string;
     onMenuClick?: (id: string) => void;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
@@ -93,7 +93,7 @@ export default function ClientCard({
                             </Menu>
                         </>
                     }
-                    sx={{p:2, alignItems: 'center'}}
+                    sx={{p: 2, alignItems: 'center'}}
                 />
 
                 <Box sx={{borderTop: '1px solid', borderColor: 'divider'}}>
@@ -121,7 +121,7 @@ export default function ClientCard({
                                     <Typography variant="caption">Last Driver</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px'}}>
-                                    <Typography variant="caption">{lastDriver}</Typography>
+                                    <Typography variant="caption">{lastDriver ?? "N/A"}</Typography>
                                 </td>
                             </tr>
                             </tbody>

@@ -1,7 +1,7 @@
 import {keepPreviousData, useQuery} from '@tanstack/react-query';
-import { ApiResponse } from '@/types/api';
-import { api } from '@/utils/api';
-import { Company } from '@/hooks/useCompanies';
+import {ApiResponse} from '@/types/api';
+import {api} from '@/utils/api';
+import {Company} from '@/hooks/useCompanies';
 
 // *** Type Definitions ***
 export type Client = {
@@ -16,6 +16,14 @@ export type Client = {
     email: string;
     remark: string;
     company: Company;
+    lastWorkday: string;
+    lastDriver: {
+        driverId: string,
+        aspNetUserId: string,
+        user: string,
+        firstName: string,
+        lastName: string
+    }
 };
 
 export type ClientsData = {
@@ -27,11 +35,12 @@ export type ClientsData = {
 };
 
 // *** Fetcher Function ***
-const fetchClients = async (page: number, pageSize: number): Promise<ClientsData> => {
+const fetchClients = async (page: number, pageSize: number, search?: string): Promise<ClientsData> => {
     const response = await api.get<ApiResponse<ClientsData>>('/clients', {
         params: {
             pageNumber: page,
             pageSize: pageSize,
+            search: search || undefined,
         },
     });
     if (response.data.isSuccess) {
@@ -41,10 +50,10 @@ const fetchClients = async (page: number, pageSize: number): Promise<ClientsData
 };
 
 // *** Custom Hook ***
-export const useClients = (page: number, pageSize: number) => {
+export const useClients = (page: number, pageSize: number, search?: string) => {
     return useQuery<ClientsData, Error>({
-        queryKey: ['clients', page, pageSize],
-        queryFn: () => fetchClients(page, pageSize),
+        queryKey: ['clients', page, pageSize, search],
+        queryFn: () => fetchClients(page, pageSize, search),
         placeholderData: keepPreviousData,
     });
 };
