@@ -30,6 +30,7 @@ import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileTile from "@/components/FileTile";
 import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
 import {ApplicationFile} from "@/types/file";
+import {getIso8601WeekOfYear} from "@/utils/Iso8601WeekOfYear";
 
 function EditPartRidePageWrapper() {
     const router = useRouter();
@@ -197,6 +198,16 @@ function EditPartRidePageWrapper() {
             setClientId(partRide.client?.id || '');
         }
     }, [partRide, partRideId, setValue]);
+
+    // Update weekNumber when date changes
+    useEffect(() => {
+        const date = watch('date');
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+            const week = getIso8601WeekOfYear(parsedDate);
+            setValue('weekNumber', week);
+        }
+    }, [watch('date'), setValue]);
 
     // On Submit
     const onSubmit: SubmitHandler<EditPartRideInput> = async (data) => {

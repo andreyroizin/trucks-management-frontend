@@ -25,6 +25,7 @@ import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileUploadBox from '@/components/FileUploadBox';
 import DateInputField from "@/components/DateInputField";
+import {getIso8601WeekOfYear} from "@/utils/Iso8601WeekOfYear";
 
 export default function CreatePartRidePage() {
     const t = useTranslations('partrides.create');
@@ -141,6 +142,16 @@ export default function CreatePartRidePage() {
             newUploads: [],
         },
     });
+
+    // Update weekNumber when date changes
+    useEffect(() => {
+        const date = watch('date');
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+            const week = getIso8601WeekOfYear(parsedDate);
+            setValue('weekNumber', week);
+        }
+    }, [watch('date'), setValue]);
 
     // On Submit
     const onSubmit: SubmitHandler<CreatePartRideInput> = async (data) => {
