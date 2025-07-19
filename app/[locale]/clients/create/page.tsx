@@ -148,6 +148,151 @@ export default function CreateClientPage() {
                     </Grid>
                 </Box>
 
+                {/* Client Address Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                        Client Address
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="address"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Street Address"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.address}
+                                        helperText={errors.address?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="postcode"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Postcode"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.postcode}
+                                        helperText={errors.postcode?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="city"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="City"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.city}
+                                        helperText={errors.city?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="country"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Country"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.country}
+                                        helperText={errors.country?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                {/* Contact Information Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                        Contact Information
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="phoneNumber"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Phone Number"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.phoneNumber}
+                                        helperText={errors.phoneNumber?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Email"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.email}
+                                        helperText={errors.email?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                {/* Remark Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                        Remark
+                    </Typography>
+                    <Controller
+                        name="remark"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                label="Remark"
+                                fullWidth
+                                margin="normal"
+                                variant="outlined"
+                                multiline
+                                rows={4}
+                                placeholder="Enter any additional remarks or comments about the client..."
+                                error={!!errors.remark}
+                                helperText={errors.remark?.message}
+                            />
+                        )}
+                    />
+                </Box>
+
                 {/* Additional Fields */}
                 <Controller
                     name="tav"
@@ -156,97 +301,6 @@ export default function CreateClientPage() {
                         <TextField
                             {...field}
                             label="TAV"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="address"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Address"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="postcode"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Postcode"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="city"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="City"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="country"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Country"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="phoneNumber"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Phone Number"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Email"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
-                <Controller
-                    name="remark"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Remark"
                             fullWidth
                             margin="normal"
                             variant="outlined"
