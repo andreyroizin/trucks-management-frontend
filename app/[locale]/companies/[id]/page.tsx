@@ -179,9 +179,9 @@ export default function CompanyDetailPage() {
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Company Name
+                                Drivers
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{company.name}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.drivers?.length || 0}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
