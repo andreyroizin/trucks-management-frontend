@@ -2,7 +2,8 @@
 
 import React, {useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
-import {Alert, Box, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
+import {useRouter} from 'next/navigation';
 import ClientCard from '@/components/ClientCard';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import SyncIcon from "@mui/icons-material/Sync";
@@ -10,6 +11,8 @@ import {useClients} from '@/hooks/useClients';
 import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
 
 export default function ClientsOverviewPage() {
+    const router = useRouter();
+    
     // Debounced search state
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
@@ -62,9 +65,17 @@ export default function ClientsOverviewPage() {
                 <Typography variant="h4" fontWeight={500}>
                     Clients overview
                 </Typography>
-                <IconButton onClick={handleRefetch}>
-                    <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
-                </IconButton>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    <Button 
+                        variant="contained" 
+                        onClick={() => router.push('/clients/create')}
+                    >
+                        Create Client
+                    </Button>
+                    <IconButton onClick={handleRefetch}>
+                        <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
+                    </IconButton>
+                </Box>
             </Box>
 
             <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Client Name"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
