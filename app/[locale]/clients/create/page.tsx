@@ -80,16 +80,24 @@ export default function CreateClientPage() {
     }
 
     return (
-        <Box maxWidth="500px" mx="auto" p={2}>
-            <Typography variant="h5" gutterBottom>
-                Create Client
-            </Typography>
+        <Box maxWidth="800px" p={4}>
+            {/* Header Block */}
+            <Box mb={4}>
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
+                    New Client Creation Form
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                    Use this form to create a new client in clients list. Please ensure all fields are filled out accurately.
+                </Typography>
+            </Box>
 
-            {isError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {error?.message || 'Failed to create client.'}
-                </Alert>
-            )}
+            {/* Form Block */}
+            <Box>
+                {isError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error?.message || 'Failed to create client.'}
+                    </Alert>
+                )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
@@ -257,6 +265,7 @@ export default function CreateClientPage() {
                     </Button>
                 </Box>
             </form>
+            </Box>
         </Box>
     );
 }
