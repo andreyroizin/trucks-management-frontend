@@ -1,27 +1,158 @@
-// app/companies/page.tsx
-
 'use client';
 
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import CompanyList from '@/components/CompanyList';
-import AddNewButton from '@/components/AddNewCompanyButton';
-import {useAuth} from "@/hooks/useAuth";
+import React, {useState} from 'react';
+import {useQueryClient} from '@tanstack/react-query';
+import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
+import {useRouter} from 'next/navigation';
+import CompanyCard from '@/components/CompanyCard';
+import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+import SyncIcon from "@mui/icons-material/Sync";
+import {useCompanies} from '@/hooks/useCompanies';
+import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
+import {useAuth} from '@/hooks/useAuth';
+import {useDeleteCompany} from '@/hooks/useDeleteCompany';
+import ConfirmModal from '@/components/ConfirmModal';
 
-export default function CompaniesPage() {
-    const { user } = useAuth();
-    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+export default function CompaniesOverviewPage() {
+    const router = useRouter();
+    const {user} = useAuth();
+    
+    // Role checks for UI visibility
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    
+    // Debounced search state
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(12);
+    
+    // Delete confirmation modal state
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [companyToDelete, setCompanyToDelete] = useState<string | null>(null);
+
+    const {
+      data: companiesData,
+      isLoading,
+      isError
+    } = useCompanies(page, pageSize, debouncedSearch);
+
+    const queryClient = useQueryClient();
+    const { mutateAsync: deleteCompany } = useDeleteCompany();
+
+    const handleRefetch = () => {
+        queryClient.invalidateQueries({ queryKey: ['companies'] });
+    }
+
+    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+
+    const handleMenuClose = () => {
+        setSelectedCompanyId(null);
+    };
+
+    const handleEdit = (id?: string) => {
+        const companyId = id || selectedCompanyId;
+        if (companyId) {
+            router.push(`/companies/edit?id=${companyId}`);
+        }
+        handleMenuClose();
+    };
+
+    const handleDelete = (id: string) => {
+        setCompanyToDelete(id);
+        setOpenDeleteModal(true);
+        handleMenuClose();
+    };
+
+    const confirmDelete = async () => {
+        if (companyToDelete) {
+            try {
+                await deleteCompany(companyToDelete);
+                queryClient.invalidateQueries({ queryKey: ['companies'] });
+                setOpenDeleteModal(false);
+                setCompanyToDelete(null);
+            } catch (error) {
+                console.error('Failed to delete company:', error);
+                setOpenDeleteModal(false);
+                setCompanyToDelete(null);
+            }
+        }
+    };
+
+    // Loading & error states
+    if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load companies</Alert>;
 
     return (
-        <Box maxWidth="5xl" mx="auto" p={4}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <Typography variant="h4" component="h1">
-                    Companies
+        <Box sx={{py: 4}}>
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Companies management
                 </Typography>
-                {(isGlobalAdmin || isCustomerAdmin) && <AddNewButton />}
+                <LanguageSelectDesktop/>
             </Box>
-            <CompanyList />
+
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h4" fontWeight={500}>
+                    Companies overview
+                </Typography>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    {(isGlobalAdmin || isCustomerAdmin) && (
+                        <Button 
+                            variant="contained" 
+                            onClick={() => router.push('/companies/create')}
+                        >
+                            Create Company
+                        </Button>
+                    )}
+                    <IconButton onClick={handleRefetch}>
+                        <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
+                    </IconButton>
+                </Box>
+            </Box>
+
+            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Company Name"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+
+            <Grid container spacing={2}>
+                {(companiesData?.data || []).map((c) => (
+                    <Grid item xs={12} sm={6} md={4} key={c.id}>
+                        <CompanyCard
+                            id={c.id}
+                            name={c.name}
+                            drivers={c.drivers}
+                            onDelete={handleDelete}
+                            onEdit={handleEdit}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+
+            <TablePagination
+                sx={{mt: 4}}
+                component="div"
+                count={companiesData?.totalCompanies || 0}
+                page={page - 1}
+                onPageChange={(event, newPage) => setPage(newPage + 1)}
+                rowsPerPage={pageSize}
+                onRowsPerPageChange={(event) => {
+                  setPage(1);
+                  setPageSize(parseInt(event.target.value, 10));
+                }}
+                rowsPerPageOptions={[6, 9, 12, 15]}
+            />
+            
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                open={openDeleteModal}
+                title="Delete Company?"
+                message="Are you sure you want to delete this company? This action cannot be undone."
+                onClose={() => {
+                    setOpenDeleteModal(false);
+                    setCompanyToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+            />
         </Box>
     );
 }
