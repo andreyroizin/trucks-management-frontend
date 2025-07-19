@@ -14,7 +14,6 @@ import {
 import Link from 'next/link';
 import {useAuth} from '@/hooks/useAuth';
 import {useClientDetails} from '@/hooks/useClientDetails';
-import ContactPersonsSection from '@/components/ContactPersons';
 import {useDeleteClient} from '@/hooks/useDeleteClient';
 import ConfirmModal from '@/components/ConfirmModal';
 import {useApproveClient} from "@/hooks/useApproveClient";
@@ -157,50 +156,11 @@ export default function ClientDetailPage() {
                         Remark: {client.remark}
                     </Typography>
 
-                    {/* Link to surcharges */}
-                    {(isGlobalAdmin || isCustomerAdmin || isCustomerAccountant || isCustomer) && (
-                        <>
-                            <Box mt={2}>
-                                <Link href={`/surcharges/${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        Manage surcharges
-                                    </Button>
-                                </Link>
-                            </Box>
-                            <Box mt={2}>
-                                <Link href={`/rates/${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        Manage rates
-                                    </Button>
-                                </Link>
-                            </Box>
-                            <Box mt={2}>
-                                <Link href={`/charters?clientId=${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        View Charters
-                                    </Button>
-                                </Link>
-                            </Box>
-                        </>
-                    )}
 
-                    {/* Link to the Company */}
-                    <Box mt={2}>
-                        Company: {` ${client.company.name} `}
-                        <Link href={`/companies/${client.company.id}`} passHref>
-                            <Button variant="outlined" size="small">
-                                Go to Company
-                            </Button>
-                        </Link>
-                    </Box>
                 </CardContent>
             </Card>
 
-            {client.isApproved && (
-                <Box sx={{ backgroundColor: 'white', mt: 2, borderRadius: 1 }}>
-                    <ContactPersonsSection clientId={client.id}/>
-                </Box>
-            )}
+
 
             {/* Confirm Deletion Modal */}
             <ConfirmModal
