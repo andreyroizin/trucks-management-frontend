@@ -30,6 +30,7 @@ import {useAllowDriverForWeek} from '@/hooks/useAllowDriverForWeek';
 import {useDrivers} from '@/hooks/useDrivers';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 import {useSnack} from "@/providers/SnackProvider";
+import Link from "next/link";
 
 /* ------------------------------------------------------------------ */
 /* Constants                                                           */
@@ -127,60 +128,6 @@ export default function WeeksToSubmitPage() {
                 <LanguageSelectDesktop />
             </Box>
 
-            {/* Filters + bulk send */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-                gap: 1,
-                mb: 3,
-                alignItems: 'center',
-              }}
-            >
-              {/* Filters group */}
-              <Box display="flex" gap={1} flexWrap="wrap">
-                <Autocomplete
-                  size="small"
-                  options={drivers || []}
-                  getOptionLabel={(d) =>
-                    `${d.user?.firstName ?? ''} ${d.user?.lastName ?? ''}`
-                  }
-                  sx={{ minWidth: 180 }}
-                  onChange={(_, v) => setDriverId(v?.id)}
-                  renderInput={(p) => <TextField {...p} label="Driver" />}
-                />
-
-                <Autocomplete
-                  size="small"
-                  options={WEEK_OPTIONS}
-                  sx={{ minWidth: 150 }}
-                  onChange={(_, v) => setWeekNr(v?.value)}
-                  renderInput={(p) => <TextField {...p} label="Week" />}
-                />
-
-                <Autocomplete
-                  size="small"
-                  options={STATUS_OPTIONS}
-                  sx={{ minWidth: 180 }}
-                  onChange={(_, v) =>
-                    setStatus(v?.value as typeof status | undefined)
-                  }
-                  renderInput={(p) => <TextField {...p} label="Status" />}
-                />
-              </Box>
-
-              {/* Bulk send button */}
-              <Button
-                variant="contained"
-                disabled={selectedIds.length === 0 || isPending}
-                onClick={() => setConfirmOpen(true)}
-                sx={{ whiteSpace: 'nowrap' }}
-              >
-                {isPending ? 'Sending…' : 'Send All Selected'}
-              </Button>
-            </Box>
-
             <Paper variant="outlined" sx={{p: 3}}>
                 <Box
                     sx={{
@@ -193,7 +140,7 @@ export default function WeeksToSubmitPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        Overview List
+                        Sign-Off weeks
                     </Typography>
 
                     {(isLoading || isRefetching) ? (
@@ -203,6 +150,63 @@ export default function WeeksToSubmitPage() {
                             <SyncIcon sx={{ transform: 'rotate(90deg)' }} />
                         </IconButton>
                     )}
+                </Box>
+                <Typography variant="body1" sx={{mb:3}}>
+                    Submit approved weekly periods for signature
+                </Typography>
+
+                {/* Filters + bulk send */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'space-between',
+                        gap: 1,
+                        mb: 3,
+                        alignItems: 'center',
+                    }}
+                >
+                    {/* Filters group */}
+                    <Box display="flex" gap={1} flexWrap="wrap">
+                        <Autocomplete
+                            size="small"
+                            options={drivers || []}
+                            getOptionLabel={(d) =>
+                                `${d.user?.firstName ?? ''} ${d.user?.lastName ?? ''}`
+                            }
+                            sx={{ minWidth: 180 }}
+                            onChange={(_, v) => setDriverId(v?.id)}
+                            renderInput={(p) => <TextField {...p} label="Driver" />}
+                        />
+
+                        <Autocomplete
+                            size="small"
+                            options={WEEK_OPTIONS}
+                            sx={{ minWidth: 150 }}
+                            onChange={(_, v) => setWeekNr(v?.value)}
+                            renderInput={(p) => <TextField {...p} label="Week" />}
+                        />
+
+                        <Autocomplete
+                            size="small"
+                            options={STATUS_OPTIONS}
+                            sx={{ minWidth: 180 }}
+                            onChange={(_, v) =>
+                                setStatus(v?.value as typeof status | undefined)
+                            }
+                            renderInput={(p) => <TextField {...p} label="Status" />}
+                        />
+                    </Box>
+
+                    {/* Bulk send button */}
+                    <Button
+                        variant="contained"
+                        disabled={selectedIds.length === 0 || isPending}
+                        onClick={() => setConfirmOpen(true)}
+                        sx={{ whiteSpace: 'nowrap' }}
+                    >
+                        {isPending ? 'Sending…' : 'Send All Selected'}
+                    </Button>
                 </Box>
 
                 <TableContainer>
@@ -268,7 +272,25 @@ export default function WeeksToSubmitPage() {
                                                 {w.totalHours.toFixed(1)} h.
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
-                                                {w.summaryStatus}
+                                                {w.disputeCount > 0 ? (
+                                                    <Link
+                                                      href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
+                                                      style={{ textDecoration: 'underline' }}
+                                                      onClick={(e) => e.stopPropagation()} // don’t select the row
+                                                    >
+                                                      {w.disputeCount} {w.disputeCount === 1 ? 'Dispute' : 'Disputes'}
+                                                    </Link>
+                                                ) : w.pendingAdminCount > 0 ? (
+                                                    <Link
+                                                      href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
+                                                      style={{ textDecoration: 'underline' }}
+                                                      onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                      {w.pendingAdminCount}{' '} Pending
+                                                    </Link>
+                                                ) : (
+                                                    w.summaryStatus
+                                                )}
                                             </TableCell>
                                             <TableCell align="right" sx={{ py: 2.6 }}>
                                                 €{w.forecastedEarning.toFixed(2)}
