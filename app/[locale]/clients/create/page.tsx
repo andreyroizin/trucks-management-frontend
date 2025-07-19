@@ -130,6 +130,53 @@ export default function CreateClientPage() {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Controller
+                                name="companyId"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        options={companiesData?.data || []}
+                                        getOptionLabel={(option) => option.name}
+                                        onChange={(_, value) => field.onChange(value?.id || '')}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Company"
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={!!errors.companyId}
+                                                helperText={errors.companyId?.message}
+                                                required
+                                            />
+                                        )}
+                                        loading={isCompaniesLoading}
+                                        value={
+                                            companiesData?.data.find(c => c.id === field.value) || null
+                                        }
+                                        isOptionEqualToValue={(option, val) => option.id === val.id}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="tav"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="TAV"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.tav}
+                                        helperText={errors.tav?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
                                 name="contactPerson"
                                 control={control}
                                 render={({ field }) => (
@@ -293,49 +340,7 @@ export default function CreateClientPage() {
                     />
                 </Box>
 
-                {/* Additional Fields */}
-                <Controller
-                    name="tav"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="TAV"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        />
-                    )}
-                />
 
-                {/* Autocomplete for Companies */}
-                <Controller
-                    name="companyId"
-                    control={control}
-                    render={({ field }) => (
-                        <Autocomplete
-                            options={companiesData?.data || []}
-                            getOptionLabel={(option) => option.name}
-                            onChange={(_, value) => field.onChange(value?.id || '')}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Company"
-                                    variant="outlined"
-                                    margin="normal"
-                                    fullWidth
-                                    error={!!errors.companyId}
-                                    helperText={errors.companyId?.message}
-                                />
-                            )}
-                            loading={isCompaniesLoading}
-                            value={
-                                companiesData?.data.find(c => c.id === field.value) || null
-                            }
-                            isOptionEqualToValue={(option, val) => option.id === val.id}
-                        />
-                    )}
-                />
 
                 <Box mt={3}>
                     <Button
