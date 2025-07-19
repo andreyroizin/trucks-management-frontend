@@ -13,6 +13,7 @@ import {
     TableBody,
     TableCell,
     TableRow,
+    TableHead,
     IconButton,
     Button,
 } from '@mui/material';
@@ -23,7 +24,6 @@ import {useCompanyDetails} from '@/hooks/useCompanyDetails';
 import {useDeleteCompany} from '@/hooks/useDeleteCompany';
 import ConfirmModal from '@/components/ConfirmModal';
 import {useApproveCompany} from "@/hooks/useApproveCompany";
-import ContactPersonsSection from '@/components/ContactPersons';
 
 export default function CompanyDetailPage() {
     const {id} = useParams();
@@ -179,7 +179,7 @@ export default function CompanyDetailPage() {
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Drivers
+                                 Company Drivers
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{company.drivers?.length || 0}</TableCell>
                         </TableRow>
@@ -242,7 +242,46 @@ export default function CompanyDetailPage() {
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Company's Drivers
                 </Typography>
-                {company.isApproved && <ContactPersonsSection companyId={company?.id} />}
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, fontWeight: 600}}>Name</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>Phone</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>Email</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>Weekly Schedule</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>Working Hours</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {company.drivers && company.drivers.length > 0 ? (
+                            company.drivers.map((driver, index) => (
+                                <TableRow key={driver.driverId || index}>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>
+                                        {driver.firstName} {driver.lastName}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {driver.phone || 'N/A'}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {driver.email || 'N/A'}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        -
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        -
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} sx={{pl: 0, border: 'none', textAlign: 'center', fontStyle: 'italic', color: 'text.secondary'}}>
+                                    No drivers assigned to this company
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
 
                     <Divider sx={{ my: 3 }} />
 
