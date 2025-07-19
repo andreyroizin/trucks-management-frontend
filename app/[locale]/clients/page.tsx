@@ -9,9 +9,15 @@ import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import SyncIcon from "@mui/icons-material/Sync";
 import {useClients} from '@/hooks/useClients';
 import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
+import {useAuth} from '@/hooks/useAuth';
 
 export default function ClientsOverviewPage() {
     const router = useRouter();
+    const {user} = useAuth();
+    
+    // Role checks for UI visibility
+    const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isCustomerAdmin = user?.roles.includes('customerAdmin');
     
     // Debounced search state
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -66,12 +72,14 @@ export default function ClientsOverviewPage() {
                     Clients overview
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                    <Button 
-                        variant="contained" 
-                        onClick={() => router.push('/clients/create')}
-                    >
-                        Create Client
-                    </Button>
+                    {(isGlobalAdmin || isCustomerAdmin) && (
+                        <Button 
+                            variant="contained" 
+                            onClick={() => router.push('/clients/create')}
+                        >
+                            Create Client
+                        </Button>
+                    )}
                     <IconButton onClick={handleRefetch}>
                         <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
                     </IconButton>
