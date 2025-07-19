@@ -9,6 +9,7 @@ import {
     Alert,
     CircularProgress,
     Autocomplete,  // For MUI Select Autocomplete
+    Grid,
 } from '@mui/material';
 import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,11 +21,13 @@ import { useCreateClient } from '@/hooks/useCreateClient';
 
 const schema = yup.object().shape({
     name: yup.string().required('Client name is required'),
+    contactPerson: yup.string().optional(),
     companyId: yup.string().required('Company is required'),
 });
 
 type FormInputs = {
     name: string;
+    contactPerson?: string;
     tav?: string;
     address?: string;
     postcode?: string;
@@ -51,6 +54,7 @@ export default function CreateClientPage() {
         resolver: yupResolver(schema),
         defaultValues: {
             name: '',
+            contactPerson: '',
             companyId: '',
         },
     });
@@ -100,22 +104,49 @@ export default function CreateClientPage() {
                 )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Client Name"
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                            error={!!errors.name}
-                            helperText={errors.name?.message}
-                            required
-                        />
-                    )}
-                />
+                {/* General Information Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                        General Information
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="name"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Client Name"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.name}
+                                        helperText={errors.name?.message}
+                                        required
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="contactPerson"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Contact Person"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.contactPerson}
+                                        helperText={errors.contactPerson?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
 
                 {/* Additional Fields */}
                 <Controller
