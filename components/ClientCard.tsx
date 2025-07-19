@@ -107,28 +107,28 @@ export default function ClientCard({
                         <table style={{width: '100%', borderCollapse: 'collapse'}}>
                             <tbody>
                             <tr>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">TAV</Typography>
                                 </td>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">{tav}</Typography>
                                 </td>
                             </tr>
                             <tr>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">Address</Typography>
                                 </td>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
                                         {[address, postcode, city, country].filter(Boolean).join(', ') || 'N/A'}
                                     </Typography>
                                 </td>
                             </tr>
                             <tr>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
                                     <Typography variant="caption">Phone Number</Typography>
                                 </td>
-                                <td style={{padding: '4px 0px'}}>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">{phoneNumber ?? "N/A"}</Typography>
                                 </td>
                             </tr>
