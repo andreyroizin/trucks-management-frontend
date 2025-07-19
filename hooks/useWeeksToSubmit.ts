@@ -46,7 +46,7 @@ const fetchWeeksToSubmit = async ({
                                   }: {
     driverId?: string;
     weekNr?: number;
-    status?: 'hasDisputes' | 'allApproved' | 'hasPending';
+    status?: 'hasDisputes' | 'allApprovedOrRejected' | 'hasPending';
     pageNumber: number;
     pageSize: number;
 }): Promise<WeeksToSubmitResponse> => {
@@ -78,7 +78,7 @@ export const useWeeksToSubmit = ({
                                  }: {
     driverId?: string;
     weekNr?: number;
-    status?: 'hasDisputes' | 'allApproved' | 'hasPending';
+    status?: 'hasDisputes' | 'allApprovedOrRejected' | 'hasPending';
     pageNumber?: number;
     pageSize?: number;
 }) =>

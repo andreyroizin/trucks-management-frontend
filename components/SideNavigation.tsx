@@ -151,7 +151,7 @@ export default function SideNavigation() {
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
                             <ListItemText primary="Disputes List"/>
                         </NavItem>
-                        <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/')} sx={{pl: 6}}>
+                        <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/weeks-to-submit')} sx={{pl: 6}}>
                             <ListItemText primary="Weeks to Submit"/>
                         </NavItem>
                     </List>
