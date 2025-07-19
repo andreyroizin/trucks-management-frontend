@@ -111,10 +111,10 @@ export default function CreateClientPage() {
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* General Information Block */}
                 <Box mb={4}>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         General Information
                     </Typography>
-                    <Grid container spacing={2}>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 name="name"
@@ -185,10 +185,10 @@ export default function CreateClientPage() {
 
                 {/* Client Address Block */}
                 <Box mb={4}>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         Client Address
                     </Typography>
-                    <Grid container spacing={2}>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 name="address"
@@ -262,10 +262,10 @@ export default function CreateClientPage() {
 
                 {/* Contact Information Block */}
                 <Box mb={4}>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         Contact Information
                     </Typography>
-                    <Grid container spacing={2}>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 name="phoneNumber"
@@ -305,7 +305,7 @@ export default function CreateClientPage() {
 
                 {/* Remark Block */}
                 <Box mb={4}>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         Remark
                     </Typography>
                     <Controller
