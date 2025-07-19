@@ -257,13 +257,13 @@ export default function CompanyDetailPage() {
                             company.drivers.map((driver, index) => (
                                 <TableRow key={driver.driverId || index}>
                                     <TableCell sx={{pl: 0, border: 'none'}}>
-                                        {driver.firstName} {driver.lastName}
+                                        {driver.user?.firstName} {driver.user?.lastName}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        {driver.phone || 'N/A'}
+                                        {driver.user?.phone || 'N/A'}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        {driver.email || 'N/A'}
+                                        {driver.user?.email || 'N/A'}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
                                         -

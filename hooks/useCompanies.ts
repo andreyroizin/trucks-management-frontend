@@ -13,9 +13,12 @@ export type CompaniesResponse = {
 export type Driver = {
     driverId: string;
     aspNetUserId: string | null;
-    user: any | null;
-    firstName: string;
-    lastName: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        phone?: string;
+        email?: string;
+    } | null;
 }
 
 export type Company = {

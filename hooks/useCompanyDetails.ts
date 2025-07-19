@@ -13,7 +13,16 @@ export type Company = {
     email?: string;
     remark?: string;
     isApproved: boolean;
-    drivers?: any[];
+    drivers?: {
+        driverId: string;
+        aspNetUserId: string | null;
+        user: {
+            firstName: string;
+            lastName: string;
+            phone?: string;
+            email?: string;
+        } | null;
+    }[];
 };
 
 const fetchCompany = async (id: string): Promise<Company> => {
