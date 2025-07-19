@@ -43,22 +43,30 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
         setAnchorEl(null);
     };
 
-    const handleView = () => {
-        router.push(`/companies/${id}`);
-        handleClose();
-    };
-
-    const handleEdit = () => {
+    const handleEdit = (event?: React.MouseEvent) => {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
         onEdit(id);
         handleClose();
     };
 
-    const handleDelete = () => {
+    const handleDelete = (event?: React.MouseEvent) => {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
         onDelete(id);
         handleClose();
     };
 
-    const handleCardClick = () => {
+    const handleCardClick = (event: React.MouseEvent) => {
+        // Prevent navigation if menu is open
+        if (anchorEl) {
+            event.stopPropagation();
+            return;
+        }
         router.push(`/companies/${id}`);
     };
 
@@ -119,7 +127,7 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                     open={open}
                     onClose={handleClose}
                     anchorOrigin={{
-                        vertical: 'top',
+                        vertical: 'bottom',
                         horizontal: 'right',
                     }}
                     transformOrigin={{
@@ -127,7 +135,6 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                         horizontal: 'right',
                     }}
                 >
-                    <MenuItem onClick={handleView}>View</MenuItem>
                     <MenuItem onClick={handleEdit}>Edit</MenuItem>
                     <MenuItem onClick={handleDelete}>Delete</MenuItem>
                 </Menu>
