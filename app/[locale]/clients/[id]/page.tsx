@@ -10,6 +10,7 @@ import {
     CircularProgress,
     Alert,
     Button,
+    Divider,
 } from '@mui/material';
 import Link from 'next/link';
 import {useAuth} from '@/hooks/useAuth';
@@ -144,17 +145,69 @@ export default function ClientDetailPage() {
                         </Box>
                     )}
 
-                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                        {client.tav}
-                    </Typography>
-                    <Typography variant="body1">
-                        {client.address}, {client.city}, {client.postcode}, {client.country}
-                    </Typography>
-                    <Typography variant="body1">Phone: {client.phoneNumber}</Typography>
-                    <Typography variant="body1">Email: {client.email}</Typography>
-                    <Typography variant="body1" sx={{mt: 1}}>
-                        Remark: {client.remark}
-                    </Typography>
+                    {/* General Information Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            General Information
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Client Name:</strong> {client.name}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>TAV:</strong> {client.tav || 'N/A'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Company:</strong> {client.company.name}
+                        </Typography>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Client Address Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Client Address
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Street Address:</strong> {client.address || 'N/A'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Postcode:</strong> {client.postcode || 'N/A'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>City:</strong> {client.city || 'N/A'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Country:</strong> {client.country || 'N/A'}
+                        </Typography>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Contact Information Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Contact Information
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Phone Number:</strong> {client.phoneNumber || 'N/A'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Email:</strong> {client.email || 'N/A'}
+                        </Typography>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Remark Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Remark
+                        </Typography>
+                        <Typography variant="body1">
+                            {client.remark || 'No remark provided'}
+                        </Typography>
+                    </Box>
 
 
                 </CardContent>
