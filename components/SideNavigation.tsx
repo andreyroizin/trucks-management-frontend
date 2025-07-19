@@ -133,7 +133,9 @@ export default function SideNavigation() {
 
                 {/* Workdays parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
-                         active={pathNoLocale.startsWith('/partrides') || pathNoLocale.startsWith('/disputes')}
+                         active={pathNoLocale.startsWith('/partrides')
+                             || pathNoLocale.startsWith('/disputes')
+                             || pathNoLocale.startsWith('/weeks-to-submit')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
                     <ListItemText primary="Workdays"/>
