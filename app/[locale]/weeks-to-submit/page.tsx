@@ -38,7 +38,7 @@ import {useSnack} from "@/providers/SnackProvider";
 // status filter options
 const STATUS_OPTIONS = [
     { label: 'Has Disputes', value: 'hasDisputes' },
-    { label: 'All approved', value: 'allApprovedOrRejected' },
+    { label: 'All Approved', value: 'allApprovedOrRejected' },
     { label: 'Has Pending', value: 'hasPending' },
 ];
 
@@ -104,7 +104,6 @@ export default function WeeksToSubmitPage() {
             for (const id of selectedIds) {
                 await allowDriver(id);
             }
-            showSnack({ text: 'All selected weeks submitted', severity: 'success' });
         } catch (e: any) {
             showSnack({
                 text: e?.response?.data?.errors?.[0] ?? 'Failed to submit weeks',
@@ -245,8 +244,8 @@ export default function WeeksToSubmitPage() {
                             {!isLoading &&
                                 data?.data?.map((w) => {
                                     const disabled =
-                                        w.summaryStatus === 'HasPending' ||
-                                        w.summaryStatus === 'HasDisputes';
+                                        w.summaryStatus === 'Has Pending' ||
+                                        w.summaryStatus === 'Has Disputes';
 
                                     return (
                                         <TableRow
@@ -269,9 +268,7 @@ export default function WeeksToSubmitPage() {
                                                 {w.totalHours.toFixed(1)} h.
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
-                                                {w.summaryStatus
-                                                    .replace(/([A-Z])/g, ' $1')
-                                                    .trim()}
+                                                {w.summaryStatus}
                                             </TableCell>
                                             <TableCell align="right" sx={{ py: 2.6 }}>
                                                 €{w.forecastedEarning.toFixed(2)}
@@ -335,7 +332,7 @@ export default function WeeksToSubmitPage() {
                 >
                   Submit
                 </Button>
-                <Button fullWidth onClick={() => setConfirmOpen(false)} color="inherit">
+                <Button fullWidth onClick={() => setConfirmOpen(false)} >
                   Cancel
                 </Button>
               </DialogActions>

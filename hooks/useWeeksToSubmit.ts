@@ -17,7 +17,7 @@ export type WeekToSubmit = {
         firstName: string;
         lastName: string;
     };
-    summaryStatus: 'HasPending' | 'HasDisputes' | 'AllApprovedOrRejected';
+    summaryStatus: 'Has Pending' | 'Has Disputes' | 'All Approved';
     partRideCount: number;
     totalHours: number;
     pendingAdminCount: number;
