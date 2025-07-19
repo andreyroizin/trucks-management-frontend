@@ -21,22 +21,28 @@ import { useCreateClient } from '@/hooks/useCreateClient';
 
 const schema = yup.object().shape({
     name: yup.string().required('Client name is required'),
-    contactPerson: yup.string().optional(),
     companyId: yup.string().required('Company is required'),
+    tav: yup.string().optional(),
+    address: yup.string().optional(),
+    postcode: yup.string().optional(),
+    city: yup.string().optional(),
+    country: yup.string().optional(),
+    phoneNumber: yup.string().optional(),
+    email: yup.string().optional(),
+    remark: yup.string().optional(),
 });
 
 type FormInputs = {
-    name: string;
-    contactPerson?: string;
-    tav?: string;
-    address?: string;
-    postcode?: string;
-    city?: string;
-    country?: string;
-    phoneNumber?: string;
-    email?: string;
-    remark?: string;
-    companyId: string;
+    name: string;               // Required
+    companyId: string;          // Required
+    tav?: string;               // Optional
+    address?: string;           // Optional
+    postcode?: string;          // Optional
+    city?: string;              // Optional
+    country?: string;           // Optional
+    phoneNumber?: string;       // Optional
+    email?: string;             // Optional
+    remark?: string;            // Optional
 };
 
 export default function CreateClientPage() {
@@ -54,7 +60,6 @@ export default function CreateClientPage() {
         resolver: yupResolver(schema),
         defaultValues: {
             name: '',
-            contactPerson: '',
             companyId: '',
         },
     });
@@ -171,23 +176,6 @@ export default function CreateClientPage() {
                                         variant="outlined"
                                         error={!!errors.tav}
                                         helperText={errors.tav?.message}
-                                    />
-                                )}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Controller
-                                name="contactPerson"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField
-                                        {...field}
-                                        label="Contact Person"
-                                        fullWidth
-                                        margin="normal"
-                                        variant="outlined"
-                                        error={!!errors.contactPerson}
-                                        helperText={errors.contactPerson?.message}
                                     />
                                 )}
                             />
