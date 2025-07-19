@@ -89,15 +89,29 @@ export default function ClientDetailPage() {
     }
 
     return (
-        <Box maxWidth="600px" mx="auto" p={2}>
-            {/* Show deletion error if any */}
-            {deleteErrorMsg && (
-                <Alert severity="error" sx={{mb: 2}}>
-                    {deleteErrorMsg}
-                </Alert>
-            )}
+        <Box sx={{ backgroundColor: 'grey.100', minHeight: '100vh' }}>
+            {/* Header Section */}
+            <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                py: 4,
+                px: 6
+            }}>
+                <Typography variant="h3" fontWeight={500}>
+                    Client Management
+                </Typography>
+            </Box>
 
-            <Card>
+            <Box sx={{ px: 6, pb: 4 }}>
+                {/* Show deletion error if any */}
+                {deleteErrorMsg && (
+                    <Alert severity="error" sx={{mb: 2}}>
+                        {deleteErrorMsg}
+                    </Alert>
+                )}
+
+                <Card elevation={0} sx={{ backgroundColor: 'white' }}>
                 <CardContent>
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -182,7 +196,11 @@ export default function ClientDetailPage() {
                 </CardContent>
             </Card>
 
-            {client.isApproved && <ContactPersonsSection clientId={client.id}/>}
+            {client.isApproved && (
+                <Box sx={{ backgroundColor: 'white', mt: 2, borderRadius: 1 }}>
+                    <ContactPersonsSection clientId={client.id}/>
+                </Box>
+            )}
 
             {/* Confirm Deletion Modal */}
             <ConfirmModal
@@ -199,6 +217,7 @@ export default function ClientDetailPage() {
                     {deleteError?.message || 'Failed to delete client.'}
                 </Alert>
             )}
+            </Box>
         </Box>
     );
 }
