@@ -18,8 +18,11 @@ export type ClientCardProps = {
     id: string;
     name: string;
     tav: string;
-    lastWorkday?: string;
-    lastDriver?: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phoneNumber?: string;
     onMenuClick?: (id: string) => void;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
@@ -29,8 +32,11 @@ export default function ClientCard({
                                        id,
                                        name,
                                        tav,
-                                       lastWorkday,
-                                       lastDriver,
+                                       address,
+                                       postcode,
+                                       city,
+                                       country,
+                                       phoneNumber,
                                        onEdit,
                                        onDelete,
                                    }: ClientCardProps) {
@@ -110,18 +116,20 @@ export default function ClientCard({
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 0px'}}>
-                                    <Typography variant="caption">Last Workday</Typography>
+                                    <Typography variant="caption">Address</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px'}}>
-                                    <Typography variant="caption">{lastWorkday}</Typography>
+                                    <Typography variant="caption">
+                                        {[address, postcode, city, country].filter(Boolean).join(', ') || 'N/A'}
+                                    </Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 0px'}}>
-                                    <Typography variant="caption">Last Driver</Typography>
+                                    <Typography variant="caption">Phone Number</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px'}}>
-                                    <Typography variant="caption">{lastDriver ?? "N/A"}</Typography>
+                                    <Typography variant="caption">{phoneNumber ?? "N/A"}</Typography>
                                 </td>
                             </tr>
                             </tbody>

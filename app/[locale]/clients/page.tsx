@@ -95,11 +95,11 @@ export default function ClientsOverviewPage() {
                             id={c.id}
                             name={c.name}
                             tav={c.tav}
-                            lastDriver={
-                                c.lastDriver
-                                    ? `${c.lastDriver.firstName ?? ''} ${c.lastDriver.lastName ?? ''}`.trim()
-                                    : undefined
-                            }
+                            address={c.address}
+                            postcode={c.postcode}
+                            city={c.city}
+                            country={c.country}
+                            phoneNumber={c.phoneNumber}
                             onDelete={handleDelete}
                             onEdit={(id) => {
                                 setSelectedClientId(id);
