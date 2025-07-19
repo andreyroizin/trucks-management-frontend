@@ -105,6 +105,7 @@ export default function WeeksToSubmitPage() {
             for (const id of selectedIds) {
                 await allowDriver(id);
             }
+            setSuccessOpen(true);
         } catch (e: any) {
             showSnack({
                 text: e?.response?.data?.errors?.[0] ?? 'Failed to submit weeks',
@@ -113,7 +114,6 @@ export default function WeeksToSubmitPage() {
         } finally {
             setSelectedIds([]);
             await qc.invalidateQueries({ queryKey: ['weeksToSubmit'] });
-            setSuccessOpen(true);
         }
     };
 
