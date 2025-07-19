@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ApiResponse } from '@/types/api';
 import {api} from "@/utils/api";
 
@@ -33,14 +33,15 @@ export type Company = {
 };
 
 // Fetcher function for companies
-const fetchCompanies = async (page: number = 1, pageSize: number = 100, search: string = ''): Promise<CompaniesResponse> => {
-    const params = new URLSearchParams({
-        page: page.toString(),
-        pageSize: pageSize.toString(),
-        ...(search && { search })
-    });
+const fetchCompanies = async (page: number, pageSize: number, search?: string): Promise<CompaniesResponse> => {
+    const params = {
+        pageNumber: page,
+        pageSize: pageSize,
+        search: search || undefined,
+    };
     
-    const response = await api.get<ApiResponse<CompaniesResponse>>(`/companies?${params}`);
+    const response = await api.get<ApiResponse<CompaniesResponse>>('/companies', { params });
+    
     if (response.data.isSuccess) {
         return response.data.data; // Return the paginated companies response
     }
@@ -48,9 +49,10 @@ const fetchCompanies = async (page: number = 1, pageSize: number = 100, search: 
 };
 
 // Custom hook to fetch companies
-export const useCompanies = (page: number = 1, pageSize: number = 100, search: string = '') => {
-    return useQuery({
+export const useCompanies = (page: number, pageSize: number, search?: string) => {
+    return useQuery<CompaniesResponse, Error>({
         queryKey: ['companies', page, pageSize, search],
-        queryFn: () => fetchCompanies(page, pageSize, search)
+        queryFn: () => fetchCompanies(page, pageSize, search),
+        placeholderData: keepPreviousData,
     });
 };
