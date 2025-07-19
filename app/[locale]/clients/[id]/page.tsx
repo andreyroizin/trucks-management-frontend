@@ -14,8 +14,10 @@ import {
     TableBody,
     TableCell,
     TableRow,
+    IconButton,
 } from '@mui/material';
-import Link from 'next/link';
+import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {useAuth} from '@/hooks/useAuth';
 import {useClientDetails} from '@/hooks/useClientDetails';
 import {useDeleteClient} from '@/hooks/useDeleteClient';
@@ -124,30 +126,48 @@ export default function ClientDetailPage() {
                         {client.name}
                     </Typography>
                     {(isCustomerAdmin || isGlobalAdmin) && (
-                        <Box sx={{display: 'flex', gap: 1}}>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
                             {(isGlobalAdmin && !client.isApproved) && (
                                 <Button
                                     variant="contained"
                                     color="success"
                                     disabled={isApproving}
                                     onClick={handleApprove}
+                                    sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
                                 >
                                     {isApproving ? 'Approving...' : 'Approve'}
                                 </Button>
                             )}
-                            <Link href={`/clients/edit?id=${client.id}`} passHref>
-                                <Button variant="contained" color="primary">
-                                    Edit
-                                </Button>
-                            </Link>
-                            <Button
-                                variant="contained"
-                                color="error"
+                            
+                            {/* Edit / Delete - matching partride styling exactly */}
+                            <IconButton
+                                onClick={() => router.push(`/clients/edit?id=${client.id}`)}
                                 disabled={isPending}
-                                onClick={() => setOpenModal(true)}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' }
+                                }}
                             >
-                                {isPending ? 'Deleting...' : 'Delete'}
-                            </Button>
+                                <DriveFileRenameOutlineRoundedIcon />
+                            </IconButton>
+
+                            <IconButton
+                                size="large"
+                                onClick={() => setOpenModal(true)}
+                                disabled={isPending}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' },
+                                    px: 1,
+                                    py: 0,
+                                }}
+                            >
+                                <DeleteOutlineIcon fontSize="medium" />
+                            </IconButton>
                         </Box>
                     )}
                 </Box>
