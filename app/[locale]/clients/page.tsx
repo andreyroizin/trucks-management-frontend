@@ -10,6 +10,8 @@ import SyncIcon from "@mui/icons-material/Sync";
 import {useClients} from '@/hooks/useClients';
 import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
 import {useAuth} from '@/hooks/useAuth';
+import {useDeleteClient} from '@/hooks/useDeleteClient';
+import ConfirmModal from '@/components/ConfirmModal';
 
 export default function ClientsOverviewPage() {
     const router = useRouter();
@@ -25,6 +27,10 @@ export default function ClientsOverviewPage() {
     // Pagination state
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(12);
+    
+    // Delete confirmation modal state
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [clientToDelete, setClientToDelete] = useState<string | null>(null);
 
     const {
       data: clientsData,
@@ -33,6 +39,7 @@ export default function ClientsOverviewPage() {
     } = useClients(page, pageSize, debouncedSearch);
 
     const queryClient = useQueryClient();
+    const { mutateAsync: deleteClient } = useDeleteClient();
 
     const handleRefetch = () => {
         queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -44,14 +51,33 @@ export default function ClientsOverviewPage() {
         setSelectedClientId(null);
     };
 
-    const handleEdit = () => {
-        console.log(`Edit client ${selectedClientId}`);
+    const handleEdit = (id?: string) => {
+        const clientId = id || selectedClientId;
+        if (clientId) {
+            router.push(`/clients/edit?id=${clientId}`);
+        }
         handleMenuClose();
     };
 
     const handleDelete = (id: string) => {
-        console.log(`Delete client ${id}`);
+        setClientToDelete(id);
+        setOpenDeleteModal(true);
         handleMenuClose();
+    };
+
+    const confirmDelete = async () => {
+        if (clientToDelete) {
+            try {
+                await deleteClient(clientToDelete);
+                queryClient.invalidateQueries({ queryKey: ['clients'] });
+                setOpenDeleteModal(false);
+                setClientToDelete(null);
+            } catch (error) {
+                console.error('Failed to delete client:', error);
+                setOpenDeleteModal(false);
+                setClientToDelete(null);
+            }
+        }
     };
 
     // Loading & error states
@@ -101,10 +127,7 @@ export default function ClientsOverviewPage() {
                             country={c.country}
                             phoneNumber={c.phoneNumber}
                             onDelete={handleDelete}
-                            onEdit={(id) => {
-                                setSelectedClientId(id);
-                                handleEdit()
-                            }}
+                            onEdit={handleEdit}
                         />
                     </Grid>
                 ))}
@@ -122,6 +145,18 @@ export default function ClientsOverviewPage() {
                   setPageSize(parseInt(event.target.value, 10));
                 }}
                 rowsPerPageOptions={[6, 9, 12, 15]}
+            />
+            
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                open={openDeleteModal}
+                title="Delete Client?"
+                message="Are you sure you want to delete this client? This action cannot be undone."
+                onClose={() => {
+                    setOpenDeleteModal(false);
+                    setClientToDelete(null);
+                }}
+                onConfirm={confirmDelete}
             />
         </Box>
     );
