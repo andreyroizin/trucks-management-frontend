@@ -31,6 +31,7 @@ import {useDrivers} from '@/hooks/useDrivers';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 import {useSnack} from "@/providers/SnackProvider";
 import Link from "next/link";
+import WeekApprovalOverviewModal from "@/components/WeekApprovalOverviewModal";
 
 /* ------------------------------------------------------------------ */
 /* Constants                                                           */
@@ -63,6 +64,8 @@ export default function WeeksToSubmitPage() {
     const [status, setStatus] = useState<
         'hasDisputes' | 'allApprovedOrRejected' | 'hasPending' | undefined
     >();
+    const [weekApprovalId, setWeekApprovalId] = useState<string | null>(null);
+    const [weekApprovalOverviewOpen, setWeekApprovalOverviewOpen] = useState(false);
 
     /* ------------------------------ Pagination ---------------------- */
     const [pageNumber, setPageNumber] = useState(1);
@@ -300,7 +303,10 @@ export default function WeeksToSubmitPage() {
                                                     size="small"
                                                     variant="outlined"
                                                     disabled={disabled}
-                                                    href={`/weeks-to-submit/${w.id}`}
+                                                    onClick={() => {
+                                                        setWeekApprovalId(w.id)
+                                                        setWeekApprovalOverviewOpen(true)
+                                                    }}
                                                 >
                                                     See Overview
                                                 </Button>
@@ -393,6 +399,16 @@ export default function WeeksToSubmitPage() {
                 </Button>
               </DialogContent>
             </Dialog>
+            {weekApprovalId && (
+                <WeekApprovalOverviewModal
+                    open={weekApprovalOverviewOpen}
+                    weekApprovalId={weekApprovalId}
+                    onClose={() => {
+                        setWeekApprovalOverviewOpen(false)
+                        setWeekApprovalId(null);
+                    }}
+                />
+            )}
         </Box>
     );
 }
