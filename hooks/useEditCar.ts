@@ -9,6 +9,11 @@ export type UpdateCarInput = {
     registrationDate?: string;
     remark?: string;
     companyId: string;
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
+    fileIdsToDelete?: string[];
 };
 
 // Update Car API

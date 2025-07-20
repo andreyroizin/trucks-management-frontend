@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -19,6 +19,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCarDetail } from '@/hooks/useCarDetail';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useEditCar } from '@/hooks/useEditCar';
+import FileUploadBox from '@/components/FileUploadBox';
+import FileTile from '@/components/FileTile';
+import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
+import { ApplicationFile } from '@/types/file';
 
 const schema = yup.object().shape({
     id: yup.string().required(),
@@ -27,6 +31,13 @@ const schema = yup.object().shape({
     vehicleYear: yup.string().optional(),
     registrationDate: yup.string().optional(),
     remark: yup.string().optional(),
+    newUploads: yup.array().of(
+        yup.object({
+            fileId: yup.string().required(),
+            originalFileName: yup.string().required(),
+        })
+    ).optional(),
+    fileIdsToDelete: yup.array().optional(),
 });
 
 type FormInputs = {
@@ -36,6 +47,11 @@ type FormInputs = {
     vehicleYear?: string;
     registrationDate?: string;
     remark?: string;
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
+    fileIdsToDelete?: string[];
 };
 
 export default function EditVehiclePage() {
@@ -53,6 +69,11 @@ export default function EditVehiclePage() {
 
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useEditCar();
+    const downloadFile = useDownloadCarFile();
+
+    // File management state
+    const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
+    const [fileIdsToDelete, setFileIdsToDelete] = useState<string[]>([]);
 
     // Set up form
     const {
@@ -69,6 +90,8 @@ export default function EditVehiclePage() {
             vehicleYear: '',
             registrationDate: '',
             remark: '',
+            newUploads: [],
+            fileIdsToDelete: [],
         },
     });
 
@@ -93,6 +116,21 @@ export default function EditVehiclePage() {
         }
     }, [carData, reset]);
 
+    // File management handlers
+    const handleFileDelete = (file: ApplicationFile) => {
+        setFileIdsToDelete((prev) =>
+            prev.includes(file.id) ? prev : [...prev, file.id]
+        );
+
+        if (carData?.files) {
+            carData.files = carData.files.filter((f) => f.id !== file.id);
+        }
+    };
+
+    const handleFileClick = async (file: ApplicationFile): Promise<void> => {
+        await downloadFile(file);
+    };
+
     // Submit handler
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -105,6 +143,9 @@ export default function EditVehiclePage() {
                 ...(data.vehicleYear && data.vehicleYear !== '' && { vehicleYear: data.vehicleYear }),
                 ...(data.registrationDate && data.registrationDate !== '' && { registrationDate: data.registrationDate }),
                 ...(data.remark && data.remark !== '' && { remark: data.remark }),
+                // Include file operations
+                newUploads: newUploads,
+                fileIdsToDelete: fileIdsToDelete,
             } as FormInputs;
             
             await mutateAsync(cleanedData);
@@ -282,19 +323,34 @@ export default function EditVehiclePage() {
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         Vehicle Documents
                     </Typography>
-                    <Box 
-                        sx={{ 
-                            p: 3, 
-                            border: '1px dashed', 
-                            borderColor: 'divider', 
-                            borderRadius: 1, 
-                            textAlign: 'center',
-                            color: 'text.secondary'
-                        }}
-                    >
-                        <Typography variant="body2">
-                            Document upload functionality will be available soon.
+                    
+                    {/* Existing Files */}
+                    {carData?.files && carData.files.length > 0 && (
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                Current Documents ({carData.files.length})
+                            </Typography>
+                            {carData.files.map((file) => (
+                                <Box key={file.id} mb={1.5}>
+                                    <FileTile
+                                        file={file}
+                                        onDelete={handleFileDelete}
+                                        onClick={handleFileClick}
+                                    />
+                                </Box>
+                            ))}
+                        </Box>
+                    )}
+
+                    {/* Upload New Files */}
+                    <Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Upload Additional Documents
                         </Typography>
+                        <FileUploadBox 
+                            uploadUrl="/temporary-uploads" 
+                            onFilesChange={setNewUploads} 
+                        />
                     </Box>
                 </Box>
 
