@@ -13,6 +13,11 @@ export type CarDetail = {
         id: string;
         name: string;
     };
+    files?: {
+        id: string;
+        originalFileName?: string;
+        contentType?: string;
+    }[];
 };
 
 // --- API CALL ---

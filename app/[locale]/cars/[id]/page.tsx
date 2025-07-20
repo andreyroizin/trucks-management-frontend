@@ -14,12 +14,15 @@ import {
     TableCell,
     TableRow,
     IconButton,
+    Stack,
 } from '@mui/material';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useCarDetail } from '@/hooks/useCarDetail';
 import { useDeleteCar } from '@/hooks/useDeleteCar';
+import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
 import ConfirmModal from '@/components/ConfirmModal';
+import FileTile from '@/components/FileTile';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function VehicleDetailPage() {
@@ -27,6 +30,7 @@ export default function VehicleDetailPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: car, isLoading, isError, error } = useCarDetail(id as string);
+    const downloadFile = useDownloadCarFile();
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
@@ -180,20 +184,21 @@ export default function VehicleDetailPage() {
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     Vehicle Documents
                 </Typography>
-                <Box 
-                    sx={{ 
-                        p: 3, 
-                        border: '1px dashed', 
-                        borderColor: 'divider', 
-                        borderRadius: 1, 
-                        textAlign: 'center',
-                        color: 'text.secondary'
-                    }}
-                >
-                    <Typography variant="body2">
-                        Document management functionality will be available soon.
+                {car.files?.length ? (
+                    <Stack spacing={2}>
+                        {car.files.map((file) => (
+                            <FileTile
+                                key={file.id}
+                                file={file}
+                                onClick={() => downloadFile(file)}
+                            />
+                        ))}
+                    </Stack>
+                ) : (
+                    <Typography variant="body1" color="text.secondary">
+                        No documents uploaded.
                     </Typography>
-                </Box>
+                )}
 
                 <Divider sx={{ my: 3 }} />
 
