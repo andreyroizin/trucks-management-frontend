@@ -1,128 +1,161 @@
 'use client';
 
-import React, {useState, Suspense, useEffect} from 'react';
-import {
-    Box,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    CircularProgress,
-    Alert,
-    TablePagination, Button,
-} from '@mui/material';
+import React, {useState} from 'react';
+import {useQueryClient} from '@tanstack/react-query';
+import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
 import {useRouter, useSearchParams} from 'next/navigation';
-import { useCars } from '@/hooks/useCars';
-import Link from 'next/link';
-import {useAuth} from "@/hooks/useAuth";
+import CarCard from '@/components/CarCard';
+import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+import SyncIcon from "@mui/icons-material/Sync";
+import {useCars} from '@/hooks/useCars';
+import {DebouncedSearchInput} from "@/components/DebouncedSearchInput";
+import {useAuth} from '@/hooks/useAuth';
+import {useDeleteCar} from '@/hooks/useDeleteCar';
+import ConfirmModal from '@/components/ConfirmModal';
 
-function CarsList() {
-    const { user, isAuthenticated, loading } = useAuth();
+export default function CarsOverviewPage() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const companyId = searchParams.get('companyId') || "";
+    const {user} = useAuth();
+    
+    // Role checks for UI visibility
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
-    const router = useRouter();
+    
+    // Debounced search state
+    const [debouncedSearch, setDebouncedSearch] = useState('');
 
     // Pagination state
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(12);
+    
+    // Delete confirmation modal state
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [carToDelete, setCarToDelete] = useState<string | null>(null);
 
-    // Fetch cars
-    const { data: carsData, isLoading, isError, error } = useCars(companyId ? [companyId] : [], page + 1, pageSize);
+    const {
+      data: carsData,
+      isLoading,
+      isError
+    } = useCars(companyId ? [companyId] : [], page, pageSize, debouncedSearch);
 
-    useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant'];
-        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
+    const queryClient = useQueryClient();
+    const { mutateAsync: deleteCar } = useDeleteCar();
 
-        if (!loading && (!isAuthenticated || !hasAccess)) {
-            router.push('/auth/login'); // Redirect to login if not authorized
+    const handleRefetch = () => {
+        queryClient.invalidateQueries({ queryKey: ['cars'] });
+    }
+
+    const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
+
+    const handleMenuClose = () => {
+        setSelectedCarId(null);
+    };
+
+    const handleEdit = (id?: string) => {
+        const carId = id || selectedCarId;
+        if (carId) {
+            router.push(`/cars/edit/${carId}`);
         }
-    }, [isAuthenticated, loading, user, router]);
-
-    // Handle page change
-    const handleChangePage = (_: unknown, newPage: number) => {
-        setPage(newPage);
+        handleMenuClose();
     };
 
-    // Handle page size change
-    const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPageSize(parseInt(event.target.value, 10));
-        setPage(0);
+    const handleDelete = (id: string) => {
+        setCarToDelete(id);
+        setOpenDeleteModal(true);
+        handleMenuClose();
     };
 
-    if (loading || isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
+    const confirmDelete = async () => {
+        if (carToDelete) {
+            try {
+                await deleteCar(carToDelete);
+                queryClient.invalidateQueries({ queryKey: ['cars'] });
+                setOpenDeleteModal(false);
+                setCarToDelete(null);
+            } catch (error) {
+                console.error('Failed to delete car:', error);
+                setOpenDeleteModal(false);
+                setCarToDelete(null);
+            }
+        }
+    };
 
-    if (isError) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load cars.'}</Alert>
-            </Box>
-        );
-    }
+    // Loading & error states
+    if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load vehicles</Alert>;
 
     return (
-        <Box maxWidth="lg" mx="auto" p={4}>
-            <Typography variant="h4" gutterBottom>
-                Cars
-            </Typography>
-            {(isGlobalAdmin || isCustomerAdmin) && (
-                <Box display="flex" mb={2}>
-                    <Link href={`/cars/create?companyId=${companyId}`} passHref>
-                        <Button variant="contained" color="primary">
-                            Create New Car
+        <Box sx={{py: 4}}>
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Vehicle Management
+                </Typography>
+                <LanguageSelectDesktop/>
+            </Box>
+
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h4" fontWeight={500}>
+                    Vehicles Overview
+                </Typography>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    {(isGlobalAdmin || isCustomerAdmin) && (
+                        <Button 
+                            variant="contained" 
+                            onClick={() => router.push(`/cars/create${companyId ? `?companyId=${companyId}` : ''}`)}
+                        >
+                            Create Vehicle
                         </Button>
-                    </Link>
+                    )}
+                    <IconButton onClick={handleRefetch}>
+                        <SyncIcon sx={{transform: 'rotate(90deg)'}}/>
+                    </IconButton>
                 </Box>
-            )}
-            <TableContainer component={Paper}>
-                <Table aria-label="cars table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>License Plate</TableCell>
-                            <TableCell>Remark</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {carsData?.cars.map((car) => (
-                            <TableRow key={car.id} hover component={Link} href={`/cars/${car.id}`}
-                                      sx={{ textDecoration: 'none', cursor: 'pointer' }}>
-                                <TableCell>{car.licensePlate}</TableCell>
-                                <TableCell>{car.remark}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <TablePagination
-                    component="div"
-                    count={carsData?.totalCars || 0}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={pageSize}
-                    onRowsPerPageChange={handleChangePageSize}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
-                />
-            </TableContainer>
-        </Box>
-    );
-}
+            </Box>
 
-// Wrap in Suspense for streaming support
-export default function CarsPage() {
-    return (
-        <Suspense fallback={<CircularProgress />}>
-            <CarsList />
-        </Suspense>
+            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"License Plate"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+
+            <Grid container spacing={2}>
+                {(carsData?.cars || []).map((car) => (
+                    <Grid item xs={12} sm={6} md={4} key={car.id}>
+                        <CarCard
+                            id={car.id}
+                            licensePlate={car.licensePlate}
+                            vehicleYear={car.vehicleYear}
+                            registrationDate={car.registrationDate}
+                            onDelete={handleDelete}
+                            onEdit={handleEdit}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+
+            <TablePagination
+                sx={{mt: 4}}
+                component="div"
+                count={carsData?.totalCars || 0}
+                page={page - 1}
+                onPageChange={(event, newPage) => setPage(newPage + 1)}
+                rowsPerPage={pageSize}
+                onRowsPerPageChange={(event) => {
+                  setPage(1);
+                  setPageSize(parseInt(event.target.value, 10));
+                }}
+                rowsPerPageOptions={[6, 9, 12, 15]}
+            />
+            
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                open={openDeleteModal}
+                title="Delete Vehicle?"
+                message="Are you sure you want to delete this vehicle? This action cannot be undone."
+                onClose={() => {
+                    setOpenDeleteModal(false);
+                    setCarToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+            />
+        </Box>
     );
 }
