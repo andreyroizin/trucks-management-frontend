@@ -241,7 +241,12 @@ export default function VehicleDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Assigned Driver</TableCell>
-                            <TableCell sx={{border: 'none'}}>N/A</TableCell>
+                            <TableCell sx={{border: 'none'}}>
+                                {car.driverFirstName && car.driverLastName 
+                                    ? `${car.driverFirstName} ${car.driverLastName}`
+                                    : 'Not assigned'
+                                }
+                            </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Vehicle Year</TableCell>

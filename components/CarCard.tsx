@@ -19,6 +19,8 @@ export type CarCardProps = {
     licensePlate: string;
     vehicleYear?: string;
     registrationDate?: string;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
     onMenuClick?: (id: string) => void;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
@@ -29,6 +31,8 @@ export default function CarCard({
                                     licensePlate,
                                     vehicleYear,
                                     registrationDate,
+                                    driverFirstName,
+                                    driverLastName,
                                     onEdit,
                                     onDelete,
                                 }: CarCardProps) {
@@ -107,7 +111,12 @@ export default function CarCard({
                                     <Typography variant="caption">Assigned Driver</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">N/A</Typography>
+                                    <Typography variant="caption">
+                                        {driverFirstName && driverLastName 
+                                            ? `${driverFirstName} ${driverLastName}`
+                                            : 'Not assigned'
+                                        }
+                                    </Typography>
                                 </td>
                             </tr>
                             <tr>

@@ -10,6 +10,10 @@ export type Car = {
     companyId: string;
     vehicleYear?: string;
     registrationDate?: string;
+    driverId?: string | null;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
+    driverEmail?: string | null;
 };
 
 export type CarsResponse = {

@@ -124,6 +124,8 @@ export default function CarsOverviewPage() {
                             licensePlate={car.licensePlate}
                             vehicleYear={car.vehicleYear}
                             registrationDate={car.registrationDate}
+                            driverFirstName={car.driverFirstName}
+                            driverLastName={car.driverLastName}
                             onDelete={handleDelete}
                             onEdit={handleEdit}
                         />

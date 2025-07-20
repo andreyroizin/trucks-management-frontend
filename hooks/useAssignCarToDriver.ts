@@ -41,7 +41,7 @@ export const useAssignCarToDriver = () => {
             assignCarToDriver(userId, data),
         onSuccess: () => {
             // Refresh relevant queries
-            queryClient.invalidateQueries({ queryKey: ['car'] });
+            queryClient.invalidateQueries({ queryKey: ['carDetail'] });
             queryClient.invalidateQueries({ queryKey: ['cars'] });
             queryClient.invalidateQueries({ queryKey: ['drivers'] });
             queryClient.invalidateQueries({ queryKey: ['companyDetails'] });
