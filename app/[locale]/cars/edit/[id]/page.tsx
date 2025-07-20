@@ -96,7 +96,18 @@ export default function EditVehiclePage() {
     // Submit handler
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            await mutateAsync(data);
+            // Clean data by removing empty strings and null values, but keep required fields
+            const cleanedData = {
+                id: data.id,
+                companyId: data.companyId,
+                licensePlate: data.licensePlate,
+                // Only include optional fields if they have values
+                ...(data.vehicleYear && data.vehicleYear !== '' && { vehicleYear: data.vehicleYear }),
+                ...(data.registrationDate && data.registrationDate !== '' && { registrationDate: data.registrationDate }),
+                ...(data.remark && data.remark !== '' && { remark: data.remark }),
+            } as FormInputs;
+            
+            await mutateAsync(cleanedData);
             router.push(`/cars/${carId}`);
         } catch {
             // Error handled by isError / error

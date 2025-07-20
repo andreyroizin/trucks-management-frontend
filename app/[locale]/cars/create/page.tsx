@@ -80,7 +80,14 @@ export default function CreateVehiclePage() {
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            await mutateAsync(data);
+            // Clean data by removing empty strings and null values
+            const cleanedData = Object.fromEntries(
+                Object.entries(data).filter(([key, value]) => 
+                    value !== undefined && value !== null && value !== ''
+                )
+            ) as FormInputs;
+            
+            await mutateAsync(cleanedData);
             reset();
             router.push('/cars');
         } catch {
