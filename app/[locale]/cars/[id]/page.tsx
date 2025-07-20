@@ -34,6 +34,7 @@ import { useCarDetail } from '@/hooks/useCarDetail';
 import { useDeleteCar } from '@/hooks/useDeleteCar';
 import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
 import { useCompanyDetails } from '@/hooks/useCompanyDetails';
+import { useAssignCarToDriver } from '@/hooks/useAssignCarToDriver';
 import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,10 +63,14 @@ export default function VehicleDetailPage() {
     // Driver assignment state
     const [openDriverModal, setOpenDriverModal] = useState(false);
     const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
+    const [assignmentError, setAssignmentError] = useState<string | null>(null);
     
     // Fetch company details to get drivers
     const { data: companyData, isLoading: isCompanyLoading } = useCompanyDetails(car?.company?.id || '');
-
+    
+    // Car assignment mutation
+    const { mutateAsync: assignCar, isPending: isAssigning, isError: isAssignError, error: assignError } = useAssignCarToDriver();
+    
     // Check roles
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant'];
@@ -89,12 +94,36 @@ export default function VehicleDetailPage() {
     };
 
     // Handle Driver Assignment
-    const handleAssignDriver = () => {
-        // For now, just close the modal as requested
-        // Backend preparation needed before implementing actual assignment
-        setOpenDriverModal(false);
-        setSelectedDriverId(null);
-        console.log('Driver assignment prepared for backend implementation');
+    const handleAssignDriver = async () => {
+        if (!selectedDriverId || !car) return;
+        
+        setAssignmentError(null);
+        
+        // Find the selected driver to get their user ID
+        const selectedDriver = companyData?.drivers?.find(d => {
+            const driverId = (d as any).id || d.driverId;
+            return driverId === selectedDriverId;
+        });
+        if (!selectedDriver?.aspNetUserId) {
+            setAssignmentError('Driver user ID not found');
+            return;
+        }
+        
+        try {
+            await assignCar({
+                userId: selectedDriver.aspNetUserId,
+                carId: car.id,
+                companyId: car.company.id,
+            });
+            
+            // Success - close modal and reset state
+            setOpenDriverModal(false);
+            setSelectedDriverId(null);
+            setAssignmentError(null);
+            
+        } catch (err: any) {
+            setAssignmentError(err.message || 'Failed to assign car to driver');
+        }
     };
 
     if (authLoading || isLoading) {
@@ -149,7 +178,11 @@ export default function VehicleDetailPage() {
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {/* Assign Driver Button */}
                             <Button
-                                onClick={() => setOpenDriverModal(true)}
+                                onClick={() => {
+                                    setSelectedDriverId(null); // Reset selection
+                                    setAssignmentError(null); // Reset errors
+                                    setOpenDriverModal(true);
+                                }}
                                 disabled={isPending || isCompanyLoading}
                                 variant="contained"
                                 startIcon={<PersonAddIcon />}
@@ -288,6 +321,13 @@ export default function VehicleDetailPage() {
                 </DialogTitle>
                 
                 <DialogContent>
+                    {/* Assignment Error */}
+                    {assignmentError && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {assignmentError}
+                        </Alert>
+                    )}
+                    
                     {isCompanyLoading ? (
                         <Box display="flex" justifyContent="center" py={4}>
                             <CircularProgress />
@@ -300,53 +340,65 @@ export default function VehicleDetailPage() {
                         </Box>
                     ) : (
                         <List sx={{ width: '100%' }}>
-                            {companyData.drivers.map((driver) => (
-                                <ListItem key={driver.driverId} disablePadding>
-                                    <ListItemButton 
-                                        onClick={() => setSelectedDriverId(driver.driverId)}
-                                        sx={{ borderRadius: 1 }}
-                                    >
-                                        <Radio
-                                            checked={selectedDriverId === driver.driverId}
-                                            value={driver.driverId}
-                                            sx={{ mr: 1 }}
-                                        />
-                                        <ListItemText 
-                                            primary={
-                                                <Typography variant="body1">
-                                                    {driver.user?.firstName} {driver.user?.lastName}
-                                                </Typography>
-                                            }
-                                            secondary={driver.user?.email}
-                                        />
-                                        {selectedDriverId === driver.driverId && (
-                                            <Chip 
-                                                label="Selected" 
-                                                size="small" 
-                                                color="primary" 
-                                                sx={{ ml: 1 }}
+                            {companyData.drivers.map((driver) => {
+                                const driverId = (driver as any).id || driver.driverId;
+                                return (
+                                    <ListItem key={driverId} disablePadding>
+                                        <ListItemButton 
+                                            onClick={() => {
+                                                setSelectedDriverId(driverId);
+                                            }}
+                                            sx={{ borderRadius: 1 }}
+                                            disabled={isAssigning}
+                                        >
+                                            <Radio
+                                                checked={selectedDriverId === driverId}
+                                                value={driverId}
+                                                sx={{ mr: 1 }}
                                             />
-                                        )}
-                                    </ListItemButton>
-                                </ListItem>
-                            ))}
+                                            <ListItemText 
+                                                primary={
+                                                    <Typography variant="body1">
+                                                        {driver.user?.firstName} {driver.user?.lastName}
+                                                    </Typography>
+                                                }
+                                                secondary={driver.user?.email}
+                                            />
+                                            {selectedDriverId === driverId && (
+                                                <Chip 
+                                                    label="Selected" 
+                                                    size="small" 
+                                                    color="primary" 
+                                                    sx={{ ml: 1 }}
+                                                />
+                                            )}
+                                        </ListItemButton>
+                                    </ListItem>
+                                );
+                            })}
                         </List>
                     )}
                 </DialogContent>
                 
                 <DialogActions sx={{ px: 3, pb: 3 }}>
                     <Button 
-                        onClick={() => setOpenDriverModal(false)}
+                        onClick={() => {
+                            setOpenDriverModal(false);
+                            setSelectedDriverId(null);
+                            setAssignmentError(null);
+                        }}
                         color="inherit"
+                        disabled={isAssigning}
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleAssignDriver}
                         variant="contained"
-                        disabled={!selectedDriverId}
+                        disabled={!selectedDriverId || isAssigning}
+                        startIcon={isAssigning ? <CircularProgress size={20} /> : null}
                     >
-                        Confirm Assignment
+                        {isAssigning ? 'Assigning...' : 'Confirm Assignment'}
                     </Button>
                 </DialogActions>
             </Dialog>
