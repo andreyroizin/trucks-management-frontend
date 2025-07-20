@@ -79,19 +79,8 @@ export default function CreateVehiclePage() {
     }, [companyIdFromUrl, companiesData, setValue]);
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-        console.log('Form data before submit:', data);
-        
-        // Clean data by removing empty strings
-        const cleanedData = Object.fromEntries(
-            Object.entries(data).filter(([key, value]) => 
-                value !== undefined && value !== null && value !== ''
-            )
-        ) as FormInputs;
-        
-        console.log('Cleaned data:', cleanedData);
-        
         try {
-            await mutateAsync(cleanedData);
+            await mutateAsync(data);
             reset();
             router.push('/cars');
         } catch {

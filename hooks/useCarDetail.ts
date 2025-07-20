@@ -7,6 +7,8 @@ export type CarDetail = {
     id: string;
     licensePlate: string;
     remark: string;
+    vehicleYear?: string;
+    registrationDate?: string;
     company: {
         id: string;
         name: string;

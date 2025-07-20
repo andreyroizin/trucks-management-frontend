@@ -22,9 +22,7 @@ export type CarResponse = {
 
 // --- API CALL ---
 const createCar = async (car: CarInput): Promise<CarResponse> => {
-    console.log('Creating car with data:', car);
     const response = await api.post<ApiResponse<CarResponse>>('/cars', car);
-    console.log('Car create response:', response.data);
     if (response.data.isSuccess) {
         return response.data.data;
     }
