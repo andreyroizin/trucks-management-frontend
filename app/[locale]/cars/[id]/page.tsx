@@ -2,48 +2,64 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Box, Card, CardContent, Typography, CircularProgress, Alert, Button } from '@mui/material';
-import Link from 'next/link';
+import {
+    Box,
+    Typography,
+    CircularProgress,
+    Alert,
+    Divider,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    IconButton,
+} from '@mui/material';
+import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useCarDetail } from '@/hooks/useCarDetail';
 import { useDeleteCar } from '@/hooks/useDeleteCar';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
 
-export default function CarDetailPage() {
+export default function VehicleDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { data: car, isLoading, isError, error } = useCarDetail(id as string);
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
 
-    // Fetch car details
-    const { data: car, isLoading, isError, error } = useCarDetail(id as string);
+    // Delete Car Hook
+    const {
+        mutateAsync: deleteCar,
+        isPending,
+        isError: isDeleteError,
+        error: deleteError,
+    } = useDeleteCar();
 
-    // Delete hook
-    const { mutateAsync: deleteCar, isPending: isDeleting } = useDeleteCar();
+    // Confirm modal state
     const [openModal, setOpenModal] = useState(false);
-    const [deleteError, setDeleteError] = useState<string | null>(null);
+    const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
 
-    // Access control
+    // Check roles
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
-
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
-            router.push('/auth/login'); // Redirect to login if not authorized
+            router.push('/auth/login');
         }
-    }, [isAuthenticated, authLoading, user, router]);
+    }, [authLoading, isAuthenticated, router, user?.roles]);
 
-
-    // Handle delete
+    // Handle Delete Confirm
     const handleDelete = async () => {
-        setDeleteError(null);
+        setDeleteErrorMsg(null);
         try {
             await deleteCar(id as string);
             setOpenModal(false);
-            router.push('/companies');
+            router.push('/cars'); // Navigate away after successful deletion
         } catch (err: any) {
-            setDeleteError(err.message || 'Failed to delete car');
+            setDeleteErrorMsg(err.message || 'Failed to delete vehicle.');
             setOpenModal(false);
         }
     };
@@ -59,70 +75,153 @@ export default function CarDetailPage() {
     if (isError || !car) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load car details.'}</Alert>
+                <Alert severity="error">{error?.message || 'Failed to load vehicle details.'}</Alert>
             </Box>
         );
     }
 
     return (
-        <Box maxWidth="600px" mx="auto" p={4}>
-            {/* Show delete error if any */}
-            {deleteError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {deleteError}
-                </Alert>
-            )}
+        <Box sx={{py: 4}}>
+            {/* Header Section */}
+            <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Vehicle Management
+                </Typography>
+            </Box>
 
-            <Card>
-                <CardContent>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h5">Car Detail</Typography>
-                        {(isCustomerAdmin || isGlobalAdmin) && (
-                            <Box>
-                                <Link href={`/cars/edit/${car.id}`} passHref>
-                                    <Button variant="contained" color="primary" sx={{ mr: 1 }}>
-                                        Edit
-                                    </Button>
-                                </Link>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    disabled={isDeleting}
-                                    onClick={() => setOpenModal(true)}
-                                >
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </Button>
-                            </Box>
-                        )}
-                    </Box>
+            <Paper variant="outlined" sx={{p: 3, mx: 'auto'}}>
+                {/* Show deletion error if any */}
+                {deleteErrorMsg && (
+                    <Alert severity="error" sx={{mb: 2}}>
+                        {deleteErrorMsg}
+                    </Alert>
+                )}
 
-                    <Typography variant="body1" gutterBottom>
-                        <strong>License Plate:</strong> {car.licensePlate}
+                {/* Header section */}
+                <Box
+                    sx={{
+                        mt: 1,
+                        mb: 3,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                    }}
+                >
+                    <Typography variant="h4" fontWeight={500}>
+                        {car.licensePlate}
                     </Typography>
-                    <Typography variant="body1" gutterBottom>
-                        <strong>Remark:</strong> {car.remark}
-                    </Typography>
+                    {(isCustomerAdmin || isGlobalAdmin) && (
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            {/* Edit / Delete - matching company styling exactly */}
+                            <IconButton
+                                onClick={() => router.push(`/cars/edit/${car.id}`)}
+                                disabled={isPending}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' }
+                                }}
+                            >
+                                <DriveFileRenameOutlineRoundedIcon />
+                            </IconButton>
 
-                    {/* Company Link */}
-                    <Typography variant="body1" sx={{ mt: 1 }}>
-                        <strong>Company:</strong>{' '}
-                        <Link href={`/companies/${car.company.id}`} passHref>
-                            <Button variant="text" size="small">
-                                {car.company.name}
-                            </Button>
-                        </Link>
-                    </Typography>
-                </CardContent>
-            </Card>
+                            <IconButton
+                                size="large"
+                                onClick={() => setOpenModal(true)}
+                                disabled={isPending}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' },
+                                    px: 1,
+                                    py: 0,
+                                }}
+                            >
+                                <DeleteOutlineIcon fontSize="medium" />
+                            </IconButton>
+                        </Box>
+                    )}
+                </Box>
 
-            {/* Confirm Modal */}
+                {/* General Information */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    General Information
+                </Typography>
+                <Table size="small">
+                    <TableBody>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                Company
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.company?.name || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Assigned Driver</TableCell>
+                            <TableCell sx={{border: 'none'}}>N/A</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Vehicle Year</TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.vehicleYear || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Registration Date</TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.registrationDate || 'N/A'}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+
+                <Divider sx={{ my: 3 }} />
+
+                {/* Vehicle Documents */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    Vehicle Documents
+                </Typography>
+                <Box 
+                    sx={{ 
+                        p: 3, 
+                        border: '1px dashed', 
+                        borderColor: 'divider', 
+                        borderRadius: 1, 
+                        textAlign: 'center',
+                        color: 'text.secondary'
+                    }}
+                >
+                    <Typography variant="body2">
+                        Document management functionality will be available soon.
+                    </Typography>
+                </Box>
+
+                <Divider sx={{ my: 3 }} />
+
+                {/* Remark */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
+                    Remark
+                </Typography>
+                <Typography variant="body1">
+                    {car.remark || 'No remark provided'}
+                </Typography>
+
+            </Paper>
+
+            {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Car?"
-                message="Are you sure you want to delete this car?"
+                title="Delete Vehicle?"
+                message="Are you sure you want to delete this vehicle?"
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
+
+            {/* Display error for deletion if needed */}
+            {isDeleteError && (
+                <Alert severity="error" sx={{mt: 2}}>
+                    {deleteError?.message || 'Failed to delete vehicle.'}
+                </Alert>
+            )}
         </Box>
     );
 }
