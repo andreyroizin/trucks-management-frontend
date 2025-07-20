@@ -1,64 +1,72 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import React, { useEffect } from 'react';
 import {
     Box,
     Typography,
     TextField,
     Button,
-    CircularProgress,
     Alert,
+    CircularProgress,
+    Autocomplete,
+    Grid,
 } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
-import { useCreateCar, CarInput } from '@/hooks/useCreateCar';
+import { useCreateCar } from '@/hooks/useCreateCar';
 
-// --- VALIDATION SCHEMA ---
-const carSchema = yup.object().shape({
+const schema = yup.object().shape({
     companyId: yup.string().required('Company is required'),
     licensePlate: yup.string().required('License plate is required'),
+    vehicleYear: yup.string().optional(),
+    registrationDate: yup.string().optional(),
     remark: yup.string().optional(),
 });
 
-function CreateCarForm() {
+type FormInputs = {
+    companyId: string;          // Required
+    licensePlate: string;       // Required
+    vehicleYear?: string;       // Optional
+    registrationDate?: string;  // Optional
+    remark?: string;            // Optional
+};
+
+export default function CreateVehiclePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
-    const { mutateAsync, isPending } = useCreateCar();
+    const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
+    const { mutateAsync, isPending, isError, error } = useCreateCar();
 
-    // Ensure only customerAdmins & globalAdmins can access
+    const {
+        handleSubmit,
+        control,
+        reset,
+        setValue,
+        formState: { errors },
+    } = useForm<FormInputs>({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            companyId: '',
+            licensePlate: '',
+            vehicleYear: '',
+            registrationDate: '',
+            remark: '',
+        },
+    });
+
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin'];
-        const hasAccess = user?.roles.some((r) => allowedRoles.includes(r));
+        const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
         if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
     }, [authLoading, isAuthenticated, router, user?.roles]);
 
     // Extract companyId from search params (if provided)
     const companyIdFromUrl = searchParams.get('companyId');
-
-    // State for API error
-    const [apiError, setApiError] = useState<string | null>(null);
-
-    // Form Handling
-    const {
-        handleSubmit,
-        control,
-        setValue,
-        formState: { errors },
-    } = useForm<CarInput>({
-        resolver: yupResolver(carSchema),
-        defaultValues: {
-            companyId: '',
-            licensePlate: '',
-            remark: '',
-        },
-    });
 
     // Pre-fill company if provided in the URL
     useEffect(() => {
@@ -70,105 +78,217 @@ function CreateCarForm() {
         }
     }, [companyIdFromUrl, companiesData, setValue]);
 
-    // Submit Handler
-    const onSubmit: SubmitHandler<CarInput> = async (data) => {
-        setApiError(null);
+    const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+        console.log('Form data before submit:', data);
+        
+        // Clean data by removing empty strings
+        const cleanedData = Object.fromEntries(
+            Object.entries(data).filter(([key, value]) => 
+                value !== undefined && value !== null && value !== ''
+            )
+        ) as FormInputs;
+        
+        console.log('Cleaned data:', cleanedData);
+        
         try {
-            await mutateAsync(data);
-            router.push(`/cars?companyId=${data.companyId}`);
-        } catch (err: any) {
-            setApiError(err.message);
+            await mutateAsync(cleanedData);
+            reset();
+            router.push('/cars');
+        } catch {
+            /* Error handled by isError & error */
         }
     };
 
-    return (
-        <Box maxWidth="600px" mx="auto" p={4}>
-            <Typography variant="h4" gutterBottom>
-                Create Car
-            </Typography>
+    if (authLoading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <CircularProgress />
+            </Box>
+        );
+    }
 
-            {/* Display API Error */}
-            {apiError && <Alert severity="error">{apiError}</Alert>}
+    return (
+        <Box maxWidth="800px" p={4}>
+            {/* Header Block */}
+            <Box mb={4}>
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
+                    New Vehicle Creation Form
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                    Use this form to create a new vehicle in vehicle list. Please ensure all fields are filled out accurately.
+                </Typography>
+            </Box>
+
+            {/* Form Block */}
+            <Box>
+                {isError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error?.message || 'Failed to create vehicle.'}
+                    </Alert>
+                )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                {/* Company Selection */}
-                <Controller
-                    name="companyId"
-                    control={control}
-                    render={({ field }) => (
-                        <Autocomplete
-                            options={companiesData?.data || []}
-                            getOptionLabel={(option) => option.name ?? ''}
-                            loading={isLoadingCompanies}
-                            value={companiesData?.data.find((c) => c.id === field.value) || null}
-                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Select Company"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    error={!!errors.companyId}
-                                    helperText={errors.companyId?.message}
-                                    required
-                                />
-                            )}
-                        />
-                    )}
-                />
+                {/* General Information Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        General Information
+                    </Typography>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
+                        {/* License Plate */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="licensePlate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="License Plate"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.licensePlate}
+                                        helperText={errors.licensePlate?.message}
+                                        required
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Company Selection */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="companyId"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        options={companiesData?.data || []}
+                                        getOptionLabel={(option) => option.name}
+                                        onChange={(_, value) => field.onChange(value?.id || '')}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Company"
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={!!errors.companyId}
+                                                helperText={errors.companyId?.message}
+                                                required
+                                            />
+                                        )}
+                                        loading={isCompaniesLoading}
+                                        value={
+                                            companiesData?.data.find(c => c.id === field.value) || null
+                                        }
+                                        isOptionEqualToValue={(option, val) => option.id === val.id}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Vehicle Year */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="vehicleYear"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Vehicle Year"
+                                        placeholder="When the vehicle was purchased?"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.vehicleYear}
+                                        helperText={errors.vehicleYear?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Registration Date */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="registrationDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Registration Date"
+                                        type="date"
+                                        placeholder="When the vehicle was registered?"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.registrationDate}
+                                        helperText={errors.registrationDate?.message}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
 
-                {/* License Plate */}
-                <Controller
-                    name="licensePlate"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="License Plate"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            error={!!errors.licensePlate}
-                            helperText={errors.licensePlate?.message}
-                            required
-                        />
-                    )}
-                />
+                {/* Remark Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Remark
+                    </Typography>
+                    <Controller
+                        name="remark"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                label="Remark"
+                                fullWidth
+                                margin="normal"
+                                variant="outlined"
+                                multiline
+                                rows={4}
+                                placeholder="Enter any additional remarks or comments about the vehicle..."
+                                error={!!errors.remark}
+                                helperText={errors.remark?.message}
+                            />
+                        )}
+                    />
+                </Box>
 
-                {/* Remark (Optional) */}
-                <Controller
-                    name="remark"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Remark"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            error={!!errors.remark}
-                            helperText={errors.remark?.message}
-                        />
-                    )}
-                />
+                {/* Vehicle Documents Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Vehicle Documents
+                    </Typography>
+                    <Box 
+                        sx={{ 
+                            p: 3, 
+                            border: '1px dashed', 
+                            borderColor: 'divider', 
+                            borderRadius: 1, 
+                            textAlign: 'center',
+                            color: 'text.secondary'
+                        }}
+                    >
+                        <Typography variant="body2">
+                            Document upload functionality will be available soon.
+                        </Typography>
+                    </Box>
+                </Box>
 
-                {/* Submit Button */}
                 <Box mt={3}>
-                    <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Create Car'}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        disabled={isPending}
+                        startIcon={isPending ? <CircularProgress size={20} /> : null}
+                    >
+                        {isPending ? 'Creating...' : 'Create Vehicle'}
                     </Button>
                 </Box>
             </form>
+            </Box>
         </Box>
-    );
-}
-
-export default function CreateCarPage() {
-    return (
-        <Suspense fallback={<CircularProgress />}>
-            <CreateCarForm />
-        </Suspense>
     );
 }
