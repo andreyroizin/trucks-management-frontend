@@ -15,12 +15,25 @@ import {
     TableRow,
     IconButton,
     Stack,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Radio,
+    Chip,
 } from '@mui/material';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useCarDetail } from '@/hooks/useCarDetail';
 import { useDeleteCar } from '@/hooks/useDeleteCar';
 import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
+import { useCompanyDetails } from '@/hooks/useCompanyDetails';
 import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
 import { useAuth } from '@/hooks/useAuth';
@@ -45,6 +58,13 @@ export default function VehicleDetailPage() {
     // Confirm modal state
     const [openModal, setOpenModal] = useState(false);
     const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
+    
+    // Driver assignment state
+    const [openDriverModal, setOpenDriverModal] = useState(false);
+    const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
+    
+    // Fetch company details to get drivers
+    const { data: companyData, isLoading: isCompanyLoading } = useCompanyDetails(car?.company?.id || '');
 
     // Check roles
     useEffect(() => {
@@ -66,6 +86,15 @@ export default function VehicleDetailPage() {
             setDeleteErrorMsg(err.message || 'Failed to delete vehicle.');
             setOpenModal(false);
         }
+    };
+
+    // Handle Driver Assignment
+    const handleAssignDriver = () => {
+        // For now, just close the modal as requested
+        // Backend preparation needed before implementing actual assignment
+        setOpenDriverModal(false);
+        setSelectedDriverId(null);
+        console.log('Driver assignment prepared for backend implementation');
     };
 
     if (authLoading || isLoading) {
@@ -118,7 +147,20 @@ export default function VehicleDetailPage() {
                     </Typography>
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            {/* Edit / Delete - matching company styling exactly */}
+                            {/* Assign Driver Button */}
+                            <Button
+                                onClick={() => setOpenDriverModal(true)}
+                                disabled={isPending || isCompanyLoading}
+                                variant="contained"
+                                startIcon={<PersonAddIcon />}
+                                sx={{
+                                    borderRadius: 1,
+                                }}
+                            >
+                                Assign Driver
+                            </Button>
+                            
+                            {/* Edit Button */}
                             <IconButton
                                 onClick={() => router.push(`/cars/edit/${car.id}`)}
                                 disabled={isPending}
@@ -132,6 +174,7 @@ export default function VehicleDetailPage() {
                                 <DriveFileRenameOutlineRoundedIcon />
                             </IconButton>
 
+                            {/* Delete Button */}
                             <IconButton
                                 size="large"
                                 onClick={() => setOpenModal(true)}
@@ -227,6 +270,86 @@ export default function VehicleDetailPage() {
                     {deleteError?.message || 'Failed to delete vehicle.'}
                 </Alert>
             )}
+
+            {/* Driver Assignment Modal */}
+            <Dialog 
+                open={openDriverModal} 
+                onClose={() => setOpenDriverModal(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Typography variant="h6" fontWeight={600}>
+                        Assign Driver to {car?.licensePlate}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Select a driver from {car?.company?.name}
+                    </Typography>
+                </DialogTitle>
+                
+                <DialogContent>
+                    {isCompanyLoading ? (
+                        <Box display="flex" justifyContent="center" py={4}>
+                            <CircularProgress />
+                        </Box>
+                    ) : !companyData?.drivers?.length ? (
+                        <Box textAlign="center" py={4}>
+                            <Typography color="text.secondary">
+                                No drivers available for this company.
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <List sx={{ width: '100%' }}>
+                            {companyData.drivers.map((driver) => (
+                                <ListItem key={driver.driverId} disablePadding>
+                                    <ListItemButton 
+                                        onClick={() => setSelectedDriverId(driver.driverId)}
+                                        sx={{ borderRadius: 1 }}
+                                    >
+                                        <Radio
+                                            checked={selectedDriverId === driver.driverId}
+                                            value={driver.driverId}
+                                            sx={{ mr: 1 }}
+                                        />
+                                        <ListItemText 
+                                            primary={
+                                                <Typography variant="body1">
+                                                    {driver.user?.firstName} {driver.user?.lastName}
+                                                </Typography>
+                                            }
+                                            secondary={driver.user?.email}
+                                        />
+                                        {selectedDriverId === driver.driverId && (
+                                            <Chip 
+                                                label="Selected" 
+                                                size="small" 
+                                                color="primary" 
+                                                sx={{ ml: 1 }}
+                                            />
+                                        )}
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
+                </DialogContent>
+                
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+                    <Button 
+                        onClick={() => setOpenDriverModal(false)}
+                        color="inherit"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleAssignDriver}
+                        variant="contained"
+                        disabled={!selectedDriverId}
+                    >
+                        Confirm Assignment
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
