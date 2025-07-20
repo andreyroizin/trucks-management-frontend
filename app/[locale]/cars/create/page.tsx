@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Box,
     Typography,
@@ -18,6 +18,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateCar } from '@/hooks/useCreateCar';
+import FileUploadBox from '@/components/FileUploadBox';
 
 const schema = yup.object().shape({
     companyId: yup.string().required('Company is required'),
@@ -33,6 +34,10 @@ type FormInputs = {
     vehicleYear?: string;       // Optional
     registrationDate?: string;  // Optional
     remark?: string;            // Optional
+    newUploads?: {              // Optional - file uploads
+        fileId: string;
+        originalFileName: string;
+    }[];
 };
 
 export default function CreateVehiclePage() {
@@ -41,6 +46,14 @@ export default function CreateVehiclePage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateCar();
+
+    // File upload state
+    const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
+
+    // Handle file upload changes with useCallback to prevent re-renders
+    const handleFilesChange = useCallback((files: { fileId: string; originalFileName: string }[]) => {
+        setTempFiles(files);
+    }, []);
 
     const {
         handleSubmit,
@@ -87,8 +100,12 @@ export default function CreateVehiclePage() {
                 )
             ) as FormInputs;
             
+            // Add uploaded files to the request
+            cleanedData.newUploads = tempFiles;
+            
             await mutateAsync(cleanedData);
             reset();
+            setTempFiles([]); // Clear uploaded files
             router.push('/cars');
         } catch {
             /* Error handled by isError & error */
@@ -255,20 +272,16 @@ export default function CreateVehiclePage() {
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                         Vehicle Documents
                     </Typography>
-                    <Box 
-                        sx={{ 
-                            p: 3, 
-                            border: '1px dashed', 
-                            borderColor: 'divider', 
-                            borderRadius: 1, 
-                            textAlign: 'center',
-                            color: 'text.secondary'
-                        }}
-                    >
-                        <Typography variant="body2">
-                            Document upload functionality will be available soon.
-                        </Typography>
-                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Upload vehicle-related documents such as registration, insurance, inspection certificates, etc. 
+                        Supported formats: PDF, JPG, PNG (max 10MB per file).
+                    </Typography>
+                    <FileUploadBox 
+                        uploadUrl="/temporary-uploads" 
+                        onFilesChange={handleFilesChange}
+                        accept="image/png,image/jpeg,image/jpg,image/heic,application/pdf"
+                        maxSizeMB={10}
+                    />
                 </Box>
 
                 <Box mt={3}>

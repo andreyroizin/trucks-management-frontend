@@ -9,6 +9,10 @@ export type CarInput = {
     vehicleYear?: string;
     registrationDate?: string;
     remark?: string;
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
 };
 
 export type CarResponse = {
