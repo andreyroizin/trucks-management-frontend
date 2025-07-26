@@ -6,21 +6,22 @@ import { ApiResponse } from '@/types/api'; // Reuse existing ApiResponse type
 
 // --- TYPES ---
 type NewClient = {
-    name: string;
-    tav?: string;
-    address?: string;
-    postcode?: string;
-    city?: string;
-    country?: string;
-    phoneNumber?: string;
-    email?: string;
-    remark?: string;
-    companyId?: string;
+    name: string;                // Required
+    companyId: string;          // Required  
+    tav?: string;               // Optional
+    address?: string;           // Optional
+    postcode?: string;          // Optional
+    city?: string;              // Optional
+    country?: string;           // Optional
+    phoneNumber?: string;       // Optional
+    email?: string;             // Optional
+    remark?: string;            // Optional
 };
 
 type CreateClientResponse = {
     id: string;
     name: string;
+    companyId: string;
     tav?: string;
     address?: string;
     postcode?: string;
@@ -29,13 +30,12 @@ type CreateClientResponse = {
     phoneNumber?: string;
     email?: string;
     remark?: string;
-    companyId?: string;
 };
 
 // --- FETCH FUNCTION ---
 const createClient = async (newClient: NewClient): Promise<CreateClientResponse> => {
     const response = await api.post<ApiResponse<CreateClientResponse>>(
-        'https://localhost:7129/clients',
+        '/clients',
         newClient
     );
     if (response.data.isSuccess) {

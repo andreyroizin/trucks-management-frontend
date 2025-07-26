@@ -14,47 +14,47 @@ import {
 } from '@mui/material';
 import {useRouter} from 'next/navigation';
 
-export type ClientCardProps = {
+export type CarCardProps = {
     id: string;
-    name: string;
-    tav: string;
-    address?: string;
-    postcode?: string;
-    city?: string;
-    country?: string;
-    phoneNumber?: string;
+    licensePlate: string;
+    vehicleYear?: string;
+    registrationDate?: string;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
     onMenuClick?: (id: string) => void;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
 };
 
-export default function ClientCard({
-                                       id,
-                                       name,
-                                       tav,
-                                       address,
-                                       postcode,
-                                       city,
-                                       country,
-                                       phoneNumber,
-                                       onEdit,
-                                       onDelete,
-                                   }: ClientCardProps) {
+export default function CarCard({
+                                    id,
+                                    licensePlate,
+                                    vehicleYear,
+                                    registrationDate,
+                                    driverFirstName,
+                                    driverLastName,
+                                    onEdit,
+                                    onDelete,
+                                }: CarCardProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const cardRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation();
         setAnchorEl(event.currentTarget);
     };
+    
     const handleClose = () => {
         setAnchorEl(null);
     };
+    
     const handleEdit = () => {
         onEdit?.(id);
         handleClose();
     };
+    
     const handleDelete = () => {
         onDelete?.(id);
         handleClose();
@@ -67,7 +67,7 @@ export default function ClientCard({
                 onClick={(e) => {
                     // If menu is open, prevent navigation
                     if (anchorEl) return;
-                    router.push(`/clients/${id}`);
+                    router.push(`/cars/${id}`);
                 }}
                 sx={{height: 230, display: 'flex', flexDirection: 'column', cursor: 'pointer'}}
                 variant="outlined"
@@ -75,7 +75,7 @@ export default function ClientCard({
                 <CardHeader
                     title={
                         <Typography variant="subtitle1" fontWeight={600}>
-                            {name}
+                            {licensePlate}
                         </Typography>
                     }
                     action={
@@ -83,7 +83,7 @@ export default function ClientCard({
                             <>
                                 <IconButton
                                     size="small"
-                                    aria-label="client actions"
+                                    aria-label="car actions"
                                     onClick={handleClick}
                                 >
                                     <MoreHorizIcon/>
@@ -110,28 +110,31 @@ export default function ClientCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">TAV</Typography>
-                                </td>
-                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{tav}</Typography>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Address</Typography>
+                                    <Typography variant="caption">Assigned Driver</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
-                                        {[address, postcode, city, country].filter(Boolean).join(', ') || 'N/A'}
+                                        {driverFirstName && driverLastName 
+                                            ? `${driverFirstName} ${driverLastName}`
+                                            : 'Not assigned'
+                                        }
                                     </Typography>
                                 </td>
                             </tr>
                             <tr>
-                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Phone Number</Typography>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">Vehicle Year</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{phoneNumber ?? "N/A"}</Typography>
+                                    <Typography variant="caption">{vehicleYear || 'N/A'}</Typography>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
+                                    <Typography variant="caption">Registration Date</Typography>
+                                </td>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">{registrationDate || 'N/A'}</Typography>
                                 </td>
                             </tr>
                             </tbody>
@@ -141,4 +144,4 @@ export default function ClientCard({
             </Card>
         </Box>
     );
-}
+} 

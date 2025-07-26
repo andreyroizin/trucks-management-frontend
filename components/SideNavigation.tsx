@@ -12,6 +12,7 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDownRounded';
 import PersonIcon from '@mui/icons-material/PersonRounded';
 import LocalShippingIcon from '@mui/icons-material/LocalShippingRounded';
 import TargetIcon from '@mui/icons-material/ExploreRounded';
+import BusinessIcon from '@mui/icons-material/BusinessRounded';
 import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -175,6 +176,12 @@ export default function SideNavigation() {
                 <NavItem active={isActive('/clients')} main onClick={() => go('/clients')}>
                     <ListItemIcon><TargetIcon/></ListItemIcon>
                     <ListItemText primary="Clients"/>
+                </NavItem>
+
+                {/* Companies */}
+                <NavItem active={isActive('/companies')} main onClick={() => go('/companies')}>
+                    <ListItemIcon><BusinessIcon/></ListItemIcon>
+                    <ListItemText primary="Companies"/>
                 </NavItem>
 
                 {/* Reports parent */}

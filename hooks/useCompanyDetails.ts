@@ -5,7 +5,24 @@ import {ApiResponse} from "@/types/api";
 export type Company = {
     id: string;
     name: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phoneNumber?: string;
+    email?: string;
+    remark?: string;
     isApproved: boolean;
+    drivers?: {
+        driverId: string;
+        aspNetUserId: string | null;
+        user: {
+            firstName: string;
+            lastName: string;
+            phone?: string;
+            email?: string;
+        } | null;
+    }[];
 };
 
 const fetchCompany = async (id: string): Promise<Company> => {

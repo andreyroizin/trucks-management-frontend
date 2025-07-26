@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
     Box,
     Typography,
@@ -9,36 +8,58 @@ import {
     Button,
     Alert,
     CircularProgress,
+    Grid,
 } from '@mui/material';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useUpdateCompany } from '@/hooks/useUpdateCompany';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth'; // Ensure this hook is correctly implemented
+import { useAuth } from '@/hooks/useAuth';
 import { useCompanyDetails } from '@/hooks/useCompanyDetails';
-
-type FormInputs = {
-    name: string;
-};
+import { useUpdateCompany } from '@/hooks/useUpdateCompany';
 
 // *** Validation Schema ***
 const schema = yup.object().shape({
-    name: yup.string().required('Company name is required'),
+    id:          yup.string().required(),
+    name:        yup.string().required('Company name is required'),
+    address:     yup.string().optional(),
+    postcode:    yup.string().optional(),
+    city:        yup.string().optional(),
+    country:     yup.string().optional(),
+    phoneNumber: yup.string().optional(),
+    email:       yup.string().optional(),
+    remark:      yup.string().optional(),
 });
+
+// *** FormInputs Type ***
+type FormInputs = {
+    id: string;
+    name: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phoneNumber?: string;
+    email?: string;
+    remark?: string;
+};
 
 export default function EditCompanyPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const companyId = searchParams.get('id') as string;
+    const companyId = searchParams.get('id') || '';
+
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const {
+        data: companyData,
+        isLoading: isCompanyLoading,
+        isError: isCompanyError,
+        error: companyError,
+    } = useCompanyDetails(companyId);
 
-    // Fetch company details
-    const { data: company, isLoading: isLoadingCompany, isError: isErrorCompany, error: companyError } = useCompanyDetails(companyId);
+    const { mutateAsync, isPending, isError, error } = useUpdateCompany();
 
-    // Initialize the update company mutation hook
-    const { mutateAsync, isPending: isUpdating, isError: isUpdateError, error: updateError } = useUpdateCompany();
-
-    // Form setup
+    // Set up form
     const {
         handleSubmit,
         control,
@@ -47,84 +68,260 @@ export default function EditCompanyPage() {
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
         defaultValues: {
-            name: company?.name || '',
+            id: companyId,
+            name: '',
+            address: '',
+            postcode: '',
+            city: '',
+            country: '',
+            phoneNumber: '',
+            email: '',
+            remark: '',
         },
     });
 
-    // Populate form with existing company data when fetched
+    // Access control
     useEffect(() => {
-        if (company) {
-            reset({ name: company.name });
-        }
-    }, [company, reset]);
+        const allowedRoles = ['globalAdmin'];
+        const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
+        if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
+    }, [authLoading, isAuthenticated, router, user?.roles]);
 
-    // Access control: Only allow 'globalAdmin' or 'customerAdmin'
+    // Prefill data once fetched
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin'];
-        const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
-
-        if (!authLoading && (!isAuthenticated || !hasAccess)) {
-            router.push('/auth/login'); // Redirect to login if not authorized
+        if (companyData) {
+            reset({
+                id:          companyData.id,
+                name:        companyData.name,
+                address:     companyData.address || '',
+                postcode:    companyData.postcode || '',
+                city:        companyData.city || '',
+                country:     companyData.country || '',
+                phoneNumber: companyData.phoneNumber || '',
+                email:       companyData.email || '',
+                remark:      companyData.remark || '',
+            });
         }
-    }, [isAuthenticated, authLoading, router, user?.roles]);
+    }, [companyData, reset]);
 
+    // Submit handler
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            await mutateAsync({ id: companyId, name: data.name });
-            reset();
-            router.push(`/companies/${companyId}`); // Redirect to Company Detail page after update
-        } catch (err) {
-            // Error handling is managed by isUpdateError and updateError
+            await mutateAsync(data);
+            router.push(`/companies/${companyId}`);
+        } catch {
+            // Error handled by isError / error
         }
     };
 
-    // Display loading state while fetching company details or during auth checks
-    if (authLoading || isLoadingCompany) {
+    // Loading states
+    if (authLoading || isCompanyLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress />
             </Box>
         );
     }
-
-    // Display error if fetching company details fails
-    if (isErrorCompany) {
+    if (isCompanyError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{companyError.message || 'Failed to load company details.'}</Alert>
+                <Alert severity="error">{companyError?.message || 'Failed to load company.'}</Alert>
             </Box>
         );
     }
 
     return (
-        <Box maxWidth="500px" mx="auto" p={2}>
-            <Typography variant="h5" gutterBottom>
-                Edit Company
-            </Typography>
+        <Box maxWidth="800px" p={4}>
+            {/* Header Block */}
+            <Box mb={4}>
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
+                    Edit Company Information
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                    Update the company information below. Please ensure all fields are filled out accurately.
+                </Typography>
+            </Box>
 
-            {isUpdateError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {updateError.message || 'Failed to update company.'}
-                </Alert>
-            )}
+            {/* Form Block */}
+            <Box>
+                {isError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error?.message || 'Failed to edit company.'}
+                    </Alert>
+                )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            label="Company Name"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            error={!!errors.name}
-                            helperText={errors.name?.message}
-                            required
-                        />
-                    )}
-                />
+                {/* General Information Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        General Information
+                    </Typography>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="name"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Company Name"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.name}
+                                        helperText={errors.name?.message}
+                                        required
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                {/* Company Address Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Company Address
+                    </Typography>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="address"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Street Address"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.address}
+                                        helperText={errors.address?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="postcode"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Postcode"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.postcode}
+                                        helperText={errors.postcode?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="city"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="City"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.city}
+                                        helperText={errors.city?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="country"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Country"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.country}
+                                        helperText={errors.country?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                {/* Contact Information Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Contact Information
+                    </Typography>
+                    <Grid container columnSpacing={2} rowSpacing={0}>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="phoneNumber"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Phone Number"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.phoneNumber}
+                                        helperText={errors.phoneNumber?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Email"
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.email}
+                                        helperText={errors.email?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+
+                {/* Remark Block */}
+                <Box mb={4}>
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                        Remark
+                    </Typography>
+                    <Controller
+                        name="remark"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                label="Remark"
+                                fullWidth
+                                margin="normal"
+                                variant="outlined"
+                                multiline
+                                rows={4}
+                                placeholder="Enter any additional remarks or comments about the company..."
+                                error={!!errors.remark}
+                                helperText={errors.remark?.message}
+                            />
+                        )}
+                    />
+                </Box>
 
                 <Box mt={3}>
                     <Button
@@ -132,13 +329,14 @@ export default function EditCompanyPage() {
                         variant="contained"
                         color="primary"
                         fullWidth
-                        disabled={isUpdating}
-                        startIcon={isUpdating ? <CircularProgress size={20} /> : null}
+                        disabled={isPending}
+                        startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isUpdating ? 'Updating...' : 'Update Company'}
+                        {isPending ? 'Updating...' : 'Update Company'}
                     </Button>
                 </Box>
             </form>
+            </Box>
         </Box>
     );
 }
