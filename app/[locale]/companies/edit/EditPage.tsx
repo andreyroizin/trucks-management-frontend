@@ -82,7 +82,7 @@ export default function EditCompanyPage() {
 
     // Access control
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
+        const allowedRoles = ['globalAdmin'];
         const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
         if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
     }, [authLoading, isAuthenticated, router, user?.roles]);

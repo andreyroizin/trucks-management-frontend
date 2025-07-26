@@ -124,9 +124,9 @@ export default function CompanyDetailPage() {
                     <Typography variant="h4" fontWeight={500}>
                         {company.name}
                     </Typography>
-                    {(isCustomerAdmin || isGlobalAdmin) && (
+                    {isGlobalAdmin && (
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            {(isGlobalAdmin && !company.isApproved) && (
+                            {!company.isApproved && (
                                 <Button
                                     variant="contained"
                                     color="success"

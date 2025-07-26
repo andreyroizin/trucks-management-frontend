@@ -25,8 +25,8 @@ type CompanyCardProps = {
     id: string;
     name: string;
     drivers: any[];
-    onDelete: (id: string) => void;
-    onEdit: (id: string) => void;
+    onDelete?: (id: string) => void;
+    onEdit?: (id: string) => void;
 };
 
 export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: CompanyCardProps) {
@@ -48,7 +48,7 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
             event.stopPropagation();
             event.preventDefault();
         }
-        onEdit(id);
+        onEdit?.(id);
         handleClose();
     };
 
@@ -57,7 +57,7 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
             event.stopPropagation();
             event.preventDefault();
         }
-        onDelete(id);
+        onDelete?.(id);
         handleClose();
     };
 
@@ -85,13 +85,15 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                     <Typography variant="h6" component="h3" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
                         {name}
                     </Typography>
-                    <IconButton
-                        size="small"
-                        onClick={handleMenuClick}
-                        aria-label="more options"
-                    >
-                        <MoreVertIcon fontSize="small" />
-                    </IconButton>
+                    {(onEdit || onDelete) && (
+                        <IconButton
+                            size="small"
+                            onClick={handleMenuClick}
+                            aria-label="more options"
+                        >
+                            <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                    )}
                 </Box>
 
                 <TableContainer component={Paper} elevation={0} sx={{ boxShadow: 'none' }}>
@@ -122,22 +124,24 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                     </Table>
                 </TableContainer>
 
-                <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                >
-                    <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                </Menu>
+                {(onEdit || onDelete) && (
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    >
+                        {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
+                        {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                    </Menu>
+                )}
             </CardContent>
         </Card>
     );

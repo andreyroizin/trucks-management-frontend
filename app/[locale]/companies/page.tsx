@@ -121,8 +121,8 @@ export default function CompaniesOverviewPage() {
                             id={c.id}
                             name={c.name}
                             drivers={c.drivers}
-                            onDelete={handleDelete}
-                            onEdit={handleEdit}
+                            onDelete={isGlobalAdmin ? handleDelete : undefined}
+                            onEdit={isGlobalAdmin ? handleEdit : undefined}
                         />
                     </Grid>
                 ))}
