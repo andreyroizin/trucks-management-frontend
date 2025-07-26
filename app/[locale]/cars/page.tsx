@@ -126,8 +126,8 @@ export default function CarsOverviewPage() {
                             registrationDate={car.registrationDate}
                             driverFirstName={car.driverFirstName}
                             driverLastName={car.driverLastName}
-                            onDelete={handleDelete}
-                            onEdit={handleEdit}
+                            onDelete={(isGlobalAdmin || isCustomerAdmin) ? handleDelete : undefined}
+                            onEdit={(isGlobalAdmin || isCustomerAdmin) ? handleEdit : undefined}
                         />
                     </Grid>
                 ))}
