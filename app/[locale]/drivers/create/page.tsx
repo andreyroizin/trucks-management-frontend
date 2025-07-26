@@ -17,6 +17,7 @@ import * as yup from 'yup';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
+import { useCreateDriver } from '@/hooks/useCreateDriver';
 
 const schema = yup.object().shape({
     CompanyId: yup.string().required('Company is required'),
@@ -35,7 +36,7 @@ const schema = yup.object().shape({
     LastWorkingDay: yup.string().required('Contract end date is required'),
     ProbationPeriod: yup.string().optional(),
     NoticePeriod: yup.string().optional(),
-    Function: yup.string().optional(),
+    Function: yup.string().required('Function is required').max(100, 'Function must be less than 100 characters'),
     WorkweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
     WeeklySchedule: yup.string().optional(),
     WorkingHours: yup.string().optional(),
@@ -71,7 +72,7 @@ type FormInputs = {
     LastWorkingDay: string;                 // Required - backend: LastWorkingDay
     ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
     NoticePeriod?: string;                  // Optional - backend: NoticePeriod
-    Function?: string;                      // Optional - backend: Function
+    Function: string;                       // Required - backend: Function
     WorkweekDuration: number;               // Required - backend: WorkweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: WorkweekDurationPercentage
     WeeklySchedule?: string;                // Optional - backend: WeeklySchedule
@@ -105,6 +106,7 @@ export default function CreateDriverPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
+    const { mutateAsync, isPending, isError, error } = useCreateDriver();
 
     const {
         handleSubmit,
@@ -165,13 +167,54 @@ export default function CreateDriverPage() {
         Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+        console.log('=== FORM SUBMISSION STARTED ===');
         try {
-            // TODO: Implement driver creation logic
-            console.log('Form data:', data);
+            console.log('Raw form data:', data);
+            
+            // Clean data by removing empty strings and null values
+            const cleanedEntries = Object.entries(data).filter(([key, value]) => 
+                value !== undefined && value !== null && value !== ''
+            );
+            const cleanedData = Object.fromEntries(cleanedEntries) as any;
+
+            // Add calculated fields
+            if (cleanedData.WorkweekDuration) {
+                cleanedData.WorkweekDurationPercentage = Math.round((cleanedData.WorkweekDuration / 40) * 100);
+            }
+            
+            if (cleanedData.CompensationPerMonthExclBtw) {
+                cleanedData.CompensationPerMonthInclBtw = Math.round((cleanedData.CompensationPerMonthExclBtw + (cleanedData.CompensationPerMonthExclBtw * 0.21)) * 100) / 100;
+            }
+
+            // Format dates to ISO 8601 format if they exist
+            if (cleanedData.DateOfBirth) {
+                cleanedData.DateOfBirth = new Date(cleanedData.DateOfBirth).toISOString();
+            }
+            if (cleanedData.DateOfEmployment) {
+                cleanedData.DateOfEmployment = new Date(cleanedData.DateOfEmployment).toISOString();
+            }
+            if (cleanedData.LastWorkingDay) {
+                cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
+            }
+
+            console.log('=== SENDING TO BACKEND ===');
+            console.log('Cleaned data:', JSON.stringify(cleanedData, null, 2));
+            console.log('All required fields present?', {
+                Email: !!cleanedData.Email,
+                Password: !!cleanedData.Password,
+                FirstName: !!cleanedData.FirstName,
+                LastName: !!cleanedData.LastName,
+                CompanyId: !!cleanedData.CompanyId,
+                DateOfEmployment: !!cleanedData.DateOfEmployment,
+                WorkweekDuration: !!cleanedData.WorkweekDuration,
+                Function: !!cleanedData.Function
+            });
+
+            await mutateAsync(cleanedData);
             reset();
             router.push('/drivers');
         } catch {
-            /* Error handling will be added when backend is implemented */
+            /* Error handled by isError & error */
         }
     };
 
@@ -205,6 +248,12 @@ export default function CreateDriverPage() {
 
             {/* Form Block */}
             <Box>
+                {isError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error?.message || 'Failed to create driver.'}
+                    </Alert>
+                )}
+
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {/* General Information Block */}
                     <Box mb={4}>
@@ -594,6 +643,7 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.Function}
                                             helperText={errors.Function?.message}
+                                            required
                                         />
                                     )}
                                 />
@@ -1036,8 +1086,9 @@ export default function CreateDriverPage() {
                             variant="contained"
                             color="primary"
                             fullWidth
+                            disabled={isPending}
                         >
-                            Create Driver
+                            {isPending ? 'Creating Driver...' : 'Create Driver'}
                         </Button>
                     </Box>
                 </form>
