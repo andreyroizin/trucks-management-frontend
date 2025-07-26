@@ -31,24 +31,41 @@ const schema = yup.object().shape({
     city: yup.string().optional(),
     country: yup.string().optional(),
     bsnNumber: yup.string().optional(),
+    employmentStartDate: yup.string().required('Employment start date is required'),
+    contractEndDate: yup.string().required('Contract end date is required'),
+    probationPeriod: yup.string().optional(),
+    noticePeriod: yup.string().optional(),
     remark: yup.string().optional(),
 });
 
 type FormInputs = {
-    companyId: string;          // Required
-    email: string;              // Required
-    password: string;           // Required
-    firstName: string;          // Required
-    lastName: string;           // Required
-    dateOfBirth?: string;       // Optional
-    phoneNumber?: string;       // Optional
-    address?: string;           // Optional
-    postcode?: string;          // Optional
-    city?: string;              // Optional
-    country?: string;           // Optional
-    bsnNumber?: string;         // Optional
-    remark?: string;            // Optional
+    companyId: string;              // Required
+    email: string;                  // Required
+    password: string;               // Required
+    firstName: string;              // Required
+    lastName: string;               // Required
+    dateOfBirth?: string;           // Optional
+    phoneNumber?: string;           // Optional
+    address?: string;               // Optional
+    postcode?: string;              // Optional
+    city?: string;                  // Optional
+    country?: string;               // Optional
+    bsnNumber?: string;             // Optional
+    employmentStartDate: string;    // Required
+    contractEndDate: string;        // Required
+    probationPeriod?: string;       // Optional
+    noticePeriod?: string;          // Optional
+    remark?: string;                // Optional
 };
+
+const periodOptions = [
+    { value: '1', label: '1 month' },
+    { value: '2', label: '2 months' },
+    { value: '3', label: '3 months' },
+    { value: '4', label: '4 months' },
+    { value: '5', label: '5 months' },
+    { value: '6', label: '6 months' },
+];
 
 export default function CreateDriverPage() {
     const router = useRouter();
@@ -75,6 +92,10 @@ export default function CreateDriverPage() {
             city: '',
             country: '',
             bsnNumber: '',
+            employmentStartDate: '',
+            contractEndDate: '',
+            probationPeriod: '',
+            noticePeriod: '',
             remark: '',
         },
     });
@@ -374,6 +395,118 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.bsnNumber}
                                             helperText={errors.bsnNumber?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Employment Dates Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Employment Dates
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            {/* Employment Start Date & Contract End Date */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="employmentStartDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Employment Start Date"
+                                            type="date"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.employmentStartDate}
+                                            helperText={errors.employmentStartDate?.message}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="contractEndDate"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Contract End Date"
+                                            type="date"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.contractEndDate}
+                                            helperText={errors.contractEndDate?.message}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* Probation Period & Notice Period */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="probationPeriod"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            options={periodOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Probation Period"
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.probationPeriod}
+                                                    helperText={errors.probationPeriod?.message}
+                                                />
+                                            )}
+                                            value={
+                                                periodOptions.find(option => option.value === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.value === val.value}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="noticePeriod"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            options={periodOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Notice Period"
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.noticePeriod}
+                                                    helperText={errors.noticePeriod?.message}
+                                                />
+                                            )}
+                                            value={
+                                                periodOptions.find(option => option.value === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
                                     )}
                                 />
