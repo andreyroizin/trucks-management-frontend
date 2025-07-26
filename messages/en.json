@@ -157,19 +157,19 @@
       },
       "sign": {
         "success": {
-          "title": "Sign Work Week",
-          "warning": "Make sure everything looks correct before signing. Once submitted, your workdays will be locked and sent for final processing.",
-          "submit": "Sign Work Week",
-          "alreadySigned": "This week has already been signed. You can view it below.",
-          "viewSigned": "View Signed Week",
-          "errorLoad": "Failed to load week details",
-          "errorSign": "Failed to sign the week"
+          "title": "Success! Your week has been signed",
+          "submitted": "Week {week} ({year}) has been successfully signed and submitted.",
+          "processed": "You will receive a notification once it has been processed by the administrator. A summary of this week is now available via the link below.",
+          "view": "View Signed Week",
+          "back": "Go to Current Period"
         },
         "title": "Review and Sign Your Work Week",
-        "review": "Please review the summary below before signing.",
-        "button": "Sign Week",
-        "already": "You have already signed this work week.",
-        "view": "View Signed Week"
+        "warning": "Make sure everything looks correct before signing. Once submitted, your workdays will be locked and sent for final processing.",
+        "submit": "Sign Work Week",
+        "alreadySigned": "This week has already been signed. You can view it below.",
+        "viewSigned": "View Signed Week",
+        "errorLoad": "Failed to load week details",
+        "errorSign": "Failed to sign the week"
       }
     }
   },
