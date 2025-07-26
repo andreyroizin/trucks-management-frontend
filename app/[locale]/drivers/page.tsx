@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDrivers } from '@/hooks/useDrivers';
 import DriversTable from '@/components/DriversTable';
-import { CircularProgress, Typography, Alert, Box } from '@mui/material';
+import { CircularProgress, Typography, Alert, Box, Button } from '@mui/material';
 import {useAuth} from "@/hooks/useAuth";
 
 export default function DriversPage() {
@@ -40,10 +40,29 @@ export default function DriversPage() {
     }
 
     return (
-        <Box p={4}>
-            <Typography variant="h4" gutterBottom>
-                Drivers
-            </Typography>
+        <Box sx={{py: 4}}>
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Driver Management
+                </Typography>
+            </Box>
+
+            <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h4" fontWeight={500}>
+                    Drivers Overview
+                </Typography>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    {(user?.roles.includes('globalAdmin') || user?.roles.includes('customerAdmin')) && (
+                        <Button 
+                            variant="contained" 
+                            onClick={() => router.push('/drivers/create')}
+                        >
+                            Create Driver
+                        </Button>
+                    )}
+                </Box>
+            </Box>
+
             <DriversTable drivers={drivers || []} />
         </Box>
     );
