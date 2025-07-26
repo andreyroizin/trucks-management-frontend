@@ -19,75 +19,77 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
 
 const schema = yup.object().shape({
-    companyId: yup.string().required('Company is required'),
-    email: yup.string().email('Invalid email').required('Email is required'),
-    password: yup.string().required('Password is required'),
-    firstName: yup.string().required('First name is required'),
-    lastName: yup.string().required('Last name is required'),
-    dateOfBirth: yup.string().optional(),
-    phoneNumber: yup.string().optional(),
-    address: yup.string().optional(),
-    postcode: yup.string().optional(),
-    city: yup.string().optional(),
-    country: yup.string().optional(),
-    bsnNumber: yup.string().optional(),
-    employmentStartDate: yup.string().required('Employment start date is required'),
-    contractEndDate: yup.string().required('Contract end date is required'),
-    probationPeriod: yup.string().optional(),
-    noticePeriod: yup.string().optional(),
-    function: yup.string().optional(),
-    workweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
-    weeklySchedule: yup.string().optional(),
-    workingHours: yup.string().optional(),
-    monthlyCompensationExclVat: yup.number().optional().min(0, 'Must be a positive number'),
-    payScale: yup.string().optional(),
-    payStep: yup.number().optional().min(0, 'Must be a positive number'),
-    hourlyWage: yup.number().optional().min(0, 'Must be a positive number'),
-    deviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
-    commuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
-    travelExpensesRate: yup.number().optional().min(0, 'Must be a positive number'),
-    maximumTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
-    vacationAgeThreshold: yup.number().optional().min(0, 'Must be a positive number'),
-    vacationDays: yup.number().optional().min(0, 'Must be a positive number'),
-    atvReducedWorkingHours: yup.number().optional().min(0, 'Must be a positive number'),
-    vacationAllowancePercentage: yup.number().optional().min(0, 'Must be a positive number').max(100, 'Must be 100% or less'),
-    remark: yup.string().optional(),
+    CompanyId: yup.string().required('Company is required'),
+    Email: yup.string().email('Invalid email').required('Email is required'),
+    Password: yup.string().required('Password is required'),
+    FirstName: yup.string().required('First name is required'),
+    LastName: yup.string().required('Last name is required'),
+    DateOfBirth: yup.string().optional(),
+    PhoneNumber: yup.string().optional(),
+    Address: yup.string().optional(),
+    Postcode: yup.string().optional(),
+    City: yup.string().optional(),
+    Country: yup.string().optional(),
+    BSN: yup.string().optional(),
+    DateOfEmployment: yup.string().required('Employment start date is required'),
+    LastWorkingDay: yup.string().required('Contract end date is required'),
+    ProbationPeriod: yup.string().optional(),
+    NoticePeriod: yup.string().optional(),
+    Function: yup.string().optional(),
+    WorkweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
+    WeeklySchedule: yup.string().optional(),
+    WorkingHours: yup.string().optional(),
+    CompensationPerMonthExclBtw: yup.number().optional().min(0, 'Must be a positive number'),
+    PayScale: yup.string().optional(),
+    PayScaleStep: yup.number().optional().min(0, 'Must be a positive number'),
+    HourlyWage100Percent: yup.number().optional().min(0, 'Must be a positive number'),
+    DeviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
+    CommuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
+    TravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
+    MaxTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
+    VacationAge: yup.number().optional().min(0, 'Must be a positive number'),
+    VacationDays: yup.number().optional().min(0, 'Must be a positive number'),
+    Atv: yup.number().optional().min(0, 'Must be a positive number'),
+    VacationAllowance: yup.number().optional().min(0, 'Must be a positive number').max(100, 'Must be 100% or less'),
+    Remark: yup.string().optional(),
 });
 
 type FormInputs = {
-    companyId: string;              // Required
-    email: string;                  // Required
-    password: string;               // Required
-    firstName: string;              // Required
-    lastName: string;               // Required
-    dateOfBirth?: string;           // Optional
-    phoneNumber?: string;           // Optional
-    address?: string;               // Optional
-    postcode?: string;              // Optional
-    city?: string;                  // Optional
-    country?: string;               // Optional
-    bsnNumber?: string;             // Optional
-    employmentStartDate: string;    // Required
-    contractEndDate: string;        // Required
-    probationPeriod?: string;       // Optional
-    noticePeriod?: string;          // Optional
-    function?: string;                      // Optional
-    workweekDuration: number;               // Required
-    weeklySchedule?: string;                // Optional
-    workingHours?: string;                  // Optional
-    monthlyCompensationExclVat?: number;    // Optional
-    payScale?: string;                      // Optional
-    payStep?: number;                       // Optional
-    hourlyWage?: number;                    // Optional
-    deviatingWage?: number;                 // Optional
-    commuteKilometers?: number;             // Optional
-    travelExpensesRate?: number;            // Optional
-    maximumTravelExpenses?: number;         // Optional
-    vacationAgeThreshold?: number;          // Optional
-    vacationDays?: number;                  // Optional
-    atvReducedWorkingHours?: number;        // Optional
-    vacationAllowancePercentage?: number;   // Optional
-    remark?: string;                        // Optional
+    CompanyId: string;                      // Required - backend: CompanyId
+    Email: string;                          // Required - backend: Email
+    Password: string;                       // Required - backend: Password
+    FirstName: string;                      // Required - backend: FirstName
+    LastName: string;                       // Required - backend: LastName
+    DateOfBirth?: string;                   // Optional - backend: DateOfBirth
+    PhoneNumber?: string;                   // Optional - backend: PhoneNumber
+    Address?: string;                       // Optional - backend: Address
+    Postcode?: string;                      // Optional - backend: Postcode
+    City?: string;                          // Optional - backend: City
+    Country?: string;                       // Optional - backend: Country
+    BSN?: string;                           // Optional - backend: BSN
+    DateOfEmployment: string;               // Required - backend: DateOfEmployment
+    LastWorkingDay: string;                 // Required - backend: LastWorkingDay
+    ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
+    NoticePeriod?: string;                  // Optional - backend: NoticePeriod
+    Function?: string;                      // Optional - backend: Function
+    WorkweekDuration: number;               // Required - backend: WorkweekDuration
+    WorkweekDurationPercentage?: number;    // Calculated - backend: WorkweekDurationPercentage
+    WeeklySchedule?: string;                // Optional - backend: WeeklySchedule
+    WorkingHours?: string;                  // Optional - backend: WorkingHours
+    CompensationPerMonthExclBtw?: number;   // Optional - backend: CompensationPerMonthExclBtw
+    CompensationPerMonthInclBtw?: number;   // Calculated - backend: CompensationPerMonthInclBtw
+    PayScale?: string;                      // Optional - backend: PayScale
+    PayScaleStep?: number;                  // Optional - backend: PayScaleStep
+    HourlyWage100Percent?: number;          // Optional - backend: HourlyWage100Percent
+    DeviatingWage?: number;                 // Optional - backend: DeviatingWage
+    CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
+    TravelExpenses?: number;                // Optional - backend: TravelExpenses
+    MaxTravelExpenses?: number;             // Optional - backend: MaxTravelExpenses
+    VacationAge?: number;                   // Optional - backend: VacationAge
+    VacationDays?: number;                  // Optional - backend: VacationDays
+    Atv?: number;                           // Optional - backend: Atv
+    VacationAllowance?: number;             // Optional - backend: VacationAllowance
+    Remark?: string;                        // Optional - backend: Remark
 };
 
 const periodOptions = [
@@ -113,39 +115,39 @@ export default function CreateDriverPage() {
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
         defaultValues: {
-            companyId: '',
-            email: '',
-            password: '',
-            firstName: '',
-            lastName: '',
-            dateOfBirth: '',
-            phoneNumber: '',
-            address: '',
-            postcode: '',
-            city: '',
-            country: '',
-            bsnNumber: '',
-            employmentStartDate: '',
-            contractEndDate: '',
-            probationPeriod: '',
-            noticePeriod: '',
-            function: '',
-            workweekDuration: 40,
-            weeklySchedule: '',
-            workingHours: '',
-            monthlyCompensationExclVat: 0,
-            payScale: '',
-            payStep: 0,
-            hourlyWage: 0,
-            deviatingWage: 0,
-            commuteKilometers: 0,
-            travelExpensesRate: 0,
-            maximumTravelExpenses: 0,
-            vacationAgeThreshold: 0,
-            vacationDays: 0,
-            atvReducedWorkingHours: 0,
-            vacationAllowancePercentage: 0,
-            remark: '',
+            CompanyId: '',
+            Email: '',
+            Password: '',
+            FirstName: '',
+            LastName: '',
+            DateOfBirth: '',
+            PhoneNumber: '',
+            Address: '',
+            Postcode: '',
+            City: '',
+            Country: '',
+            BSN: '',
+            DateOfEmployment: '',
+            LastWorkingDay: '',
+            ProbationPeriod: '',
+            NoticePeriod: '',
+            Function: '',
+            WorkweekDuration: 40,
+            WeeklySchedule: '',
+            WorkingHours: '',
+            CompensationPerMonthExclBtw: 0,
+            PayScale: '',
+            PayScaleStep: 0,
+            HourlyWage100Percent: 0,
+            DeviatingWage: 0,
+            CommuteKilometers: 0,
+            TravelExpenses: 0,
+            MaxTravelExpenses: 0,
+            VacationAge: 0,
+            VacationDays: 0,
+            Atv: 0,
+            VacationAllowance: 0,
+            Remark: '',
         },
     });
 
@@ -154,11 +156,11 @@ export default function CreateDriverPage() {
     const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
 
     // Watch workweek duration to calculate percentage
-    const workweekDuration = watch('workweekDuration');
+    const workweekDuration = watch('WorkweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
 
     // Watch monthly compensation to calculate VAT inclusion
-    const monthlyCompensationExclVat = watch('monthlyCompensationExclVat');
+    const monthlyCompensationExclVat = watch('CompensationPerMonthExclBtw');
     const monthlyCompensationInclVat = monthlyCompensationExclVat ? 
         Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
 
@@ -212,7 +214,7 @@ export default function CreateDriverPage() {
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="companyId"
+                                    name="CompanyId"
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
@@ -226,8 +228,8 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    error={!!errors.companyId}
-                                                    helperText={errors.companyId?.message}
+                                                    error={!!errors.CompanyId}
+                                                    helperText={errors.CompanyId?.message}
                                                     required
                                                 />
                                             )}
@@ -252,7 +254,7 @@ export default function CreateDriverPage() {
                             {/* Email & Password */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="email"
+                                    name="Email"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -262,8 +264,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.email}
-                                            helperText={errors.email?.message}
+                                            error={!!errors.Email}
+                                            helperText={errors.Email?.message}
                                             required
                                         />
                                     )}
@@ -271,7 +273,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="password"
+                                    name="Password"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -281,8 +283,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.password}
-                                            helperText={errors.password?.message}
+                                            error={!!errors.Password}
+                                            helperText={errors.Password?.message}
                                             required
                                         />
                                     )}
@@ -292,7 +294,7 @@ export default function CreateDriverPage() {
                             {/* First Name & Last Name */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="firstName"
+                                    name="FirstName"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -301,8 +303,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.firstName}
-                                            helperText={errors.firstName?.message}
+                                            error={!!errors.FirstName}
+                                            helperText={errors.FirstName?.message}
                                             required
                                         />
                                     )}
@@ -310,7 +312,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="lastName"
+                                    name="LastName"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -319,8 +321,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.lastName}
-                                            helperText={errors.lastName?.message}
+                                            error={!!errors.LastName}
+                                            helperText={errors.LastName?.message}
                                             required
                                         />
                                     )}
@@ -330,7 +332,7 @@ export default function CreateDriverPage() {
                             {/* Date of Birth & Phone Number */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="dateOfBirth"
+                                    name="DateOfBirth"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -340,8 +342,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.dateOfBirth}
-                                            helperText={errors.dateOfBirth?.message}
+                                            error={!!errors.DateOfBirth}
+                                            helperText={errors.DateOfBirth?.message}
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
@@ -351,7 +353,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="phoneNumber"
+                                    name="PhoneNumber"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -360,8 +362,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.phoneNumber}
-                                            helperText={errors.phoneNumber?.message}
+                                            error={!!errors.PhoneNumber}
+                                            helperText={errors.PhoneNumber?.message}
                                         />
                                     )}
                                 />
@@ -370,7 +372,7 @@ export default function CreateDriverPage() {
                             {/* Address & PostCode */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="address"
+                                    name="Address"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -379,15 +381,15 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.address}
-                                            helperText={errors.address?.message}
+                                            error={!!errors.Address}
+                                            helperText={errors.Address?.message}
                                         />
                                     )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="postcode"
+                                    name="Postcode"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -396,8 +398,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.postcode}
-                                            helperText={errors.postcode?.message}
+                                            error={!!errors.Postcode}
+                                            helperText={errors.Postcode?.message}
                                         />
                                     )}
                                 />
@@ -406,7 +408,7 @@ export default function CreateDriverPage() {
                             {/* City & Country */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="city"
+                                    name="City"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -415,15 +417,15 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.city}
-                                            helperText={errors.city?.message}
+                                            error={!!errors.City}
+                                            helperText={errors.City?.message}
                                         />
                                     )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="country"
+                                    name="Country"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -432,8 +434,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.country}
-                                            helperText={errors.country?.message}
+                                            error={!!errors.Country}
+                                            helperText={errors.Country?.message}
                                         />
                                     )}
                                 />
@@ -442,7 +444,7 @@ export default function CreateDriverPage() {
                             {/* BSN Number */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="bsnNumber"
+                                    name="BSN"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -451,8 +453,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.bsnNumber}
-                                            helperText={errors.bsnNumber?.message}
+                                            error={!!errors.BSN}
+                                            helperText={errors.BSN?.message}
                                         />
                                     )}
                                 />
@@ -469,7 +471,7 @@ export default function CreateDriverPage() {
                             {/* Employment Start Date & Contract End Date */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="employmentStartDate"
+                                    name="DateOfEmployment"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -479,8 +481,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.employmentStartDate}
-                                            helperText={errors.employmentStartDate?.message}
+                                            error={!!errors.DateOfEmployment}
+                                            helperText={errors.DateOfEmployment?.message}
                                             required
                                             InputLabelProps={{
                                                 shrink: true,
@@ -491,7 +493,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="contractEndDate"
+                                    name="LastWorkingDay"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -501,8 +503,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.contractEndDate}
-                                            helperText={errors.contractEndDate?.message}
+                                            error={!!errors.LastWorkingDay}
+                                            helperText={errors.LastWorkingDay?.message}
                                             required
                                             InputLabelProps={{
                                                 shrink: true,
@@ -515,7 +517,7 @@ export default function CreateDriverPage() {
                             {/* Probation Period & Notice Period */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="probationPeriod"
+                                    name="ProbationPeriod"
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
@@ -529,8 +531,8 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    error={!!errors.probationPeriod}
-                                                    helperText={errors.probationPeriod?.message}
+                                                    error={!!errors.ProbationPeriod}
+                                                    helperText={errors.ProbationPeriod?.message}
                                                 />
                                             )}
                                             value={
@@ -543,7 +545,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="noticePeriod"
+                                    name="NoticePeriod"
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
@@ -557,8 +559,8 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    error={!!errors.noticePeriod}
-                                                    helperText={errors.noticePeriod?.message}
+                                                    error={!!errors.NoticePeriod}
+                                                    helperText={errors.NoticePeriod?.message}
                                                 />
                                             )}
                                             value={
@@ -581,7 +583,7 @@ export default function CreateDriverPage() {
                             {/* Function - Full Width */}
                             <Grid item xs={12}>
                                 <Controller
-                                    name="function"
+                                    name="Function"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -590,8 +592,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.function}
-                                            helperText={errors.function?.message}
+                                            error={!!errors.Function}
+                                            helperText={errors.Function?.message}
                                         />
                                     )}
                                 />
@@ -600,7 +602,7 @@ export default function CreateDriverPage() {
                             {/* Workweek Duration & Percentage */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="workweekDuration"
+                                    name="WorkweekDuration"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -610,8 +612,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.workweekDuration}
-                                            helperText={errors.workweekDuration?.message}
+                                            error={!!errors.WorkweekDuration}
+                                            helperText={errors.WorkweekDuration?.message}
                                             required
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                         />
@@ -639,7 +641,7 @@ export default function CreateDriverPage() {
                             {/* Weekly Schedule & Working Hours */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="weeklySchedule"
+                                    name="WeeklySchedule"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -648,15 +650,15 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.weeklySchedule}
-                                            helperText={errors.weeklySchedule?.message}
+                                            error={!!errors.WeeklySchedule}
+                                            helperText={errors.WeeklySchedule?.message}
                                         />
                                     )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="workingHours"
+                                    name="WorkingHours"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -665,8 +667,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.workingHours}
-                                            helperText={errors.workingHours?.message}
+                                            error={!!errors.WorkingHours}
+                                            helperText={errors.WorkingHours?.message}
                                         />
                                     )}
                                 />
@@ -683,7 +685,7 @@ export default function CreateDriverPage() {
                             {/* Monthly Compensation Excl. VAT & Incl. VAT */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="monthlyCompensationExclVat"
+                                    name="CompensationPerMonthExclBtw"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -693,8 +695,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.monthlyCompensationExclVat}
-                                            helperText={errors.monthlyCompensationExclVat?.message}
+                                            error={!!errors.CompensationPerMonthExclBtw}
+                                            helperText={errors.CompensationPerMonthExclBtw?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -725,7 +727,7 @@ export default function CreateDriverPage() {
                             {/* Pay Scale & Pay Step */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="payScale"
+                                    name="PayScale"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -734,15 +736,15 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.payScale}
-                                            helperText={errors.payScale?.message}
+                                            error={!!errors.PayScale}
+                                            helperText={errors.PayScale?.message}
                                         />
                                     )}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="payStep"
+                                    name="PayScaleStep"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -752,8 +754,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.payStep}
-                                            helperText={errors.payStep?.message}
+                                            error={!!errors.PayScaleStep}
+                                            helperText={errors.PayScaleStep?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -767,7 +769,7 @@ export default function CreateDriverPage() {
                             {/* Hourly Wage & Deviating Wage */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="hourlyWage"
+                                    name="HourlyWage100Percent"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -777,8 +779,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.hourlyWage}
-                                            helperText={errors.hourlyWage?.message}
+                                            error={!!errors.HourlyWage100Percent}
+                                            helperText={errors.HourlyWage100Percent?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -790,7 +792,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="deviatingWage"
+                                    name="DeviatingWage"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -800,8 +802,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.deviatingWage}
-                                            helperText={errors.deviatingWage?.message}
+                                            error={!!errors.DeviatingWage}
+                                            helperText={errors.DeviatingWage?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -823,7 +825,7 @@ export default function CreateDriverPage() {
                             {/* Commute Kilometers - Full Width */}
                             <Grid item xs={12}>
                                 <Controller
-                                    name="commuteKilometers"
+                                    name="CommuteKilometers"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -833,8 +835,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.commuteKilometers}
-                                            helperText={errors.commuteKilometers?.message}
+                                            error={!!errors.CommuteKilometers}
+                                            helperText={errors.CommuteKilometers?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -848,7 +850,7 @@ export default function CreateDriverPage() {
                             {/* Travel Expenses Rate & Maximum Travel Expenses */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="travelExpensesRate"
+                                    name="TravelExpenses"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -858,8 +860,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.travelExpensesRate}
-                                            helperText={errors.travelExpensesRate?.message}
+                                            error={!!errors.TravelExpenses}
+                                            helperText={errors.TravelExpenses?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -871,7 +873,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="maximumTravelExpenses"
+                                    name="MaxTravelExpenses"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -881,8 +883,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.maximumTravelExpenses}
-                                            helperText={errors.maximumTravelExpenses?.message}
+                                            error={!!errors.MaxTravelExpenses}
+                                            helperText={errors.MaxTravelExpenses?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -904,7 +906,7 @@ export default function CreateDriverPage() {
                             {/* Vacation Age Threshold & Vacation Days */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="vacationAgeThreshold"
+                                    name="VacationAge"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -914,8 +916,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.vacationAgeThreshold}
-                                            helperText={errors.vacationAgeThreshold?.message}
+                                            error={!!errors.VacationAge}
+                                            helperText={errors.VacationAge?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -927,7 +929,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="vacationDays"
+                                    name="VacationDays"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -937,8 +939,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.vacationDays}
-                                            helperText={errors.vacationDays?.message}
+                                            error={!!errors.VacationDays}
+                                            helperText={errors.VacationDays?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -952,7 +954,7 @@ export default function CreateDriverPage() {
                             {/* ATV & Vacation Allowance Percentage */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="atvReducedWorkingHours"
+                                    name="Atv"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -962,8 +964,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.atvReducedWorkingHours}
-                                            helperText={errors.atvReducedWorkingHours?.message}
+                                            error={!!errors.Atv}
+                                            helperText={errors.Atv?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -975,7 +977,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="vacationAllowancePercentage"
+                                    name="VacationAllowance"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -985,8 +987,8 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.vacationAllowancePercentage}
-                                            helperText={errors.vacationAllowancePercentage?.message}
+                                            error={!!errors.VacationAllowance}
+                                            helperText={errors.VacationAllowance?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
@@ -1008,7 +1010,7 @@ export default function CreateDriverPage() {
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
                                 <Controller
-                                    name="remark"
+                                    name="Remark"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
@@ -1019,8 +1021,8 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             multiline
                                             rows={3}
-                                            error={!!errors.remark}
-                                            helperText={errors.remark?.message}
+                                            error={!!errors.Remark}
+                                            helperText={errors.Remark?.message}
                                         />
                                     )}
                                 />
