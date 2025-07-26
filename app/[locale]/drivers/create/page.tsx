@@ -39,6 +39,11 @@ const schema = yup.object().shape({
     workweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
     weeklySchedule: yup.string().optional(),
     workingHours: yup.string().optional(),
+    monthlyCompensationExclVat: yup.number().optional().min(0, 'Must be a positive number'),
+    payScale: yup.string().optional(),
+    payStep: yup.number().optional().min(0, 'Must be a positive number'),
+    hourlyWage: yup.number().optional().min(0, 'Must be a positive number'),
+    deviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
     remark: yup.string().optional(),
 });
 
@@ -59,11 +64,16 @@ type FormInputs = {
     contractEndDate: string;        // Required
     probationPeriod?: string;       // Optional
     noticePeriod?: string;          // Optional
-    function?: string;              // Optional
-    workweekDuration: number;       // Required
-    weeklySchedule?: string;        // Optional
-    workingHours?: string;          // Optional
-    remark?: string;                // Optional
+    function?: string;                      // Optional
+    workweekDuration: number;               // Required
+    weeklySchedule?: string;                // Optional
+    workingHours?: string;                  // Optional
+    monthlyCompensationExclVat?: number;    // Optional
+    payScale?: string;                      // Optional
+    payStep?: number;                       // Optional
+    hourlyWage?: number;                    // Optional
+    deviatingWage?: number;                 // Optional
+    remark?: string;                        // Optional
 };
 
 const periodOptions = [
@@ -109,6 +119,11 @@ export default function CreateDriverPage() {
             workweekDuration: 40,
             weeklySchedule: '',
             workingHours: '',
+            monthlyCompensationExclVat: 0,
+            payScale: '',
+            payStep: 0,
+            hourlyWage: 0,
+            deviatingWage: 0,
             remark: '',
         },
     });
@@ -120,6 +135,11 @@ export default function CreateDriverPage() {
     // Watch workweek duration to calculate percentage
     const workweekDuration = watch('workweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
+
+    // Watch monthly compensation to calculate VAT inclusion
+    const monthlyCompensationExclVat = watch('monthlyCompensationExclVat');
+    const monthlyCompensationInclVat = monthlyCompensationExclVat ? 
+        Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -626,6 +646,146 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.workingHours}
                                             helperText={errors.workingHours?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Compensation Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Compensation
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            {/* Monthly Compensation Excl. VAT & Incl. VAT */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="monthlyCompensationExclVat"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Monthly Compensation (Excl. VAT)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.monthlyCompensationExclVat}
+                                            helperText={errors.monthlyCompensationExclVat?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Monthly Compensation (Incl. VAT)"
+                                    value={monthlyCompensationInclVat.toFixed(2)}
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: 'grey.50',
+                                        },
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* Pay Scale & Pay Step */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="payScale"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Pay Scale"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.payScale}
+                                            helperText={errors.payScale?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="payStep"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Pay Step"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.payStep}
+                                            helperText={errors.payStep?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* Hourly Wage & Deviating Wage */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="hourlyWage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Hourly Wage (100%)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.hourlyWage}
+                                            helperText={errors.hourlyWage?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="deviatingWage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Deviating Wage (if applicable)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.deviatingWage}
+                                            helperText={errors.deviatingWage?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
                                         />
                                     )}
                                 />
