@@ -47,6 +47,10 @@ const schema = yup.object().shape({
     commuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
     travelExpensesRate: yup.number().optional().min(0, 'Must be a positive number'),
     maximumTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
+    vacationAgeThreshold: yup.number().optional().min(0, 'Must be a positive number'),
+    vacationDays: yup.number().optional().min(0, 'Must be a positive number'),
+    atvReducedWorkingHours: yup.number().optional().min(0, 'Must be a positive number'),
+    vacationAllowancePercentage: yup.number().optional().min(0, 'Must be a positive number').max(100, 'Must be 100% or less'),
     remark: yup.string().optional(),
 });
 
@@ -79,6 +83,10 @@ type FormInputs = {
     commuteKilometers?: number;             // Optional
     travelExpensesRate?: number;            // Optional
     maximumTravelExpenses?: number;         // Optional
+    vacationAgeThreshold?: number;          // Optional
+    vacationDays?: number;                  // Optional
+    atvReducedWorkingHours?: number;        // Optional
+    vacationAllowancePercentage?: number;   // Optional
     remark?: string;                        // Optional
 };
 
@@ -133,6 +141,10 @@ export default function CreateDriverPage() {
             commuteKilometers: 0,
             travelExpensesRate: 0,
             maximumTravelExpenses: 0,
+            vacationAgeThreshold: 0,
+            vacationDays: 0,
+            atvReducedWorkingHours: 0,
+            vacationAllowancePercentage: 0,
             remark: '',
         },
     });
@@ -875,6 +887,111 @@ export default function CreateDriverPage() {
                                             inputProps={{
                                                 step: "0.01",
                                                 min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Vacation & Allowances Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Vacation & Allowances
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            {/* Vacation Age Threshold & Vacation Days */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="vacationAgeThreshold"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Vacation Age Threshold"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.vacationAgeThreshold}
+                                            helperText={errors.vacationAgeThreshold?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="vacationDays"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Vacation Days"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.vacationDays}
+                                            helperText={errors.vacationDays?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* ATV & Vacation Allowance Percentage */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="atvReducedWorkingHours"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="ATV (Reduced Working Hours)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.atvReducedWorkingHours}
+                                            helperText={errors.atvReducedWorkingHours?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="vacationAllowancePercentage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Vacation Allowance (%)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.vacationAllowancePercentage}
+                                            helperText={errors.vacationAllowancePercentage?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0",
+                                                max: "100"
                                             }}
                                         />
                                     )}
