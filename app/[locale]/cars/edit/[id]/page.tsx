@@ -106,12 +106,12 @@ export default function EditVehiclePage() {
     useEffect(() => {
         if (carData) {
             reset({
-                id: carData.id,
-                companyId: carData.company?.id || '',
-                licensePlate: carData.licensePlate,
-                vehicleYear: carData.vehicleYear || '',
-                registrationDate: carData.registrationDate || '',
-                remark: carData.remark || '',
+                id: carData?.id,
+                companyId: carData?.company?.id || '',
+                licensePlate: carData?.licensePlate,
+                vehicleYear: carData?.vehicleYear || '',
+                registrationDate: carData?.registrationDate || '',
+                remark: carData?.remark || '',
             });
         }
     }, [carData, reset]);
@@ -123,7 +123,7 @@ export default function EditVehiclePage() {
         );
 
         if (carData?.files) {
-            carData.files = carData.files.filter((f) => f.id !== file.id);
+            carData.files = carData?.files?.filter((f) => f.id !== file.id);
         }
     };
 
@@ -325,12 +325,12 @@ export default function EditVehiclePage() {
                     </Typography>
                     
                     {/* Existing Files */}
-                    {carData?.files && carData.files.length > 0 && (
+                    {carData?.files && carData?.files?.length > 0 && (
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                Current Documents ({carData.files.length})
+                                Current Documents ({carData?.files?.length})
                             </Typography>
-                            {carData.files.map((file) => (
+                            {carData?.files?.map((file) => (
                                 <Box key={file.id} mb={1.5}>
                                     <FileTile
                                         file={file}
