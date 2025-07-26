@@ -123,11 +123,11 @@ export default function ClientDetailPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        {client.name}
+                        {client?.name}
                     </Typography>
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            {(isGlobalAdmin && !client.isApproved) && (
+                            {(isGlobalAdmin && !client?.isApproved) && (
                                 <Button
                                     variant="contained"
                                     color="success"
@@ -141,7 +141,7 @@ export default function ClientDetailPage() {
                             
                             {/* Edit / Delete - matching partride styling exactly */}
                             <IconButton
-                                onClick={() => router.push(`/clients/edit?id=${client.id}`)}
+                                onClick={() => router.push(`/clients/edit?id=${client?.id}`)}
                                 disabled={isPending}
                                 sx={{
                                     bgcolor: 'grey.800',
@@ -182,15 +182,15 @@ export default function ClientDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
                                 Client Name
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.name}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.name}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>TAV</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.tav || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.tav || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Company</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.company.name}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.company?.name}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -207,19 +207,19 @@ export default function ClientDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
                                 Street Address
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.address || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.address || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Postcode</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.postcode || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.postcode || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>City</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.city || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.city || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Country</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.country || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.country || 'N/A'}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -236,11 +236,11 @@ export default function ClientDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
                                 Phone Number
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.phoneNumber || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.phoneNumber || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>Email</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client.email || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.email || 'N/A'}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -252,7 +252,7 @@ export default function ClientDetailPage() {
                     Remark
                 </Typography>
                 <Typography variant="body1">
-                    {client.remark || 'No remark provided'}
+                    {client?.remark || 'No remark provided'}
                 </Typography>
 
 
