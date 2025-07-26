@@ -134,21 +134,21 @@ export default function CreateDriverPage() {
             ProbationPeriod: '',
             NoticePeriod: '',
             Function: '',
-            WorkweekDuration: 40,
+            WorkweekDuration: 40, // Keep 40 as reasonable default for work hours
             WeeklySchedule: '',
             WorkingHours: '',
-            CompensationPerMonthExclBtw: 0,
+            CompensationPerMonthExclBtw: undefined,
             PayScale: '',
-            PayScaleStep: 0,
-            HourlyWage100Percent: 0,
-            DeviatingWage: 0,
-            CommuteKilometers: 0,
-            TravelExpenses: 0,
-            MaxTravelExpenses: 0,
-            VacationAge: 0,
-            VacationDays: 0,
-            Atv: 0,
-            VacationAllowance: 0,
+            PayScaleStep: undefined,
+            HourlyWage100Percent: undefined,
+            DeviatingWage: undefined,
+            CommuteKilometers: undefined,
+            TravelExpenses: undefined,
+            MaxTravelExpenses: undefined,
+            VacationAge: undefined,
+            VacationDays: undefined,
+            Atv: undefined,
+            VacationAllowance: undefined,
             Remark: '',
         },
     });
@@ -167,10 +167,7 @@ export default function CreateDriverPage() {
         Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-        console.log('=== FORM SUBMISSION STARTED ===');
         try {
-            console.log('Raw form data:', data);
-            
             // Clean data by removing empty strings and null values
             const cleanedEntries = Object.entries(data).filter(([key, value]) => 
                 value !== undefined && value !== null && value !== ''
@@ -196,19 +193,6 @@ export default function CreateDriverPage() {
             if (cleanedData.LastWorkingDay) {
                 cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
             }
-
-            console.log('=== SENDING TO BACKEND ===');
-            console.log('Cleaned data:', JSON.stringify(cleanedData, null, 2));
-            console.log('All required fields present?', {
-                Email: !!cleanedData.Email,
-                Password: !!cleanedData.Password,
-                FirstName: !!cleanedData.FirstName,
-                LastName: !!cleanedData.LastName,
-                CompanyId: !!cleanedData.CompanyId,
-                DateOfEmployment: !!cleanedData.DateOfEmployment,
-                WorkweekDuration: !!cleanedData.WorkweekDuration,
-                Function: !!cleanedData.Function
-            });
 
             await mutateAsync(cleanedData);
             reset();

@@ -75,24 +75,11 @@ export type CreateDriverResponse = {
 
 // --- API CALL ---
 const createDriver = async (driver: CreateDriverInput): Promise<CreateDriverResponse> => {
-    try {
-        console.log('API Call - Request data:', JSON.stringify(driver, null, 2));
-        const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
-        console.log('API Call - Response received:', response.data);
-        
-        if (response.data.isSuccess) {
-            return response.data.data;
-        }
-        throw new Error(response.data.errors?.[0] || 'Failed to create driver');
-    } catch (error: any) {
-        console.error('API Call - Error details:', {
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data,
-            headers: error.response?.headers
-        });
-        throw error;
+    const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
+    if (response.data.isSuccess) {
+        return response.data.data;
     }
+    throw new Error(response.data.errors?.[0] || 'Failed to create driver');
 };
 
 // --- MUTATION HOOK ---
