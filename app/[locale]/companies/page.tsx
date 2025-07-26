@@ -98,7 +98,7 @@ export default function CompaniesOverviewPage() {
                     Companies overview
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                    {(isGlobalAdmin || isCustomerAdmin) && (
+                    {isGlobalAdmin && (
                         <Button 
                             variant="contained" 
                             onClick={() => router.push('/companies/create')}
