@@ -35,6 +35,10 @@ const schema = yup.object().shape({
     contractEndDate: yup.string().required('Contract end date is required'),
     probationPeriod: yup.string().optional(),
     noticePeriod: yup.string().optional(),
+    function: yup.string().optional(),
+    workweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
+    weeklySchedule: yup.string().optional(),
+    workingHours: yup.string().optional(),
     remark: yup.string().optional(),
 });
 
@@ -55,6 +59,10 @@ type FormInputs = {
     contractEndDate: string;        // Required
     probationPeriod?: string;       // Optional
     noticePeriod?: string;          // Optional
+    function?: string;              // Optional
+    workweekDuration: number;       // Required
+    weeklySchedule?: string;        // Optional
+    workingHours?: string;          // Optional
     remark?: string;                // Optional
 };
 
@@ -76,6 +84,7 @@ export default function CreateDriverPage() {
         handleSubmit,
         control,
         reset,
+        watch,
         formState: { errors },
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
@@ -96,6 +105,10 @@ export default function CreateDriverPage() {
             contractEndDate: '',
             probationPeriod: '',
             noticePeriod: '',
+            function: '',
+            workweekDuration: 40,
+            weeklySchedule: '',
+            workingHours: '',
             remark: '',
         },
     });
@@ -103,6 +116,10 @@ export default function CreateDriverPage() {
     // Check access permissions
     const allowedRoles = ['globalAdmin', 'customerAdmin'];
     const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
+
+    // Watch workweek duration to calculate percentage
+    const workweekDuration = watch('workweekDuration');
+    const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -507,6 +524,108 @@ export default function CreateDriverPage() {
                                                 periodOptions.find(option => option.value === field.value) || null
                                             }
                                             isOptionEqualToValue={(option, val) => option.value === val.value}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Work Conditions Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Work Conditions
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            {/* Function - Full Width */}
+                            <Grid item xs={12}>
+                                <Controller
+                                    name="function"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Function"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.function}
+                                            helperText={errors.function?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* Workweek Duration & Percentage */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="workweekDuration"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Workweek Duration (hours)"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.workweekDuration}
+                                            helperText={errors.workweekDuration?.message}
+                                            required
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Workweek Duration Percentage"
+                                    value={`${workweekPercentage}%`}
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: 'grey.50',
+                                        },
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* Weekly Schedule & Working Hours */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="weeklySchedule"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Weekly Schedule"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.weeklySchedule}
+                                            helperText={errors.weeklySchedule?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="workingHours"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Working Hours"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.workingHours}
+                                            helperText={errors.workingHours?.message}
                                         />
                                     )}
                                 />
