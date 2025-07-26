@@ -31,6 +31,8 @@ export type WeekToSubmitDetail = {
     totalHours: number;
     totalForecasted: number;
     partRides: WeekPartRide[];
+    vacationHoursUsed: number;
+    vacationHoursLeft: number;
 };
 
 /* ------------------------------------------------------------------ */

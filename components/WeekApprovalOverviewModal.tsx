@@ -142,7 +142,7 @@ export default function WeekApprovalOverviewModal({
                                             Vacation Hours Used
                                         </TableCell>
                                         <TableCell sx={{ py: 1, width: '50%', borderBottom: 'none' }}>
-                                            —
+                                            {data.vacationHoursUsed}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -150,7 +150,7 @@ export default function WeekApprovalOverviewModal({
                                             Vacation Hours Left
                                         </TableCell>
                                         <TableCell sx={{ py: 1, width: '50%', borderBottom: 'none' }}>
-                                            —
+                                            {data.vacationHoursLeft}
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
