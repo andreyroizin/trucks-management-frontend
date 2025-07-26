@@ -70,6 +70,7 @@ export default function TripsManagementPage() {
     const [carIds, setCarIds] = useState<string[]>([]);
     const [statusIds, setStatusIds] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+    const [weekNumber, setWeekNumber] = useState<string>('');
     const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
     const [openCreateDispute, setOpenCreateDispute] = useState(false);
     const [disputePartRideId, setDisputePartRideId] = useState<string | null>(null);
@@ -99,6 +100,7 @@ export default function TripsManagementPage() {
         driverIds,
         carIds,
         statusIds,
+        weekNumber,
         pageNumber,
         pageSize: rowsPerPage,
         startDate: startDate?.isValid() ? startDate.format('YYYY-MM-DD') : undefined,
@@ -264,6 +266,18 @@ export default function TripsManagementPage() {
             {/* Filters */}
             <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between'}}>
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+                    <Autocomplete
+                        size="small"
+                        options={Array.from({ length: 53 }, (_, i) => ({ label: `${i + 1}`, value: String(i + 1) }))}
+                        value={
+                            weekNumber
+                                ? { label: `${weekNumber}`, value: weekNumber }
+                                : null
+                        }
+                        onChange={(_, v) => setWeekNumber(v?.value ?? '')}
+                        sx={{ minWidth: 120, maxWidth: 120 }}
+                        renderInput={(p) => <TextField {...p} label="Week" />}
+                    />
                     <Autocomplete
                         multiple
                         size="small"
