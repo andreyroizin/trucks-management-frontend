@@ -5,8 +5,15 @@ import {ApiResponse} from '@/types/api';
 export type UpdateCarInput = {
     id: string;
     licensePlate: string;
+    vehicleYear?: string;
+    registrationDate?: string;
     remark?: string;
     companyId: string;
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
+    fileIdsToDelete?: string[];
 };
 
 // Update Car API

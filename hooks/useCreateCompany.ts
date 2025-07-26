@@ -3,14 +3,29 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 
-
 export type Company = {
     id: string;
     name: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phoneNumber?: string;
+    email?: string;
+    remark?: string;
+    isApproved?: boolean;
+    drivers?: any[];
 };
 
 type CreateCompanyInput = {
     name: string;
+    address?: string;
+    postcode?: string;
+    city?: string;
+    country?: string;
+    phoneNumber?: string;
+    email?: string;
+    remark?: string;
 };
 
 const createCompany = async (newCompany: CreateCompanyInput): Promise<Company> => {

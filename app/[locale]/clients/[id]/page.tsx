@@ -4,17 +4,22 @@ import React, {useState, useEffect} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import {
     Box,
-    Card,
-    CardContent,
     Typography,
     CircularProgress,
     Alert,
     Button,
+    Divider,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    IconButton,
 } from '@mui/material';
-import Link from 'next/link';
+import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {useAuth} from '@/hooks/useAuth';
 import {useClientDetails} from '@/hooks/useClientDetails';
-import ContactPersonsSection from '@/components/ContactPersons';
 import {useDeleteClient} from '@/hooks/useDeleteClient';
 import ConfirmModal from '@/components/ConfirmModal';
 import {useApproveClient} from "@/hooks/useApproveClient";
@@ -89,100 +94,169 @@ export default function ClientDetailPage() {
     }
 
     return (
-        <Box maxWidth="600px" mx="auto" p={2}>
-            {/* Show deletion error if any */}
-            {deleteErrorMsg && (
-                <Alert severity="error" sx={{mb: 2}}>
-                    {deleteErrorMsg}
-                </Alert>
-            )}
+        <Box sx={{py: 4}}>
+            {/* Header Section */}
+            <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Typography variant="h3" fontWeight={500}>
+                    Client Management
+                </Typography>
+            </Box>
 
-            <Card>
-                <CardContent>
+            <Paper variant="outlined" sx={{p: 3, mx: 'auto'}}>
+                {/* Show deletion error if any */}
+                {deleteErrorMsg && (
+                    <Alert severity="error" sx={{mb: 2}}>
+                        {deleteErrorMsg}
+                    </Alert>
+                )}
+
+                {/* Header section */}
+                <Box
+                    sx={{
+                        mt: 1,
+                        mb: 3,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                    }}
+                >
+                    <Typography variant="h4" fontWeight={500}>
+                        {client?.name}
+                    </Typography>
                     {(isCustomerAdmin || isGlobalAdmin) && (
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="h5">{client.name}</Typography>
-                            <Box>
-                                {(isGlobalAdmin && !client.isApproved) && (
-                                    <Button
-                                        variant="contained"
-                                        color="success"
-                                        sx={{mr: 1}}
-                                        disabled={isApproving}
-                                        onClick={handleApprove}
-                                    >
-                                        {isApproving ? 'Approving...' : 'Approve'}
-                                    </Button>
-                                )}
-                                <Link href={`/clients/edit?id=${client.id}`} passHref>
-                                    <Button variant="contained" color="primary" sx={{mr: 1}}>
-                                        Edit
-                                    </Button>
-                                </Link>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            {(isGlobalAdmin && !client?.isApproved) && (
                                 <Button
                                     variant="contained"
-                                    color="error"
-                                    disabled={isPending}
-                                    onClick={() => setOpenModal(true)}
+                                    color="success"
+                                    disabled={isApproving}
+                                    onClick={handleApprove}
+                                    sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
                                 >
-                                    {isPending ? 'Deleting...' : 'Delete'}
+                                    {isApproving ? 'Approving...' : 'Approve'}
                                 </Button>
-                            </Box>
+                            )}
+                            
+                            {/* Edit / Delete - matching partride styling exactly */}
+                            <IconButton
+                                onClick={() => router.push(`/clients/edit?id=${client?.id}`)}
+                                disabled={isPending}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' }
+                                }}
+                            >
+                                <DriveFileRenameOutlineRoundedIcon />
+                            </IconButton>
+
+                            <IconButton
+                                size="large"
+                                onClick={() => setOpenModal(true)}
+                                disabled={isPending}
+                                sx={{
+                                    bgcolor: 'grey.800',
+                                    color: 'common.white',
+                                    borderRadius: 1,
+                                    '&:hover': { bgcolor: 'grey.700' },
+                                    px: 1,
+                                    py: 0,
+                                }}
+                            >
+                                <DeleteOutlineIcon fontSize="medium" />
+                            </IconButton>
                         </Box>
                     )}
+                </Box>
 
-                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                        {client.tav}
-                    </Typography>
-                    <Typography variant="body1">
-                        {client.address}, {client.city}, {client.postcode}, {client.country}
-                    </Typography>
-                    <Typography variant="body1">Phone: {client.phoneNumber}</Typography>
-                    <Typography variant="body1">Email: {client.email}</Typography>
-                    <Typography variant="body1" sx={{mt: 1}}>
-                        Remark: {client.remark}
-                    </Typography>
+                {/* General Information */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    General Information
+                </Typography>
+                <Table size="small">
+                    <TableBody>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                Client Name
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.name}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>TAV</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.tav || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Company</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.company?.name}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
 
-                    {/* Link to surcharges */}
-                    {(isGlobalAdmin || isCustomerAdmin || isCustomerAccountant || isCustomer) && (
-                        <>
-                            <Box mt={2}>
-                                <Link href={`/surcharges/${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        Manage surcharges
-                                    </Button>
-                                </Link>
-                            </Box>
-                            <Box mt={2}>
-                                <Link href={`/rates/${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        Manage rates
-                                    </Button>
-                                </Link>
-                            </Box>
-                            <Box mt={2}>
-                                <Link href={`/charters?clientId=${client.id}`} passHref>
-                                    <Button variant="outlined" size="small">
-                                        View Charters
-                                    </Button>
-                                </Link>
-                            </Box>
-                        </>
-                    )}
+                    <Divider sx={{ my: 3 }} />
 
-                    {/* Link to the Company */}
-                    <Box mt={2}>
-                        Company: {` ${client.company.name} `}
-                        <Link href={`/companies/${client.company.id}`} passHref>
-                            <Button variant="outlined" size="small">
-                                Go to Company
-                            </Button>
-                        </Link>
-                    </Box>
-                </CardContent>
-            </Card>
+                {/* Client Address */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    Client Address
+                </Typography>
+                <Table size="small">
+                    <TableBody>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                Street Address
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.address || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Postcode</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.postcode || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>City</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.city || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Country</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.country || 'N/A'}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
 
-            {client.isApproved && <ContactPersonsSection clientId={client.id}/>}
+                    <Divider sx={{ my: 3 }} />
+
+                {/* Contact Information */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    Contact Information
+                </Typography>
+                <Table size="small">
+                    <TableBody>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                Phone Number
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.phoneNumber || 'N/A'}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>Email</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.email || 'N/A'}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+
+                    <Divider sx={{ my: 3 }} />
+
+                {/* Remark */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
+                    Remark
+                </Typography>
+                <Typography variant="body1">
+                    {client?.remark || 'No remark provided'}
+                </Typography>
+
+
+            </Paper>
 
             {/* Confirm Deletion Modal */}
             <ConfirmModal

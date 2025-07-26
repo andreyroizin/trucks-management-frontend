@@ -7,10 +7,21 @@ export type CarDetail = {
     id: string;
     licensePlate: string;
     remark: string;
+    vehicleYear?: string;
+    registrationDate?: string;
     company: {
         id: string;
         name: string;
     };
+    driverId?: string | null;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
+    driverEmail?: string | null;
+    files?: {
+        id: string;
+        originalFileName?: string;
+        contentType?: string;
+    }[];
 };
 
 // --- API CALL ---

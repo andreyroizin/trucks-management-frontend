@@ -19,11 +19,17 @@ const FileTile: React.FC<FileTileProps> = ({ file, onDelete, onClick }) => {
             alignItems="center"
             justifyContent="space-between"
             sx={{
-                backgroundColor: '#1976D214',
-                border: '1px solid #1976D2',
-                borderRadius: '4px',
+                backgroundColor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
                 padding: '16px',
                 cursor: 'pointer',
+                boxShadow: 1,
+                '&:hover': {
+                    boxShadow: 2,
+                    borderColor: 'primary.main',
+                },
             }}
         >
             <Box display="flex" alignItems="center" gap={2}>
