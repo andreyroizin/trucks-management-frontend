@@ -279,7 +279,7 @@ export default function WeeksToSubmitPage() {
                                             <TableCell sx={{ py: 2.6 }}>
                                                {w.rejectedCount > 0 ? (
                                                     <Link
-                                                        href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=3`}
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=3`}
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
@@ -287,7 +287,7 @@ export default function WeeksToSubmitPage() {
                                                     </Link>
                                                 ) : w.disputeCount > 0 ? (
                                                     <Link
-                                                        href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
@@ -295,7 +295,7 @@ export default function WeeksToSubmitPage() {
                                                     </Link>
                                                 ) : w.pendingAdminCount > 0 ? (
                                                     <Link
-                                                        href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >

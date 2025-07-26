@@ -63,7 +63,8 @@ const fetchPartRides = async ({
                                   driverIds,
                                   carIds,
                                   statusIds,
-                                  weekNumber,
+                                  weekNumbers,
+                                  weekDays,
                                   turnoverMin,
                                   turnoverMax,
                                   decimalHoursMin,
@@ -78,7 +79,8 @@ const fetchPartRides = async ({
     driverIds?: string[];
     carIds?: string[];
     statusIds?: string[];
-    weekNumber?: string;
+    weekNumbers?: string[];
+    weekDays?: string[];
     turnoverMin?: string;
     turnoverMax?: string;
     decimalHoursMin?: string;
@@ -94,7 +96,8 @@ const fetchPartRides = async ({
     driverIds?.forEach(id => queryParams.append('driverIds', id));
     carIds?.forEach(id => queryParams.append('carIds', id));
     statusIds?.forEach(id => queryParams.append('statusIds', id));
-    if (weekNumber) queryParams.set('weekNumber', weekNumber);
+    weekDays?.forEach(d => queryParams.append('weekDays', d));
+    weekNumbers?.forEach(w => queryParams.append('weekNumbers', w));
     if (turnoverMin) queryParams.set('turnoverMin', turnoverMin);
     if (turnoverMax) queryParams.set('turnoverMax', turnoverMax);
     if (decimalHoursMin) queryParams.set('decimalHoursMin', decimalHoursMin);
@@ -121,7 +124,8 @@ export const usePartRides = ({
                                  driverIds,
                                  carIds,
                                  statusIds,
-                                 weekNumber,
+                                 weekNumbers,
+                                 weekDays,
                                  turnoverMin,
                                  turnoverMax,
                                  decimalHoursMin,
@@ -136,7 +140,8 @@ export const usePartRides = ({
     driverIds?: string[];
     carIds?: string[];
     statusIds?: string[];
-    weekNumber?: string;
+    weekNumbers?: string[];
+    weekDays?: string[];
     turnoverMin?: string;
     turnoverMax?: string;
     decimalHoursMin?: string;
@@ -154,7 +159,8 @@ export const usePartRides = ({
             driverIds,
             carIds,
             statusIds,
-            weekNumber,
+            weekNumbers,
+            weekDays,
             turnoverMin,
             turnoverMax,
             decimalHoursMin,
@@ -171,7 +177,8 @@ export const usePartRides = ({
                 driverIds,
                 carIds,
                 statusIds,
-                weekNumber,
+                weekNumbers,
+                weekDays,
                 turnoverMin,
                 turnoverMax,
                 decimalHoursMin,

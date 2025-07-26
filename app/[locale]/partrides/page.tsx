@@ -72,7 +72,8 @@ export default function TripsManagementPage() {
     const [carIds, setCarIds] = useState<string[]>([]);
     const [statusIds, setStatusIds] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-    const [weekNumber, setWeekNumber] = useState<string>('');
+    const [weekNumbers, setWeekNumbers] = useState<string[]>([]);
+    const [weekDays, setWeekDays] = useState<string[]>([]); // Mon = 1, … Sun = 0
     const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
     const [openCreateDispute, setOpenCreateDispute] = useState(false);
     const [disputePartRideId, setDisputePartRideId] = useState<string | null>(null);
@@ -102,7 +103,8 @@ export default function TripsManagementPage() {
         driverIds,
         carIds,
         statusIds,
-        weekNumber,
+        weekNumbers,
+        weekDays,
         pageNumber,
         pageSize: rowsPerPage,
         startDate: startDate?.isValid() ? startDate.format('YYYY-MM-DD') : undefined,
@@ -269,16 +271,35 @@ export default function TripsManagementPage() {
             <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4, justifyContent: 'space-between'}}>
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
                     <Autocomplete
+                        multiple
                         size="small"
                         options={Array.from({ length: 53 }, (_, i) => ({ label: `${i + 1}`, value: String(i + 1) }))}
-                        value={
-                            weekNumber
-                                ? { label: `${weekNumber}`, value: weekNumber }
-                                : null
-                        }
-                        onChange={(_, v) => setWeekNumber(v?.value ?? '')}
-                        sx={{ minWidth: 120, maxWidth: 120 }}
-                        renderInput={(p) => <TextField {...p} label="Week" />}
+                        value={weekNumbers.map((v) => ({ label: v, value: v }))}
+                        onChange={(_, selected) => setWeekNumbers(selected.map((d) => d.value))}
+                        sx={{minWidth: 200, maxWidth: 200}}
+                        renderInput={(p) => <TextField {...p} label="Week(s)" />}
+                    />
+                    <Autocomplete
+                        multiple
+                        size="small"
+                        options={[
+                            { label: 'Monday',    value: '1' },
+                            { label: 'Tuesday',   value: '2' },
+                            { label: 'Wednesday', value: '3' },
+                            { label: 'Thursday',  value: '4' },
+                            { label: 'Friday',    value: '5' },
+                            { label: 'Saturday',  value: '6' },
+                            { label: 'Sunday',    value: '0' },
+                        ]}
+                        value={weekDays.map((v) => ({
+                            label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][Number(v)],
+                            value: v,
+                        }))}
+                        onChange={(_, selected) => setWeekDays(selected.map((d) => d.value))}
+                        getOptionLabel={(o) => o.label}
+                        isOptionEqualToValue={(a, b) => a.value === b.value}
+                        sx={{ minWidth: 200, maxWidth: 200 }}
+                        renderInput={(params) => <TextField {...params} label="Weekday(s)" />}
                     />
                     <Autocomplete
                         multiple
@@ -380,7 +401,6 @@ export default function TripsManagementPage() {
                         onDateChange={setStartDate}
                         slotProps={{textField: {size: 'small'}}}
                     />
-                    -
                     <DateInputField
                         label="End date"
                         name="endDate"
