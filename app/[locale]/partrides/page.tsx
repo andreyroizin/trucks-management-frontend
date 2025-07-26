@@ -44,6 +44,8 @@ import DisputeCreateDialog from "@/components/DisputeCreateDialog";
 import {useSnack} from "@/providers/SnackProvider";
 import {useApprovePartRide} from "@/hooks/useApprovePartRide";
 import {useRejectPartRide} from "@/hooks/useRejectPartRide";
+import {WEEKEND_HOLIDAY_BG} from "@/utils/constants/styles";
+import {isHolidayDayjs} from "@/utils/constants/dutchHolidays";
 
 export default function TripsManagementPage() {
     const router = useRouter();
@@ -442,12 +444,10 @@ export default function TripsManagementPage() {
                                     />
                                 </TableCell>
                                 <TableCell>Date</TableCell>
+                                <TableCell>Week</TableCell>
+                                <TableCell>Hours code</TableCell>
                                 <TableCell>Driver</TableCell>
-                                <TableCell>Vehicle</TableCell>
-                                <TableCell>Client</TableCell>
                                 <TableCell align="right">Hours</TableCell>
-                                <TableCell>Deviation</TableCell>
-                                <TableCell align="right">Forecasted (€)</TableCell>
                                 <TableCell>Statuses</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
@@ -473,7 +473,14 @@ export default function TripsManagementPage() {
                                         key={row.id}
                                         hover
                                         selected={selectedIds.includes(row.id)}
-                                        sx={{cursor: 'pointer'}}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            backgroundColor: (() => {
+                                                const d = dayjs(row.date);
+                                                const isWeekendOrHoliday = d.day() === 0 || d.day() === 6 || isHolidayDayjs(d);
+                                                return isWeekendOrHoliday ? WEEKEND_HOLIDAY_BG : undefined;
+                                            })()
+                                        }}
                                         onClick={() => router.push(`/partrides/${row.id}`)}
                                     >
                                         <TableCell padding="checkbox" sx={{py: 2.6}}>
@@ -485,37 +492,19 @@ export default function TripsManagementPage() {
                                             />
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            {dayjs(row.date).format('DD.MM.YY')}
+                                            {dayjs(row.date).format('dd DD.MM.YY')}
+                                        </TableCell>
+                                        <TableCell sx={{py: 2.6}}>
+                                            {row?.weekNumber ?? "N/A"}
+                                        </TableCell>
+                                        <TableCell sx={{py: 2.6}}>
+                                            {row?.hoursCode?.name ?? "N/A"}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
                                             {(row.driver?.firstName && row.driver?.lastName) ? row.driver?.firstName + ' ' + row.driver?.lastName : 'N/A'}
                                         </TableCell>
-                                        <TableCell sx={{py: 2.6}}>
-                                            {row.car?.licensePlate ?? 'N/A'}
-                                        </TableCell>
-                                        <TableCell sx={{py: 2.6}}>
-                                            {row.client?.name ?? 'N/A'}
-                                        </TableCell>
                                         <TableCell align="right" sx={{py: 2.6}}>
                                             {row.decimalHours}
-                                        </TableCell>
-                                        <TableCell sx={{py: 2.6}}>
-                                            {(() => {
-                                                const rest = dayjs(row.rest, 'HH:mm:ss');
-                                                const restCalc = dayjs(row.restCalculated, 'HH:mm:ss');
-                                                const diff = rest.diff(restCalc);
-
-                                                if (isNaN(diff)) return 'N/A';
-
-                                                const duration = dayjs.duration(diff);
-                                                const hours = Math.floor(duration.asHours());
-                                                const minutes = duration.minutes();
-                                                const prefix = diff >= 0 ? '+' : '-';
-                                                return `${prefix}${Math.abs(hours)}h ${Math.abs(minutes)}m`;
-                                            })()}
-                                        </TableCell>
-                                        <TableCell align="right" sx={{py: 2.6}}>
-                                            €{row.earnings}
                                         </TableCell>
                                         <TableCell>
                                             <Box>

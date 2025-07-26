@@ -41,6 +41,10 @@ export type PartRide = {
         id: string;
         licensePlate: string;
     };
+    hoursCode?: {
+        id: string;
+        name: string;
+    };
     earnings: number
 };
 
