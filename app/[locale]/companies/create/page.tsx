@@ -56,11 +56,9 @@ export default function CreateCompanyPage() {
         },
     });
 
-    useEffect(() => {
-        const allowedRoles = ['globalAdmin'];
-        const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
-        if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
-    }, [authLoading, isAuthenticated, router, user?.roles]);
+    // Check access permissions
+    const allowedRoles = ['globalAdmin'];
+    const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -76,6 +74,14 @@ export default function CreateCompanyPage() {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!isAuthenticated || !hasAccess) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <Alert severity="error">You don't have permission to access this page.</Alert>
             </Box>
         );
     }

@@ -72,11 +72,9 @@ export default function CreateVehiclePage() {
         },
     });
 
-    useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin'];
-        const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
-        if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
-    }, [authLoading, isAuthenticated, router, user?.roles]);
+    // Check access permissions
+    const allowedRoles = ['globalAdmin', 'customerAdmin'];
+    const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
 
     // Extract companyId from search params (if provided)
     const companyIdFromUrl = searchParams.get('companyId');
@@ -116,6 +114,14 @@ export default function CreateVehiclePage() {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!isAuthenticated || !hasAccess) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <Alert severity="error">You don't have permission to access this page.</Alert>
             </Box>
         );
     }
