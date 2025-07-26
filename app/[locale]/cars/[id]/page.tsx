@@ -73,7 +73,7 @@ export default function VehicleDetailPage() {
     
     // Check roles
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer', 'customer', 'customerAccountant'];
         const hasAccess = user?.roles.some(role => allowedRoles.includes(role));
         if (!authLoading && (!isAuthenticated || !hasAccess)) {
             router.push('/auth/login');
