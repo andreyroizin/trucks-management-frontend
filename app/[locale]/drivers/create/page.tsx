@@ -44,6 +44,9 @@ const schema = yup.object().shape({
     payStep: yup.number().optional().min(0, 'Must be a positive number'),
     hourlyWage: yup.number().optional().min(0, 'Must be a positive number'),
     deviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
+    commuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
+    travelExpensesRate: yup.number().optional().min(0, 'Must be a positive number'),
+    maximumTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
     remark: yup.string().optional(),
 });
 
@@ -73,6 +76,9 @@ type FormInputs = {
     payStep?: number;                       // Optional
     hourlyWage?: number;                    // Optional
     deviatingWage?: number;                 // Optional
+    commuteKilometers?: number;             // Optional
+    travelExpensesRate?: number;            // Optional
+    maximumTravelExpenses?: number;         // Optional
     remark?: string;                        // Optional
 };
 
@@ -124,6 +130,9 @@ export default function CreateDriverPage() {
             payStep: 0,
             hourlyWage: 0,
             deviatingWage: 0,
+            commuteKilometers: 0,
+            travelExpensesRate: 0,
+            maximumTravelExpenses: 0,
             remark: '',
         },
     });
@@ -781,6 +790,87 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.deviatingWage}
                                             helperText={errors.deviatingWage?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Commute and Travel Expenses Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Commute and Travel Expenses
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            {/* Commute Kilometers - Full Width */}
+                            <Grid item xs={12}>
+                                <Controller
+                                    name="commuteKilometers"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Commute Kilometers"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.commuteKilometers}
+                                            helperText={errors.commuteKilometers?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* Travel Expenses Rate & Maximum Travel Expenses */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="travelExpensesRate"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Travel Expenses Rate"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.travelExpensesRate}
+                                            helperText={errors.travelExpensesRate?.message}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0"
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="maximumTravelExpenses"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Maximum Travel Expenses"
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.maximumTravelExpenses}
+                                            helperText={errors.maximumTravelExpenses?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",
