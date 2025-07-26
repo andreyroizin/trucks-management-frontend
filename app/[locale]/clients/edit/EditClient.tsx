@@ -58,7 +58,7 @@ export default function EditClientPage() {
     const clientId = searchParams.get('id') || '';
 
     const { user, isAuthenticated, loading: authLoading } = useAuth();
-    const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies();
+    const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const {
         data: clientData,
         isLoading: isClientLoading,
@@ -93,7 +93,7 @@ export default function EditClientPage() {
 
     // Access control
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
         const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
         if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
     }, [authLoading, isAuthenticated, router, user?.roles]);

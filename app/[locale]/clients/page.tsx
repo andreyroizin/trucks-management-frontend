@@ -126,8 +126,8 @@ export default function ClientsOverviewPage() {
                             city={c.city}
                             country={c.country}
                             phoneNumber={c.phoneNumber}
-                            onDelete={handleDelete}
-                            onEdit={handleEdit}
+                            onDelete={(isGlobalAdmin || isCustomerAdmin) ? handleDelete : undefined}
+                            onEdit={(isGlobalAdmin || isCustomerAdmin) ? handleEdit : undefined}
                         />
                     </Grid>
                 ))}

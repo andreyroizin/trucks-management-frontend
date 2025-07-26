@@ -48,7 +48,7 @@ type FormInputs = {
 export default function CreateClientPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
-    const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies();
+    const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateClient();
 
     const {
@@ -65,7 +65,7 @@ export default function CreateClientPage() {
     });
 
     useEffect(() => {
-        const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer'];
+        const allowedRoles = ['globalAdmin', 'customerAdmin'];
         const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
         if (!authLoading && (!isAuthenticated || !hasAccess)) router.push('/auth/login');
     }, [authLoading, isAuthenticated, router, user?.roles]);

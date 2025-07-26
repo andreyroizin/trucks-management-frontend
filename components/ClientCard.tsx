@@ -79,25 +79,27 @@ export default function ClientCard({
                         </Typography>
                     }
                     action={
-                        <>
-                            <IconButton
-                                size="small"
-                                aria-label="client actions"
-                                onClick={handleClick}
-                            >
-                                <MoreHorizIcon/>
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-                                transformOrigin={{vertical: 'top', horizontal: 'right'}}
-                            >
-                                <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                                <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                            </Menu>
-                        </>
+                        (onEdit || onDelete) ? (
+                            <>
+                                <IconButton
+                                    size="small"
+                                    aria-label="client actions"
+                                    onClick={handleClick}
+                                >
+                                    <MoreHorizIcon/>
+                                </IconButton>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                                    transformOrigin={{vertical: 'top', horizontal: 'right'}}
+                                >
+                                    {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
+                                    {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                                </Menu>
+                            </>
+                        ) : null
                     }
                     sx={{p: 2, alignItems: 'center'}}
                 />
