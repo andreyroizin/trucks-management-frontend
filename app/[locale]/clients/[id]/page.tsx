@@ -2,6 +2,7 @@
 
 import React, {useState, useEffect} from 'react';
 import {useParams, useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 import {
     Box,
     Typography,
@@ -26,6 +27,7 @@ import {useApproveClient} from "@/hooks/useApproveClient";
 
 export default function ClientDetailPage() {
     const {id} = useParams();
+    const t = useTranslations();
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const {data: client, isLoading, isError, error} = useClientDetails(id as string);
@@ -88,7 +90,7 @@ export default function ClientDetailPage() {
     if (isError || !client) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load client details.'}</Alert>
+                <Alert severity="error">{error?.message || t('clients.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -98,7 +100,7 @@ export default function ClientDetailPage() {
             {/* Header Section */}
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Client Management
+                    {t('clients.detail.title')}
                 </Typography>
             </Box>
 
@@ -135,7 +137,7 @@ export default function ClientDetailPage() {
                                     onClick={handleApprove}
                                     sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
                                 >
-                                    {isApproving ? 'Approving...' : 'Approve'}
+                                    {isApproving ? t('clients.detail.buttons.approving') : t('clients.detail.buttons.approve')}
                                 </Button>
                             )}
                             
@@ -174,22 +176,22 @@ export default function ClientDetailPage() {
 
                 {/* General Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    General Information
+                    {t('clients.detail.sections.general')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Client Name
+                                {t('clients.detail.fields.name')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{client?.name}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>TAV</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client?.tav || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.tav')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.tav || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Company</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.company')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{client?.company?.name}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -199,27 +201,27 @@ export default function ClientDetailPage() {
 
                 {/* Client Address */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Client Address
+                    {t('clients.detail.sections.address')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Street Address
+                                {t('clients.detail.fields.address')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{client?.address || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Postcode</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client?.postcode || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.postcode')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.postcode || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>City</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client?.city || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.city')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.city || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Country</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client?.country || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.country')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.country || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -228,19 +230,19 @@ export default function ClientDetailPage() {
 
                 {/* Contact Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Contact Information
+                    {t('clients.detail.sections.contact')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Phone Number
+                                {t('clients.detail.fields.phone')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{client?.phoneNumber || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Email</TableCell>
-                            <TableCell sx={{border: 'none'}}>{client?.email || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.email')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.email || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -249,10 +251,10 @@ export default function ClientDetailPage() {
 
                 {/* Remark */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
-                    Remark
+                    {t('clients.detail.sections.remark')}
                 </Typography>
                 <Typography variant="body1">
-                    {client?.remark || 'No remark provided'}
+                    {client?.remark || t('clients.detail.noRemark')}
                 </Typography>
 
 
@@ -261,8 +263,8 @@ export default function ClientDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Client?"
-                message="Are you sure you want to delete this client?"
+                title={t('clients.detail.deleteConfirm.title')}
+                message={t('clients.detail.deleteConfirm.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
@@ -270,7 +272,7 @@ export default function ClientDetailPage() {
             {/* Display error for deletion if needed */}
             {isDeleteError && (
                 <Alert severity="error" sx={{mt: 2}}>
-                    {deleteError?.message || 'Failed to delete client.'}
+                    {deleteError?.message || t('clients.detail.errors.deleteFailed')}
                 </Alert>
             )}
         </Box>

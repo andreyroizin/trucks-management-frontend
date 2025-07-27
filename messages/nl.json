@@ -447,5 +447,310 @@
         }
       }
     }
+  },
+  "reports": {
+    "title": "Rapporten",
+    "filters": {
+      "driver": "Chauffeur",
+      "period": "Periode"
+    },
+    "table": {
+      "title": "Perioderapportenlijst",
+      "noSelection": "Kies eerst een chauffeur en periode om het rapport te vinden.",
+      "columns": {
+        "week": "Week",
+        "driver": "Chauffeur",
+        "signedOn": "Ondertekend op",
+        "actions": "Acties"
+      }
+    },
+    "status": {
+      "checking": "Controleren...",
+      "downloading": "Downloaden...",
+      "signed": "Ondertekend",
+      "notSigned": "Niet ondertekend",
+      "pendingSignature": "Wacht op handtekening",
+      "pendingAdmin": "Wacht op admin",
+      "invalidated": "Ongeldig",
+      "notAvailable": "Niet beschikbaar",
+      "weekNotFound": "Week niet gevonden",
+      "checkingStatus": "Status controleren...",
+      "periodNotSigned": "Periode niet volledig ondertekend"
+    },
+    "buttons": {
+      "downloadWeek": "Download Weekrapport",
+      "downloadPeriod": "Download Perioderapport"
+    },
+    "periodHeader": {
+      "title": "Periode {year}–{periodNr}",
+      "description": "Hier is een overzicht van je werk en verdiensten voor deze periode."
+    }
+  },
+  "companies": {
+    "title": "Bedrijfsbeheer",
+    "overview": {
+      "title": "Bedrijfsoverzicht",
+      "search": {
+        "placeholder": "Bedrijfsnaam"
+      },
+      "buttons": {
+        "create": "Bedrijf Aanmaken",
+        "refresh": "Lijst vernieuwen"
+      },
+      "pagination": {
+        "rowsPerPage": "Rijen per pagina:"
+      },
+      "errors": {
+        "loadFailed": "Laden van bedrijven mislukt"
+      }
+    },
+    "create": {
+      "title": "Nieuw Bedrijf Aanmaken",
+      "subtitle": "Gebruik dit formulier om een nieuw bedrijf toe te voegen aan de bedrijvenlijst. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "sections": {
+        "general": "Algemene Informatie",
+        "address": "Bedrijfsadres",
+        "contact": "Contactgegevens",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "name": {
+          "label": "Bedrijfsnaam",
+          "required": "Bedrijfsnaam is verplicht"
+        },
+        "address": {
+          "label": "Straatnaam"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land"
+        },
+        "phone": {
+          "label": "Telefoonnummer"
+        },
+        "email": {
+          "label": "E-mail"
+        },
+        "remark": {
+          "label": "Opmerking",
+          "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over het bedrijf in..."
+        }
+      },
+      "buttons": {
+        "submit": "Bedrijf Aanmaken",
+        "submitting": "Aanmaken..."
+      },
+      "errors": {
+        "createFailed": "Aanmaken van bedrijf mislukt.",
+        "noPermission": "U heeft geen toegang tot deze pagina."
+      }
+    },
+    "detail": {
+      "title": "Bedrijfsbeheer",
+      "sections": {
+        "general": "Algemene Informatie",
+        "address": "Bedrijfsadres",
+        "contact": "Contactgegevens",
+        "drivers": "Chauffeurs van het Bedrijf",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "drivers": "Bedrijfschauffeurs",
+        "address": "Straatnaam",
+        "postcode": "Postcode",
+        "city": "Stad",
+        "country": "Land",
+        "phone": "Telefoonnummer",
+        "email": "E-mail"
+      },
+      "driversTable": {
+        "columns": {
+          "name": "Naam",
+          "phone": "Telefoon",
+          "email": "E-mail",
+          "schedule": "Weekschema",
+          "hours": "Werkuren"
+        },
+        "noDrivers": "Geen chauffeurs toegewezen aan dit bedrijf"
+      },
+      "noRemark": "Geen opmerking beschikbaar",
+      "buttons": {
+        "approve": "Goedkeuren",
+        "approving": "Goedkeuren...",
+        "edit": "Bedrijf Bewerken",
+        "delete": "Bedrijf Verwijderen"
+      },
+      "errors": {
+        "loadFailed": "Laden van bedrijfsgegevens mislukt.",
+        "deleteFailed": "Verwijderen van bedrijf mislukt."
+      },
+      "deleteConfirm": {
+        "title": "Bedrijf Verwijderen?",
+        "message": "Weet u zeker dat u dit bedrijf wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      },
+      "notAvailable": "N/B"
+    },
+    "edit": {
+      "title": "Bedrijfsinformatie Bewerken",
+      "subtitle": "Werk de bedrijfsinformatie hieronder bij. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "buttons": {
+        "submit": "Bedrijf Bijwerken",
+        "submitting": "Bijwerken..."
+      },
+      "errors": {
+        "loadFailed": "Laden van bedrijf mislukt.",
+        "updateFailed": "Bewerken van bedrijf mislukt."
+      }
+    },
+    "card": {
+      "drivers": "Chauffeurs",
+      "menu": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      }
+    }
+  },
+  "clients": {
+    "title": "Klantenbeheer",
+    "overview": {
+      "title": "Klantenoverzicht",
+      "search": {
+        "placeholder": "Klantnaam"
+      },
+      "buttons": {
+        "create": "Klant Aanmaken",
+        "refresh": "Lijst vernieuwen"
+      },
+      "pagination": {
+        "rowsPerPage": "Rijen per pagina:"
+      },
+      "errors": {
+        "loadFailed": "Laden van klanten mislukt"
+      }
+    },
+    "create": {
+      "title": "Nieuwe Klant Aanmaken",
+      "subtitle": "Gebruik dit formulier om een nieuwe klant toe te voegen aan de klantenlijst. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "sections": {
+        "general": "Algemene Informatie",
+        "address": "Klantadres",
+        "contact": "Contactgegevens",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "name": {
+          "label": "Klantnaam",
+          "required": "Klantnaam is verplicht"
+        },
+        "company": {
+          "label": "Bedrijf",
+          "required": "Bedrijf is verplicht"
+        },
+        "tav": {
+          "label": "TAV"
+        },
+        "address": {
+          "label": "Straatnaam"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land"
+        },
+        "phone": {
+          "label": "Telefoonnummer"
+        },
+        "email": {
+          "label": "E-mail"
+        },
+        "remark": {
+          "label": "Opmerking",
+          "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over de klant in..."
+        }
+      },
+      "buttons": {
+        "submit": "Klant Aanmaken",
+        "submitting": "Aanmaken..."
+      },
+      "errors": {
+        "createFailed": "Aanmaken van klant mislukt.",
+        "noPermission": "U heeft geen toegang tot deze pagina."
+      }
+    },
+    "detail": {
+      "title": "Klantbeheer",
+      "sections": {
+        "general": "Algemene Informatie",
+        "address": "Klantadres",
+        "contact": "Contactgegevens",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "name": "Klantnaam",
+        "tav": "TAV",
+        "company": "Bedrijf",
+        "address": "Straatnaam",
+        "postcode": "Postcode",
+        "city": "Stad",
+        "country": "Land",
+        "phone": "Telefoonnummer",
+        "email": "E-mail"
+      },
+      "noRemark": "Geen opmerking beschikbaar",
+      "buttons": {
+        "approve": "Goedkeuren",
+        "approving": "Goedkeuren...",
+        "edit": "Klant Bewerken",
+        "delete": "Klant Verwijderen"
+      },
+      "errors": {
+        "loadFailed": "Laden van klantgegevens mislukt.",
+        "deleteFailed": "Verwijderen van klant mislukt."
+      },
+      "deleteConfirm": {
+        "title": "Klant Verwijderen?",
+        "message": "Weet u zeker dat u deze klant wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      },
+      "notAvailable": "N/B"
+    },
+    "edit": {
+      "title": "Klantinformatie Bewerken",
+      "subtitle": "Werk de klantinformatie hieronder bij. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "buttons": {
+        "submit": "Klant Bijwerken",
+        "submitting": "Bijwerken..."
+      },
+      "errors": {
+        "loadFailed": "Laden van klant mislukt.",
+        "updateFailed": "Bewerken van klant mislukt."
+      }
+    },
+    "card": {
+      "fields": {
+        "tav": "TAV",
+        "address": "Adres",
+        "phone": "Telefoonnummer"
+      },
+      "menu": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      },
+      "notAvailable": "N/B"
+    }
+  },
+  "common": {
+    "buttons": {
+      "delete": "Verwijderen",
+      "cancel": "Annuleren"
+    }
   }
 }

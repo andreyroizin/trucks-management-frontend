@@ -2,6 +2,7 @@
 
 import React, {useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
+import {useTranslations} from 'next-intl';
 import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
 import {useRouter} from 'next/navigation';
 import ClientCard from '@/components/ClientCard';
@@ -15,6 +16,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 
 export default function ClientsOverviewPage() {
     const router = useRouter();
+    const t = useTranslations();
     const {user} = useAuth();
     
     // Role checks for UI visibility
@@ -82,20 +84,20 @@ export default function ClientsOverviewPage() {
 
     // Loading & error states
     if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
-    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load clients</Alert>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>{t('clients.overview.errors.loadFailed')}</Alert>;
 
     return (
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Clients management
+                    {t('clients.title')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
 
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h4" fontWeight={500}>
-                    Clients overview
+                    {t('clients.overview.title')}
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                     {(isGlobalAdmin || isCustomerAdmin) && (
@@ -103,7 +105,7 @@ export default function ClientsOverviewPage() {
                             variant="contained" 
                             onClick={() => router.push('/clients/create')}
                         >
-                            Create Client
+                            {t('clients.overview.buttons.create')}
                         </Button>
                     )}
                     <IconButton onClick={handleRefetch}>
@@ -112,7 +114,13 @@ export default function ClientsOverviewPage() {
                 </Box>
             </Box>
 
-            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Client Name"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+            <DebouncedSearchInput 
+                value={debouncedSearch} 
+                onDebouncedChange={setDebouncedSearch} 
+                placeholder={t('clients.overview.search.placeholder')} 
+                size={"small"} 
+                sx={{ mb: 4, maxWidth: 260 }} 
+            />
 
             <Grid container spacing={2}>
                 {(clientsData?.data || []).map((c) => (
@@ -145,13 +153,14 @@ export default function ClientsOverviewPage() {
                   setPageSize(parseInt(event.target.value, 10));
                 }}
                 rowsPerPageOptions={[6, 9, 12, 15]}
+                labelRowsPerPage={t('clients.overview.pagination.rowsPerPage')}
             />
             
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openDeleteModal}
-                title="Delete Client?"
-                message="Are you sure you want to delete this client? This action cannot be undone."
+                title={t('clients.detail.deleteConfirm.title')}
+                message={t('clients.detail.deleteConfirm.message')}
                 onClose={() => {
                     setOpenDeleteModal(false);
                     setClientToDelete(null);

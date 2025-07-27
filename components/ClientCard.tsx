@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useRef, useState} from 'react';
+import { useTranslations } from 'next-intl';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
     Card,
@@ -40,6 +41,7 @@ export default function ClientCard({
                                        onEdit,
                                        onDelete,
                                    }: ClientCardProps) {
+    const t = useTranslations();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const cardRef = useRef<HTMLDivElement>(null);
@@ -95,8 +97,8 @@ export default function ClientCard({
                                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                                     transformOrigin={{vertical: 'top', horizontal: 'right'}}
                                 >
-                                    {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
-                                    {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                                    {onEdit && <MenuItem onClick={handleEdit}>{t('clients.card.menu.edit')}</MenuItem>}
+                                    {onDelete && <MenuItem onClick={handleDelete}>{t('clients.card.menu.delete')}</MenuItem>}
                                 </Menu>
                             </>
                         ) : null
@@ -110,7 +112,7 @@ export default function ClientCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">TAV</Typography>
+                                    <Typography variant="caption">{t('clients.card.fields.tav')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">{tav}</Typography>
@@ -118,7 +120,7 @@ export default function ClientCard({
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Address</Typography>
+                                    <Typography variant="caption">{t('clients.card.fields.address')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
@@ -128,10 +130,10 @@ export default function ClientCard({
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Phone Number</Typography>
+                                    <Typography variant="caption">{t('clients.card.fields.phone')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{phoneNumber ?? "N/A"}</Typography>
+                                    <Typography variant="caption">{phoneNumber ?? t('clients.card.notAvailable')}</Typography>
                                 </td>
                             </tr>
                             </tbody>

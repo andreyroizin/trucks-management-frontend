@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -19,19 +20,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';  // Assumes you have this
 import { useCreateClient } from '@/hooks/useCreateClient';
 
-const schema = yup.object().shape({
-    name: yup.string().required('Client name is required'),
-    companyId: yup.string().required('Company is required'),
-    tav: yup.string().optional(),
-    address: yup.string().optional(),
-    postcode: yup.string().optional(),
-    city: yup.string().optional(),
-    country: yup.string().optional(),
-    phoneNumber: yup.string().optional(),
-    email: yup.string().optional(),
-    remark: yup.string().optional(),
-});
-
 type FormInputs = {
     name: string;               // Required
     companyId: string;          // Required
@@ -47,6 +35,20 @@ type FormInputs = {
 
 export default function CreateClientPage() {
     const router = useRouter();
+    const t = useTranslations();
+    
+    const schema = yup.object().shape({
+        name: yup.string().required(t('clients.create.fields.name.required')),
+        companyId: yup.string().required(t('clients.create.fields.company.required')),
+        tav: yup.string().optional(),
+        address: yup.string().optional(),
+        postcode: yup.string().optional(),
+        city: yup.string().optional(),
+        country: yup.string().optional(),
+        phoneNumber: yup.string().optional(),
+        email: yup.string().optional(),
+        remark: yup.string().optional(),
+    });
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateClient();
@@ -93,10 +95,10 @@ export default function CreateClientPage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    New Client Creation Form
+                    {t('clients.create.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Use this form to create a new client in clients list. Please ensure all fields are filled out accurately.
+                    {t('clients.create.subtitle')}
                 </Typography>
             </Box>
 
@@ -104,7 +106,7 @@ export default function CreateClientPage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to create client.'}
+                        {error?.message || t('clients.create.errors.createFailed')}
                     </Alert>
                 )}
 
@@ -112,7 +114,7 @@ export default function CreateClientPage() {
                 {/* General Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        General Information
+                        {t('clients.create.sections.general')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -122,7 +124,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Client Name"
+                                        label={t('clients.create.fields.name.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -145,7 +147,7 @@ export default function CreateClientPage() {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                label="Company"
+                                                label={t('clients.create.fields.company.label')}
                                                 variant="outlined"
                                                 margin="normal"
                                                 fullWidth
@@ -170,7 +172,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="TAV"
+                                        label={t('clients.create.fields.tav.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -186,7 +188,7 @@ export default function CreateClientPage() {
                 {/* Client Address Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Client Address
+                        {t('clients.create.sections.address')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -196,7 +198,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Street Address"
+                                        label={t('clients.create.fields.address.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -213,7 +215,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Postcode"
+                                        label={t('clients.create.fields.postcode.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -230,7 +232,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="City"
+                                        label={t('clients.create.fields.city.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -247,7 +249,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Country"
+                                        label={t('clients.create.fields.country.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -263,7 +265,7 @@ export default function CreateClientPage() {
                 {/* Contact Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Contact Information
+                        {t('clients.create.sections.contact')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -273,7 +275,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Phone Number"
+                                        label={t('clients.create.fields.phone.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -290,7 +292,7 @@ export default function CreateClientPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Email"
+                                        label={t('clients.create.fields.email.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -306,7 +308,7 @@ export default function CreateClientPage() {
                 {/* Remark Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Remark
+                        {t('clients.create.sections.remark')}
                     </Typography>
                     <Controller
                         name="remark"
@@ -314,13 +316,13 @@ export default function CreateClientPage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Remark"
+                                label={t('clients.create.fields.remark.label')}
                                 fullWidth
                                 margin="normal"
                                 variant="outlined"
                                 multiline
                                 rows={4}
-                                placeholder="Enter any additional remarks or comments about the client..."
+                                placeholder={t('clients.create.fields.remark.placeholder')}
                                 error={!!errors.remark}
                                 helperText={errors.remark?.message}
                             />
@@ -339,7 +341,7 @@ export default function CreateClientPage() {
                         disabled={isPending}
                         startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Creating...' : 'Create Client'}
+                        {isPending ? t('clients.create.buttons.submitting') : t('clients.create.buttons.submit')}
                     </Button>
                 </Box>
             </form>

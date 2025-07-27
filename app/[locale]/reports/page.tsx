@@ -16,6 +16,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useWeekStatus, WeekDetail } from '@/hooks/useWeekStatus';
@@ -52,6 +53,7 @@ function WeekReportRow({
     driverName: string; 
     year: number; 
 }) {
+    const t = useTranslations();
     const { data: weekData, isLoading, error } = useWeekStatus(year, weekNumber, driverId);
     const downloadWeekReport = useDownloadWeekReport();
     
@@ -71,7 +73,7 @@ function WeekReportRow({
     return (
         <TableRow hover>
             <TableCell sx={{ py: 2.6 }}>
-                Week {weekNumber}
+                {t('reports.table.columns.week')} {weekNumber}
             </TableCell>
             <TableCell sx={{ py: 2.6 }}>
                 {driverName}
@@ -79,21 +81,21 @@ function WeekReportRow({
             <TableCell sx={{ py: 2.6 }}>
                 {isLoading ? (
                     <Typography variant="body2" color="text.secondary">
-                        Checking...
+                        {t('reports.status.checking')}
                     </Typography>
                 ) : isWeekSigned ? (
                     <Typography variant="body2" color="success.main">
-                        {signedDate ? new Date(signedDate).toLocaleDateString() : 'Signed'}
+                        {signedDate ? new Date(signedDate).toLocaleDateString() : t('reports.status.signed')}
                     </Typography>
                 ) : weekData ? (
                     <Typography variant="body2" color="warning.main">
-                        {weekDetail?.status === 1 ? 'Pending signature' : 
-                         weekDetail?.status === 0 ? 'Pending admin' : 
-                         weekDetail?.status === 3 ? 'Invalidated' : 'Not signed'}
+                        {weekDetail?.status === 1 ? t('reports.status.pendingSignature') : 
+                         weekDetail?.status === 0 ? t('reports.status.pendingAdmin') : 
+                         weekDetail?.status === 3 ? t('reports.status.invalidated') : t('reports.status.notSigned')}
                     </Typography>
                 ) : (
                     <Typography variant="body2" color="text.secondary">
-                        Week not found
+                        {t('reports.status.weekNotFound')}
                     </Typography>
                 )}
             </TableCell>
@@ -106,18 +108,18 @@ function WeekReportRow({
                     onClick={handleDownload}
                 >
                     {downloadWeekReport.isPending 
-                        ? 'Downloading...' 
+                        ? t('reports.status.downloading')
                         : isLoading 
-                            ? 'Checking...'
+                            ? t('reports.status.checking')
                             : isWeekSigned 
-                                ? 'Download Week Report'
+                                ? t('reports.buttons.downloadWeek')
                                 : weekDetail?.status === 1
-                                    ? 'Pending Signature'
+                                    ? t('reports.status.pendingSignature')
                                     : weekDetail?.status === 0
-                                        ? 'Pending Admin'
+                                        ? t('reports.status.pendingAdmin')
                                         : weekDetail?.status === 3
-                                            ? 'Invalidated'
-                                            : 'Not Available'
+                                            ? t('reports.status.invalidated')
+                                            : t('reports.status.notAvailable')
                     }
                 </Button>
             </TableCell>
@@ -127,6 +129,7 @@ function WeekReportRow({
 
 export default function ReportsPage() {
     const router = useRouter();
+    const t = useTranslations();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     
     // Filter states
@@ -172,7 +175,7 @@ export default function ReportsPage() {
             {/* Header */}
             <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="h3" fontWeight={500}>
-                    Reports
+                    {t('reports.title')}
                 </Typography>
                 <LanguageSelectDesktop />
             </Box>
@@ -195,7 +198,7 @@ export default function ReportsPage() {
                             setSelectedDriver(newValue);
                         }}
                         sx={{ minWidth: 200, maxWidth: 200 }}
-                        renderInput={(params) => <TextField {...params} label="Driver" />}
+                        renderInput={(params) => <TextField {...params} label={t('reports.filters.driver')} />}
                         isOptionEqualToValue={(option, value) => option?.id === value?.id}
                     />
 
@@ -209,7 +212,7 @@ export default function ReportsPage() {
                             setSelectedPeriod(newValue);
                         }}
                         sx={{ minWidth: 200, maxWidth: 200 }}
-                        renderInput={(params) => <TextField {...params} label="Period" />}
+                        renderInput={(params) => <TextField {...params} label={t('reports.filters.period')} />}
                         isOptionEqualToValue={(option, value) => 
                             option?.value?.year === value?.value?.year && 
                             option?.value?.periodNr === value?.value?.periodNr
@@ -228,7 +231,7 @@ export default function ReportsPage() {
                 mb: 3
             }}>
                 <Typography variant="h4" fontWeight={500}>
-                    Periods Reports List
+                    {t('reports.table.title')}
                 </Typography>
             </Box>
 
@@ -236,7 +239,7 @@ export default function ReportsPage() {
             {!selectedDriver || !selectedPeriod ? (
                 <Box sx={{ py: 4 }}>
                     <Typography variant="body1" color="text.secondary">
-                        Choose Driver and Period first, to find the report.
+                        {t('reports.table.noSelection')}
                     </Typography>
                 </Box>
             ) : (
@@ -252,10 +255,13 @@ export default function ReportsPage() {
                     }}>
                         <Box>
                             <Typography variant="h4" fontWeight={500} sx={{ mb: 1 }}>
-                                {selectedPeriod.value.year}–{String(selectedPeriod.value.periodNr).padStart(2, '0')} Period
+                                {t('reports.periodHeader.title', {
+                                    year: selectedPeriod.value.year,
+                                    periodNr: String(selectedPeriod.value.periodNr).padStart(2, '0')
+                                })}
                             </Typography>
                             <Typography variant="body1" color="text.secondary">
-                                Here's a breakdown of your work and earnings for this period.
+                                {t('reports.periodHeader.description')}
                             </Typography>
                         </Box>
                         <Button 
@@ -269,12 +275,12 @@ export default function ReportsPage() {
                             })}
                         >
                             {downloadPeriodReport.isPending 
-                                ? 'Downloading...' 
+                                ? t('reports.status.downloading')
                                 : isPeriodLoading 
-                                    ? 'Checking Status...'
+                                    ? t('reports.status.checkingStatus')
                                     : isPeriodSigned 
-                                        ? 'Download Period Report'
-                                        : 'Period Not Fully Signed'
+                                        ? t('reports.buttons.downloadPeriod')
+                                        : t('reports.status.periodNotSigned')
                             }
                         </Button>
                     </Box>
@@ -284,10 +290,10 @@ export default function ReportsPage() {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Week</TableCell>
-                                    <TableCell>Driver</TableCell>
-                                    <TableCell>Signed on</TableCell>
-                                    <TableCell>Actions</TableCell>
+                                    <TableCell>{t('reports.table.columns.week')}</TableCell>
+                                    <TableCell>{t('reports.table.columns.driver')}</TableCell>
+                                    <TableCell>{t('reports.table.columns.signedOn')}</TableCell>
+                                    <TableCell>{t('reports.table.columns.actions')}</TableCell>
                                 </TableRow>
                             </TableHead>
                                                          <TableBody>

@@ -447,5 +447,310 @@
         }
       }
     }
+  },
+  "reports": {
+    "title": "Reports",
+    "filters": {
+      "driver": "Driver",
+      "period": "Period"
+    },
+    "table": {
+      "title": "Periods Reports List",
+      "noSelection": "Choose Driver and Period first, to find the report.",
+      "columns": {
+        "week": "Week",
+        "driver": "Driver",
+        "signedOn": "Signed on",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "checking": "Checking...",
+      "downloading": "Downloading...",
+      "signed": "Signed",
+      "notSigned": "Not signed",
+      "pendingSignature": "Pending signature",
+      "pendingAdmin": "Pending admin",
+      "invalidated": "Invalidated",
+      "notAvailable": "Not Available",
+      "weekNotFound": "Week not found",
+      "checkingStatus": "Checking Status...",
+      "periodNotSigned": "Period Not Fully Signed"
+    },
+    "buttons": {
+      "downloadWeek": "Download Week Report",
+      "downloadPeriod": "Download Period Report"
+    },
+    "periodHeader": {
+      "title": "{year}–{periodNr} Period",
+      "description": "Here's a breakdown of your work and earnings for this period."
+    }
+  },
+  "companies": {
+    "title": "Companies management",
+    "overview": {
+      "title": "Companies overview",
+      "search": {
+        "placeholder": "Company Name"
+      },
+      "buttons": {
+        "create": "Create Company",
+        "refresh": "Refresh list"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load companies"
+      }
+    },
+    "create": {
+      "title": "New Company Creation Form",
+      "subtitle": "Use this form to create a new company in companies list. Please ensure all fields are filled out accurately.",
+      "sections": {
+        "general": "General Information",
+        "address": "Company Address",
+        "contact": "Contact Information",
+        "remark": "Remark"
+      },
+      "fields": {
+        "name": {
+          "label": "Company Name",
+          "required": "Company name is required"
+        },
+        "address": {
+          "label": "Street Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country"
+        },
+        "phone": {
+          "label": "Phone Number"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "remark": {
+          "label": "Remark",
+          "placeholder": "Enter any additional remarks or comments about the company..."
+        }
+      },
+      "buttons": {
+        "submit": "Create Company",
+        "submitting": "Creating..."
+      },
+      "errors": {
+        "createFailed": "Failed to create company.",
+        "noPermission": "You don't have permission to access this page."
+      }
+    },
+    "detail": {
+      "title": "Company Management",
+      "sections": {
+        "general": "General Information",
+        "address": "Company Address",
+        "contact": "Contact Information",
+        "drivers": "Company's Drivers",
+        "remark": "Remark"
+      },
+      "fields": {
+        "drivers": "Company Drivers",
+        "address": "Street Address",
+        "postcode": "Postcode",
+        "city": "City",
+        "country": "Country",
+        "phone": "Phone Number",
+        "email": "Email"
+      },
+      "driversTable": {
+        "columns": {
+          "name": "Name",
+          "phone": "Phone",
+          "email": "Email",
+          "schedule": "Weekly Schedule",
+          "hours": "Working Hours"
+        },
+        "noDrivers": "No drivers assigned to this company"
+      },
+      "noRemark": "No remark provided",
+      "buttons": {
+        "approve": "Approve",
+        "approving": "Approving...",
+        "edit": "Edit Company",
+        "delete": "Delete Company"
+      },
+      "errors": {
+        "loadFailed": "Failed to load company details.",
+        "deleteFailed": "Failed to delete company."
+      },
+      "deleteConfirm": {
+        "title": "Delete Company?",
+        "message": "Are you sure you want to delete this company? This action cannot be undone."
+      },
+      "notAvailable": "N/A"
+    },
+    "edit": {
+      "title": "Edit Company Information",
+      "subtitle": "Update the company information below. Please ensure all fields are filled out accurately.",
+      "buttons": {
+        "submit": "Update Company",
+        "submitting": "Updating..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load company.",
+        "updateFailed": "Failed to edit company."
+      }
+    },
+    "card": {
+      "drivers": "Drivers",
+      "menu": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    }
+  },
+  "clients": {
+    "title": "Clients management",
+    "overview": {
+      "title": "Clients overview",
+      "search": {
+        "placeholder": "Client Name"
+      },
+      "buttons": {
+        "create": "Create Client",
+        "refresh": "Refresh list"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load clients"
+      }
+    },
+    "create": {
+      "title": "New Client Creation Form",
+      "subtitle": "Use this form to create a new client in clients list. Please ensure all fields are filled out accurately.",
+      "sections": {
+        "general": "General Information",
+        "address": "Client Address",
+        "contact": "Contact Information",
+        "remark": "Remark"
+      },
+      "fields": {
+        "name": {
+          "label": "Client Name",
+          "required": "Client name is required"
+        },
+        "company": {
+          "label": "Company",
+          "required": "Company is required"
+        },
+        "tav": {
+          "label": "TAV"
+        },
+        "address": {
+          "label": "Street Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country"
+        },
+        "phone": {
+          "label": "Phone Number"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "remark": {
+          "label": "Remark",
+          "placeholder": "Enter any additional remarks or comments about the client..."
+        }
+      },
+      "buttons": {
+        "submit": "Create Client",
+        "submitting": "Creating..."
+      },
+      "errors": {
+        "createFailed": "Failed to create client.",
+        "noPermission": "You don't have permission to access this page."
+      }
+    },
+    "detail": {
+      "title": "Client Management",
+      "sections": {
+        "general": "General Information",
+        "address": "Client Address",
+        "contact": "Contact Information",
+        "remark": "Remark"
+      },
+      "fields": {
+        "name": "Client Name",
+        "tav": "TAV",
+        "company": "Company",
+        "address": "Street Address",
+        "postcode": "Postcode",
+        "city": "City",
+        "country": "Country",
+        "phone": "Phone Number",
+        "email": "Email"
+      },
+      "noRemark": "No remark provided",
+      "buttons": {
+        "approve": "Approve",
+        "approving": "Approving...",
+        "edit": "Edit Client",
+        "delete": "Delete Client"
+      },
+      "errors": {
+        "loadFailed": "Failed to load client details.",
+        "deleteFailed": "Failed to delete client."
+      },
+      "deleteConfirm": {
+        "title": "Delete Client?",
+        "message": "Are you sure you want to delete this client? This action cannot be undone."
+      },
+      "notAvailable": "N/A"
+    },
+    "edit": {
+      "title": "Edit Client Information",
+      "subtitle": "Update the client information below. Please ensure all fields are filled out accurately.",
+      "buttons": {
+        "submit": "Update Client",
+        "submitting": "Updating..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load client.",
+        "updateFailed": "Failed to edit client."
+      }
+    },
+    "card": {
+      "fields": {
+        "tav": "TAV",
+        "address": "Address",
+        "phone": "Phone Number"
+      },
+      "menu": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "notAvailable": "N/A"
+    }
+  },
+  "common": {
+    "buttons": {
+      "delete": "Delete",
+      "cancel": "Cancel"
+    }
   }
 }

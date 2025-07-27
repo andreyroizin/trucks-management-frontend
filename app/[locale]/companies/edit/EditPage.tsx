@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -18,19 +19,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCompanyDetails } from '@/hooks/useCompanyDetails';
 import { useUpdateCompany } from '@/hooks/useUpdateCompany';
 
-// *** Validation Schema ***
-const schema = yup.object().shape({
-    id:          yup.string().required(),
-    name:        yup.string().required('Company name is required'),
-    address:     yup.string().optional(),
-    postcode:    yup.string().optional(),
-    city:        yup.string().optional(),
-    country:     yup.string().optional(),
-    phoneNumber: yup.string().optional(),
-    email:       yup.string().optional(),
-    remark:      yup.string().optional(),
-});
-
 // *** FormInputs Type ***
 type FormInputs = {
     id: string;
@@ -46,6 +34,20 @@ type FormInputs = {
 
 export default function EditCompanyPage() {
     const router = useRouter();
+    const t = useTranslations();
+    
+    // *** Validation Schema ***
+    const schema = yup.object().shape({
+        id:          yup.string().required(),
+        name:        yup.string().required(t('companies.create.fields.name.required')),
+        address:     yup.string().optional(),
+        postcode:    yup.string().optional(),
+        city:        yup.string().optional(),
+        country:     yup.string().optional(),
+        phoneNumber: yup.string().optional(),
+        email:       yup.string().optional(),
+        remark:      yup.string().optional(),
+    });
     const searchParams = useSearchParams();
     const companyId = searchParams.get('id') || '';
 
@@ -125,7 +127,7 @@ export default function EditCompanyPage() {
     if (isCompanyError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{companyError?.message || 'Failed to load company.'}</Alert>
+                <Alert severity="error">{companyError?.message || t('companies.edit.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -135,10 +137,10 @@ export default function EditCompanyPage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    Edit Company Information
+                    {t('companies.edit.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Update the company information below. Please ensure all fields are filled out accurately.
+                    {t('companies.edit.subtitle')}
                 </Typography>
             </Box>
 
@@ -146,7 +148,7 @@ export default function EditCompanyPage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to edit company.'}
+                        {error?.message || t('companies.edit.errors.updateFailed')}
                     </Alert>
                 )}
 
@@ -154,7 +156,7 @@ export default function EditCompanyPage() {
                 {/* General Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        General Information
+                        {t('companies.create.sections.general')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -164,7 +166,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Company Name"
+                                        label={t('companies.create.fields.name.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -181,7 +183,7 @@ export default function EditCompanyPage() {
                 {/* Company Address Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Company Address
+                        {t('companies.create.sections.address')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -191,7 +193,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Street Address"
+                                        label={t('companies.create.fields.address.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -208,7 +210,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Postcode"
+                                        label={t('companies.create.fields.postcode.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -225,7 +227,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="City"
+                                        label={t('companies.create.fields.city.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -242,7 +244,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Country"
+                                        label={t('companies.create.fields.country.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -258,7 +260,7 @@ export default function EditCompanyPage() {
                 {/* Contact Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Contact Information
+                        {t('companies.create.sections.contact')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -268,7 +270,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Phone Number"
+                                        label={t('companies.create.fields.phone.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -285,7 +287,7 @@ export default function EditCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Email"
+                                        label={t('companies.create.fields.email.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -301,7 +303,7 @@ export default function EditCompanyPage() {
                 {/* Remark Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Remark
+                        {t('companies.create.sections.remark')}
                     </Typography>
                     <Controller
                         name="remark"
@@ -309,13 +311,13 @@ export default function EditCompanyPage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Remark"
+                                label={t('companies.create.fields.remark.label')}
                                 fullWidth
                                 margin="normal"
                                 variant="outlined"
                                 multiline
                                 rows={4}
-                                placeholder="Enter any additional remarks or comments about the company..."
+                                placeholder={t('companies.create.fields.remark.placeholder')}
                                 error={!!errors.remark}
                                 helperText={errors.remark?.message}
                             />
@@ -332,7 +334,7 @@ export default function EditCompanyPage() {
                         disabled={isPending}
                         startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Updating...' : 'Update Company'}
+                        {isPending ? t('companies.edit.buttons.submitting') : t('companies.edit.buttons.submit')}
                     </Button>
                 </Box>
             </form>

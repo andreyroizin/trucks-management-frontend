@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -17,17 +18,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateCompany } from '@/hooks/useCreateCompany';
 
-const schema = yup.object().shape({
-    name: yup.string().required('Company name is required'),
-    address: yup.string().optional(),
-    postcode: yup.string().optional(),
-    city: yup.string().optional(),
-    country: yup.string().optional(),
-    phoneNumber: yup.string().optional(),
-    email: yup.string().optional(),
-    remark: yup.string().optional(),
-});
-
 type FormInputs = {
     name: string;               // Required
     address?: string;           // Optional
@@ -41,6 +31,18 @@ type FormInputs = {
 
 export default function CreateCompanyPage() {
     const router = useRouter();
+    const t = useTranslations();
+    
+    const schema = yup.object().shape({
+        name: yup.string().required(t('companies.create.fields.name.required')),
+        address: yup.string().optional(),
+        postcode: yup.string().optional(),
+        city: yup.string().optional(),
+        country: yup.string().optional(),
+        phoneNumber: yup.string().optional(),
+        email: yup.string().optional(),
+        remark: yup.string().optional(),
+    });
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { mutateAsync, isPending, isError, error } = useCreateCompany();
 
@@ -81,7 +83,7 @@ export default function CreateCompanyPage() {
     if (!isAuthenticated || !hasAccess) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">You don't have permission to access this page.</Alert>
+                <Alert severity="error">{t('companies.create.errors.noPermission')}</Alert>
             </Box>
         );
     }
@@ -91,10 +93,10 @@ export default function CreateCompanyPage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    New Company Creation Form
+                    {t('companies.create.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Use this form to create a new company in companies list. Please ensure all fields are filled out accurately.
+                    {t('companies.create.subtitle')}
                 </Typography>
             </Box>
 
@@ -102,7 +104,7 @@ export default function CreateCompanyPage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to create company.'}
+                        {error?.message || t('companies.create.errors.createFailed')}
                     </Alert>
                 )}
 
@@ -110,7 +112,7 @@ export default function CreateCompanyPage() {
                 {/* General Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        General Information
+                        {t('companies.create.sections.general')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -120,7 +122,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Company Name"
+                                        label={t('companies.create.fields.name.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -137,7 +139,7 @@ export default function CreateCompanyPage() {
                 {/* Company Address Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Company Address
+                        {t('companies.create.sections.address')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -147,7 +149,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Street Address"
+                                        label={t('companies.create.fields.address.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -164,7 +166,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Postcode"
+                                        label={t('companies.create.fields.postcode.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -181,7 +183,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="City"
+                                        label={t('companies.create.fields.city.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -198,7 +200,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Country"
+                                        label={t('companies.create.fields.country.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -214,7 +216,7 @@ export default function CreateCompanyPage() {
                 {/* Contact Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Contact Information
+                        {t('companies.create.sections.contact')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         <Grid item xs={12} sm={6}>
@@ -224,7 +226,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Phone Number"
+                                        label={t('companies.create.fields.phone.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -241,7 +243,7 @@ export default function CreateCompanyPage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Email"
+                                        label={t('companies.create.fields.email.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -257,7 +259,7 @@ export default function CreateCompanyPage() {
                 {/* Remark Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Remark
+                        {t('companies.create.sections.remark')}
                     </Typography>
                     <Controller
                         name="remark"
@@ -265,13 +267,13 @@ export default function CreateCompanyPage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Remark"
+                                label={t('companies.create.fields.remark.label')}
                                 fullWidth
                                 margin="normal"
                                 variant="outlined"
                                 multiline
                                 rows={4}
-                                placeholder="Enter any additional remarks or comments about the company..."
+                                placeholder={t('companies.create.fields.remark.placeholder')}
                                 error={!!errors.remark}
                                 helperText={errors.remark?.message}
                             />
@@ -288,7 +290,7 @@ export default function CreateCompanyPage() {
                         disabled={isPending}
                         startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Creating...' : 'Create Company'}
+                        {isPending ? t('companies.create.buttons.submitting') : t('companies.create.buttons.submit')}
                     </Button>
                 </Box>
             </form>
