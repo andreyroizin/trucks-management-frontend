@@ -20,22 +20,7 @@ import {register as registerApi} from '@/utils/api';
 import * as yup from 'yup';
 import {countries} from '@/data/countries';
 import {useClients} from "@/hooks/useClients";
-
-const registerSchema = yup.object().shape({
-    email: yup.string().email('Invalid email').required('Email is required'),
-    password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-    confirmPassword: yup
-        .string()
-        .oneOf([yup.ref('password')], 'Passwords must match')
-        .required('Confirm Password is required'),
-    firstName: yup.string().required('First Name is required'),
-    lastName: yup.string().required('Last Name is required'),
-    roles: yup
-        .array()
-        .of(yup.string().required('Role is required'))
-        .compact() // Removes undefined values
-        .required('At least one role must be selected'),
-});
+import {useTranslations} from 'next-intl';
 
 type RegisterFormInputs = {
     email: string;
@@ -55,6 +40,24 @@ type RegisterFormInputs = {
 };
 
 export default function RegisterForm() {
+    const t = useTranslations();
+    
+    // Validation schema - moved inside component to access translations
+    const registerSchema = yup.object().shape({
+        email: yup.string().email(t('auth.register.validation.emailInvalid')).required(t('auth.register.validation.emailRequired')),
+        password: yup.string().min(6, t('auth.register.validation.passwordMinLength')).required(t('auth.register.validation.passwordRequired')),
+        confirmPassword: yup
+            .string()
+            .oneOf([yup.ref('password')], t('auth.register.validation.passwordsMatch'))
+            .required(t('auth.register.validation.confirmPasswordRequired')),
+        firstName: yup.string().required(t('auth.register.validation.firstNameRequired')),
+        lastName: yup.string().required(t('auth.register.validation.lastNameRequired')),
+        roles: yup
+            .array()
+            .of(yup.string().required(t('auth.register.validation.roleRequired')))
+            .compact() // Removes undefined values
+            .required(t('auth.register.validation.rolesRequired')),
+    });
     const {register, handleSubmit, setValue, watch, formState: {errors}} = useForm<RegisterFormInputs>({
         resolver: yupResolver(registerSchema),
         defaultValues: {
@@ -91,12 +94,12 @@ export default function RegisterForm() {
             });
 
             if (response.isSuccess) {
-                setSuccessMessage('Registration successful!');
+                setSuccessMessage(t('auth.register.success'));
             } else {
-                setApiError(response.errors?.[0] || 'Unknown error occurred');
+                setApiError(response.errors?.[0] || t('auth.register.errors.unknownError'));
             }
         } catch (error: any) {
-            setApiError(error?.response?.data?.errors?.[0] || 'An unexpected error occurred. Please try again later.');
+            setApiError(error?.response?.data?.errors?.[0] || t('auth.register.errors.unexpectedError'));
         } finally {
             setLoading(false);
         }
@@ -106,7 +109,7 @@ export default function RegisterForm() {
     if (isErrorCompanies || isErrorRoles || isErrorClients) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                Unexpected error occurred. Please try again later.
+                {t('auth.register.errors.loadingError')}
             </div>
         );
     }
@@ -122,34 +125,34 @@ export default function RegisterForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-            <Typography variant="h5" sx={{marginBottom: '1rem'}}>Register</Typography>
+            <Typography variant="h5" sx={{marginBottom: '1rem'}}>{t('auth.register.title')}</Typography>
             {apiError && <Alert severity="error" sx={{marginBottom: '1rem'}}>{apiError}</Alert>}
             {successMessage && <Alert severity="success" sx={{marginBottom: '1rem'}}>{successMessage}</Alert>}
 
             {/* User Details */}
-            <TextField label="First Name" fullWidth {...register('firstName')} error={!!errors.firstName}
+            <TextField label={t('auth.register.fields.firstName')} fullWidth {...register('firstName')} error={!!errors.firstName}
                        helperText={errors.firstName?.message} sx={{mb: 2}}/>
-            <TextField label="Last Name" fullWidth {...register('lastName')} error={!!errors.lastName}
+            <TextField label={t('auth.register.fields.lastName')} fullWidth {...register('lastName')} error={!!errors.lastName}
                        helperText={errors.lastName?.message} sx={{mb: 2}}/>
-            <TextField label="Email" fullWidth {...register('email')} error={!!errors.email}
+            <TextField label={t('auth.register.fields.email')} fullWidth {...register('email')} error={!!errors.email}
                        helperText={errors.email?.message} sx={{mb: 2}}/>
-            <TextField label="Password" fullWidth type="password" {...register('password')} error={!!errors.password}
+            <TextField label={t('auth.register.fields.password')} fullWidth type="password" {...register('password')} error={!!errors.password}
                        helperText={errors.password?.message} sx={{mb: 2}}/>
-            <TextField label="Confirm Password" fullWidth type="password" {...register('confirmPassword')}
+            <TextField label={t('auth.register.fields.confirmPassword')} fullWidth type="password" {...register('confirmPassword')}
                        error={!!errors.confirmPassword} helperText={errors.confirmPassword?.message} sx={{mb: 2}}/>
 
             {/* Address Details */}
-            <TextField label="Address" fullWidth {...register('address')} sx={{mb: 2}}/>
-            <TextField label="Postcode" fullWidth {...register('postcode')} sx={{mb: 2}}/>
-            <TextField label="City" fullWidth {...register('city')} sx={{mb: 2}}/>
+            <TextField label={t('auth.register.fields.address')} fullWidth {...register('address')} sx={{mb: 2}}/>
+            <TextField label={t('auth.register.fields.postcode')} fullWidth {...register('postcode')} sx={{mb: 2}}/>
+            <TextField label={t('auth.register.fields.city')} fullWidth {...register('city')} sx={{mb: 2}}/>
             <FormControl fullWidth sx={{mb: 2}}>
-                <InputLabel>Country</InputLabel>
+                <InputLabel>{t('auth.register.fields.country')}</InputLabel>
                 <Select
                     {...register('country')}
                     defaultValue=""
                 >
                     <MenuItem value="" disabled>
-                        Select a country
+                        {t('auth.register.placeholders.selectCountry')}
                     </MenuItem>
                     {countries.map((country) => (
                         <MenuItem key={country.code} value={country.name}>
@@ -161,11 +164,11 @@ export default function RegisterForm() {
                     {errors.country?.message}
                 </Typography>
             </FormControl>
-            <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
+            <TextField label={t('auth.register.fields.phoneNumber')} fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
 
             {/* Remark */}
             <TextField
-                label="Remark"
+                label={t('auth.register.fields.remark')}
                 fullWidth
                 multiline
                 rows={4}
@@ -175,7 +178,7 @@ export default function RegisterForm() {
 
             {/* Company */}
             <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Companies</InputLabel>
+                <InputLabel>{t('auth.register.fields.companies')}</InputLabel>
                 <Select
                     {...register('companyIds')}
                     multiple
@@ -197,7 +200,7 @@ export default function RegisterForm() {
                 >
                     {isLoadingCompanies ? (
                         <MenuItem disabled>
-                            <em>Loading...</em>
+                            <em>{t('auth.register.loading.companies')}</em>
                         </MenuItem>
                     ) : (
                         companies?.data.map((company) => (
@@ -215,7 +218,7 @@ export default function RegisterForm() {
 
             {/* Clients Selection */}
             <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Clients</InputLabel>
+                <InputLabel>{t('auth.register.fields.clients')}</InputLabel>
                 <Select
                     {...register('clientIds')}
                     multiple
@@ -237,7 +240,7 @@ export default function RegisterForm() {
                 >
                     {isLoadingClients ? (
                         <MenuItem disabled>
-                            <em>Loading...</em>
+                            <em>{t('auth.register.loading.clients')}</em>
                         </MenuItem>
                     ) : (
                         clients?.data.map((client) => (
@@ -254,7 +257,7 @@ export default function RegisterForm() {
             </FormControl>
 
             {/* Roles Selection */}
-            <Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>
+            <Typography variant="subtitle1" sx={{mb: 1}}>{t('auth.register.fields.roles')}</Typography>
             {roles?.map((role) => (
                 <FormControlLabel
                     key={role.id}
@@ -278,7 +281,7 @@ export default function RegisterForm() {
             {successMessage && <Alert severity="success" sx={{marginTop: '1rem'}}>{successMessage}</Alert>}
 
             <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading} sx={{mt: 2}}>
-                {loading ? <CircularProgress size={24}/> : 'Register'}
+                {loading ? <CircularProgress size={24}/> : t('auth.register.button')}
             </Button>
 
         </form>

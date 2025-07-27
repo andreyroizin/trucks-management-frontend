@@ -8,16 +8,7 @@ import * as yup from 'yup';
 import { changePassword } from '@/utils/api';
 import {useAuth} from "@/hooks/useAuth";
 import {useRouter} from "next/navigation";
-
-// Validation schema
-const changePasswordSchema = yup.object().shape({
-    oldPassword: yup.string().required('Old Password is required'),
-    newPassword: yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
-    confirmNewPassword: yup
-        .string()
-        .oneOf([yup.ref('newPassword')], 'Passwords must match')
-        .required('Confirm New Password is required'),
-});
+import {useTranslations} from 'next-intl';
 
 type ChangePasswordFormInputs = {
     oldPassword: string;
@@ -27,11 +18,23 @@ type ChangePasswordFormInputs = {
 
 export default function ChangePasswordPage() {
     const { user, isAuthenticated, loading: loadingUser } = useAuth();
+    const router = useRouter();
+    const t = useTranslations();
+    
+    // Validation schema - moved inside component to access translations
+    const changePasswordSchema = yup.object().shape({
+        oldPassword: yup.string().required(t('auth.changePassword.validation.oldPasswordRequired')),
+        newPassword: yup.string().min(6, t('auth.changePassword.validation.passwordMinLength')).required(t('auth.changePassword.validation.newPasswordRequired')),
+        confirmNewPassword: yup
+            .string()
+            .oneOf([yup.ref('newPassword')], t('auth.changePassword.validation.passwordsMatch'))
+            .required(t('auth.changePassword.validation.confirmPasswordRequired')),
+    });
+    
     const { register, handleSubmit, formState: { errors } } = useForm<ChangePasswordFormInputs>({
         resolver: yupResolver(changePasswordSchema),
     });
 
-    const router = useRouter();
     const [apiError, setApiError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -53,10 +56,10 @@ export default function ChangePasswordPage() {
             if (response.isSuccess) {
                 setSuccessMessage(response.data); // Use the success message from the API response
             } else {
-                setApiError(response.errors?.[0] || 'An unexpected error occurred.');
+                setApiError(response.errors?.[0] || t('auth.changePassword.errors.unexpectedError'));
             }
         } catch (error: any) {
-            setApiError(error?.response?.data?.errors?.[0] || 'An unexpected error occurred. Please try again later.');
+            setApiError(error?.response?.data?.errors?.[0] || t('auth.changePassword.errors.tryAgainLater'));
         } finally {
             setLoading(false);
         }
@@ -76,7 +79,7 @@ export default function ChangePasswordPage() {
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2 }}>
-                    Change Password
+                    {t('auth.changePassword.title')}
                 </Typography>
 
                 {/* Display API Error */}
@@ -96,7 +99,7 @@ export default function ChangePasswordPage() {
                 {!successMessage && (
                     <>
                         <TextField
-                            label="Old Password"
+                            label={t('auth.changePassword.fields.oldPassword')}
                             type="password"
                             fullWidth
                             variant="outlined"
@@ -108,7 +111,7 @@ export default function ChangePasswordPage() {
                         />
 
                         <TextField
-                            label="New Password"
+                            label={t('auth.changePassword.fields.newPassword')}
                             type="password"
                             fullWidth
                             variant="outlined"
@@ -120,7 +123,7 @@ export default function ChangePasswordPage() {
                         />
 
                         <TextField
-                            label="Confirm New Password"
+                            label={t('auth.changePassword.fields.confirmNewPassword')}
                             type="password"
                             fullWidth
                             variant="outlined"
@@ -139,7 +142,7 @@ export default function ChangePasswordPage() {
                             sx={{ mt: 2 }}
                             disabled={loading}
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Change Password'}
+                            {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.changePassword.button')}
                         </Button>
                     </>
                 )}

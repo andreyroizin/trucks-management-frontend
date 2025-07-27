@@ -9,15 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { resetPasswordWithToken } from '@/utils/api';
 import { ResetPasswordPayload } from '@/types/api';
 import Link from 'next/link';
-
-// Validation schema
-const resetPasswordSchema = yup.object().shape({
-    newPassword: yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
-    confirmPassword: yup
-        .string()
-        .oneOf([yup.ref('newPassword')], 'Passwords must match')
-        .required('Confirm Password is required'),
-});
+import {useTranslations} from 'next-intl';
 
 type ResetPasswordFormInputs = {
     newPassword: string;
@@ -28,6 +20,16 @@ export default function ResetPasswordPage() {
     const searchParams = useSearchParams();
     const email = searchParams.get('email');
     const token = searchParams.get('token');
+    const t = useTranslations();
+    
+    // Validation schema - moved inside component to access translations
+    const resetPasswordSchema = yup.object().shape({
+        newPassword: yup.string().min(6, t('auth.resetPassword.validation.passwordMinLength')).required(t('auth.resetPassword.validation.newPasswordRequired')),
+        confirmPassword: yup
+            .string()
+            .oneOf([yup.ref('newPassword')], t('auth.resetPassword.validation.passwordsMatch'))
+            .required(t('auth.resetPassword.validation.confirmPasswordRequired')),
+    });
 
     const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormInputs>({
         resolver: yupResolver(resetPasswordSchema),
@@ -53,19 +55,19 @@ export default function ResetPasswordPage() {
             const response = await resetPasswordWithToken(payload);
 
             if (response.isSuccess) {
-                setSuccessMessage('Your password has been successfully reset.');
+                setSuccessMessage(t('auth.resetPassword.success'));
             } else {
-                setApiError(response.errors?.[0] || 'An unexpected error occurred.');
+                setApiError(response.errors?.[0] || t('auth.resetPassword.errors.unexpectedError'));
             }
         } catch (error: any) {
-            setApiError(error?.response?.data?.errors?.[0] || 'An unexpected error occurred. Please try again later.');
+            setApiError(error?.response?.data?.errors?.[0] || t('auth.resetPassword.errors.tryAgainLater'));
         } finally {
             setLoading(false);
         }
     };
 
     if (!email || !token) {
-        return <Alert severity="error">Invalid or missing parameters in the URL.</Alert>;
+        return <Alert severity="error">{t('auth.resetPassword.errors.invalidParameters')}</Alert>;
     }
 
     return (
@@ -82,7 +84,7 @@ export default function ResetPasswordPage() {
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2 }}>
-                    Reset Password
+                    {t('auth.resetPassword.title')}
                 </Typography>
 
                 {/* Display API Error */}
@@ -110,7 +112,7 @@ export default function ResetPasswordPage() {
                                 textDecoration: 'underline',
                             }}
                         >
-                            Go to Login
+                            {t('auth.resetPassword.goToLogin')}
                         </MuiLink>
                     </>
                 )}
@@ -118,7 +120,7 @@ export default function ResetPasswordPage() {
                 {!successMessage && (
                     <>
                         <TextField
-                            label="New Password"
+                            label={t('auth.resetPassword.fields.newPassword')}
                             type="password"
                             fullWidth
                             variant="outlined"
@@ -130,7 +132,7 @@ export default function ResetPasswordPage() {
                         />
 
                         <TextField
-                            label="Confirm Password"
+                            label={t('auth.resetPassword.fields.confirmPassword')}
                             type="password"
                             fullWidth
                             variant="outlined"
@@ -149,7 +151,7 @@ export default function ResetPasswordPage() {
                             sx={{ mt: 2 }}
                             disabled={loading}
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Reset Password'}
+                            {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.resetPassword.button')}
                         </Button>
                     </>
                 )}

@@ -1290,5 +1290,133 @@
         "logout": "Излизане"
       }
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "fields": {
+        "email": "Имейл",
+        "password": "Парола"
+      },
+      "button": "Вход",
+      "forgotPassword": "Забравена парола?",
+      "validation": {
+        "emailInvalid": "Невалиден имейл",
+        "emailRequired": "Имейлът е задължителен",
+        "passwordMinLength": "Паролата трябва да съдържа поне 6 символа",
+        "passwordRequired": "Паролата е задължителна"
+      },
+      "errors": {
+        "unknownError": "Възникна неизвестна грешка",
+        "unexpectedError": "Възникна неочаквана грешка. Моля, опитайте отново."
+      }
+    },
+    "register": {
+      "title": "Регистрация",
+      "fields": {
+        "firstName": "Име",
+        "lastName": "Фамилия",
+        "email": "Имейл",
+        "password": "Парола",
+        "confirmPassword": "Потвърждаване на паролата",
+        "address": "Адрес",
+        "postcode": "Пощенски код",
+        "city": "Град",
+        "country": "Държава",
+        "phoneNumber": "Телефонен номер",
+        "remark": "Забележка",
+        "companies": "Компании",
+        "clients": "Клиенти",
+        "roles": "Роли"
+      },
+      "placeholders": {
+        "selectCountry": "Изберете държава"
+      },
+      "button": "Регистрация",
+      "success": "Регистрацията е успешна!",
+      "validation": {
+        "emailInvalid": "Невалиден имейл",
+        "emailRequired": "Имейлът е задължителен",
+        "passwordMinLength": "Паролата трябва да съдържа поне 6 символа",
+        "passwordRequired": "Паролата е задължителна",
+        "passwordsMatch": "Паролите трябва да съвпадат",
+        "confirmPasswordRequired": "Потвърждаването на паролата е задължително",
+        "firstNameRequired": "Името е задължително",
+        "lastNameRequired": "Фамилията е задължителна",
+        "roleRequired": "Ролята е задължителна",
+        "rolesRequired": "Трябва да бъде избрана поне една роля"
+      },
+      "errors": {
+        "unknownError": "Възникна неизвестна грешка",
+        "unexpectedError": "Възникна неочаквана грешка. Моля, опитайте по-късно.",
+        "loadingError": "Възникна неочаквана грешка. Моля, опитайте по-късно."
+      },
+      "loading": {
+        "text": "Зареждане...",
+        "companies": "Зареждане...",
+        "clients": "Зареждане..."
+      }
+    },
+    "forgotPassword": {
+      "title": "Забравена парола",
+      "fields": {
+        "email": "Имейл"
+      },
+      "button": "Изпрати",
+      "success": "Инструкции за възстановяване на паролата са изпратени на вашия имейл.",
+      "goToLogin": "Отиди към вход",
+      "validation": {
+        "emailInvalid": "Невалиден имейл",
+        "emailRequired": "Имейлът е задължителен"
+      },
+      "errors": {
+        "unexpectedError": "Възникна неочаквана грешка.",
+        "tryAgainLater": "Възникна неочаквана грешка. Моля, опитайте по-късно."
+      }
+    },
+    "changePassword": {
+      "title": "Смяна на парола",
+      "fields": {
+        "oldPassword": "Стара парола",
+        "newPassword": "Нова парола",
+        "confirmNewPassword": "Потвърждаване на новата парола"
+      },
+      "button": "Смяна на парола",
+      "validation": {
+        "oldPasswordRequired": "Старата парола е задължителна",
+        "passwordMinLength": "Паролата трябва да съдържа поне 6 символа",
+        "newPasswordRequired": "Новата парола е задължителна",
+        "passwordsMatch": "Паролите трябва да съвпадат",
+        "confirmPasswordRequired": "Потвърждаването на новата парола е задължително"
+      },
+      "errors": {
+        "unexpectedError": "Възникна неочаквана грешка.",
+        "tryAgainLater": "Възникна неочаквана грешка. Моля, опитайте по-късно."
+      }
+    },
+    "resetPassword": {
+      "title": "Възстановяване на парола",
+      "fields": {
+        "newPassword": "Нова парола",
+        "confirmPassword": "Потвърждаване на паролата"
+      },
+      "button": "Възстанови парола",
+      "success": "Вашата парола беше успешно възстановена.",
+      "goToLogin": "Отиди към вход",
+      "validation": {
+        "passwordMinLength": "Паролата трябва да съдържа поне 6 символа",
+        "newPasswordRequired": "Новата парола е задължителна",
+        "passwordsMatch": "Паролите трябва да съвпадат",
+        "confirmPasswordRequired": "Потвърждаването на паролата е задължително"
+      },
+      "errors": {
+        "invalidParameters": "Невалидни или липсващи параметри в URL адреса.",
+        "unexpectedError": "Възникна неочаквана грешка.",
+        "tryAgainLater": "Възникна неочаквана грешка. Моля, опитайте по-късно."
+      }
+    },
+    "common": {
+      "loading": "Зареждане..."
+    }
   }
 }

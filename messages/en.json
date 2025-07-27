@@ -1290,5 +1290,133 @@
         "logout": "Log out"
       }
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "button": "Login",
+      "forgotPassword": "Forgot Password?",
+      "validation": {
+        "emailInvalid": "Invalid email",
+        "emailRequired": "Email is required",
+        "passwordMinLength": "Password must be at least 6 characters",
+        "passwordRequired": "Password is required"
+      },
+      "errors": {
+        "unknownError": "Unknown error occurred",
+        "unexpectedError": "An unexpected error occurred. Please try again."
+      }
+    },
+    "register": {
+      "title": "Register",
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "address": "Address",
+        "postcode": "Postcode",
+        "city": "City",
+        "country": "Country",
+        "phoneNumber": "Phone Number",
+        "remark": "Remark",
+        "companies": "Companies",
+        "clients": "Clients",
+        "roles": "Roles"
+      },
+      "placeholders": {
+        "selectCountry": "Select a country"
+      },
+      "button": "Register",
+      "success": "Registration successful!",
+      "validation": {
+        "emailInvalid": "Invalid email",
+        "emailRequired": "Email is required",
+        "passwordMinLength": "Password must be at least 6 characters",
+        "passwordRequired": "Password is required",
+        "passwordsMatch": "Passwords must match",
+        "confirmPasswordRequired": "Confirm Password is required",
+        "firstNameRequired": "First Name is required",
+        "lastNameRequired": "Last Name is required",
+        "roleRequired": "Role is required",
+        "rolesRequired": "At least one role must be selected"
+      },
+      "errors": {
+        "unknownError": "Unknown error occurred",
+        "unexpectedError": "An unexpected error occurred. Please try again later.",
+        "loadingError": "Unexpected error occurred. Please try again later."
+      },
+      "loading": {
+        "text": "Loading...",
+        "companies": "Loading...",
+        "clients": "Loading..."
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "fields": {
+        "email": "Email"
+      },
+      "button": "Submit",
+      "success": "Password reset instructions sent to your email.",
+      "goToLogin": "Go to Login",
+      "validation": {
+        "emailInvalid": "Invalid email",
+        "emailRequired": "Email is required"
+      },
+      "errors": {
+        "unexpectedError": "An unexpected error occurred.",
+        "tryAgainLater": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "fields": {
+        "oldPassword": "Old Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password"
+      },
+      "button": "Change Password",
+      "validation": {
+        "oldPasswordRequired": "Old Password is required",
+        "passwordMinLength": "Password must be at least 6 characters",
+        "newPasswordRequired": "New Password is required",
+        "passwordsMatch": "Passwords must match",
+        "confirmPasswordRequired": "Confirm New Password is required"
+      },
+      "errors": {
+        "unexpectedError": "An unexpected error occurred.",
+        "tryAgainLater": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "fields": {
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password"
+      },
+      "button": "Reset Password",
+      "success": "Your password has been successfully reset.",
+      "goToLogin": "Go to Login",
+      "validation": {
+        "passwordMinLength": "Password must be at least 6 characters",
+        "newPasswordRequired": "New Password is required",
+        "passwordsMatch": "Passwords must match",
+        "confirmPasswordRequired": "Confirm Password is required"
+      },
+      "errors": {
+        "invalidParameters": "Invalid or missing parameters in the URL.",
+        "unexpectedError": "An unexpected error occurred.",
+        "tryAgainLater": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "common": {
+      "loading": "Loading..."
+    }
   }
 }

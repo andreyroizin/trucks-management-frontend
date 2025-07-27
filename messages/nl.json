@@ -1290,5 +1290,133 @@
         "logout": "Uitloggen"
       }
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Inloggen",
+      "fields": {
+        "email": "E-mail",
+        "password": "Wachtwoord"
+      },
+      "button": "Inloggen",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "validation": {
+        "emailInvalid": "Ongeldig e-mailadres",
+        "emailRequired": "E-mail is verplicht",
+        "passwordMinLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+        "passwordRequired": "Wachtwoord is verplicht"
+      },
+      "errors": {
+        "unknownError": "Onbekende fout opgetreden",
+        "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het opnieuw."
+      }
+    },
+    "register": {
+      "title": "Registreren",
+      "fields": {
+        "firstName": "Voornaam",
+        "lastName": "Achternaam",
+        "email": "E-mail",
+        "password": "Wachtwoord",
+        "confirmPassword": "Wachtwoord bevestigen",
+        "address": "Adres",
+        "postcode": "Postcode",
+        "city": "Stad",
+        "country": "Land",
+        "phoneNumber": "Telefoonnummer",
+        "remark": "Opmerking",
+        "companies": "Bedrijven",
+        "clients": "Klanten",
+        "roles": "Rollen"
+      },
+      "placeholders": {
+        "selectCountry": "Selecteer een land"
+      },
+      "button": "Registreren",
+      "success": "Registratie succesvol!",
+      "validation": {
+        "emailInvalid": "Ongeldig e-mailadres",
+        "emailRequired": "E-mail is verplicht",
+        "passwordMinLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+        "passwordRequired": "Wachtwoord is verplicht",
+        "passwordsMatch": "Wachtwoorden moeten overeenkomen",
+        "confirmPasswordRequired": "Wachtwoord bevestigen is verplicht",
+        "firstNameRequired": "Voornaam is verplicht",
+        "lastNameRequired": "Achternaam is verplicht",
+        "roleRequired": "Rol is verplicht",
+        "rolesRequired": "Minimaal één rol moet geselecteerd zijn"
+      },
+      "errors": {
+        "unknownError": "Onbekende fout opgetreden",
+        "unexpectedError": "Er is een onverwachte fout opgetreden. Probeer het later opnieuw.",
+        "loadingError": "Onverwachte fout opgetreden. Probeer het later opnieuw."
+      },
+      "loading": {
+        "text": "Laden...",
+        "companies": "Laden...",
+        "clients": "Laden..."
+      }
+    },
+    "forgotPassword": {
+      "title": "Wachtwoord vergeten",
+      "fields": {
+        "email": "E-mail"
+      },
+      "button": "Verzenden",
+      "success": "Wachtwoord reset instructies verzonden naar uw e-mail.",
+      "goToLogin": "Ga naar inloggen",
+      "validation": {
+        "emailInvalid": "Ongeldig e-mailadres",
+        "emailRequired": "E-mail is verplicht"
+      },
+      "errors": {
+        "unexpectedError": "Er is een onverwachte fout opgetreden.",
+        "tryAgainLater": "Er is een onverwachte fout opgetreden. Probeer het later opnieuw."
+      }
+    },
+    "changePassword": {
+      "title": "Wachtwoord wijzigen",
+      "fields": {
+        "oldPassword": "Oud wachtwoord",
+        "newPassword": "Nieuw wachtwoord",
+        "confirmNewPassword": "Nieuw wachtwoord bevestigen"
+      },
+      "button": "Wachtwoord wijzigen",
+      "validation": {
+        "oldPasswordRequired": "Oud wachtwoord is verplicht",
+        "passwordMinLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+        "newPasswordRequired": "Nieuw wachtwoord is verplicht",
+        "passwordsMatch": "Wachtwoorden moeten overeenkomen",
+        "confirmPasswordRequired": "Nieuw wachtwoord bevestigen is verplicht"
+      },
+      "errors": {
+        "unexpectedError": "Er is een onverwachte fout opgetreden.",
+        "tryAgainLater": "Er is een onverwachte fout opgetreden. Probeer het later opnieuw."
+      }
+    },
+    "resetPassword": {
+      "title": "Wachtwoord resetten",
+      "fields": {
+        "newPassword": "Nieuw wachtwoord",
+        "confirmPassword": "Wachtwoord bevestigen"
+      },
+      "button": "Wachtwoord resetten",
+      "success": "Uw wachtwoord is succesvol gereset.",
+      "goToLogin": "Ga naar inloggen",
+      "validation": {
+        "passwordMinLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+        "newPasswordRequired": "Nieuw wachtwoord is verplicht",
+        "passwordsMatch": "Wachtwoorden moeten overeenkomen",
+        "confirmPasswordRequired": "Wachtwoord bevestigen is verplicht"
+      },
+      "errors": {
+        "invalidParameters": "Ongeldige of ontbrekende parameters in de URL.",
+        "unexpectedError": "Er is een onverwachte fout opgetreden.",
+        "tryAgainLater": "Er is een onverwachte fout opgetreden. Probeer het later opnieuw."
+      }
+    },
+    "common": {
+      "loading": "Laden..."
+    }
   }
 }
