@@ -125,7 +125,7 @@ export default function DriverDetailPage() {
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {/* Edit Button */}
                             <IconButton
-                                onClick={() => router.push(`/drivers/edit/${driver.id}`)}
+                                onClick={() => router.push(`/drivers/edit/${id}`)}
                                 sx={{
                                     bgcolor: 'grey.800',
                                     color: 'common.white',
