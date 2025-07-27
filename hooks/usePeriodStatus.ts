@@ -62,7 +62,8 @@ export const usePeriodStatus = (year: number, periodNumber: number) => {
         periodNumber,
         hasSignedPeriods: !!signedPeriods,
         signedPeriodsCount: signedPeriods?.length || 0,
-        signedPeriods
+        signedPeriods,
+        matchingPeriod: signedPeriods?.find(p => p.year === year && p.periodNr === periodNumber)
     });
     
     // Backend uses numeric status: 2 = Signed, but signed periods endpoint returns string "Signed"

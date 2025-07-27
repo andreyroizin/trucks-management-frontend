@@ -20,6 +20,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useWeekStatus, WeekDetail } from '@/hooks/useWeekStatus';
 import { usePeriodStatus } from '@/hooks/usePeriodStatus';
+import { usePeriodStatusByWeeks } from '@/hooks/usePeriodStatusByWeeks';
 import { useDownloadWeekReport, useDownloadPeriodReport } from '@/hooks/useDownloadReports';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
@@ -96,9 +97,9 @@ function WeekReportRow({
                     <Typography variant="body2" color="text.secondary">
                         Checking...
                     </Typography>
-                ) : isWeekSigned && signedDate ? (
+                ) : isWeekSigned ? (
                     <Typography variant="body2" color="success.main">
-                        {new Date(signedDate).toLocaleDateString()}
+                        {signedDate ? new Date(signedDate).toLocaleDateString() : 'Signed'}
                     </Typography>
                 ) : weekData ? (
                     <Typography variant="body2" color="warning.main">
@@ -155,11 +156,20 @@ export default function ReportsPage() {
     const downloadWeekReport = useDownloadWeekReport();
     const downloadPeriodReport = useDownloadPeriodReport();
     
-    // Period status check (only when both driver and period are selected)
-    const { isPeriodSigned, isLoading: isPeriodLoading } = usePeriodStatus(
+    // Period status check by individual weeks (works for admin roles)
+    const { isPeriodSigned, isLoading: isPeriodLoading } = usePeriodStatusByWeeks(
         selectedPeriod?.value?.year || 0,
-        selectedPeriod?.value?.periodNr || 0
+        selectedPeriod?.value?.periodNr || 0,
+        (selectedDriver && selectedPeriod) ? selectedDriver.id : ''
     );
+    
+    console.log(`🔍 Reports Page - Period Status Check (by weeks):`, {
+        selectedYear: selectedPeriod?.value?.year,
+        selectedPeriodNr: selectedPeriod?.value?.periodNr,
+        isPeriodSigned,
+        isPeriodLoading,
+        selectedDriver: selectedDriver?.id
+    });
 
     // Access control
     useEffect(() => {
