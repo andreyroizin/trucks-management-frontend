@@ -747,6 +747,136 @@
       "notAvailable": "N/A"
     }
   },
+  "cars": {
+    "title": "Vehicle Management",
+    "overview": {
+      "title": "Vehicles Overview",
+      "search": {
+        "placeholder": "License Plate"
+      },
+      "buttons": {
+        "create": "Create Vehicle",
+        "refresh": "Refresh list"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load vehicles"
+      }
+    },
+    "create": {
+      "title": "New Vehicle Creation Form",
+      "subtitle": "Use this form to create a new vehicle in vehicle list. Please ensure all fields are filled out accurately.",
+      "sections": {
+        "general": "General Information",
+        "remark": "Remark",
+        "documents": "Vehicle Documents"
+      },
+      "fields": {
+        "licensePlate": {
+          "label": "License Plate",
+          "required": "License plate is required"
+        },
+        "company": {
+          "label": "Company",
+          "required": "Company is required"
+        },
+        "vehicleYear": {
+          "label": "Vehicle Year",
+          "placeholder": "When the vehicle was purchased?"
+        },
+        "registrationDate": {
+          "label": "Registration Date",
+          "placeholder": "When the vehicle was registered?"
+        },
+        "remark": {
+          "label": "Remark",
+          "placeholder": "Enter any additional remarks or comments about the vehicle..."
+        }
+      },
+      "documents": {
+        "description": "Upload vehicle-related documents such as registration, insurance, inspection certificates, etc. Supported formats: PDF, JPG, PNG (max 10MB per file)."
+      },
+      "buttons": {
+        "submit": "Create Vehicle",
+        "submitting": "Creating..."
+      },
+      "errors": {
+        "createFailed": "Failed to create vehicle.",
+        "noPermission": "You don't have permission to access this page."
+      }
+    },
+    "detail": {
+      "title": "Vehicle Management",
+      "sections": {
+        "general": "General Information",
+        "documents": "Vehicle Documents",
+        "remark": "Remark"
+      },
+      "fields": {
+        "company": "Company",
+        "assignedDriver": "Assigned Driver",
+        "vehicleYear": "Vehicle Year",
+        "registrationDate": "Registration Date"
+      },
+      "noRemark": "No remark provided",
+      "noDocuments": "No documents uploaded.",
+      "notAssigned": "Not assigned",
+      "buttons": {
+        "assignDriver": "Assign Driver",
+        "assigning": "Assigning...",
+        "confirmAssignment": "Confirm Assignment",
+        "edit": "Edit Vehicle",
+        "delete": "Delete Vehicle"
+      },
+      "errors": {
+        "loadFailed": "Failed to load vehicle details.",
+        "deleteFailed": "Failed to delete vehicle.",
+        "assignmentFailed": "Failed to assign car to driver"
+      },
+      "deleteConfirm": {
+        "title": "Delete Vehicle?",
+        "message": "Are you sure you want to delete this vehicle? This action cannot be undone."
+      },
+      "assignmentModal": {
+        "title": "Assign Driver to {licensePlate}",
+        "subtitle": "Select a driver from {companyName}",
+        "noDrivers": "No drivers available for this company.",
+        "selected": "Selected"
+      },
+      "notAvailable": "N/A"
+    },
+    "edit": {
+      "title": "Edit Vehicle Information",
+      "subtitle": "Update the vehicle information below. Please ensure all fields are filled out accurately.",
+      "buttons": {
+        "submit": "Update Vehicle",
+        "submitting": "Updating..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load vehicle.",
+        "updateFailed": "Failed to edit vehicle."
+      },
+      "documents": {
+        "current": "Current Documents ({count})",
+        "uploadNew": "Upload Additional Documents"
+      }
+    },
+    "card": {
+      "fields": {
+        "assignedDriver": "Assigned Driver",
+        "vehicleYear": "Vehicle Year",
+        "registrationDate": "Registration Date"
+      },
+      "menu": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "notAssigned": "Not assigned",
+      "notAvailable": "N/A"
+    }
+  },
   "common": {
     "buttons": {
       "delete": "Delete",

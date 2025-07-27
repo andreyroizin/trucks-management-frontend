@@ -747,6 +747,136 @@
       "notAvailable": "N/B"
     }
   },
+  "cars": {
+    "title": "Voertuigbeheer",
+    "overview": {
+      "title": "Voertuigen Overzicht",
+      "search": {
+        "placeholder": "Kenteken"
+      },
+      "buttons": {
+        "create": "Voertuig Aanmaken",
+        "refresh": "Lijst vernieuwen"
+      },
+      "pagination": {
+        "rowsPerPage": "Rijen per pagina:"
+      },
+      "errors": {
+        "loadFailed": "Voertuigen laden mislukt"
+      }
+    },
+    "create": {
+      "title": "Nieuw Voertuig Aanmaakformulier",
+      "subtitle": "Gebruik dit formulier om een nieuw voertuig aan te maken in de voertuigenlijst. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "sections": {
+        "general": "Algemene Informatie",
+        "remark": "Opmerking",
+        "documents": "Voertuigdocumenten"
+      },
+      "fields": {
+        "licensePlate": {
+          "label": "Kenteken",
+          "required": "Kenteken is verplicht"
+        },
+        "company": {
+          "label": "Bedrijf",
+          "required": "Bedrijf is verplicht"
+        },
+        "vehicleYear": {
+          "label": "Voertuigjaar",
+          "placeholder": "Wanneer is het voertuig gekocht?"
+        },
+        "registrationDate": {
+          "label": "Registratiedatum",
+          "placeholder": "Wanneer is het voertuig geregistreerd?"
+        },
+        "remark": {
+          "label": "Opmerking",
+          "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over het voertuig in..."
+        }
+      },
+      "documents": {
+        "description": "Upload voertuiggerelateerde documenten zoals registratie, verzekering, inspectiecertificaten, etc. Ondersteunde formaten: PDF, JPG, PNG (max 10MB per bestand)."
+      },
+      "buttons": {
+        "submit": "Voertuig Aanmaken",
+        "submitting": "Aanmaken..."
+      },
+      "errors": {
+        "createFailed": "Voertuig aanmaken mislukt.",
+        "noPermission": "U heeft geen toestemming om deze pagina te bekijken."
+      }
+    },
+    "detail": {
+      "title": "Voertuigbeheer",
+      "sections": {
+        "general": "Algemene Informatie",
+        "documents": "Voertuigdocumenten",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "company": "Bedrijf",
+        "assignedDriver": "Toegewezen Chauffeur",
+        "vehicleYear": "Voertuigjaar",
+        "registrationDate": "Registratiedatum"
+      },
+      "noRemark": "Geen opmerking opgegeven",
+      "noDocuments": "Geen documenten geüpload.",
+      "notAssigned": "Niet toegewezen",
+      "buttons": {
+        "assignDriver": "Chauffeur Toewijzen",
+        "assigning": "Toewijzen...",
+        "confirmAssignment": "Toewijzing Bevestigen",
+        "edit": "Voertuig Bewerken",
+        "delete": "Voertuig Verwijderen"
+      },
+      "errors": {
+        "loadFailed": "Voertuigdetails laden mislukt.",
+        "deleteFailed": "Voertuig verwijderen mislukt.",
+        "assignmentFailed": "Voertuig toewijzen aan chauffeur mislukt"
+      },
+      "deleteConfirm": {
+        "title": "Voertuig Verwijderen?",
+        "message": "Weet u zeker dat u dit voertuig wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      },
+      "assignmentModal": {
+        "title": "Chauffeur Toewijzen aan {licensePlate}",
+        "subtitle": "Selecteer een chauffeur van {companyName}",
+        "noDrivers": "Geen chauffeurs beschikbaar voor dit bedrijf.",
+        "selected": "Geselecteerd"
+      },
+      "notAvailable": "N/B"
+    },
+    "edit": {
+      "title": "Voertuiginformatie Bewerken",
+      "subtitle": "Werk de voertuiginformatie hieronder bij. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "buttons": {
+        "submit": "Voertuig Bijwerken",
+        "submitting": "Bijwerken..."
+      },
+      "errors": {
+        "loadFailed": "Voertuig laden mislukt.",
+        "updateFailed": "Voertuig bewerken mislukt."
+      },
+      "documents": {
+        "current": "Huidige Documenten ({count})",
+        "uploadNew": "Extra Documenten Uploaden"
+      }
+    },
+    "card": {
+      "fields": {
+        "assignedDriver": "Toegewezen Chauffeur",
+        "vehicleYear": "Voertuigjaar",
+        "registrationDate": "Registratiedatum"
+      },
+      "menu": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      },
+      "notAssigned": "Niet toegewezen",
+      "notAvailable": "N/B"
+    }
+  },
   "common": {
     "buttons": {
       "delete": "Verwijderen",

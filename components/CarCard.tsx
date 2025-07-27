@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useRef, useState} from 'react';
+import {useTranslations} from 'next-intl';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
     Card,
@@ -40,6 +41,7 @@ export default function CarCard({
     const open = Boolean(anchorEl);
     const cardRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const t = useTranslations();
     
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation();
@@ -95,8 +97,8 @@ export default function CarCard({
                                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                                     transformOrigin={{vertical: 'top', horizontal: 'right'}}
                                 >
-                                    {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
-                                    {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                                    {onEdit && <MenuItem onClick={handleEdit}>{t('cars.card.menu.edit')}</MenuItem>}
+                                    {onDelete && <MenuItem onClick={handleDelete}>{t('cars.card.menu.delete')}</MenuItem>}
                                 </Menu>
                             </>
                         ) : null
@@ -110,31 +112,31 @@ export default function CarCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Assigned Driver</Typography>
+                                    <Typography variant="caption">{t('cars.card.fields.assignedDriver')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
                                         {driverFirstName && driverLastName 
                                             ? `${driverFirstName} ${driverLastName}`
-                                            : 'Not assigned'
+                                            : t('cars.card.notAssigned')
                                         }
                                     </Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Vehicle Year</Typography>
+                                    <Typography variant="caption">{t('cars.card.fields.vehicleYear')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{vehicleYear || 'N/A'}</Typography>
+                                    <Typography variant="caption">{vehicleYear || t('cars.card.notAvailable')}</Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Registration Date</Typography>
+                                    <Typography variant="caption">{t('cars.card.fields.registrationDate')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{registrationDate || 'N/A'}</Typography>
+                                    <Typography variant="caption">{registrationDate || t('cars.card.notAvailable')}</Typography>
                                 </td>
                             </tr>
                             </tbody>

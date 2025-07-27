@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -42,6 +43,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function VehicleDetailPage() {
     const { id } = useParams();
     const router = useRouter();
+    const t = useTranslations();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: car, isLoading, isError, error } = useCarDetail(id as string);
     const downloadFile = useDownloadCarFile();
@@ -88,7 +90,7 @@ export default function VehicleDetailPage() {
             setOpenModal(false);
             router.push('/cars'); // Navigate away after successful deletion
         } catch (err: any) {
-            setDeleteErrorMsg(err.message || 'Failed to delete vehicle.');
+            setDeleteErrorMsg(err.message || t('cars.detail.errors.deleteFailed'));
             setOpenModal(false);
         }
     };
@@ -122,7 +124,7 @@ export default function VehicleDetailPage() {
             setAssignmentError(null);
             
         } catch (err: any) {
-            setAssignmentError(err.message || 'Failed to assign car to driver');
+            setAssignmentError(err.message || t('cars.detail.errors.assignmentFailed'));
         }
     };
 
@@ -137,7 +139,7 @@ export default function VehicleDetailPage() {
     if (isError || !car) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load vehicle details.'}</Alert>
+                <Alert severity="error">{error?.message || t('cars.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -147,7 +149,7 @@ export default function VehicleDetailPage() {
             {/* Header Section */}
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Vehicle Management
+                    {t('cars.detail.title')}
                 </Typography>
             </Box>
 
@@ -190,7 +192,7 @@ export default function VehicleDetailPage() {
                                     borderRadius: 1,
                                 }}
                             >
-                                Assign Driver
+                                {t('cars.detail.buttons.assignDriver')}
                             </Button>
                             
                             {/* Edit Button */}
@@ -229,32 +231,32 @@ export default function VehicleDetailPage() {
 
                 {/* General Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    General Information
+                    {t('cars.detail.sections.general')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Company
+                                {t('cars.detail.fields.company')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{car.company?.name || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.company?.name || t('cars.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Assigned Driver</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.assignedDriver')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {car.driverFirstName && car.driverLastName 
                                     ? `${car.driverFirstName} ${car.driverLastName}`
-                                    : 'Not assigned'
+                                    : t('cars.detail.notAssigned')
                                 }
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Vehicle Year</TableCell>
-                            <TableCell sx={{border: 'none'}}>{car.vehicleYear || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.vehicleYear')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.vehicleYear || t('cars.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Registration Date</TableCell>
-                            <TableCell sx={{border: 'none'}}>{car.registrationDate || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.registrationDate')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{car.registrationDate || t('cars.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -263,7 +265,7 @@ export default function VehicleDetailPage() {
 
                 {/* Vehicle Documents */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Vehicle Documents
+                    {t('cars.detail.sections.documents')}
                 </Typography>
                 {car.files?.length ? (
                     <Stack spacing={2}>
@@ -277,7 +279,7 @@ export default function VehicleDetailPage() {
                     </Stack>
                 ) : (
                     <Typography variant="body1" color="text.secondary">
-                        No documents uploaded.
+                        {t('cars.detail.noDocuments')}
                     </Typography>
                 )}
 
@@ -285,10 +287,10 @@ export default function VehicleDetailPage() {
 
                 {/* Remark */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
-                    Remark
+                    {t('cars.detail.sections.remark')}
                 </Typography>
                 <Typography variant="body1">
-                    {car.remark || 'No remark provided'}
+                    {car.remark || t('cars.detail.noRemark')}
                 </Typography>
 
             </Paper>
@@ -296,8 +298,8 @@ export default function VehicleDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Vehicle?"
-                message="Are you sure you want to delete this vehicle?"
+                title={t('cars.detail.deleteConfirm.title')}
+                message={t('cars.detail.deleteConfirm.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
@@ -305,7 +307,7 @@ export default function VehicleDetailPage() {
             {/* Display error for deletion if needed */}
             {isDeleteError && (
                 <Alert severity="error" sx={{mt: 2}}>
-                    {deleteError?.message || 'Failed to delete vehicle.'}
+                    {deleteError?.message || t('cars.detail.errors.deleteFailed')}
                 </Alert>
             )}
 
@@ -318,10 +320,10 @@ export default function VehicleDetailPage() {
             >
                 <DialogTitle>
                     <Typography variant="h6" fontWeight={600}>
-                        Assign Driver to {car?.licensePlate}
+                        {t('cars.detail.assignmentModal.title', { licensePlate: car?.licensePlate })}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Select a driver from {car?.company?.name}
+                        {t('cars.detail.assignmentModal.subtitle', { companyName: car?.company?.name })}
                     </Typography>
                 </DialogTitle>
                 
@@ -340,7 +342,7 @@ export default function VehicleDetailPage() {
                     ) : !companyData?.drivers?.length ? (
                         <Box textAlign="center" py={4}>
                             <Typography color="text.secondary">
-                                No drivers available for this company.
+                                {t('cars.detail.assignmentModal.noDrivers')}
                             </Typography>
                         </Box>
                     ) : (
@@ -371,7 +373,7 @@ export default function VehicleDetailPage() {
                                             />
                                             {selectedDriverId === driverId && (
                                                 <Chip 
-                                                    label="Selected" 
+                                                    label={t('cars.detail.assignmentModal.selected')} 
                                                     size="small" 
                                                     color="primary" 
                                                     sx={{ ml: 1 }}
@@ -395,7 +397,7 @@ export default function VehicleDetailPage() {
                         color="inherit"
                         disabled={isAssigning}
                     >
-                        Cancel
+                        {t('common.buttons.cancel')}
                     </Button>
                     <Button
                         onClick={handleAssignDriver}
@@ -403,7 +405,7 @@ export default function VehicleDetailPage() {
                         disabled={!selectedDriverId || isAssigning}
                         startIcon={isAssigning ? <CircularProgress size={20} /> : null}
                     >
-                        {isAssigning ? 'Assigning...' : 'Confirm Assignment'}
+                        {isAssigning ? t('cars.detail.buttons.assigning') : t('cars.detail.buttons.confirmAssignment')}
                     </Button>
                 </DialogActions>
             </Dialog>

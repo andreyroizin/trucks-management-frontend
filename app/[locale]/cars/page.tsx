@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
 import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
 import {useRouter, useSearchParams} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 import CarCard from '@/components/CarCard';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 import SyncIcon from "@mui/icons-material/Sync";
@@ -16,6 +17,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 export default function CarsOverviewPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const t = useTranslations();
     const companyId = searchParams.get('companyId') || "";
     const {user} = useAuth();
     
@@ -84,20 +86,20 @@ export default function CarsOverviewPage() {
 
     // Loading & error states
     if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
-    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load vehicles</Alert>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>{t('cars.overview.errors.loadFailed')}</Alert>;
 
     return (
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Vehicle Management
+                    {t('cars.title')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
 
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h4" fontWeight={500}>
-                    Vehicles Overview
+                    {t('cars.overview.title')}
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                     {(isGlobalAdmin || isCustomerAdmin) && (
@@ -105,7 +107,7 @@ export default function CarsOverviewPage() {
                             variant="contained" 
                             onClick={() => router.push(`/cars/create${companyId ? `?companyId=${companyId}` : ''}`)}
                         >
-                            Create Vehicle
+                            {t('cars.overview.buttons.create')}
                         </Button>
                     )}
                     <IconButton onClick={handleRefetch}>
@@ -114,7 +116,7 @@ export default function CarsOverviewPage() {
                 </Box>
             </Box>
 
-            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"License Plate"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={t('cars.overview.search.placeholder')} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
 
             <Grid container spacing={2}>
                 {(carsData?.cars || []).map((car) => (
@@ -150,8 +152,8 @@ export default function CarsOverviewPage() {
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openDeleteModal}
-                title="Delete Vehicle?"
-                message="Are you sure you want to delete this vehicle? This action cannot be undone."
+                title={t('cars.detail.deleteConfirm.title')}
+                message={t('cars.detail.deleteConfirm.message')}
                 onClose={() => {
                     setOpenDeleteModal(false);
                     setCarToDelete(null);
