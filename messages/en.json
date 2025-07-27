@@ -1418,5 +1418,80 @@
     "common": {
       "loading": "Loading..."
     }
+  },
+  "charters": {
+    "title": "Charters",
+    "overview": {
+      "createCharter": "Create Charter",
+      "filters": {
+        "selectCompany": "Select a Company",
+        "selectClient": "Select a Client",
+        "clear": "Clear"
+      },
+      "table": {
+        "headers": {
+          "name": "Name",
+          "remark": "Remark",
+          "client": "Client",
+          "company": "Company"
+        },
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load charters."
+      }
+    },
+    "detail": {
+      "title": "Charter Detail",
+      "fields": {
+        "name": "Name",
+        "remark": "Remark",
+        "client": "Client",
+        "company": "Company",
+        "notAvailable": "N/A"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Charter?",
+        "message": "Are you sure you want to delete this charter?"
+      },
+      "errors": {
+        "loadFailed": "Failed to load charter detail.",
+        "deleteFailed": "Failed to delete charter"
+      }
+    },
+    "create": {
+      "title": "Create Charter",
+      "fields": {
+        "charterName": "Charter Name",
+        "selectClient": "Select Client",
+        "remark": "Remark"
+      },
+      "button": "Create Charter",
+      "validation": {
+        "nameRequired": "Charter name is required",
+        "clientRequired": "Client is required"
+      }
+    },
+    "edit": {
+      "title": "Edit Charter",
+      "fields": {
+        "charterName": "Charter Name",
+        "selectClient": "Select Client",
+        "remark": "Remark"
+      },
+      "button": "Save Changes",
+      "validation": {
+        "nameRequired": "Charter name is required",
+        "clientRequired": "Client is required"
+      },
+      "errors": {
+        "loadFailed": "Failed to load charter details."
+      }
+    }
   }
 }

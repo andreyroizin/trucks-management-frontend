@@ -24,6 +24,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {useCompanies} from "@/hooks/useCompanies";
 import {useClients} from "@/hooks/useClients";
 import Autocomplete from "@mui/material/Autocomplete";
+import {useTranslations} from 'next-intl';
 
 function ChartersInner() {
     const router = useRouter();
@@ -31,6 +32,7 @@ function ChartersInner() {
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations();
 
     // Extract existing search params
     const [companyId, setCompanyId] = useState(searchParams.get('companyId') || '');
@@ -81,7 +83,7 @@ function ChartersInner() {
     if (isError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error.message || 'Failed to load charters.'}</Alert>
+                <Alert severity="error">{error.message || t('charters.overview.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -90,13 +92,13 @@ function ChartersInner() {
         <Box maxWidth="lg" mx="auto" p={4}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h4" gutterBottom>
-                    Charters
+                    {t('charters.title')}
                 </Typography>
 
                 {(isCustomerAdmin || isGlobalAdmin) &&
                     <Link href="/charters/create" passHref>
                         <Button variant="contained" color="primary">
-                            Create Charter
+                            {t('charters.overview.createCharter')}
                         </Button>
                     </Link>
                 }
@@ -122,7 +124,7 @@ function ChartersInner() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select a Company"
+                                    label={t('charters.overview.filters.selectCompany')}
                                     variant="outlined"
                                     fullWidth
                                 />
@@ -143,7 +145,7 @@ function ChartersInner() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select a Client"
+                                    label={t('charters.overview.filters.selectClient')}
                                     variant="outlined"
                                     fullWidth
                                 />
@@ -161,7 +163,7 @@ function ChartersInner() {
                         setPage(0);
                     }}
                 >
-                    Clear
+                    {t('charters.overview.filters.clear')}
                 </Button>
             </Box>
 
@@ -169,10 +171,10 @@ function ChartersInner() {
                 <Table aria-label="charters table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Remark</TableCell>
-                            <TableCell>Client</TableCell>
-                            <TableCell>Company</TableCell>
+                            <TableCell>{t('charters.overview.table.headers.name')}</TableCell>
+                            <TableCell>{t('charters.overview.table.headers.remark')}</TableCell>
+                            <TableCell>{t('charters.overview.table.headers.client')}</TableCell>
+                            <TableCell>{t('charters.overview.table.headers.company')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -200,7 +202,7 @@ function ChartersInner() {
                     rowsPerPage={pageSize}
                     onRowsPerPageChange={handleChangePageSize}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('charters.overview.table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>

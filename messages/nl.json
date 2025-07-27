@@ -1418,5 +1418,80 @@
     "common": {
       "loading": "Laden..."
     }
+  },
+  "charters": {
+    "title": "Charters",
+    "overview": {
+      "createCharter": "Charter Aanmaken",
+      "filters": {
+        "selectCompany": "Selecteer een Bedrijf",
+        "selectClient": "Selecteer een Klant",
+        "clear": "Wissen"
+      },
+      "table": {
+        "headers": {
+          "name": "Naam",
+          "remark": "Opmerking",
+          "client": "Klant",
+          "company": "Bedrijf"
+        },
+        "rowsPerPage": "Rijen per pagina:"
+      },
+      "errors": {
+        "loadFailed": "Laden van charters mislukt."
+      }
+    },
+    "detail": {
+      "title": "Charter Details",
+      "fields": {
+        "name": "Naam",
+        "remark": "Opmerking",
+        "client": "Klant",
+        "company": "Bedrijf",
+        "notAvailable": "N/B"
+      },
+      "actions": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Charter Verwijderen?",
+        "message": "Weet je zeker dat je deze charter wilt verwijderen?"
+      },
+      "errors": {
+        "loadFailed": "Laden van charter details mislukt.",
+        "deleteFailed": "Verwijderen van charter mislukt"
+      }
+    },
+    "create": {
+      "title": "Charter Aanmaken",
+      "fields": {
+        "charterName": "Charter Naam",
+        "selectClient": "Selecteer Klant",
+        "remark": "Opmerking"
+      },
+      "button": "Charter Aanmaken",
+      "validation": {
+        "nameRequired": "Charter naam is verplicht",
+        "clientRequired": "Klant is verplicht"
+      }
+    },
+    "edit": {
+      "title": "Charter Bewerken",
+      "fields": {
+        "charterName": "Charter Naam",
+        "selectClient": "Selecteer Klant",
+        "remark": "Opmerking"
+      },
+      "button": "Wijzigingen Opslaan",
+      "validation": {
+        "nameRequired": "Charter naam is verplicht",
+        "clientRequired": "Klant is verplicht"
+      },
+      "errors": {
+        "loadFailed": "Laden van charter details mislukt."
+      }
+    }
   }
 }

@@ -18,17 +18,19 @@ import { useCharterDetail } from '@/hooks/useCharterDetail';  // Hook to fetch e
 import { useEditCharter, EditCharterInput } from '@/hooks/useEditCharter';
 import { useClients } from '@/hooks/useClients';
 import { useAuth } from '@/hooks/useAuth';
-
-// *** Validation Schema ***
-const editCharterSchema = yup.object().shape({
-    name: yup.string().required('Charter name is required'),
-    clientId: yup.string().required('Client is required'),
-});
+import {useTranslations} from 'next-intl';
 
 export default function EditCharterPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations();
+    
+    // *** Validation Schema - moved inside component to access translations ***
+    const editCharterSchema = yup.object().shape({
+        name: yup.string().required(t('charters.edit.validation.nameRequired')),
+        clientId: yup.string().required(t('charters.edit.validation.clientRequired')),
+    });
 
     // Fetch existing data
     const { data: charter, isLoading: isLoadingCharter, isError, error } = useCharterDetail(id as string);
@@ -97,7 +99,7 @@ export default function EditCharterPage() {
     if (isError || !charter) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load charter details.'}</Alert>
+                <Alert severity="error">{error?.message || t('charters.edit.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -105,7 +107,7 @@ export default function EditCharterPage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Edit Charter
+                {t('charters.edit.title')}
             </Typography>
 
             {apiError && (
@@ -122,7 +124,7 @@ export default function EditCharterPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Charter Name"
+                            label={t('charters.edit.fields.charterName')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -147,7 +149,7 @@ export default function EditCharterPage() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select Client"
+                                    label={t('charters.edit.fields.selectClient')}
                                     variant="outlined"
                                     fullWidth
                                     margin="normal"
@@ -167,7 +169,7 @@ export default function EditCharterPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Remark"
+                            label={t('charters.edit.fields.remark')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -179,7 +181,7 @@ export default function EditCharterPage() {
 
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Save Changes'}
+                        {isPending ? <CircularProgress size={20} /> : t('charters.edit.button')}
                     </Button>
                 </Box>
             </form>

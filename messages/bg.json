@@ -1418,5 +1418,80 @@
     "common": {
       "loading": "Зареждане..."
     }
+  },
+  "charters": {
+    "title": "Чартъри",
+    "overview": {
+      "createCharter": "Създаване на Чартър",
+      "filters": {
+        "selectCompany": "Изберете Компания",
+        "selectClient": "Изберете Клиент",
+        "clear": "Изчистване"
+      },
+      "table": {
+        "headers": {
+          "name": "Име",
+          "remark": "Забележка",
+          "client": "Клиент",
+          "company": "Компания"
+        },
+        "rowsPerPage": "Редове на страница:"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на чартърите."
+      }
+    },
+    "detail": {
+      "title": "Детайли за Чартъра",
+      "fields": {
+        "name": "Име",
+        "remark": "Забележка",
+        "client": "Клиент",
+        "company": "Компания",
+        "notAvailable": "Н/Д"
+      },
+      "actions": {
+        "edit": "Редактиране",
+        "delete": "Изтриване",
+        "deleting": "Изтриване..."
+      },
+      "deleteModal": {
+        "title": "Изтриване на Чартър?",
+        "message": "Сигурни ли сте, че искате да изтриете този чартър?"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайлите за чартъра.",
+        "deleteFailed": "Неуспешно изтриване на чартър"
+      }
+    },
+    "create": {
+      "title": "Създаване на Чартър",
+      "fields": {
+        "charterName": "Име на Чартъра",
+        "selectClient": "Изберете Клиент",
+        "remark": "Забележка"
+      },
+      "button": "Създаване на Чартър",
+      "validation": {
+        "nameRequired": "Името на чартъра е задължително",
+        "clientRequired": "Клиентът е задължителен"
+      }
+    },
+    "edit": {
+      "title": "Редактиране на Чартър",
+      "fields": {
+        "charterName": "Име на Чартъра",
+        "selectClient": "Изберете Клиент",
+        "remark": "Забележка"
+      },
+      "button": "Запазване на Промените",
+      "validation": {
+        "nameRequired": "Името на чартъра е задължително",
+        "clientRequired": "Клиентът е задължителен"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайлите за чартъра."
+      }
+    }
   }
 }
