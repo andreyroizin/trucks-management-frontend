@@ -58,6 +58,12 @@ export type CreateDriverInput = {
     VacationAge?: number;
     Atv?: number;
     VacationAllowance?: number;
+    
+    // Group 8: File Operations
+    NewUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
 };
 
 export type CreateDriverResponse = {

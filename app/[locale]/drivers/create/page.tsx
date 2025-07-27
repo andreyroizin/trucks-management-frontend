@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     Box,
     Typography,
@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateDriver } from '@/hooks/useCreateDriver';
+import FileUploadBox from '@/components/FileUploadBox';
 
 const schema = yup.object().shape({
     CompanyId: yup.string().required('Company is required'),
@@ -108,6 +109,14 @@ export default function CreateDriverPage() {
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateDriver();
 
+    // File upload state
+    const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
+
+    // Handle file upload changes with useCallback to prevent re-renders
+    const handleFilesChange = useCallback((files: { fileId: string; originalFileName: string }[]) => {
+        setTempFiles(files);
+    }, []);
+
     const {
         handleSubmit,
         control,
@@ -194,8 +203,12 @@ export default function CreateDriverPage() {
                 cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
             }
 
+            // Add uploaded files to the request
+            cleanedData.NewUploads = tempFiles;
+
             await mutateAsync(cleanedData);
             reset();
+            setTempFiles([]); // Clear uploaded files
             router.push('/drivers');
         } catch {
             /* Error handled by isError & error */
@@ -1059,6 +1072,23 @@ export default function CreateDriverPage() {
                                             helperText={errors.Remark?.message}
                                         />
                                     )}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Documents Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Documents
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
+                            <Grid item xs={12}>
+                                <FileUploadBox
+                                    uploadUrl="/temporary-uploads"
+                                    onFilesChange={handleFilesChange}
+                                    maxSizeMB={10}
+                                    accept="image/png,image/jpeg,image/jpg,image/heic,application/pdf"
                                 />
                             </Grid>
                         </Grid>

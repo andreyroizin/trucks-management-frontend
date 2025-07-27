@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
+import { ApplicationFile } from '@/types/file';
 
 // Driver with Contract Response Type based on backend guide
 export type DriverWithContract = {
@@ -67,6 +68,9 @@ export type DriverWithContract = {
     // User Status
     isApproved?: boolean;
     remark?: string;
+    
+    // Files
+    files?: ApplicationFile[];
 };
 
 // API call function

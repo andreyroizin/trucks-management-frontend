@@ -14,12 +14,15 @@ import {
     TableCell,
     TableRow,
     IconButton,
+    Stack,
 } from '@mui/material';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useDriverWithContract } from '@/hooks/useDriverWithContract';
 import { useDeleteDriver } from '@/hooks/useDeleteDriver';
+import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import ConfirmModal from '@/components/ConfirmModal';
+import FileTile from '@/components/FileTile';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function DriverDetailPage() {
@@ -28,6 +31,7 @@ export default function DriverDetailPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: driver, isLoading, isError, error } = useDriverWithContract(id as string);
     const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
+    const downloadFile = useDownloadDriverFile();
     
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
@@ -411,6 +415,28 @@ export default function DriverDetailPage() {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <Divider sx={{ my: 3 }} />
+
+                {/* Driver Documents */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    Driver Documents
+                </Typography>
+                {driver.files?.length ? (
+                    <Stack spacing={2}>
+                        {driver.files.map((file) => (
+                            <FileTile
+                                key={file.id}
+                                file={file}
+                                onClick={() => downloadFile(file)}
+                            />
+                        ))}
+                    </Stack>
+                ) : (
+                    <Typography variant="body1" color="text.secondary">
+                        No documents uploaded.
+                    </Typography>
+                )}
 
                 <Divider sx={{ my: 3 }} />
 

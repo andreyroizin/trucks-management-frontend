@@ -63,6 +63,13 @@ export interface UpdateDriverInput {
     
     // Car Assignment
     carId?: string;
+    
+    // File Operations
+    newUploads?: {
+        fileId: string;
+        originalFileName: string;
+    }[];
+    fileIdsToDelete?: string[];
 }
 
 export interface DriverWithContractResponse {

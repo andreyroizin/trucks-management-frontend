@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
@@ -19,6 +19,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDriverWithContract } from '@/hooks/useDriverWithContract';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useUpdateDriver } from '@/hooks/useUpdateDriver';
+import FileUploadBox from '@/components/FileUploadBox';
+import FileTile from '@/components/FileTile';
+import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
+import { ApplicationFile } from '@/types/file';
 
 const schema = yup.object().shape({
     CompanyId: yup.string().required('Company is required'),
@@ -116,6 +120,11 @@ export default function EditDriverPage() {
     
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useUpdateDriver();
+    const downloadFile = useDownloadDriverFile();
+
+    // File management state
+    const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
+    const [fileIdsToDelete, setFileIdsToDelete] = useState<string[]>([]);
 
     const {
         handleSubmit,
@@ -223,6 +232,21 @@ export default function EditDriverPage() {
         }
     }, [driverData, reset]);
 
+    // File management handlers
+    const handleFileDelete = (file: ApplicationFile) => {
+        setFileIdsToDelete((prev) =>
+            prev.includes(file.id) ? prev : [...prev, file.id]
+        );
+
+        if (driverData?.files) {
+            driverData.files = driverData?.files?.filter((f) => f.id !== file.id);
+        }
+    };
+
+    const handleFileClick = async (file: ApplicationFile): Promise<void> => {
+        await downloadFile(file);
+    };
+
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
             // Clean data by removing empty strings and undefined values
@@ -288,6 +312,9 @@ export default function EditDriverPage() {
                 atv: cleanedData.Atv,
                 vacationAllowance: cleanedData.VacationAllowance,
                 remark: cleanedData.Remark,
+                // Include file operations
+                newUploads: newUploads,
+                fileIdsToDelete: fileIdsToDelete,
             };
 
             await mutateAsync({ driverId, data: backendData });
@@ -1090,6 +1117,48 @@ export default function EditDriverPage() {
                                 />
                             </Grid>
                         </Grid>
+                    </Box>
+
+                    {/* Documents Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Documents
+                        </Typography>
+                        
+                        {/* Existing Files */}
+                        {driverData?.files && driverData.files.length > 0 && (
+                            <Box mb={3}>
+                                <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                                    Current Documents
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    {driverData.files
+                                        .filter(file => !fileIdsToDelete.includes(file.id))
+                                        .map((file) => (
+                                            <Grid item xs={12} key={file.id}>
+                                                <FileTile
+                                                    file={file}
+                                                    onClick={handleFileClick}
+                                                    onDelete={handleFileDelete}
+                                                />
+                                            </Grid>
+                                        ))}
+                                </Grid>
+                            </Box>
+                        )}
+
+                        {/* Upload New Files */}
+                        <Box>
+                            <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                                Upload New Documents
+                            </Typography>
+                            <FileUploadBox
+                                uploadUrl="/temporary-uploads"
+                                onFilesChange={setNewUploads}
+                                maxSizeMB={10}
+                                accept="image/png,image/jpeg,image/jpg,image/heic,application/pdf"
+                            />
+                        </Box>
                     </Box>
 
                     <Box mt={3}>
