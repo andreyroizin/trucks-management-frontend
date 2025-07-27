@@ -1493,5 +1493,168 @@
         "loadFailed": "Laden van charter details mislukt."
       }
     }
+  },
+  "contactPerson": {
+    "workdaysManagement": "Werkdagen Beheer",
+    "disputes": {
+      "title": "Geschillenlijst",
+      "filters": {
+        "statuses": "Statussen",
+        "vehicles": "Voertuigen",
+        "drivers": "Chauffeurs",
+        "clients": "Klanten",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum"
+      },
+      "table": {
+        "headers": {
+          "date": "Datum",
+          "driver": "Chauffeur",
+          "vehicle": "Voertuig",
+          "client": "Klant",
+          "totalHours": "Totaal Uren",
+          "hoursCorrection": "Uren Correctie",
+          "statuses": "Statussen",
+          "actions": "Acties"
+        },
+        "noRecords": "Geen records gevonden.",
+        "statusLabels": {
+          "pendingDriver": "In afwachting van chauffeur",
+          "pendingAdmin": "In afwachting van beheerder",
+          "acceptedByDriver": "Geaccepteerd door chauffeur",
+          "acceptedByAdmin": "Geaccepteerd door beheerder",
+          "closed": "Gesloten"
+        }
+      },
+      "actions": {
+        "disputeDeleted": "Geschil succesvol verwijderd!",
+        "disputeClosed": "Geschil succesvol gesloten!",
+        "deleteFailed": "Verwijderen van geschil mislukt.",
+        "closeFailed": "Sluiten van geschil mislukt."
+      },
+      "deleteModal": {
+        "title": "Verwijdering Bevestigen",
+        "message": "Weet je zeker dat je dit geschil wilt verwijderen?"
+      },
+      "errors": {
+        "loadFailed": "Er is een fout opgetreden bij het ophalen van gegevens."
+      }
+    },
+    "disputeDetail": {
+      "title": "Geschil",
+      "fields": {
+        "workdayId": "Werkdag ID",
+        "client": "Klant",
+        "status": "Status",
+        "assignedDriver": "Toegewezen chauffeur",
+        "auto": "Auto",
+        "totalHours": "Totaal Uren",
+        "date": "Datum",
+        "start": "Start",
+        "end": "Einde",
+        "restTime": "Rusttijd",
+        "hoursCorrection": "Uren Correctie",
+        "newTotalHours": "Nieuwe Totaal Uren"
+      },
+      "sections": {
+        "driverVehicleInfo": "Chauffeur & Voertuig Info",
+        "loggedTimeDistance": "Gelogde Tijd & Afstand",
+        "suggestedAdjustments": "Voorgestelde Aanpassingen",
+        "comments": "Opmerkingen"
+      },
+      "actions": {
+        "goToWorkday": "Ga Naar Werkdag",
+        "disputeApproved": "Geschil goedgekeurd",
+        "approveFailed": "Goedkeuring mislukt.",
+        "commentSent": "Opmerking verzonden",
+        "commentFailed": "Verzenden opmerking mislukt.",
+        "disputeClosed": "Geschil gesloten",
+        "closeFailed": "Sluiten mislukt",
+        "disputeDeleted": "Geschil verwijderd",
+        "deleteFailed": "Verwijderen mislukt"
+      },
+      "comments": {
+        "noComments": "Nog geen opmerkingen."
+      },
+      "deleteModal": {
+        "title": "Geschil Verwijderen",
+        "message": "Weet je zeker dat je dit geschil wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      }
+    },
+    "partrideDetail": {
+      "title": "Werkdag Details",
+      "fields": {
+        "workdayId": "Werkdag ID",
+        "date": "Datum",
+        "client": "Klant",
+        "status": "Status",
+        "assignedDriver": "Toegewezen chauffeur",
+        "auto": "Auto",
+        "totalHours": "Totaal Uren",
+        "correctionHours": "Correctie Uren",
+        "start": "Start",
+        "end": "Einde",
+        "actualRestTime": "Werkelijke Rusttijd",
+        "calculatedRestTime": "Berekende Rusttijd",
+        "hoursCode": "Uren Code",
+        "hoursOptions": "Uren Opties",
+        "kilometersDriven": "Gereden Kilometers",
+        "extraKilometers": "Extra Kilometers",
+        "taxFreeCompensation": "Belastingvrije vergoeding",
+        "nightAllowance": "Nachtvergoeding",
+        "kilometerReimbursement": "Kilometervergoeding",
+        "consignmentFee": "Zendingskosten",
+        "variousCompensation": "Diverse vergoeding"
+      },
+      "sections": {
+        "driverVehicleInfo": "Chauffeur & Voertuig Info",
+        "loggedTimeDistance": "Gelogde Tijd & Afstand",
+        "financialOverview": "Financieel Overzicht",
+        "additionalInformation": "Aanvullende Informatie",
+        "recordComment": "Record Opmerking"
+      },
+      "actions": {
+        "goToDispute": "Ga Naar Dit Geschil",
+        "workdayApproved": "Werkdag goedgekeurd",
+        "approveFailed": "Goedkeuring mislukt",
+        "workdayRejected": "Werkdag afgewezen",
+        "rejectFailed": "Afwijzing mislukt",
+        "workdayDeleted": "Werkdag verwijderd",
+        "deleteFailed": "Verwijderen mislukt"
+      },
+      "files": {
+        "noReceipts": "Geen bonnetjes geüpload."
+      },
+      "comments": {
+        "noComment": "Geen opmerking geplaatst."
+      },
+      "deleteModal": {
+        "title": "Werkdag Verwijderen",
+        "message": "Weet je zeker dat je deze werkdag wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      },
+      "errors": {
+        "loadFailed": "Laden van werkdag mislukt"
+      }
+    }
+  },
+  "contactPersons": {
+    "detail": {
+      "edit": "Bewerken",
+      "fields": {
+        "email": "E-mail",
+        "phone": "Telefoon",
+        "address": "Adres",
+        "roles": "Rollen",
+        "remark": "Opmerking",
+        "notAvailable": "N/B"
+      },
+      "associatedEntities": {
+        "title": "Gekoppelde Entiteiten",
+        "noEntities": "Geen gekoppelde bedrijven of klanten"
+      },
+      "errors": {
+        "loadFailed": "Laden van contactpersoon details mislukt."
+      }
+    }
   }
 }

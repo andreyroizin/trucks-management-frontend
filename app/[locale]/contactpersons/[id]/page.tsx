@@ -17,6 +17,7 @@ import {
     Link as MuiLink,
 } from '@mui/material';
 import Link from 'next/link';
+import {useTranslations} from 'next-intl';
 
 export default function ContactPersonDetailPage() {
     const params = useParams();
@@ -26,6 +27,7 @@ export default function ContactPersonDetailPage() {
     const { data: userDetails, isLoading, isError, error } = useUserDetails(contactPersonId);
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations();
 
     useEffect(() => {
         const allowedRoles = [
@@ -52,7 +54,7 @@ export default function ContactPersonDetailPage() {
     if (isError || !userDetails) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load contact person details.'}</Alert>
+                <Alert severity="error">{error?.message || t('contactPersons.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -83,25 +85,25 @@ export default function ContactPersonDetailPage() {
                         </Typography>
                         {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/users/edit?id=${id}`} passHref>
                                 <Button variant="contained" color="primary">
-                                    Edit
+                                    {t('contactPersons.detail.edit')}
                                 </Button>
                             </Link>}
                     </Box>
 
                     {/* Basic user info */}
-                    <Typography>Email: {email}</Typography>
-                    <Typography>Phone: {phoneNumber || 'N/A'}</Typography>
+                    <Typography>{t('contactPersons.detail.fields.email')}: {email}</Typography>
+                    <Typography>{t('contactPersons.detail.fields.phone')}: {phoneNumber || t('contactPersons.detail.fields.notAvailable')}</Typography>
                     <Typography>
-                        Address: {address || 'N/A'}, {city || 'N/A'}, {postcode || 'N/A'}, {country || 'N/A'}
+                        {t('contactPersons.detail.fields.address')}: {address || t('contactPersons.detail.fields.notAvailable')}, {city || t('contactPersons.detail.fields.notAvailable')}, {postcode || t('contactPersons.detail.fields.notAvailable')}, {country || t('contactPersons.detail.fields.notAvailable')}
                     </Typography>
-                    <Typography>Roles: {roles.join(', ')}</Typography>
-                    <Typography>Remark: {remark || 'N/A'}</Typography>
+                    <Typography>{t('contactPersons.detail.fields.roles')}: {roles.join(', ')}</Typography>
+                    <Typography>{t('contactPersons.detail.fields.remark')}: {remark || t('contactPersons.detail.fields.notAvailable')}</Typography>
 
                     {/* Associated Entities */}
                     {contactPersonInfo && (
                         <>
                             <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                                Associated Entities
+                                {t('contactPersons.detail.associatedEntities.title')}
                             </Typography>
                             {contactPersonInfo.clientsCompanies?.length ? (
                                 <List dense>
@@ -125,7 +127,7 @@ export default function ContactPersonDetailPage() {
                                     })}
                                 </List>
                             ) : (
-                                <Typography variant="body2">No associated companies or clients</Typography>
+                                <Typography variant="body2">{t('contactPersons.detail.associatedEntities.noEntities')}</Typography>
                             )}
                         </>
                     )}

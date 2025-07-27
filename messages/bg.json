@@ -1493,5 +1493,168 @@
         "loadFailed": "Неуспешно зареждане на детайлите за чартъра."
       }
     }
+  },
+  "contactPerson": {
+    "workdaysManagement": "Управление на Работни Дни",
+    "disputes": {
+      "title": "Списък със Спорове",
+      "filters": {
+        "statuses": "Статуси",
+        "vehicles": "Превозни средства",
+        "drivers": "Шофьори",
+        "clients": "Клиенти",
+        "startDate": "Начална дата",
+        "endDate": "Крайна дата"
+      },
+      "table": {
+        "headers": {
+          "date": "Дата",
+          "driver": "Шофьор",
+          "vehicle": "Превозно средство",
+          "client": "Клиент",
+          "totalHours": "Общо Часове",
+          "hoursCorrection": "Корекция на Часове",
+          "statuses": "Статуси",
+          "actions": "Действия"
+        },
+        "noRecords": "Няма намерени записи.",
+        "statusLabels": {
+          "pendingDriver": "В очакване на шофьор",
+          "pendingAdmin": "В очакване на администратор",
+          "acceptedByDriver": "Приет от шофьор",
+          "acceptedByAdmin": "Приет от администратор",
+          "closed": "Затворен"
+        }
+      },
+      "actions": {
+        "disputeDeleted": "Спорът е изтрит успешно!",
+        "disputeClosed": "Спорът е затворен успешно!",
+        "deleteFailed": "Изтриването на спора неуспешно.",
+        "closeFailed": "Затварянето на спора неуспешно."
+      },
+      "deleteModal": {
+        "title": "Потвърждение за Изтриване",
+        "message": "Сигурни ли сте, че искате да изтриете този спор?"
+      },
+      "errors": {
+        "loadFailed": "Възникна грешка при извличането на данни."
+      }
+    },
+    "disputeDetail": {
+      "title": "Спор",
+      "fields": {
+        "workdayId": "ID на Работен Ден",
+        "client": "Клиент",
+        "status": "Статус",
+        "assignedDriver": "Назначен шофьор",
+        "auto": "Автомобил",
+        "totalHours": "Общо Часове",
+        "date": "Дата",
+        "start": "Начало",
+        "end": "Край",
+        "restTime": "Време за Почивка",
+        "hoursCorrection": "Корекция на Часове",
+        "newTotalHours": "Нови Общо Часове"
+      },
+      "sections": {
+        "driverVehicleInfo": "Информация за Шофьор и Превозно Средство",
+        "loggedTimeDistance": "Записано Време и Разстояние",
+        "suggestedAdjustments": "Предложени Корекции",
+        "comments": "Коментари"
+      },
+      "actions": {
+        "goToWorkday": "Отиди към Работен Ден",
+        "disputeApproved": "Спорът е одобрен",
+        "approveFailed": "Одобрението неуспешно.",
+        "commentSent": "Коментарът е изпратен",
+        "commentFailed": "Изпращането на коментар неуспешно.",
+        "disputeClosed": "Спорът е затворен",
+        "closeFailed": "Затварянето неуспешно",
+        "disputeDeleted": "Спорът е изтрит",
+        "deleteFailed": "Изтриването неуспешно"
+      },
+      "comments": {
+        "noComments": "Все още няма коментари."
+      },
+      "deleteModal": {
+        "title": "Изтриване на Спор",
+        "message": "Сигурни ли сте, че искате да изтриете този спор? Това действие не може да бъде отменено."
+      }
+    },
+    "partrideDetail": {
+      "title": "Детайли за Работен Ден",
+      "fields": {
+        "workdayId": "ID на Работен Ден",
+        "date": "Дата",
+        "client": "Клиент",
+        "status": "Статус",
+        "assignedDriver": "Назначен шофьор",
+        "auto": "Автомобил",
+        "totalHours": "Общо Часове",
+        "correctionHours": "Часове за Корекция",
+        "start": "Начало",
+        "end": "Край",
+        "actualRestTime": "Действително Време за Почивка",
+        "calculatedRestTime": "Изчислено Време за Почивка",
+        "hoursCode": "Код на Часове",
+        "hoursOptions": "Опции за Часове",
+        "kilometersDriven": "Изминати Километри",
+        "extraKilometers": "Допълнителни Километри",
+        "taxFreeCompensation": "Необлагаема компенсация",
+        "nightAllowance": "Нощна добавка",
+        "kilometerReimbursement": "Възстановяване на километри",
+        "consignmentFee": "Такса за пратка",
+        "variousCompensation": "Различна компенсация"
+      },
+      "sections": {
+        "driverVehicleInfo": "Информация за Шофьор и Превозно Средство",
+        "loggedTimeDistance": "Записано Време и Разстояние",
+        "financialOverview": "Финансов Преглед",
+        "additionalInformation": "Допълнителна Информация",
+        "recordComment": "Коментар към Записа"
+      },
+      "actions": {
+        "goToDispute": "Отиди към Този Спор",
+        "workdayApproved": "Работният ден е одобрен",
+        "approveFailed": "Одобрението неуспешно",
+        "workdayRejected": "Работният ден е отхвърлен",
+        "rejectFailed": "Отхвърлянето неуспешно",
+        "workdayDeleted": "Работният ден е изтрит",
+        "deleteFailed": "Изтриването неуспешно"
+      },
+      "files": {
+        "noReceipts": "Няма качени разписки."
+      },
+      "comments": {
+        "noComment": "Няма публикуван коментар."
+      },
+      "deleteModal": {
+        "title": "Изтриване на Работен Ден",
+        "message": "Сигурни ли сте, че искате да изтриете този работен ден? Това действие не може да бъде отменено."
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на работен ден"
+      }
+    }
+  },
+  "contactPersons": {
+    "detail": {
+      "edit": "Редактиране",
+      "fields": {
+        "email": "Имейл",
+        "phone": "Телефон",
+        "address": "Адрес",
+        "roles": "Роли",
+        "remark": "Забележка",
+        "notAvailable": "Н/Д"
+      },
+      "associatedEntities": {
+        "title": "Свързани Субекти",
+        "noEntities": "Няма свързани компании или клиенти"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайлите за контактното лице."
+      }
+    }
   }
 }

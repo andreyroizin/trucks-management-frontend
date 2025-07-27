@@ -1493,5 +1493,168 @@
         "loadFailed": "Failed to load charter details."
       }
     }
+  },
+  "contactPerson": {
+    "workdaysManagement": "Workdays Management",
+    "disputes": {
+      "title": "Disputes List",
+      "filters": {
+        "statuses": "Statuses",
+        "vehicles": "Vehicles",
+        "drivers": "Drivers",
+        "clients": "Clients",
+        "startDate": "Start date",
+        "endDate": "End date"
+      },
+      "table": {
+        "headers": {
+          "date": "Date",
+          "driver": "Driver",
+          "vehicle": "Vehicle",
+          "client": "Client",
+          "totalHours": "Total Hours",
+          "hoursCorrection": "Hours Correction",
+          "statuses": "Statuses",
+          "actions": "Actions"
+        },
+        "noRecords": "No records found.",
+        "statusLabels": {
+          "pendingDriver": "Pending Driver",
+          "pendingAdmin": "Pending Admin",
+          "acceptedByDriver": "Accepted By Driver",
+          "acceptedByAdmin": "Accepted By Admin",
+          "closed": "Closed"
+        }
+      },
+      "actions": {
+        "disputeDeleted": "Dispute deleted successfully!",
+        "disputeClosed": "Dispute closed successfully!",
+        "deleteFailed": "Failed to delete dispute.",
+        "closeFailed": "Failed to close dispute."
+      },
+      "deleteModal": {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to delete this dispute?"
+      },
+      "errors": {
+        "loadFailed": "An error occurred while fetching data."
+      }
+    },
+    "disputeDetail": {
+      "title": "Dispute",
+      "fields": {
+        "workdayId": "Workday ID",
+        "client": "Client",
+        "status": "Status",
+        "assignedDriver": "Assigned Driver",
+        "auto": "Auto",
+        "totalHours": "Total Hours",
+        "date": "Date",
+        "start": "Start",
+        "end": "End",
+        "restTime": "Rest Time",
+        "hoursCorrection": "Hours Correction",
+        "newTotalHours": "New Total Hours"
+      },
+      "sections": {
+        "driverVehicleInfo": "Driver & Vehicle Info",
+        "loggedTimeDistance": "Logged Time & Distance",
+        "suggestedAdjustments": "Suggested Adjustments",
+        "comments": "Comments"
+      },
+      "actions": {
+        "goToWorkday": "Go To Workday",
+        "disputeApproved": "Dispute approved",
+        "approveFailed": "Failed to approve.",
+        "commentSent": "Comment sent",
+        "commentFailed": "Failed to send comment.",
+        "disputeClosed": "Dispute closed",
+        "closeFailed": "Close failed",
+        "disputeDeleted": "Dispute deleted",
+        "deleteFailed": "Delete failed"
+      },
+      "comments": {
+        "noComments": "No comments yet."
+      },
+      "deleteModal": {
+        "title": "Delete Dispute",
+        "message": "Are you sure you want to delete this dispute? This action cannot be undone."
+      }
+    },
+    "partrideDetail": {
+      "title": "Workday Details",
+      "fields": {
+        "workdayId": "Workday ID",
+        "date": "Date",
+        "client": "Client",
+        "status": "Status",
+        "assignedDriver": "Assigned Driver",
+        "auto": "Auto",
+        "totalHours": "Total Hours",
+        "correctionHours": "Correction Hours",
+        "start": "Start",
+        "end": "End",
+        "actualRestTime": "Actual Rest Time",
+        "calculatedRestTime": "Calculated Rest Time",
+        "hoursCode": "Hours Code",
+        "hoursOptions": "Hours Options",
+        "kilometersDriven": "Kilometers Driven",
+        "extraKilometers": "Extra Kilometers",
+        "taxFreeCompensation": "Tax free compensation",
+        "nightAllowance": "Night allowance",
+        "kilometerReimbursement": "Kilometer reimbursement",
+        "consignmentFee": "Consignment fee",
+        "variousCompensation": "Various compensation"
+      },
+      "sections": {
+        "driverVehicleInfo": "Driver & Vehicle Info",
+        "loggedTimeDistance": "Logged Time & Distance",
+        "financialOverview": "Financial Overview",
+        "additionalInformation": "Additional Information",
+        "recordComment": "Record Comment"
+      },
+      "actions": {
+        "goToDispute": "Go To This Dispute",
+        "workdayApproved": "Workday approved",
+        "approveFailed": "Approve failed",
+        "workdayRejected": "Workday rejected",
+        "rejectFailed": "Reject failed",
+        "workdayDeleted": "Workday deleted",
+        "deleteFailed": "Delete failed"
+      },
+      "files": {
+        "noReceipts": "No receipts uploaded."
+      },
+      "comments": {
+        "noComment": "No comment posted."
+      },
+      "deleteModal": {
+        "title": "Delete Workday",
+        "message": "Are you sure you want to delete this workday? This action cannot be undone."
+      },
+      "errors": {
+        "loadFailed": "Failed to load workday"
+      }
+    }
+  },
+  "contactPersons": {
+    "detail": {
+      "edit": "Edit",
+      "fields": {
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "roles": "Roles",
+        "remark": "Remark",
+        "notAvailable": "N/A"
+      },
+      "associatedEntities": {
+        "title": "Associated Entities",
+        "noEntities": "No associated companies or clients"
+      },
+      "errors": {
+        "loadFailed": "Failed to load contact person details."
+      }
+    }
   }
 }

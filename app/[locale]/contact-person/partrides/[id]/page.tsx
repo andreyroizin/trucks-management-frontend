@@ -30,10 +30,12 @@ import {usePartRideDisputes} from "@/hooks/usePartRideDisputes";
 import {useDownloadPartRideFile} from "@/hooks/useDownloadPartRideFile";
 import PartRideDetailActionBar from "@/components/PartRideDetailActionBar";
 import DisputeCreateDialog from "@/components/DisputeCreateDialog";
+import {useTranslations} from 'next-intl';
 
 export default function PartRideDetailPage() {
     const {id} = useParams<{ id: string }>();
     const router = useRouter();
+    const t = useTranslations();
 
     const {data, isLoading, error} = usePartRideDetail(id);
     const {data: disputesData, isLoading: disputesLoading} = usePartRideDisputes(id);
@@ -50,28 +52,28 @@ export default function PartRideDetailPage() {
     const handleApprove = async () => {
         try {
             await approveRide(id);
-            showSnack({text: 'Workday approved', severity: 'success'});
+            showSnack({text: t('contactPerson.partrideDetail.actions.workdayApproved'), severity: 'success'});
         } catch (e: any) {
-            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Approve failed', severity: 'error'});
+            showSnack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.partrideDetail.actions.approveFailed'), severity: 'error'});
         }
     };
 
     const handleReject = async () => {
         try {
             await rejectRide(id);
-            showSnack({text: 'Workday rejected', severity: 'success'});
+            showSnack({text: t('contactPerson.partrideDetail.actions.workdayRejected'), severity: 'success'});
         } catch (e: any) {
-            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Reject failed', severity: 'error'});
+            showSnack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.partrideDetail.actions.rejectFailed'), severity: 'error'});
         }
     };
 
     const handleDelete = async () => {
         try {
             await deleteRide(id);
-            showSnack({text: 'Workday deleted', severity: 'success'});
+            showSnack({text: t('contactPerson.partrideDetail.actions.workdayDeleted'), severity: 'success'});
             router.push('/partrides');
         } catch (e: any) {
-            showSnack({text: e?.response?.data?.errors?.[0] ?? 'Delete failed', severity: 'error'});
+            showSnack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.partrideDetail.actions.deleteFailed'), severity: 'error'});
         } finally {
             setDeleteConfirmOpen(false);
         }
@@ -97,7 +99,7 @@ export default function PartRideDetailPage() {
     if (!data || error) {
         return (
             <Typography mt={6} textAlign="center" color="error">
-                {(error as any)?.message ?? 'Failed to load workday'}
+                {(error as any)?.message ?? t('contactPerson.partrideDetail.errors.loadFailed')}
             </Typography>
         );
     }
@@ -113,7 +115,7 @@ export default function PartRideDetailPage() {
             {/* top bar */}
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Workdays Management
+                    {t('contactPerson.workdaysManagement')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
@@ -132,7 +134,7 @@ export default function PartRideDetailPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        {dayjs(pr?.date).format('DD.MM.YYYY')} Workday Details
+                        {dayjs(pr?.date).format('DD.MM.YYYY')} {t('contactPerson.partrideDetail.title')}
                     </Typography>
                     <PartRideDetailActionBar
                         onReject={handleReject}
@@ -147,20 +149,20 @@ export default function PartRideDetailPage() {
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Workday&nbsp;ID
+                                {t('contactPerson.partrideDetail.fields.workdayId')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.id}</TableCell>
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Date</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.date')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {dayjs(pr?.date).format('DD.MM.YYYY')}
                             </TableCell>
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Client</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.client')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.client ? (
                                     <Link
@@ -177,7 +179,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Status</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.status')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {/* TODO: Replace with real status mapping when available */}
                                 {PartRideStatusChip(pr?.status)}
@@ -194,7 +196,7 @@ export default function PartRideDetailPage() {
                         sx={{mt: 4, width: '100%', maxWidth: 500}}
                         onClick={() => router.push(`/disputes/${latestDispute.id}`)}
                     >
-                        Go To This Dispute
+                        {t('contactPerson.partrideDetail.actions.goToDispute')}
                     </Button>
                 )}
 
@@ -202,13 +204,13 @@ export default function PartRideDetailPage() {
 
                 {/* Driver & Vehicle */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Driver &amp; Vehicle Info
+                    {t('contactPerson.partrideDetail.sections.driverVehicleInfo')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Assigned Driver
+                                {t('contactPerson.partrideDetail.fields.assignedDriver')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.driver ? (
@@ -225,7 +227,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Auto</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.auto')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.car ? (
                                     <Link href={`/cars/${pr?.car?.id}`} underline="hover">
@@ -243,13 +245,13 @@ export default function PartRideDetailPage() {
 
                 {/* Logged time */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Logged Time &amp; Distance
+                    {t('contactPerson.partrideDetail.sections.loggedTimeDistance')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Total Hours
+                                {t('contactPerson.partrideDetail.fields.totalHours')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.decimalHours} h
@@ -258,7 +260,7 @@ export default function PartRideDetailPage() {
 
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Correction Hours
+                                {t('contactPerson.partrideDetail.fields.correctionHours')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.correctionTotalHours} h
@@ -266,40 +268,40 @@ export default function PartRideDetailPage() {
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Start</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.start')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.start}</TableCell>
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>End</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.end')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.end}</TableCell>
                         </TableRow>
 
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Actual Rest Time</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.actualRestTime')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.rest ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Calculated Rest Time</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.calculatedRestTime')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.restCalculated ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Hours Code</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.hoursCode')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.hoursCode?.name ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Hours Options</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.hoursOptions')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.hoursOption?.name ?? '—'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>
-                                Kilometers Driven
+                                {t('contactPerson.partrideDetail.fields.kilometersDriven')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.totalKilometers}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>
-                                Extra Kilometers
+                                {t('contactPerson.partrideDetail.fields.extraKilometers')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.extraKilometers}</TableCell>
                         </TableRow>
@@ -309,14 +311,14 @@ export default function PartRideDetailPage() {
                 {/* Financial overview */}
                 <Divider sx={{my: 3}}/>
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Financial Overview
+                    {t('contactPerson.partrideDetail.sections.financialOverview')}
                 </Typography>
 
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Tax free compensation
+                                {t('contactPerson.partrideDetail.fields.taxFreeCompensation')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 €{pr?.taxFreeCompensation}
@@ -324,7 +326,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Night allowance
+                                {t('contactPerson.partrideDetail.fields.nightAllowance')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 €{pr?.nightAllowance}
@@ -332,7 +334,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Kilometer reimbursement
+                                {t('contactPerson.partrideDetail.fields.kilometerReimbursement')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 €{pr?.kilometerReimbursement}
@@ -340,7 +342,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Consignment fee
+                                {t('contactPerson.partrideDetail.fields.consignmentFee')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 €{pr?.consignmentFee}
@@ -348,7 +350,7 @@ export default function PartRideDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Various compensation
+                                {t('contactPerson.partrideDetail.fields.variousCompensation')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 €{pr?.variousCompensation}
@@ -360,7 +362,7 @@ export default function PartRideDetailPage() {
                 {/* Files */}
                 <Divider sx={{my: 3}}/>
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Additional Information
+                    {t('contactPerson.partrideDetail.sections.additionalInformation')}
                 </Typography>
                 {pr?.files?.length ? (
                     <Stack spacing={2}>
@@ -374,21 +376,21 @@ export default function PartRideDetailPage() {
                     </Stack>
                 ) : (
                     <Typography variant="body1" color="">
-                        No receipts uploaded.
+                        {t('contactPerson.partrideDetail.files.noReceipts')}
                     </Typography>
                 )}
 
                 {/* Comment */}
                 <Divider sx={{my: 3}}/>
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
-                    Record Comment
+                    {t('contactPerson.partrideDetail.sections.recordComment')}
                 </Typography>
-                <Typography variant="body1">{pr?.remark || "No comment posted."}</Typography>
+                <Typography variant="body1">{pr?.remark || t('contactPerson.partrideDetail.comments.noComment')}</Typography>
 
                 <ConfirmModal
                     open={deleteConfirmOpen}
-                    title="Delete Workday"
-                    message="Are you sure you want to delete this workday? This action cannot be undone."
+                    title={t('contactPerson.partrideDetail.deleteModal.title')}
+                    message={t('contactPerson.partrideDetail.deleteModal.message')}
                     onClose={() => setDeleteConfirmOpen(false)}
                     onConfirm={handleDelete}
                 />
