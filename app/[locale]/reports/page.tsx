@@ -19,7 +19,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useWeekStatus, WeekDetail } from '@/hooks/useWeekStatus';
-import { usePeriodStatus } from '@/hooks/usePeriodStatus';
 import { usePeriodStatusByWeeks } from '@/hooks/usePeriodStatusByWeeks';
 import { useDownloadWeekReport, useDownloadPeriodReport } from '@/hooks/useDownloadReports';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
@@ -53,26 +52,11 @@ function WeekReportRow({
     driverName: string; 
     year: number; 
 }) {
-    console.log(`🎯 WeekReportRow - Component props:`, { 
-        weekNumber, 
-        driverId, 
-        driverName, 
-        year 
-    });
-    
     const { data: weekData, isLoading, error } = useWeekStatus(year, weekNumber, driverId);
     const downloadWeekReport = useDownloadWeekReport();
     
     // Backend uses numeric status: 2 = Signed
     const weekDetail = weekData as WeekDetail | undefined;
-    
-    console.log(`📊 WeekReportRow - Hook results for week ${weekNumber}:`, {
-        isLoading,
-        hasData: !!weekData,
-        weekData,
-        weekStatus: weekDetail?.status,
-        error: error?.message
-    });
     const isWeekSigned = weekDetail?.status === 2;
     const signedDate = weekDetail?.driverSignedAt;
     
@@ -163,13 +147,7 @@ export default function ReportsPage() {
         (selectedDriver && selectedPeriod) ? selectedDriver.id : ''
     );
     
-    console.log(`🔍 Reports Page - Period Status Check (by weeks):`, {
-        selectedYear: selectedPeriod?.value?.year,
-        selectedPeriodNr: selectedPeriod?.value?.periodNr,
-        isPeriodSigned,
-        isPeriodLoading,
-        selectedDriver: selectedDriver?.id
-    });
+
 
     // Access control
     useEffect(() => {
@@ -318,19 +296,7 @@ export default function ReportsPage() {
                                     // Calculate approximate ISO week numbers based on period
                                     // This is a simplified calculation for display purposes
                                     const baseWeek = (selectedPeriod.value.periodNr - 1) * 4 + 1;
-                                    const weeks = [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
-                                    
-                                    console.log(`🗓️ ReportsPage - Generating weeks for period:`, {
-                                        selectedPeriod: selectedPeriod.value,
-                                        selectedDriver: {
-                                            id: selectedDriver.id,
-                                            name: selectedDriver?.user?.firstName + ' ' + selectedDriver?.user?.lastName
-                                        },
-                                        baseWeek,
-                                        weeks
-                                    });
-                                    
-                                    return weeks;
+                                    return [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
                                 })().map((weekNumber) => (
                                     <WeekReportRow
                                         key={weekNumber}

@@ -1,4 +1,4 @@
-import { useWeekStatus, WeekDetail } from './useWeekStatus';
+import { useWeekStatus } from './useWeekStatus';
 
 // Check if a period is fully signed by checking all 4 individual weeks
 export const usePeriodStatusByWeeks = (year: number, periodNumber: number, driverId: string) => {
@@ -22,23 +22,7 @@ export const usePeriodStatusByWeeks = (year: number, periodNumber: number, drive
     const allWeeksSigned = shouldFetch && (week1Status.data?.status === 2 && 
                           week2Status.data?.status === 2 && 
                           week3Status.data?.status === 2 && 
-                          week4Status.data?.status === 2);
-    
-    console.log(`🔍 usePeriodStatusByWeeks - Checking period ${periodNumber} for driver ${driverId}:`, {
-        year,
-        periodNumber,
-        driverId,
-        shouldFetch,
-        weeks,
-        weekStatuses: shouldFetch ? {
-            week1: { status: week1Status.data?.status, loading: week1Status.isLoading },
-            week2: { status: week2Status.data?.status, loading: week2Status.isLoading },
-            week3: { status: week3Status.data?.status, loading: week3Status.isLoading },
-            week4: { status: week4Status.data?.status, loading: week4Status.isLoading }
-        } : 'Not fetching - missing driver/period selection',
-        allWeeksSigned,
-        isLoading
-    });
+                                                     week4Status.data?.status === 2);
     
     return {
         isPeriodSigned: allWeeksSigned,

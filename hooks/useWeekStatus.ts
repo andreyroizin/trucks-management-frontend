@@ -31,34 +31,11 @@ const fetchWeekStatus = async (year: number, weekNumber: number, driverId?: stri
     
     const url = `/drivers/week/details?${params.toString()}`;
     
-    console.log(`🔍 useWeekStatus - Fetching week status for:`, { year, weekNumber, driverId });
-    console.log(`📡 API URL: ${url}`);
-    
-    try {
-        const response = await api.get<ApiResponse<WeekDetail>>(url);
-        console.log(`✅ useWeekStatus - API Response:`, {
-            status: response.status,
-            isSuccess: response.data.isSuccess,
-            data: response.data.data,
-            errors: response.data.errors
-        });
-        
-        if (response.data.isSuccess) {
-            return response.data.data;
-        }
-        throw new Error(response.data.errors?.[0] || 'Failed to fetch week status');
-    } catch (error: any) {
-        console.error(`❌ useWeekStatus - API Error:`, {
-            year,
-            weekNumber,
-            driverId,
-            error: error.message,
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data
-        });
-        throw error;
+    const response = await api.get<ApiResponse<WeekDetail>>(url);
+    if (response.data.isSuccess) {
+        return response.data.data;
     }
+    throw new Error(response.data.errors?.[0] || 'Failed to fetch week status');
 };
 
 export const useWeekStatus = (year: number, weekNumber: number, driverId?: string) => {
@@ -68,26 +45,10 @@ export const useWeekStatus = (year: number, weekNumber: number, driverId?: strin
     const isAdmin = user?.roles?.includes('globalAdmin') || user?.roles?.includes('customerAdmin');
     const finalDriverId = isAdmin && driverId ? driverId : undefined;
     
-    console.log(`🎯 useWeekStatus Hook - Called with:`, { 
-        year, 
-        weekNumber, 
-        driverId, 
-        finalDriverId,
-        userRole: user?.roles,
-        isAdmin,
-        enabled: !!year && !!weekNumber 
-    });
-    
     return useQuery<WeekDetail, Error>({
         queryKey: ['weekStatus', year, weekNumber, finalDriverId],
         queryFn: () => fetchWeekStatus(year, weekNumber, finalDriverId),
         enabled: !!year && !!weekNumber,
         retry: false, // Don't retry if week doesn't exist
-        onError: (error) => {
-            console.error(`🚨 useWeekStatus Query Error for week ${weekNumber}:`, error);
-        },
-        onSuccess: (data) => {
-            console.log(`✅ useWeekStatus Query Success for week ${weekNumber}:`, data);
-        }
     });
 }; 
