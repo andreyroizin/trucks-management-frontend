@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
     Autocomplete,
     Box,
+    Button,
     CircularProgress,
     Table,
     TableBody,
@@ -116,53 +117,82 @@ export default function ReportsPage() {
                 </Box>
             </Box>
 
-            {/* Table Section */}
-            <Box sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 1,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                mb: 3
-            }}>
-                <Typography variant="h4" fontWeight={500}>
-                    Periods Reports List
-                </Typography>
-            </Box>
+            {/* Content Area */}
+            {!selectedDriver || !selectedPeriod ? (
+                <Box sx={{ textAlign: 'center', py: 8 }}>
+                    <Typography variant="body1" color="text.secondary">
+                        Choose Driver and Period first, to find the report.
+                    </Typography>
+                </Box>
+            ) : (
+                <>
+                    {/* Period Header */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        mb: 4,
+                        flexWrap: 'wrap',
+                        gap: 2
+                    }}>
+                        <Box>
+                            <Typography variant="h4" fontWeight={500} sx={{ mb: 1 }}>
+                                {selectedPeriod.value.year}–{String(selectedPeriod.value.periodNr).padStart(2, '0')} Period
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary">
+                                Here's a breakdown of your work and earnings for this period.
+                            </Typography>
+                        </Box>
+                        <Button variant="contained" color="primary">
+                            Download Period Report
+                        </Button>
+                    </Box>
 
-            {/* Table Container */}
-            <TableContainer>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Period</TableCell>
-                            <TableCell>Driver</TableCell>
-                            <TableCell>Total Hours</TableCell>
-                            <TableCell>Total Earnings</TableCell>
-                            <TableCell>Status</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {!selectedDriver || !selectedPeriod ? (
-                            <TableRow>
-                                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                                    <Typography variant="body1" color="text.secondary">
-                                        Choose Driver and Period first, to find the report.
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                                    <Typography variant="body1" color="text.secondary">
-                                        Table data will be implemented next.
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    {/* Table Container */}
+                    <TableContainer>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Week</TableCell>
+                                    <TableCell>Driver</TableCell>
+                                    <TableCell>Signed on</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {/* Generate 4 weeks for each period */}
+                                {[1, 2, 3, 4].map((weekNumber) => (
+                                    <TableRow key={weekNumber} hover>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            Week {weekNumber}
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            {selectedDriver?.user?.firstName && selectedDriver?.user?.lastName 
+                                                ? `${selectedDriver.user.firstName} ${selectedDriver.user.lastName}`
+                                                : 'Unknown Driver'
+                                            }
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Not signed
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell sx={{ py: 2.6 }}>
+                                            <Button 
+                                                variant="outlined" 
+                                                size="small"
+                                                sx={{ minWidth: 'auto' }}
+                                            >
+                                                Download Week Report
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </>
+            )}
         </Box>
     );
 } 
