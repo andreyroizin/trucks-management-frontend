@@ -39,6 +39,8 @@ export default function DriverCard({
     // Fetch contract data for this driver
     const { data: contractData, isLoading } = useDriverWithContract(id);
     
+
+    
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation();
         setAnchorEl(event.currentTarget);
@@ -81,7 +83,7 @@ export default function DriverCard({
                     if (anchorEl) return;
                     router.push(`/drivers/${id}`);
                 }}
-                sx={{height: 230, display: 'flex', flexDirection: 'column', cursor: 'pointer'}}
+                sx={{height: 255, display: 'flex', flexDirection: 'column', cursor: 'pointer'}}
                 variant="outlined"
             >
                 <CardHeader
@@ -152,6 +154,16 @@ export default function DriverCard({
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">{contractData?.workingHours || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
+                                    <Typography variant="caption">Vacation Hours Left</Typography>
+                                </td>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">
+                                        {contractData?.vacationHoursLeft !== undefined ? `${contractData.vacationHoursLeft} hours` : (isLoading ? 'Loading...' : 'N/A')}
+                                    </Typography>
                                 </td>
                             </tr>
                             <tr>

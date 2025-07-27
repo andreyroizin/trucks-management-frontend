@@ -58,6 +58,7 @@ export type DriverWithContract = {
     vacationAge?: number;
     atv?: number;
     vacationAllowance?: number;
+    vacationHoursLeft?: number;
     
     // Car Assignment
     carId?: string;
