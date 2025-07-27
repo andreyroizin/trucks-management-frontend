@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -20,41 +21,7 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateDriver } from '@/hooks/useCreateDriver';
 import FileUploadBox from '@/components/FileUploadBox';
 
-const schema = yup.object().shape({
-    CompanyId: yup.string().required('Company is required'),
-    Email: yup.string().email('Invalid email').required('Email is required'),
-    Password: yup.string().required('Password is required'),
-    FirstName: yup.string().required('First name is required'),
-    LastName: yup.string().required('Last name is required'),
-    DateOfBirth: yup.string().optional(),
-    PhoneNumber: yup.string().optional(),
-    Address: yup.string().optional(),
-    Postcode: yup.string().optional(),
-    City: yup.string().optional(),
-    Country: yup.string().optional(),
-    BSN: yup.string().optional(),
-    DateOfEmployment: yup.string().required('Employment start date is required'),
-    LastWorkingDay: yup.string().required('Contract end date is required'),
-    ProbationPeriod: yup.string().optional(),
-    NoticePeriod: yup.string().optional(),
-    Function: yup.string().required('Function is required').max(100, 'Function must be less than 100 characters'),
-    WorkweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
-    WeeklySchedule: yup.string().optional(),
-    WorkingHours: yup.string().optional(),
-    CompensationPerMonthExclBtw: yup.number().optional().min(0, 'Must be a positive number'),
-    PayScale: yup.string().optional(),
-    PayScaleStep: yup.number().optional().min(0, 'Must be a positive number'),
-    HourlyWage100Percent: yup.number().optional().min(0, 'Must be a positive number'),
-    DeviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
-    CommuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
-    TravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
-    MaxTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationAge: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationDays: yup.number().optional().min(0, 'Must be a positive number'),
-    Atv: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationAllowance: yup.number().optional().min(0, 'Must be a positive number').max(100, 'Must be 100% or less'),
-    Remark: yup.string().optional(),
-});
+// Schema will be defined inside the component to access translations
 
 type FormInputs = {
     CompanyId: string;                      // Required - backend: CompanyId
@@ -94,13 +61,13 @@ type FormInputs = {
     Remark?: string;                        // Optional - backend: Remark
 };
 
-const periodOptions = [
-    { value: '1', label: '1 month' },
-    { value: '2', label: '2 months' },
-    { value: '3', label: '3 months' },
-    { value: '4', label: '4 months' },
-    { value: '5', label: '5 months' },
-    { value: '6', label: '6 months' },
+const getPeriodOptions = (t: any) => [
+    { value: '1', label: t('drivers.create.periodOptions.1') },
+    { value: '2', label: t('drivers.create.periodOptions.2') },
+    { value: '3', label: t('drivers.create.periodOptions.3') },
+    { value: '4', label: t('drivers.create.periodOptions.4') },
+    { value: '5', label: t('drivers.create.periodOptions.5') },
+    { value: '6', label: t('drivers.create.periodOptions.6') },
 ];
 
 export default function CreateDriverPage() {
@@ -108,6 +75,45 @@ export default function CreateDriverPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateDriver();
+    const t = useTranslations();
+    
+    const periodOptions = getPeriodOptions(t);
+    
+    const schema = yup.object().shape({
+        CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
+        Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
+        Password: yup.string().required(t('drivers.create.fields.password.required')),
+        FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
+        LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
+        DateOfBirth: yup.string().optional(),
+        PhoneNumber: yup.string().optional(),
+        Address: yup.string().optional(),
+        Postcode: yup.string().optional(),
+        City: yup.string().optional(),
+        Country: yup.string().optional(),
+        BSN: yup.string().optional(),
+        DateOfEmployment: yup.string().required(t('drivers.create.fields.dateOfEmployment.required')),
+        LastWorkingDay: yup.string().required(t('drivers.create.fields.lastWorkingDay.required')),
+        ProbationPeriod: yup.string().optional(),
+        NoticePeriod: yup.string().optional(),
+        Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
+        WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
+        WeeklySchedule: yup.string().optional(),
+        WorkingHours: yup.string().optional(),
+        CompensationPerMonthExclBtw: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        PayScale: yup.string().optional(),
+        PayScaleStep: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        HourlyWage100Percent: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        DeviatingWage: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        CommuteKilometers: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        TravelExpenses: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        MaxTravelExpenses: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationAge: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationDays: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        Atv: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationAllowance: yup.number().optional().min(0, t('drivers.validation.positiveNumber')).max(100, t('drivers.create.fields.vacationAllowance.maxPercent')),
+        Remark: yup.string().optional(),
+    });
 
     // File upload state
     const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
@@ -226,7 +232,7 @@ export default function CreateDriverPage() {
     if (!isAuthenticated || !hasAccess) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">You don't have permission to access this page.</Alert>
+                <Alert severity="error">{t('drivers.create.errors.noPermission')}</Alert>
             </Box>
         );
     }
@@ -236,10 +242,10 @@ export default function CreateDriverPage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    New Driver Creation Form
+                    {t('drivers.create.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Use this form to create a new employment contract for a driver. Please ensure all fields are filled out accurately.
+                    {t('drivers.create.subtitle')}
                 </Typography>
             </Box>
 
@@ -247,7 +253,7 @@ export default function CreateDriverPage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to create driver.'}
+                        {error?.message || t('drivers.create.errors.createFailed')}
                     </Alert>
                 )}
 
@@ -255,7 +261,7 @@ export default function CreateDriverPage() {
                     {/* General Information Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            General Information
+                            {t('drivers.create.sections.general')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
@@ -270,7 +276,7 @@ export default function CreateDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Company"
+                                                    label={t('drivers.create.fields.company.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -294,7 +300,7 @@ export default function CreateDriverPage() {
                     {/* Employee Information Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Employee Information
+                            {t('drivers.create.sections.employee')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Email & Password */}
@@ -305,7 +311,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Email"
+                                            label={t('drivers.create.fields.email.label')}
                                             type="email"
                                             fullWidth
                                             margin="normal"
@@ -324,7 +330,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Password"
+                                            label={t('drivers.create.fields.password.label')}
                                             type="password"
                                             fullWidth
                                             margin="normal"
@@ -345,7 +351,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="First Name"
+                                            label={t('drivers.create.fields.firstName.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -363,7 +369,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Last Name"
+                                            label={t('drivers.create.fields.lastName.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -383,7 +389,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Date of Birth"
+                                            label={t('drivers.create.fields.dateOfBirth.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
@@ -404,7 +410,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Phone Number"
+                                            label={t('drivers.create.fields.phoneNumber.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -423,7 +429,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Address"
+                                            label={t('drivers.create.fields.address.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -440,7 +446,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="PostCode"
+                                            label={t('drivers.create.fields.postcode.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -459,7 +465,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="City"
+                                            label={t('drivers.create.fields.city.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -476,7 +482,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Country"
+                                            label={t('drivers.create.fields.country.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -495,7 +501,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="BSN Number"
+                                            label={t('drivers.create.fields.bsn.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -511,7 +517,7 @@ export default function CreateDriverPage() {
                     {/* Employment Dates Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Employment Dates
+                            {t('drivers.create.sections.employmentDates')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Employment Start Date & Contract End Date */}
@@ -522,7 +528,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Employment Start Date"
+                                            label={t('drivers.create.fields.dateOfEmployment.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
@@ -544,7 +550,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Contract End Date"
+                                            label={t('drivers.create.fields.lastWorkingDay.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
@@ -573,7 +579,7 @@ export default function CreateDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Probation Period"
+                                                    label={t('drivers.create.fields.probationPeriod.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -601,7 +607,7 @@ export default function CreateDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Notice Period"
+                                                    label={t('drivers.create.fields.noticePeriod.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -623,7 +629,7 @@ export default function CreateDriverPage() {
                     {/* Work Conditions Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Work Conditions
+                            {t('drivers.create.sections.workConditions')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Function - Full Width */}
@@ -634,7 +640,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Function"
+                                            label={t('drivers.create.fields.function.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -654,7 +660,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Workweek Duration (hours)"
+                                            label={t('drivers.create.fields.workweekDuration.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -669,7 +675,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Workweek Duration Percentage"
+                                    label={t('drivers.create.fields.workweekDuration.label') + " Percentage"}
                                     value={`${workweekPercentage}%`}
                                     fullWidth
                                     margin="normal"
@@ -693,7 +699,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Weekly Schedule"
+                                            label={t('drivers.create.fields.weeklySchedule.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -710,7 +716,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Working Hours"
+                                            label={t('drivers.create.fields.workingHours.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -726,7 +732,7 @@ export default function CreateDriverPage() {
                     {/* Compensation Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Compensation
+                            {t('drivers.create.sections.compensation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Monthly Compensation Excl. VAT & Incl. VAT */}
@@ -737,7 +743,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Monthly Compensation (Excl. VAT)"
+                                            label={t('drivers.create.fields.compensationPerMonthExclBtw.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -755,7 +761,7 @@ export default function CreateDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Monthly Compensation (Incl. VAT)"
+                                    label={t('drivers.create.fields.monthlyCompensationIncl.label')}
                                     value={monthlyCompensationInclVat.toFixed(2)}
                                     fullWidth
                                     margin="normal"
@@ -779,7 +785,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Pay Scale"
+                                            label={t('drivers.create.fields.payScale.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -796,7 +802,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Pay Step"
+                                            label={t('drivers.create.fields.payScaleStep.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -821,7 +827,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Hourly Wage (100%)"
+                                            label={t('drivers.create.fields.hourlyWage100Percent.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -844,7 +850,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Deviating Wage (if applicable)"
+                                            label={t('drivers.create.fields.deviatingWage.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -866,7 +872,7 @@ export default function CreateDriverPage() {
                     {/* Commute and Travel Expenses Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Commute and Travel Expenses
+                            {t('drivers.create.sections.commute')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Commute Kilometers - Full Width */}
@@ -877,7 +883,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Commute Kilometers"
+                                            label={t('drivers.create.fields.commuteKilometers.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -902,7 +908,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Travel Expenses Rate"
+                                            label={t('drivers.create.fields.travelExpenses.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -925,7 +931,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Maximum Travel Expenses"
+                                            label={t('drivers.create.fields.maxTravelExpenses.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -947,7 +953,7 @@ export default function CreateDriverPage() {
                     {/* Vacation & Allowances Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Vacation & Allowances
+                            {t('drivers.create.sections.vacation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Vacation Age Threshold & Vacation Days */}
@@ -958,7 +964,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Age Threshold"
+                                            label={t('drivers.create.fields.vacationAge.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -981,7 +987,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Days"
+                                            label={t('drivers.create.fields.vacationDays.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1006,7 +1012,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="ATV (Reduced Working Hours)"
+                                            label={t('drivers.create.fields.atv.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1029,7 +1035,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Allowance (%)"
+                                            label={t('drivers.create.fields.vacationAllowance.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1052,7 +1058,7 @@ export default function CreateDriverPage() {
                     {/* Remark Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Remark
+                            {t('drivers.create.sections.remark')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
@@ -1062,7 +1068,7 @@ export default function CreateDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Remark"
+                                            label={t('drivers.create.fields.remark.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -1080,7 +1086,7 @@ export default function CreateDriverPage() {
                     {/* Documents Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Documents
+                            {t('drivers.create.sections.documents')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
@@ -1102,7 +1108,7 @@ export default function CreateDriverPage() {
                             fullWidth
                             disabled={isPending}
                         >
-                            {isPending ? 'Creating Driver...' : 'Create Driver'}
+                            {isPending ? t('drivers.create.buttons.submitting') : t('drivers.create.buttons.submit')}
                         </Button>
                     </Box>
                 </form>

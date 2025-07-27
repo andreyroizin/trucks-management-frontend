@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -24,40 +25,7 @@ import FileTile from '@/components/FileTile';
 import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import { ApplicationFile } from '@/types/file';
 
-const schema = yup.object().shape({
-    CompanyId: yup.string().required('Company is required'),
-    Email: yup.string().email('Invalid email').required('Email is required'),
-    FirstName: yup.string().required('First name is required'),
-    LastName: yup.string().required('Last name is required'),
-    DateOfBirth: yup.string().optional(),
-    PhoneNumber: yup.string().optional(),
-    Address: yup.string().optional(),
-    Postcode: yup.string().optional(),
-    City: yup.string().optional(),
-    Country: yup.string().optional(),
-    BSN: yup.string().optional(),
-    DateOfEmployment: yup.string().required('Employment start date is required'),
-    LastWorkingDay: yup.string().required('Contract end date is required'),
-    ProbationPeriod: yup.string().optional(),
-    NoticePeriod: yup.string().optional(),
-    Function: yup.string().required('Function is required').max(100, 'Function must be less than 100 characters'),
-    WorkweekDuration: yup.number().required('Workweek duration is required').min(1, 'Must be at least 1 hour'),
-    WeeklySchedule: yup.string().optional(),
-    WorkingHours: yup.string().optional(),
-    CompensationPerMonthExclBtw: yup.number().optional().min(0, 'Must be a positive number'),
-    PayScale: yup.string().optional(),
-    PayScaleStep: yup.number().optional().min(0, 'Must be a positive number'),
-    HourlyWage100Percent: yup.number().optional().min(0, 'Must be a positive number'),
-    DeviatingWage: yup.number().optional().min(0, 'Must be a positive number'),
-    CommuteKilometers: yup.number().optional().min(0, 'Must be a positive number'),
-    TravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
-    MaxTravelExpenses: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationAge: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationDays: yup.number().optional().min(0, 'Must be a positive number'),
-    Atv: yup.number().optional().min(0, 'Must be a positive number'),
-    VacationAllowance: yup.number().optional().min(0, 'Must be a positive number').max(100, 'Must be 100% or less'),
-    Remark: yup.string().optional(),
-});
+// Schema will be defined inside the component to access translations
 
 type FormInputs = {
     CompanyId: string;                      // Required - backend: companyId
@@ -96,19 +64,22 @@ type FormInputs = {
     Remark?: string;                        // Optional - backend: remark
 };
 
-const periodOptions = [
-    { value: '1 month', label: '1 month' },
-    { value: '2 months', label: '2 months' },
-    { value: '3 months', label: '3 months' },
-    { value: '4 months', label: '4 months' },
-    { value: '5 months', label: '5 months' },
-    { value: '6 months', label: '6 months' },
+const getPeriodOptions = (t: any) => [
+    { value: '1', label: t('drivers.create.periodOptions.1') },
+    { value: '2', label: t('drivers.create.periodOptions.2') },
+    { value: '3', label: t('drivers.create.periodOptions.3') },
+    { value: '4', label: t('drivers.create.periodOptions.4') },
+    { value: '5', label: t('drivers.create.periodOptions.5') },
+    { value: '6', label: t('drivers.create.periodOptions.6') },
 ];
 
 export default function EditDriverPage() {
     const { id } = useParams();
     const router = useRouter();
     const driverId = id as string;
+    const t = useTranslations();
+    
+    const periodOptions = getPeriodOptions(t);
     
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const {
@@ -121,6 +92,41 @@ export default function EditDriverPage() {
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useUpdateDriver();
     const downloadFile = useDownloadDriverFile();
+    
+    const schema = yup.object().shape({
+        CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
+        Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
+        FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
+        LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
+        DateOfBirth: yup.string().optional(),
+        PhoneNumber: yup.string().optional(),
+        Address: yup.string().optional(),
+        Postcode: yup.string().optional(),
+        City: yup.string().optional(),
+        Country: yup.string().optional(),
+        BSN: yup.string().optional(),
+        DateOfEmployment: yup.string().required(t('drivers.create.fields.dateOfEmployment.required')),
+        LastWorkingDay: yup.string().required(t('drivers.create.fields.lastWorkingDay.required')),
+        ProbationPeriod: yup.string().optional(),
+        NoticePeriod: yup.string().optional(),
+        Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
+        WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
+        WeeklySchedule: yup.string().optional(),
+        WorkingHours: yup.string().optional(),
+        CompensationPerMonthExclBtw: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        PayScale: yup.string().optional(),
+        PayScaleStep: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        HourlyWage100Percent: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        DeviatingWage: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        CommuteKilometers: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        TravelExpenses: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        MaxTravelExpenses: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationAge: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationDays: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        Atv: yup.number().optional().min(0, t('drivers.validation.positiveNumber')),
+        VacationAllowance: yup.number().optional().min(0, t('drivers.validation.positiveNumber')).max(100, t('drivers.create.fields.vacationAllowance.maxPercent')),
+        Remark: yup.string().optional(),
+    });
 
     // File management state
     const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
@@ -336,7 +342,7 @@ export default function EditDriverPage() {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <Alert severity="error">
-                    {driverError?.message || 'Failed to load driver details. Please try again later.'}
+                    {driverError?.message || t('drivers.edit.errors.loadFailed')}
                 </Alert>
             </Box>
         );
@@ -345,7 +351,7 @@ export default function EditDriverPage() {
     if (!isAuthenticated || !hasAccess) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">You don't have permission to access this page.</Alert>
+                <Alert severity="error">{t('drivers.edit.errors.noPermission')}</Alert>
             </Box>
         );
     }
@@ -355,10 +361,10 @@ export default function EditDriverPage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    Edit Driver Contract
+                    {t('drivers.edit.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Update the employment contract information for {driverData.firstName} {driverData.lastName}. Please ensure all fields are filled out accurately.
+                    {t('drivers.edit.subtitle', { firstName: driverData.firstName, lastName: driverData.lastName })}
                 </Typography>
             </Box>
 
@@ -366,7 +372,7 @@ export default function EditDriverPage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to update driver.'}
+                        {error?.message || t('drivers.edit.errors.updateFailed')}
                     </Alert>
                 )}
 
@@ -374,7 +380,7 @@ export default function EditDriverPage() {
                     {/* General Information Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            General Information
+                            {t('drivers.edit.sections.general')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
@@ -389,7 +395,7 @@ export default function EditDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Company"
+                                                    label={t('drivers.edit.fields.company.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -413,7 +419,7 @@ export default function EditDriverPage() {
                     {/* Employee Information Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Employee Information
+                            {t('drivers.edit.sections.employee')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Email & Phone Number */}
@@ -424,7 +430,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Email"
+                                            label={t('drivers.edit.fields.email.label')}
                                             type="email"
                                             fullWidth
                                             margin="normal"
@@ -443,7 +449,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Phone Number"
+                                            label={t('drivers.edit.fields.phoneNumber.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -462,7 +468,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="First Name"
+                                            label={t('drivers.edit.fields.firstName.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -480,7 +486,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Last Name"
+                                            label={t('drivers.edit.fields.lastName.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -593,7 +599,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="BSN number"
+                                            label={t('drivers.edit.fields.bsn.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -609,7 +615,7 @@ export default function EditDriverPage() {
                     {/* Employment Dates Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Employment Dates
+                            {t('drivers.edit.sections.employmentDates')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Employment Start Date & Contract End Date */}
@@ -620,7 +626,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Employment Start Date"
+                                            label={t('drivers.edit.fields.dateOfEmployment.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
@@ -642,7 +648,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Contract End Date"
+                                            label={t('drivers.edit.fields.lastWorkingDay.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
@@ -671,7 +677,7 @@ export default function EditDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Probation Period"
+                                                    label={t('drivers.edit.fields.probationPeriod.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -699,7 +705,7 @@ export default function EditDriverPage() {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="Notice Period"
+                                                    label={t('drivers.edit.fields.noticePeriod.label')}
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
@@ -721,7 +727,7 @@ export default function EditDriverPage() {
                     {/* Work Conditions Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Work Conditions
+                            {t('drivers.edit.sections.workConditions')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             {/* Function - Full Width */}
@@ -732,7 +738,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Function"
+                                            label={t('drivers.edit.fields.function.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -752,7 +758,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Workweek Duration (hours)"
+                                            label={t('drivers.edit.fields.workweekDuration.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -767,7 +773,7 @@ export default function EditDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Workweek Duration Percentage"
+                                    label={t('drivers.edit.fields.workweekDuration.label') + " Percentage"}
                                     value={`${workweekPercentage}%`}
                                     fullWidth
                                     margin="normal"
@@ -791,7 +797,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Weekly Schedule"
+                                            label={t('drivers.edit.fields.weeklySchedule.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -808,7 +814,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Working Hours"
+                                            label={t('drivers.edit.fields.workingHours.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -824,7 +830,7 @@ export default function EditDriverPage() {
                     {/* Compensation Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Compensation
+                            {t('drivers.edit.sections.compensation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
@@ -834,7 +840,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Monthly Compensation (Excl. VAT)"
+                                            label={t('drivers.edit.fields.compensationPerMonthExclBtw.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -848,7 +854,7 @@ export default function EditDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label="Monthly Compensation (Incl. VAT)"
+                                    label={t('drivers.edit.fields.monthlyCompensationIncl.label')}
                                     value={monthlyCompensationInclVat.toFixed(2)}
                                     fullWidth
                                     margin="normal"
@@ -870,7 +876,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Pay Scale"
+                                            label={t('drivers.edit.fields.payScale.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -887,7 +893,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Pay Step"
+                                            label={t('drivers.edit.fields.payScaleStep.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -906,7 +912,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Hourly Wage (100%)"
+                                            label={t('drivers.edit.fields.hourlyWage100Percent.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -925,7 +931,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Deviating Wage (if applicable)"
+                                            label={t('drivers.edit.fields.deviatingWage.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -943,7 +949,7 @@ export default function EditDriverPage() {
                     {/* Commute and Travel Expenses Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Commute and Travel Expenses
+                            {t('drivers.edit.sections.commute')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
@@ -953,7 +959,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Commute Kilometers"
+                                            label={t('drivers.edit.fields.commuteKilometers.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -972,7 +978,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Travel Expenses Rate"
+                                            label={t('drivers.edit.fields.travelExpenses.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -991,7 +997,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Maximum Travel Expenses"
+                                            label={t('drivers.edit.fields.maxTravelExpenses.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1009,7 +1015,7 @@ export default function EditDriverPage() {
                     {/* Vacation & Allowances Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Vacation & Allowances
+                            {t('drivers.edit.sections.vacation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
@@ -1019,7 +1025,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Age Threshold"
+                                            label={t('drivers.edit.fields.vacationAge.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1038,7 +1044,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Days"
+                                            label={t('drivers.edit.fields.vacationDays.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1057,7 +1063,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="ATV (Reduced Working Hours)"
+                                            label={t('drivers.edit.fields.atv.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1076,7 +1082,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Vacation Allowance (%)"
+                                            label={t('drivers.edit.fields.vacationAllowance.label')}
                                             type="number"
                                             fullWidth
                                             margin="normal"
@@ -1094,7 +1100,7 @@ export default function EditDriverPage() {
                     {/* Remark Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Remark
+                            {t('drivers.edit.sections.remark')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
@@ -1104,7 +1110,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Remark"
+                                            label={t('drivers.edit.fields.remark.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -1122,14 +1128,14 @@ export default function EditDriverPage() {
                     {/* Documents Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            Documents
+                            {t('drivers.edit.sections.documents')}
                         </Typography>
                         
                         {/* Existing Files */}
                         {driverData?.files && driverData.files.length > 0 && (
                             <Box mb={3}>
                                 <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                                    Current Documents
+                                    {t('drivers.edit.documents.current', { count: driverData.files.length })}
                                 </Typography>
                                 <Grid container spacing={2}>
                                     {driverData.files
@@ -1150,7 +1156,7 @@ export default function EditDriverPage() {
                         {/* Upload New Files */}
                         <Box>
                             <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                                Upload New Documents
+                                {t('drivers.edit.documents.uploadNew')}
                             </Typography>
                             <FileUploadBox
                                 uploadUrl="/temporary-uploads"
@@ -1169,7 +1175,7 @@ export default function EditDriverPage() {
                             fullWidth
                             disabled={isPending}
                         >
-                            {isPending ? 'Updating Driver...' : 'Update Driver'}
+                            {isPending ? t('drivers.edit.buttons.submitting') : t('drivers.edit.buttons.submit')}
                         </Button>
                     </Box>
                 </form>

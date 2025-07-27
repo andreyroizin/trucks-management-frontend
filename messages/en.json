@@ -877,6 +877,391 @@
       "notAvailable": "N/A"
     }
   },
+  "drivers": {
+    "title": "Driver Management",
+    "overview": {
+      "title": "Drivers Overview",
+      "search": {
+        "placeholder": "Search drivers"
+      },
+      "buttons": {
+        "create": "Create Driver",
+        "refresh": "Refresh list"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load data. Please try again later."
+      }
+    },
+    "create": {
+      "title": "New Driver Creation Form",
+      "subtitle": "Use this form to create a new driver with contract. Please ensure all fields are filled out accurately.",
+      "sections": {
+        "general": "General Information",
+        "employee": "Employee Information",
+        "employment": "Employment Details",
+        "employmentDates": "Employment Dates",
+        "workConditions": "Work Conditions",
+        "compensation": "Compensation",
+        "commute": "Commute and Travel Expenses",
+        "vacation": "Vacation & Allowances",
+        "documents": "Driver Documents",
+        "remark": "Remark"
+      },
+      "fields": {
+        "company": {
+          "label": "Company",
+          "required": "Company is required"
+        },
+        "email": {
+          "label": "Email",
+          "required": "Email is required",
+          "invalid": "Invalid email"
+        },
+        "password": {
+          "label": "Password",
+          "required": "Password is required"
+        },
+        "firstName": {
+          "label": "First Name",
+          "required": "First name is required"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "required": "Last name is required"
+        },
+        "dateOfBirth": {
+          "label": "Date of Birth"
+        },
+        "phoneNumber": {
+          "label": "Phone Number"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country"
+        },
+        "bsn": {
+          "label": "BSN"
+        },
+        "dateOfEmployment": {
+          "label": "Employment Start Date",
+          "required": "Employment start date is required"
+        },
+        "lastWorkingDay": {
+          "label": "Contract End Date",
+          "required": "Contract end date is required"
+        },
+        "probationPeriod": {
+          "label": "Probation Period"
+        },
+        "noticePeriod": {
+          "label": "Notice Period"
+        },
+        "function": {
+          "label": "Function",
+          "required": "Function is required",
+          "maxLength": "Function must be less than 100 characters"
+        },
+        "workweekDuration": {
+          "label": "Workweek Duration (hours)",
+          "required": "Workweek duration is required",
+          "minHours": "Must be at least 1 hour"
+        },
+        "weeklySchedule": {
+          "label": "Weekly Schedule"
+        },
+        "workingHours": {
+          "label": "Working Hours"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Monthly Compensation (Excl. VAT)"
+        },
+        "payScale": {
+          "label": "Pay Scale"
+        },
+        "payScaleStep": {
+          "label": "Pay Scale Step"
+        },
+        "hourlyWage100Percent": {
+          "label": "Hourly Wage (100%)"
+        },
+        "deviatingWage": {
+          "label": "Deviating Wage"
+        },
+        "commuteKilometers": {
+          "label": "Commute Kilometers"
+        },
+        "travelExpenses": {
+          "label": "Travel Expenses Rate"
+        },
+        "maxTravelExpenses": {
+          "label": "Maximum Travel Expenses"
+        },
+        "vacationAge": {
+          "label": "Vacation Age Threshold"
+        },
+        "vacationDays": {
+          "label": "Vacation Days"
+        },
+        "atv": {
+          "label": "ATV (Reduced Working Hours)"
+        },
+        "vacationAllowance": {
+          "label": "Vacation Allowance",
+          "maxPercent": "Must be 100% or less"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Monthly Compensation (Incl. VAT)"
+        },
+        "remark": {
+          "label": "Remark",
+          "placeholder": "Enter any additional remarks or comments about the driver..."
+        }
+      },
+      "validation": {
+        "positiveNumber": "Must be a positive number"
+      },
+      "periodOptions": {
+        "1": "1 month",
+        "2": "2 months",
+        "3": "3 months",
+        "4": "4 months",
+        "5": "5 months",
+        "6": "6 months"
+      },
+      "documents": {
+        "description": "Upload driver-related documents such as ID, driving license, employment contract, etc. Supported formats: PDF, JPG, PNG (max 10MB per file)."
+      },
+      "buttons": {
+        "submit": "Create Driver",
+        "submitting": "Creating Driver..."
+      },
+      "errors": {
+        "createFailed": "Failed to create driver.",
+        "noPermission": "You don't have permission to access this page."
+      }
+    },
+    "detail": {
+      "title": "Driver Management",
+      "sections": {
+        "general": "General Information",
+        "employee": "Employee Information",
+        "employment": "Employment Details",
+        "workConditions": "Work Conditions",
+        "compensation": "Compensation",
+        "commute": "Commute and Travel Expenses",
+        "vacation": "Vacation & Allowances",
+        "carAssignment": "Car Assignment",
+        "contractStatus": "Contract Status",
+        "documents": "Driver Documents",
+        "remark": "Remark"
+      },
+      "fields": {
+        "company": "Company",
+        "email": "Email",
+        "phone": "Phone",
+        "dateOfBirth": "Date of Birth",
+        "address": "Address",
+        "bsn": "BSN",
+        "function": "Function",
+        "employmentDate": "Employment Date",
+        "contractEndDate": "Contract End Date",
+        "probationPeriod": "Probation Period",
+        "noticePeriod": "Notice Period",
+        "workweekDuration": "Workweek Duration",
+        "weeklySchedule": "Weekly Schedule",
+        "workingHours": "Working Hours",
+        "payScale": "Pay Scale",
+        "monthlyCompensationExcl": "Monthly Compensation (Excl. VAT)",
+        "monthlyCompensationIncl": "Monthly Compensation (Incl. VAT)",
+        "hourlyWage100Percent": "Hourly Wage (100%)",
+        "deviatingWage": "Deviating Wage",
+        "commuteKilometers": "Commute Kilometers",
+        "travelExpensesRate": "Travel Expenses Rate",
+        "maxTravelExpenses": "Maximum Travel Expenses",
+        "vacationAgeThreshold": "Vacation Age Threshold",
+        "vacationDays": "Vacation Days",
+        "atv": "ATV (Reduced Working Hours)",
+        "vacationAllowance": "Vacation Allowance",
+        "assignedCar": "Assigned Car",
+        "noCarAssigned": "No car assigned",
+        "status": "Status",
+        "signedDate": "Signed Date",
+        "accessCode": "Access Code"
+      },
+      "noRemark": "No remark provided",
+      "noDocuments": "No documents uploaded.",
+      "buttons": {
+        "edit": "Edit Driver",
+        "delete": "Delete Driver"
+      },
+      "errors": {
+        "loadFailed": "Failed to load driver details.",
+        "deleteFailed": "Failed to delete driver."
+      },
+      "deleteConfirm": {
+        "title": "Terminate Driver?",
+        "message": "Are you sure you want to terminate {firstName} {lastName}? This will deactivate their account and contract."
+      },
+      "notAvailable": "N/A"
+    },
+    "edit": {
+      "title": "Edit Driver Contract",
+      "subtitle": "Update the employment contract information for {firstName} {lastName}. Please ensure all fields are filled out accurately.",
+      "sections": {
+        "general": "General Information",
+        "employee": "Employee Information",
+        "employment": "Employment Details",
+        "employmentDates": "Employment Dates",
+        "workConditions": "Work Conditions",
+        "compensation": "Compensation",
+        "commute": "Commute and Travel Expenses",
+        "vacation": "Vacation & Allowances",
+        "documents": "Driver Documents",
+        "remark": "Remark"
+      },
+      "fields": {
+        "company": {
+          "label": "Company"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "phoneNumber": {
+          "label": "Phone Number"
+        },
+        "firstName": {
+          "label": "First Name"
+        },
+        "lastName": {
+          "label": "Last Name"
+        },
+        "dateOfBirth": {
+          "label": "Date of Birth"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country"
+        },
+        "bsn": {
+          "label": "BSN"
+        },
+        "dateOfEmployment": {
+          "label": "Employment Start Date"
+        },
+        "lastWorkingDay": {
+          "label": "Contract End Date"
+        },
+        "probationPeriod": {
+          "label": "Probation Period"
+        },
+        "noticePeriod": {
+          "label": "Notice Period"
+        },
+        "function": {
+          "label": "Function"
+        },
+        "workweekDuration": {
+          "label": "Workweek Duration (hours)"
+        },
+        "weeklySchedule": {
+          "label": "Weekly Schedule"
+        },
+        "workingHours": {
+          "label": "Working Hours"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Monthly Compensation (Excl. VAT)"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Monthly Compensation (Incl. VAT)"
+        },
+        "payScale": {
+          "label": "Pay Scale"
+        },
+        "payScaleStep": {
+          "label": "Pay Scale Step"
+        },
+        "hourlyWage100Percent": {
+          "label": "Hourly Wage (100%)"
+        },
+        "deviatingWage": {
+          "label": "Deviating Wage"
+        },
+        "commuteKilometers": {
+          "label": "Commute Kilometers"
+        },
+        "travelExpenses": {
+          "label": "Travel Expenses Rate"
+        },
+        "maxTravelExpenses": {
+          "label": "Maximum Travel Expenses"
+        },
+        "vacationAge": {
+          "label": "Vacation Age Threshold"
+        },
+        "vacationDays": {
+          "label": "Vacation Days"
+        },
+        "atv": {
+          "label": "ATV (Reduced Working Hours)"
+        },
+        "vacationAllowance": {
+          "label": "Vacation Allowance"
+        },
+        "remark": {
+          "label": "Remark"
+        }
+      },
+      "buttons": {
+        "submit": "Update Driver",
+        "submitting": "Updating Driver..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load driver details. Please try again later.",
+        "updateFailed": "Failed to update driver.",
+        "noPermission": "You don't have permission to access this page."
+      },
+      "documents": {
+        "current": "Current Documents ({count})",
+        "uploadNew": "Upload Additional Documents"
+      }
+    },
+    "card": {
+      "fields": {
+        "workweekDuration": "Workweek Duration",
+        "contractDate": "Contract Date",
+        "nextContract": "Next Contract",
+        "payscaleIncrease": "Payscale Increase",
+        "vacationHoursLeft": "Vacation Hours Left"
+      },
+      "menu": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "loading": "Loading...",
+      "notAvailable": "N/A",
+      "hours": "hours"
+    }
+  },
   "common": {
     "buttons": {
       "delete": "Delete",

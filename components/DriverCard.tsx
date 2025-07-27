@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useRef, useState} from 'react';
+import {useTranslations} from 'next-intl';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
     Card,
@@ -35,6 +36,7 @@ export default function DriverCard({
     const open = Boolean(anchorEl);
     const cardRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const t = useTranslations();
     
     // Fetch contract data for this driver
     const { data: contractData, isLoading } = useDriverWithContract(id);
@@ -109,8 +111,8 @@ export default function DriverCard({
                                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                                     transformOrigin={{vertical: 'top', horizontal: 'right'}}
                                 >
-                                    {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
-                                    {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                                    {onEdit && <MenuItem onClick={handleEdit}>{t('drivers.card.menu.edit')}</MenuItem>}
+                                    {onDelete && <MenuItem onClick={handleDelete}>{t('drivers.card.menu.delete')}</MenuItem>}
                                 </Menu>
                             </>
                         ) : null
@@ -124,50 +126,50 @@ export default function DriverCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Workweek Duration</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.workweekDuration')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
-                                        {contractData?.workweekDuration ? `${contractData.workweekDuration} hours` : (isLoading ? 'Loading...' : 'N/A')}
+                                        {contractData?.workweekDuration ? `${contractData.workweekDuration} ${t('drivers.card.hours')}` : (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))}
                                     </Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Contract Date</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.contractDate')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{formatDate(contractData?.dateOfEmployment) || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                    <Typography variant="caption">{formatDate(contractData?.dateOfEmployment) || (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))}</Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Next Contract</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.nextContract')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{formatDate(contractData?.lastWorkingDay) || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                    <Typography variant="caption">{formatDate(contractData?.lastWorkingDay) || (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))}</Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Payscale Increase</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.payscaleIncrease')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
                                         {(contractData?.payScale && contractData?.payScaleStep) 
                                             ? `${contractData.payScale}${contractData.payScaleStep}`
-                                            : contractData?.payScale || (isLoading ? 'Loading...' : 'N/A')
+                                            : contractData?.payScale || (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))
                                         }
                                     </Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Vacation Hours Left</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.vacationHoursLeft')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
-                                        {contractData?.vacationHoursLeft !== undefined ? `${Number(contractData.vacationHoursLeft).toFixed(2)} hours` : (isLoading ? 'Loading...' : 'N/A')}
+                                        {contractData?.vacationHoursLeft !== undefined ? `${Number(contractData.vacationHoursLeft).toFixed(2)} ${t('drivers.card.hours')}` : (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))}
                                     </Typography>
                                 </td>
                             </tr>

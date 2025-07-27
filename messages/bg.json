@@ -877,6 +877,391 @@
       "notAvailable": "Н/Д"
     }
   },
+  "drivers": {
+    "title": "Управление на шофьори",
+    "overview": {
+      "title": "Преглед на шофьори",
+      "search": {
+        "placeholder": "Търсене на шофьори"
+      },
+      "buttons": {
+        "create": "Създаване на шофьор",
+        "refresh": "Обновяване на списъка"
+      },
+      "pagination": {
+        "rowsPerPage": "Редове на страница:"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на данни. Моля, опитайте отново по-късно."
+      }
+    },
+    "create": {
+      "title": "Форма за създаване на нов шофьор",
+      "subtitle": "Използвайте този формуляр за създаване на нов шофьор с договор. Моля, уверете се, че всички полета са попълнени правилно.",
+      "sections": {
+        "general": "Обща информация",
+        "employee": "Информация за служителя",
+        "employment": "Детайли за заетостта",
+        "employmentDates": "Дати на заетостта",
+        "workConditions": "Работни условия",
+        "compensation": "Възнаграждение",
+        "commute": "Пътуване до работа и пътни разходи",
+        "vacation": "Отпуск и надбавки",
+        "documents": "Документи на шофьора",
+        "remark": "Забележка"
+      },
+      "fields": {
+        "company": {
+          "label": "Компания",
+          "required": "Компанията е задължителна"
+        },
+        "email": {
+          "label": "Имейл",
+          "required": "Имейлът е задължителен",
+          "invalid": "Невалиден имейл"
+        },
+        "password": {
+          "label": "Парола",
+          "required": "Паролата е задължителна"
+        },
+        "firstName": {
+          "label": "Име",
+          "required": "Името е задължително"
+        },
+        "lastName": {
+          "label": "Фамилия",
+          "required": "Фамилията е задължителна"
+        },
+        "dateOfBirth": {
+          "label": "Дата на раждане"
+        },
+        "phoneNumber": {
+          "label": "Телефонен номер"
+        },
+        "address": {
+          "label": "Адрес"
+        },
+        "postcode": {
+          "label": "Пощенски код"
+        },
+        "city": {
+          "label": "Град"
+        },
+        "country": {
+          "label": "Държава"
+        },
+        "bsn": {
+          "label": "BSN"
+        },
+        "dateOfEmployment": {
+          "label": "Дата на наемане",
+          "required": "Датата на наемане е задължителна"
+        },
+        "lastWorkingDay": {
+          "label": "Дата на край на договора",
+          "required": "Датата на край на договора е задължителна"
+        },
+        "probationPeriod": {
+          "label": "Пробен период"
+        },
+        "noticePeriod": {
+          "label": "Период на предизвестие"
+        },
+        "function": {
+          "label": "Функция",
+          "required": "Функцията е задължителна",
+          "maxLength": "Функцията трябва да бъде по-малко от 100 символа"
+        },
+        "workweekDuration": {
+          "label": "Продължителност на работната седмица (часове)",
+          "required": "Продължителността на работната седмица е задължителна",
+          "minHours": "Трябва да бъде поне 1 час"
+        },
+        "weeklySchedule": {
+          "label": "Седмичен график"
+        },
+        "workingHours": {
+          "label": "Работни часове"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Месечно възнаграждение (Без ДДС)"
+        },
+        "payScale": {
+          "label": "Възнаградителна скала"
+        },
+        "payScaleStep": {
+          "label": "Стъпка на възнаградителната скала"
+        },
+        "hourlyWage100Percent": {
+          "label": "Почасова заплата (100%)"
+        },
+        "deviatingWage": {
+          "label": "Отклоняваща се заплата"
+        },
+        "commuteKilometers": {
+          "label": "Километри до работа"
+        },
+        "travelExpenses": {
+          "label": "Тарифа за пътни разходи"
+        },
+        "maxTravelExpenses": {
+          "label": "Максимални пътни разходи"
+        },
+        "vacationAge": {
+          "label": "Праг на възраст за отпуск"
+        },
+        "vacationDays": {
+          "label": "Дни отпуск"
+        },
+        "atv": {
+          "label": "ATV (Намалени работни часове)"
+        },
+        "vacationAllowance": {
+          "label": "Надбавка за отпуск",
+          "maxPercent": "Трябва да бъде 100% или по-малко"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Месечно възнаграждение (вкл. ДДС)"
+        },
+        "remark": {
+          "label": "Забележка",
+          "placeholder": "Въведете допълнителни забележки или коментари за шофьора..."
+        }
+      },
+      "validation": {
+        "positiveNumber": "Трябва да бъде положително число"
+      },
+      "periodOptions": {
+        "1": "1 месец",
+        "2": "2 месеца",
+        "3": "3 месеца",
+        "4": "4 месеца",
+        "5": "5 месеца",
+        "6": "6 месеца"
+      },
+      "documents": {
+        "description": "Качете документи свързани с шофьора като лична карта, шофьорска книжка, трудов договор и т.н. Поддържани формати: PDF, JPG, PNG (макс. 10MB на файл)."
+      },
+      "buttons": {
+        "submit": "Създаване на шофьор",
+        "submitting": "Създаване на шофьор..."
+      },
+      "errors": {
+        "createFailed": "Неуспешно създаване на шофьор.",
+        "noPermission": "Нямате разрешение за достъп до тази страница."
+      }
+    },
+    "detail": {
+      "title": "Управление на шофьори",
+      "sections": {
+        "general": "Обща информация",
+        "employee": "Информация за служителя",
+        "employment": "Детайли за заетостта",
+        "workConditions": "Работни условия",
+        "compensation": "Възнаграждение",
+        "commute": "Пътуване до работа и пътни разходи",
+        "vacation": "Отпуск и надбавки",
+        "carAssignment": "Назначаване на автомобил",
+        "contractStatus": "Статус на договора",
+        "documents": "Документи на шофьора",
+        "remark": "Забележка"
+      },
+      "fields": {
+        "company": "Компания",
+        "email": "Имейл",
+        "phone": "Телефон",
+        "dateOfBirth": "Дата на раждане",
+        "address": "Адрес",
+        "bsn": "BSN",
+        "function": "Функция",
+        "employmentDate": "Дата на наемане",
+        "contractEndDate": "Дата на край на договора",
+        "probationPeriod": "Пробен период",
+        "noticePeriod": "Период на предизвестие",
+        "workweekDuration": "Продължителност на работната седмица",
+        "weeklySchedule": "Седмичен график",
+        "workingHours": "Работни часове",
+        "payScale": "Възнаградителна скала",
+        "monthlyCompensationExcl": "Месечно възнаграждение (Без ДДС)",
+        "monthlyCompensationIncl": "Месечно възнаграждение (С ДДС)",
+        "hourlyWage100Percent": "Почасова заплата (100%)",
+        "deviatingWage": "Отклоняваща се заплата",
+        "commuteKilometers": "Километри до работа",
+        "travelExpensesRate": "Тарифа за пътни разходи",
+        "maxTravelExpenses": "Максимални пътни разходи",
+        "vacationAgeThreshold": "Праг на възраст за отпуск",
+        "vacationDays": "Дни отпуск",
+        "atv": "ATV (Намалени работни часове)",
+        "vacationAllowance": "Надбавка за отпуск",
+        "assignedCar": "Назначен автомобил",
+        "noCarAssigned": "Няма назначен автомобил",
+        "status": "Статус",
+        "signedDate": "Дата на подписване",
+        "accessCode": "Код за достъп"
+      },
+      "noRemark": "Няма предоставена забележка",
+      "noDocuments": "Няма качени документи.",
+      "buttons": {
+        "edit": "Редактиране на шофьор",
+        "delete": "Изтриване на шофьор"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайли за шофьора.",
+        "deleteFailed": "Неуспешно изтриване на шофьор."
+      },
+      "deleteConfirm": {
+        "title": "Прекратяване на шофьор?",
+        "message": "Сигурни ли сте, че искате да прекратите {firstName} {lastName}? Това ще деактивира техния акаунт и договор."
+      },
+      "notAvailable": "Н/Д"
+    },
+    "edit": {
+      "title": "Редактиране на договор на шофьор",
+      "subtitle": "Обновете информацията за трудовия договор за {firstName} {lastName}. Моля, уверете се, че всички полета са попълнени правилно.",
+      "sections": {
+        "general": "Обща информация",
+        "employee": "Информация за служителя",
+        "employment": "Детайли за заетостта",
+        "employmentDates": "Дати на заетостта",
+        "workConditions": "Работни условия",
+        "compensation": "Възнаграждение",
+        "commute": "Пътуване до работа и пътни разходи",
+        "vacation": "Отпуск и надбавки",
+        "documents": "Документи на шофьора",
+        "remark": "Забележка"
+      },
+      "fields": {
+        "company": {
+          "label": "Компания"
+        },
+        "email": {
+          "label": "Имейл"
+        },
+        "phoneNumber": {
+          "label": "Телефонен номер"
+        },
+        "firstName": {
+          "label": "Име"
+        },
+        "lastName": {
+          "label": "Фамилия"
+        },
+        "dateOfBirth": {
+          "label": "Дата на раждане"
+        },
+        "address": {
+          "label": "Адрес"
+        },
+        "postcode": {
+          "label": "Пощенски код"
+        },
+        "city": {
+          "label": "Град"
+        },
+        "country": {
+          "label": "Държава"
+        },
+        "bsn": {
+          "label": "БСН"
+        },
+        "dateOfEmployment": {
+          "label": "Дата на започване на работа"
+        },
+        "lastWorkingDay": {
+          "label": "Дата на приключване на договора"
+        },
+        "probationPeriod": {
+          "label": "Изпитателен срок"
+        },
+        "noticePeriod": {
+          "label": "Срок за предизвестие"
+        },
+        "function": {
+          "label": "Длъжност"
+        },
+        "workweekDuration": {
+          "label": "Продължителност на работната седмица (часове)"
+        },
+        "weeklySchedule": {
+          "label": "Седмичен график"
+        },
+        "workingHours": {
+          "label": "Работно време"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Месечно възнаграждение (без ДДС)"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Месечно възнаграждение (вкл. ДДС)"
+        },
+        "payScale": {
+          "label": "Заплатна скала"
+        },
+        "payScaleStep": {
+          "label": "Стъпка от заплатната скала"
+        },
+        "hourlyWage100Percent": {
+          "label": "Часова ставка (100%)"
+        },
+        "deviatingWage": {
+          "label": "Отклоняваща се заплата"
+        },
+        "commuteKilometers": {
+          "label": "Километри до работа"
+        },
+        "travelExpenses": {
+          "label": "Ставка за пътни разходи"
+        },
+        "maxTravelExpenses": {
+          "label": "Максимални пътни разходи"
+        },
+        "vacationAge": {
+          "label": "Възрастова граница за отпуск"
+        },
+        "vacationDays": {
+          "label": "Дни отпуск"
+        },
+        "atv": {
+          "label": "ATV (Намалено работно време)"
+        },
+        "vacationAllowance": {
+          "label": "Надбавка за отпуск"
+        },
+        "remark": {
+          "label": "Забележка"
+        }
+      },
+      "buttons": {
+        "submit": "Обновяване на шофьор",
+        "submitting": "Обновяване на шофьор..."
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайли за шофьора. Моля, опитайте отново по-късно.",
+        "updateFailed": "Неуспешно обновяване на шофьор.",
+        "noPermission": "Нямате разрешение за достъп до тази страница."
+      },
+      "documents": {
+        "current": "Текущи документи ({count})",
+        "uploadNew": "Качване на допълнителни документи"
+      }
+    },
+    "card": {
+      "fields": {
+        "workweekDuration": "Продължителност на работната седмица",
+        "contractDate": "Дата на договора",
+        "nextContract": "Следващ договор",
+        "payscaleIncrease": "Увеличаване на възнаградителната скала",
+        "vacationHoursLeft": "Оставащи часове отпуск"
+      },
+      "menu": {
+        "edit": "Редактиране",
+        "delete": "Изтриване"
+      },
+      "loading": "Зареждане...",
+      "notAvailable": "Н/Д",
+      "hours": "часа"
+    }
+  },
   "common": {
     "buttons": {
       "delete": "Изтриване",

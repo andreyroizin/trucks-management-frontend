@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -28,6 +29,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function DriverDetailPage() {
     const { id } = useParams();
     const router = useRouter();
+    const t = useTranslations();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: driver, isLoading, isError, error } = useDriverWithContract(id as string);
     const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
@@ -57,7 +59,7 @@ export default function DriverDetailPage() {
             setOpenModal(false);
             router.push('/drivers');
         } catch (err: any) {
-            setDeleteErrorMsg(err.message || 'Failed to delete driver.');
+            setDeleteErrorMsg(err.message || t('drivers.detail.errors.deleteFailed'));
             setOpenModal(false);
         }
     };
@@ -89,7 +91,7 @@ export default function DriverDetailPage() {
     if (isError || !driver) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load driver details.'}</Alert>
+                <Alert severity="error">{error?.message || t('drivers.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -99,7 +101,7 @@ export default function DriverDetailPage() {
             {/* Header Section */}
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Driver Management
+                    {t('drivers.detail.title')}
                 </Typography>
             </Box>
 
@@ -163,26 +165,26 @@ export default function DriverDetailPage() {
 
                 {/* General Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    General Information
+                    {t('drivers.detail.sections.general')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Company
+                                {t('drivers.detail.fields.company')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.companyName || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.companyName || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Email</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.email || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.email')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.email || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Phone</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.phoneNumber || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.phone')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.phoneNumber || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Date of Birth</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.dateOfBirth')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatDate(driver.dateOfBirth)}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -192,21 +194,21 @@ export default function DriverDetailPage() {
 
                 {/* Employee Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Employee Information
+                    {t('drivers.detail.sections.employee')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Address
+                                {t('drivers.detail.fields.address')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {driver.address ? `${driver.address}, ${driver.postcode} ${driver.city}, ${driver.country}` : 'N/A'}
+                                {driver.address ? `${driver.address}, ${driver.postcode} ${driver.city}, ${driver.country}` : t('drivers.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>BSN</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.bsn || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.bsn')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.bsn || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -215,31 +217,31 @@ export default function DriverDetailPage() {
 
                 {/* Employment Details */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Employment Details
+                    {t('drivers.detail.sections.employment')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Function
+                                {t('drivers.detail.fields.function')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.function || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.function || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Employment Date</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.employmentDate')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatDate(driver.dateOfEmployment)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Contract End Date</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.contractEndDate')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatDate(driver.lastWorkingDay)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Probation Period</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.probationPeriod || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.probationPeriod')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.probationPeriod || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Notice Period</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.noticePeriod || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.noticePeriod')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.noticePeriod || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -248,25 +250,25 @@ export default function DriverDetailPage() {
 
                 {/* Work Conditions */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Work Conditions
+                    {t('drivers.detail.sections.workConditions')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Workweek Duration
+                                {t('drivers.detail.fields.workweekDuration')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {driver.workweekDuration ? `${driver.workweekDuration} hours (${driver.workweekDurationPercentage || 0}%)` : 'N/A'}
+                                {driver.workweekDuration ? `${driver.workweekDuration} hours (${driver.workweekDurationPercentage || 0}%)` : t('drivers.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Weekly Schedule</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.weeklySchedule || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.weeklySchedule')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.weeklySchedule || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Working Hours</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.workingHours || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.workingHours')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.workingHours || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -275,32 +277,32 @@ export default function DriverDetailPage() {
 
                 {/* Compensation */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Compensation
+                    {t('drivers.detail.sections.compensation')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Pay Scale
+                                {t('drivers.detail.fields.payScale')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
-                                {driver.payScale ? `${driver.payScale} - Step ${driver.payScaleStep || 'N/A'}` : 'N/A'}
+                                {driver.payScale ? `${driver.payScale} - Step ${driver.payScaleStep || t('drivers.detail.notAvailable')}` : t('drivers.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Monthly Compensation (Excl. VAT)</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.monthlyCompensationExcl')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.compensationPerMonthExclBtw)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Monthly Compensation (Incl. VAT)</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.monthlyCompensationIncl')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.compensationPerMonthInclBtw)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Hourly Wage (100%)</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.hourlyWage100Percent')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.hourlyWage100Percent)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Deviating Wage</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.deviatingWage')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.deviatingWage)}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -310,22 +312,22 @@ export default function DriverDetailPage() {
 
                 {/* Commute and Travel Expenses */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Commute and Travel Expenses
+                    {t('drivers.detail.sections.commute')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Commute Kilometers
+                                {t('drivers.detail.fields.commuteKilometers')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.commuteKilometers ? `${driver.commuteKilometers} km` : 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.commuteKilometers ? `${driver.commuteKilometers} km` : t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Travel Expenses Rate</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.travelExpensesRate')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.travelExpenses)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Maximum Travel Expenses</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.maxTravelExpenses')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.maxTravelExpenses)}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -335,26 +337,26 @@ export default function DriverDetailPage() {
 
                 {/* Vacation & Allowances */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Vacation & Allowances
+                    {t('drivers.detail.sections.vacation')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Vacation Age Threshold
+                                {t('drivers.detail.fields.vacationAgeThreshold')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.vacationAge ? `${driver.vacationAge} years` : 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.vacationAge ? `${driver.vacationAge} years` : t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Vacation Days</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.vacationDays ? `${driver.vacationDays} days` : 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.vacationDays')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.vacationDays ? `${driver.vacationDays} days` : t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>ATV (Reduced Working Hours)</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.atv ? `${driver.atv} hours` : 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.atv')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.atv ? `${driver.atv} hours` : t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Vacation Allowance</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.vacationAllowance')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.vacationAllowance)}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -364,13 +366,13 @@ export default function DriverDetailPage() {
 
                 {/* Car Assignment */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Car Assignment
+                    {t('drivers.detail.sections.carAssignment')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Assigned Car
+                                {t('drivers.detail.fields.assignedCar')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {driver.carLicensePlate ? (
@@ -384,7 +386,7 @@ export default function DriverDetailPage() {
                                         </Typography>
                                     </Box>
                                 ) : (
-                                    'No car assigned'
+                                    t('drivers.detail.fields.noCarAssigned')
                                 )}
                             </TableCell>
                         </TableRow>
@@ -395,23 +397,23 @@ export default function DriverDetailPage() {
 
                 {/* Contract Status */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Contract Status
+                    {t('drivers.detail.sections.contractStatus')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                Status
+                                {t('drivers.detail.fields.status')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.contractStatus || 'N/A'}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.contractStatus || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Signed Date</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.signedDate')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatDate(driver.signedAt)}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Access Code</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.accessCode || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.accessCode')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{driver.accessCode || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -420,7 +422,7 @@ export default function DriverDetailPage() {
 
                 {/* Driver Documents */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Driver Documents
+                    {t('drivers.detail.sections.documents')}
                 </Typography>
                 {driver.files?.length ? (
                     <Stack spacing={2}>
@@ -434,7 +436,7 @@ export default function DriverDetailPage() {
                     </Stack>
                 ) : (
                     <Typography variant="body1" color="text.secondary">
-                        No documents uploaded.
+                        {t('drivers.detail.noDocuments')}
                     </Typography>
                 )}
 
@@ -442,10 +444,10 @@ export default function DriverDetailPage() {
 
                 {/* Remark */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
-                    Remark
+                    {t('drivers.detail.sections.remark')}
                 </Typography>
                 <Typography variant="body1">
-                    {driver.remark || 'No remark provided'}
+                    {driver.remark || t('drivers.detail.noRemark')}
                 </Typography>
 
             </Paper>
@@ -453,8 +455,8 @@ export default function DriverDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Terminate Driver?"
-                message={`Are you sure you want to terminate ${driver?.firstName} ${driver?.lastName}? This will deactivate their account and contract.`}
+                title={t('drivers.detail.deleteConfirm.title')}
+                message={t('drivers.detail.deleteConfirm.message', { firstName: driver?.firstName, lastName: driver?.lastName })}
                 onClose={() => !isDeleting && setOpenModal(false)}
                 onConfirm={handleDelete}
             />

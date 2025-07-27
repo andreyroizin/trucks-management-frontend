@@ -877,6 +877,391 @@
       "notAvailable": "N/B"
     }
   },
+  "drivers": {
+    "title": "Chauffeurbeheer",
+    "overview": {
+      "title": "Chauffeurs Overzicht",
+      "search": {
+        "placeholder": "Zoek chauffeurs"
+      },
+      "buttons": {
+        "create": "Chauffeur Aanmaken",
+        "refresh": "Lijst vernieuwen"
+      },
+      "pagination": {
+        "rowsPerPage": "Rijen per pagina:"
+      },
+      "errors": {
+        "loadFailed": "Gegevens laden mislukt. Probeer het later opnieuw."
+      }
+    },
+    "create": {
+      "title": "Nieuw Chauffeur Aanmaakformulier",
+      "subtitle": "Gebruik dit formulier om een nieuwe chauffeur met contract aan te maken. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "sections": {
+        "general": "Algemene Informatie",
+        "employee": "Werknemersinformatie",
+        "employment": "Werkgelegenheidsdetails",
+        "employmentDates": "Werkgelegenheidsdata",
+        "workConditions": "Werkvoorwaarden",
+        "compensation": "Vergoeding",
+        "commute": "Woon-werkverkeer en Reisuitgaven",
+        "vacation": "Vakantie & Toeslagen",
+        "documents": "Chauffeurdocumenten",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "company": {
+          "label": "Bedrijf",
+          "required": "Bedrijf is verplicht"
+        },
+        "email": {
+          "label": "E-mail",
+          "required": "E-mail is verplicht",
+          "invalid": "Ongeldige e-mail"
+        },
+        "password": {
+          "label": "Wachtwoord",
+          "required": "Wachtwoord is verplicht"
+        },
+        "firstName": {
+          "label": "Voornaam",
+          "required": "Voornaam is verplicht"
+        },
+        "lastName": {
+          "label": "Achternaam",
+          "required": "Achternaam is verplicht"
+        },
+        "dateOfBirth": {
+          "label": "Geboortedatum"
+        },
+        "phoneNumber": {
+          "label": "Telefoonnummer"
+        },
+        "address": {
+          "label": "Adres"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land"
+        },
+        "bsn": {
+          "label": "BSN"
+        },
+        "dateOfEmployment": {
+          "label": "Datum van indiensttreding",
+          "required": "Datum van indiensttreding is verplicht"
+        },
+        "lastWorkingDay": {
+          "label": "Contract einddatum",
+          "required": "Contract einddatum is verplicht"
+        },
+        "probationPeriod": {
+          "label": "Proeftijd"
+        },
+        "noticePeriod": {
+          "label": "Opzegtermijn"
+        },
+        "function": {
+          "label": "Functie",
+          "required": "Functie is verplicht",
+          "maxLength": "Functie moet minder dan 100 tekens zijn"
+        },
+        "workweekDuration": {
+          "label": "Werkweekduur (uren)",
+          "required": "Werkweekduur is verplicht",
+          "minHours": "Moet minimaal 1 uur zijn"
+        },
+        "weeklySchedule": {
+          "label": "Wekelijkse planning"
+        },
+        "workingHours": {
+          "label": "Werkuren"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Maandelijkse vergoeding (Excl. BTW)"
+        },
+        "payScale": {
+          "label": "Salarisschaal"
+        },
+        "payScaleStep": {
+          "label": "Salarisschaal Stap"
+        },
+        "hourlyWage100Percent": {
+          "label": "Uurloon (100%)"
+        },
+        "deviatingWage": {
+          "label": "Afwijkend loon"
+        },
+        "commuteKilometers": {
+          "label": "Woon-werkverkeer kilometers"
+        },
+        "travelExpenses": {
+          "label": "Reisuitgaven tarief"
+        },
+        "maxTravelExpenses": {
+          "label": "Maximale reisuitgaven"
+        },
+        "vacationAge": {
+          "label": "Vakantie leeftijdsdrempel"
+        },
+        "vacationDays": {
+          "label": "Vakantiedagen"
+        },
+        "atv": {
+          "label": "ATV (Verkorte werkuren)"
+        },
+        "vacationAllowance": {
+          "label": "Vakantietoeslag",
+          "maxPercent": "Moet 100% of minder zijn"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Maandelijkse Vergoeding (Incl. BTW)"
+        },
+        "remark": {
+          "label": "Opmerking",
+          "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over de chauffeur in..."
+        }
+      },
+      "validation": {
+        "positiveNumber": "Moet een positief getal zijn"
+      },
+      "periodOptions": {
+        "1": "1 maand",
+        "2": "2 maanden",
+        "3": "3 maanden",
+        "4": "4 maanden",
+        "5": "5 maanden",
+        "6": "6 maanden"
+      },
+      "documents": {
+        "description": "Upload chauffeurgerelateerde documenten zoals ID, rijbewijs, arbeidsovereenkomst, etc. Ondersteunde formaten: PDF, JPG, PNG (max 10MB per bestand)."
+      },
+      "buttons": {
+        "submit": "Chauffeur Aanmaken",
+        "submitting": "Chauffeur Aanmaken..."
+      },
+      "errors": {
+        "createFailed": "Chauffeur aanmaken mislukt.",
+        "noPermission": "U heeft geen toestemming om deze pagina te bekijken."
+      }
+    },
+    "detail": {
+      "title": "Chauffeurbeheer",
+      "sections": {
+        "general": "Algemene Informatie",
+        "employee": "Werknemersinformatie",
+        "employment": "Werkgelegenheidsdetails",
+        "workConditions": "Werkvoorwaarden",
+        "compensation": "Vergoeding",
+        "commute": "Woon-werkverkeer en Reisuitgaven",
+        "vacation": "Vakantie & Toeslagen",
+        "carAssignment": "Auto toewijzing",
+        "contractStatus": "Contractstatus",
+        "documents": "Chauffeurdocumenten",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "company": "Bedrijf",
+        "email": "E-mail",
+        "phone": "Telefoon",
+        "dateOfBirth": "Geboortedatum",
+        "address": "Adres",
+        "bsn": "BSN",
+        "function": "Functie",
+        "employmentDate": "Datum van indiensttreding",
+        "contractEndDate": "Contract einddatum",
+        "probationPeriod": "Proeftijd",
+        "noticePeriod": "Opzegtermijn",
+        "workweekDuration": "Werkweekduur",
+        "weeklySchedule": "Wekelijkse planning",
+        "workingHours": "Werkuren",
+        "payScale": "Salarisschaal",
+        "monthlyCompensationExcl": "Maandelijkse vergoeding (Excl. BTW)",
+        "monthlyCompensationIncl": "Maandelijkse vergoeding (Incl. BTW)",
+        "hourlyWage100Percent": "Uurloon (100%)",
+        "deviatingWage": "Afwijkend loon",
+        "commuteKilometers": "Woon-werkverkeer kilometers",
+        "travelExpensesRate": "Reisuitgaven tarief",
+        "maxTravelExpenses": "Maximale reisuitgaven",
+        "vacationAgeThreshold": "Vakantie leeftijdsdrempel",
+        "vacationDays": "Vakantiedagen",
+        "atv": "ATV (Verkorte werkuren)",
+        "vacationAllowance": "Vakantietoeslag",
+        "assignedCar": "Toegewezen auto",
+        "noCarAssigned": "Geen auto toegewezen",
+        "status": "Status",
+        "signedDate": "Ondertekende datum",
+        "accessCode": "Toegangscode"
+      },
+      "noRemark": "Geen opmerking opgegeven",
+      "noDocuments": "Geen documenten geüpload.",
+      "buttons": {
+        "edit": "Chauffeur Bewerken",
+        "delete": "Chauffeur Verwijderen"
+      },
+      "errors": {
+        "loadFailed": "Chauffeurdetails laden mislukt.",
+        "deleteFailed": "Chauffeur verwijderen mislukt."
+      },
+      "deleteConfirm": {
+        "title": "Chauffeur Beëindigen?",
+        "message": "Weet u zeker dat u {firstName} {lastName} wilt beëindigen? Dit zal hun account en contract deactiveren."
+      },
+      "notAvailable": "N/B"
+    },
+    "edit": {
+      "title": "Chauffeurcontract Bewerken",
+      "subtitle": "Werk de arbeidsovereenkomstinformatie bij voor {firstName} {lastName}. Zorg ervoor dat alle velden correct zijn ingevuld.",
+      "sections": {
+        "general": "Algemene Informatie",
+        "employee": "Werknemersinformatie",
+        "employment": "Werkgelegenheidsdetails",
+        "employmentDates": "Werkgelegenheidsdata",
+        "workConditions": "Werkvoorwaarden",
+        "compensation": "Vergoeding",
+        "commute": "Woon-werkverkeer en Reisuitgaven",
+        "vacation": "Vakantie & Toeslagen",
+        "documents": "Chauffeurdocumenten",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "company": {
+          "label": "Bedrijf"
+        },
+        "email": {
+          "label": "E-mail"
+        },
+        "phoneNumber": {
+          "label": "Telefoonnummer"
+        },
+        "firstName": {
+          "label": "Voornaam"
+        },
+        "lastName": {
+          "label": "Achternaam"
+        },
+        "dateOfBirth": {
+          "label": "Geboortedatum"
+        },
+        "address": {
+          "label": "Adres"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land"
+        },
+        "bsn": {
+          "label": "BSN"
+        },
+        "dateOfEmployment": {
+          "label": "Startdatum Dienstverband"
+        },
+        "lastWorkingDay": {
+          "label": "Einddatum Contract"
+        },
+        "probationPeriod": {
+          "label": "Proeftijd"
+        },
+        "noticePeriod": {
+          "label": "Opzegtermijn"
+        },
+        "function": {
+          "label": "Functie"
+        },
+        "workweekDuration": {
+          "label": "Werkweekduur (uren)"
+        },
+        "weeklySchedule": {
+          "label": "Weekrooster"
+        },
+        "workingHours": {
+          "label": "Werktijden"
+        },
+        "compensationPerMonthExclBtw": {
+          "label": "Maandelijkse Vergoeding (Excl. BTW)"
+        },
+        "monthlyCompensationIncl": {
+          "label": "Maandelijkse Vergoeding (Incl. BTW)"
+        },
+        "payScale": {
+          "label": "Salarisschaal"
+        },
+        "payScaleStep": {
+          "label": "Salarisschaal Stap"
+        },
+        "hourlyWage100Percent": {
+          "label": "Uurloon (100%)"
+        },
+        "deviatingWage": {
+          "label": "Afwijkend Loon"
+        },
+        "commuteKilometers": {
+          "label": "Woon-werkkilometers"
+        },
+        "travelExpenses": {
+          "label": "Reiskostenvergoeding"
+        },
+        "maxTravelExpenses": {
+          "label": "Maximale Reiskosten"
+        },
+        "vacationAge": {
+          "label": "Vakantie Leeftijdsgrens"
+        },
+        "vacationDays": {
+          "label": "Vakantiedagen"
+        },
+        "atv": {
+          "label": "ATV (Verminderde Werktijd)"
+        },
+        "vacationAllowance": {
+          "label": "Vakantietoeslag"
+        },
+        "remark": {
+          "label": "Opmerking"
+        }
+      },
+      "buttons": {
+        "submit": "Chauffeur Bijwerken",
+        "submitting": "Chauffeur Bijwerken..."
+      },
+      "errors": {
+        "loadFailed": "Chauffeurdetails laden mislukt. Probeer het later opnieuw.",
+        "updateFailed": "Chauffeur bijwerken mislukt.",
+        "noPermission": "U heeft geen toestemming om deze pagina te bekijken."
+      },
+      "documents": {
+        "current": "Huidige Documenten ({count})",
+        "uploadNew": "Extra Documenten Uploaden"
+      }
+    },
+    "card": {
+      "fields": {
+        "workweekDuration": "Werkweekduur",
+        "contractDate": "Contractdatum",
+        "nextContract": "Volgend Contract",
+        "payscaleIncrease": "Salarisschaal Verhoging",
+        "vacationHoursLeft": "Vakantie Uren Over"
+      },
+      "menu": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      },
+      "loading": "Laden...",
+      "notAvailable": "N/B",
+      "hours": "uur"
+    }
+  },
   "common": {
     "buttons": {
       "delete": "Verwijderen",

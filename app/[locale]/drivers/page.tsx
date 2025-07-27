@@ -4,6 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import DriverCard from '@/components/DriverCard';
@@ -13,10 +14,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import SyncIcon from "@mui/icons-material/Sync";
 import { DebouncedSearchInput } from "@/components/DebouncedSearchInput";
 import ConfirmModal from '@/components/ConfirmModal';
+import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 
 export default function DriversPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading } = useAuth();
+    const t = useTranslations();
     const { data: drivers, isLoading: isLoadingDrivers, isError: isErrorDrivers } = useDrivers();
     const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     
@@ -82,7 +85,7 @@ export default function DriversPage() {
     if (isErrorDrivers) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">Failed to load data. Please try again later.</Alert>
+                <Alert severity="error">{t('drivers.overview.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -91,13 +94,14 @@ export default function DriversPage() {
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Driver Management
+                    {t('drivers.title')}
                 </Typography>
+                <LanguageSelectDesktop/>
             </Box>
 
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h4" fontWeight={500}>
-                    Drivers Overview
+                    {t('drivers.overview.title')}
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                     {(isGlobalAdmin || isCustomerAdmin) && (
@@ -105,7 +109,7 @@ export default function DriversPage() {
                             variant="contained" 
                             onClick={() => router.push('/drivers/create')}
                         >
-                            Create Driver
+                            {t('drivers.overview.buttons.create')}
                         </Button>
                     )}
                     <IconButton onClick={handleRefetch}>
@@ -114,7 +118,7 @@ export default function DriversPage() {
                 </Box>
             </Box>
 
-            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Search drivers"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={t('drivers.overview.search.placeholder')} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
 
             <Grid container spacing={2}>
                 {(drivers || []).map((driver) => (
@@ -147,8 +151,8 @@ export default function DriversPage() {
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openDeleteModal}
-                title="Terminate Driver?"
-                message="Are you sure you want to terminate this driver? This will deactivate their account and contract."
+                title={t('drivers.detail.deleteConfirm.title')}
+                message={t('drivers.detail.deleteConfirm.message')}
                 onClose={() => {
                     if (!isDeleting) {
                         setOpenDeleteModal(false);
