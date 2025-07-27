@@ -18,6 +18,9 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useDrivers } from '@/hooks/useDrivers';
+import { useWeekStatus, WeekDetail } from '@/hooks/useWeekStatus';
+import { usePeriodStatus } from '@/hooks/usePeriodStatus';
+import { useDownloadWeekReport, useDownloadPeriodReport } from '@/hooks/useDownloadReports';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
 // Period options for the filter
@@ -37,6 +40,106 @@ const periodOptions = [
     { label: '2025-P-13', value: { year: 2025, periodNr: 13 } },
 ];
 
+// Component for individual week row with status checking
+function WeekReportRow({ 
+    weekNumber, 
+    driverId, 
+    driverName, 
+    year 
+}: { 
+    weekNumber: number; 
+    driverId: string; 
+    driverName: string; 
+    year: number; 
+}) {
+    console.log(`🎯 WeekReportRow - Component props:`, { 
+        weekNumber, 
+        driverId, 
+        driverName, 
+        year 
+    });
+    
+    const { data: weekData, isLoading, error } = useWeekStatus(year, weekNumber, driverId);
+    const downloadWeekReport = useDownloadWeekReport();
+    
+    // Backend uses numeric status: 2 = Signed
+    const weekDetail = weekData as WeekDetail | undefined;
+    
+    console.log(`📊 WeekReportRow - Hook results for week ${weekNumber}:`, {
+        isLoading,
+        hasData: !!weekData,
+        weekData,
+        weekStatus: weekDetail?.status,
+        error: error?.message
+    });
+    const isWeekSigned = weekDetail?.status === 2;
+    const signedDate = weekDetail?.driverSignedAt;
+    
+    const handleDownload = () => {
+        downloadWeekReport.mutate({
+            driverId,
+            year,
+            weekNumber
+        });
+    };
+
+    return (
+        <TableRow hover>
+            <TableCell sx={{ py: 2.6 }}>
+                Week {weekNumber}
+            </TableCell>
+            <TableCell sx={{ py: 2.6 }}>
+                {driverName}
+            </TableCell>
+            <TableCell sx={{ py: 2.6 }}>
+                {isLoading ? (
+                    <Typography variant="body2" color="text.secondary">
+                        Checking...
+                    </Typography>
+                ) : isWeekSigned && signedDate ? (
+                    <Typography variant="body2" color="success.main">
+                        {new Date(signedDate).toLocaleDateString()}
+                    </Typography>
+                ) : weekData ? (
+                    <Typography variant="body2" color="warning.main">
+                        {weekDetail?.status === 1 ? 'Pending signature' : 
+                         weekDetail?.status === 0 ? 'Pending admin' : 
+                         weekDetail?.status === 3 ? 'Invalidated' : 'Not signed'}
+                    </Typography>
+                ) : (
+                    <Typography variant="body2" color="text.secondary">
+                        Week not found
+                    </Typography>
+                )}
+            </TableCell>
+            <TableCell sx={{ py: 2.6 }}>
+                <Button 
+                    variant="outlined" 
+                    size="small"
+                    sx={{ minWidth: 'auto' }}
+                    disabled={!isWeekSigned || isLoading || downloadWeekReport.isPending}
+                    onClick={handleDownload}
+                >
+                    {downloadWeekReport.isPending 
+                        ? 'Downloading...' 
+                        : isLoading 
+                            ? 'Checking...'
+                            : isWeekSigned 
+                                ? 'Download Week Report'
+                                : weekDetail?.status === 1
+                                    ? 'Pending Signature'
+                                    : weekDetail?.status === 0
+                                        ? 'Pending Admin'
+                                        : weekDetail?.status === 3
+                                            ? 'Invalidated'
+                                            : 'Not Available'
+                    }
+                </Button>
+            </TableCell>
+        </TableRow>
+    );
+}
+
 export default function ReportsPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -47,6 +150,16 @@ export default function ReportsPage() {
     
     // Data hooks
     const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
+    
+    // Report hooks
+    const downloadWeekReport = useDownloadWeekReport();
+    const downloadPeriodReport = useDownloadPeriodReport();
+    
+    // Period status check (only when both driver and period are selected)
+    const { isPeriodSigned, isLoading: isPeriodLoading } = usePeriodStatus(
+        selectedPeriod?.value?.year || 0,
+        selectedPeriod?.value?.periodNr || 0
+    );
 
     // Access control
     useEffect(() => {
@@ -157,8 +270,24 @@ export default function ReportsPage() {
                                 Here's a breakdown of your work and earnings for this period.
                             </Typography>
                         </Box>
-                        <Button variant="contained" color="primary">
-                            Download Period Report
+                        <Button 
+                            variant="contained" 
+                            color="primary"
+                            disabled={!isPeriodSigned || isPeriodLoading || downloadPeriodReport.isPending}
+                            onClick={() => downloadPeriodReport.mutate({
+                                driverId: selectedDriver.id,
+                                year: selectedPeriod.value.year,
+                                periodNumber: selectedPeriod.value.periodNr
+                            })}
+                        >
+                            {downloadPeriodReport.isPending 
+                                ? 'Downloading...' 
+                                : isPeriodLoading 
+                                    ? 'Checking Status...'
+                                    : isPeriodSigned 
+                                        ? 'Download Period Report'
+                                        : 'Period Not Fully Signed'
+                            }
                         </Button>
                     </Box>
 
@@ -173,41 +302,39 @@ export default function ReportsPage() {
                                     <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
+                                                         <TableBody>
                                 {/* Generate 4 weeks for each period - using ISO week numbers */}
                                 {(() => {
                                     // Calculate approximate ISO week numbers based on period
                                     // This is a simplified calculation for display purposes
                                     const baseWeek = (selectedPeriod.value.periodNr - 1) * 4 + 1;
-                                    return [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
+                                    const weeks = [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
+                                    
+                                    console.log(`🗓️ ReportsPage - Generating weeks for period:`, {
+                                        selectedPeriod: selectedPeriod.value,
+                                        selectedDriver: {
+                                            id: selectedDriver.id,
+                                            name: selectedDriver?.user?.firstName + ' ' + selectedDriver?.user?.lastName
+                                        },
+                                        baseWeek,
+                                        weeks
+                                    });
+                                    
+                                    return weeks;
                                 })().map((weekNumber) => (
-                                    <TableRow key={weekNumber} hover>
-                                        <TableCell sx={{ py: 2.6 }}>
-                                            Week {weekNumber}
-                                        </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
-                                            {selectedDriver?.user?.firstName && selectedDriver?.user?.lastName 
+                                    <WeekReportRow
+                                        key={weekNumber}
+                                        weekNumber={weekNumber}
+                                        driverId={selectedDriver.id}
+                                        driverName={
+                                            selectedDriver?.user?.firstName && selectedDriver?.user?.lastName 
                                                 ? `${selectedDriver.user.firstName} ${selectedDriver.user.lastName}`
                                                 : 'Unknown Driver'
-                                            }
-                                        </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
-                                            <Typography variant="body2" color="text.secondary">
-                                                Not signed
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell sx={{ py: 2.6 }}>
-                                            <Button 
-                                                variant="outlined" 
-                                                size="small"
-                                                sx={{ minWidth: 'auto' }}
-                                            >
-                                                Download Week Report
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
+                                        }
+                                        year={selectedPeriod.value.year}
+                                    />
                                 ))}
-                            </TableBody>
+                             </TableBody>
                         </Table>
                     </TableContainer>
                 </>
