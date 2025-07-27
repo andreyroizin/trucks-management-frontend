@@ -122,6 +122,14 @@ export default function DriverCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">Function</Typography>
+                                </td>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">{contractData?.function || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">Workweek Duration</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
