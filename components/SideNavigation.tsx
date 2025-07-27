@@ -77,7 +77,7 @@ export default function SideNavigation() {
     const fullName = user ? `${user.firstName} ${user.lastName}` : 'My Profile';
     /* expansion states */
     const [workdaysOpen, setWorkdaysOpen] = React.useState<boolean>(true);
-    const [reportsOpen, setReportsOpen] = React.useState<boolean>(false);
+
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -184,26 +184,11 @@ export default function SideNavigation() {
                     <ListItemText primary="Companies"/>
                 </NavItem>
 
-                {/* Reports parent */}
-                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathNoLocale.startsWith('/reports')} main>
+                {/* Reports */}
+                <NavItem active={isActive('/reports')} main onClick={() => go('/reports')}>
                     <ListItemIcon><AssessmentIcon/></ListItemIcon>
                     <ListItemText primary="Reports"/>
-                    <KeyboardArrowDown
-                        sx={{transform: reportsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
-                    />
                 </NavItem>
-
-                {/* Reports children */}
-                <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
-                    <List disablePadding>
-                        <NavItem active={isActive('/reports/earnings')} onClick={() => go('/')} sx={{pl: 6}}>
-                            <ListItemText primary="Earnings"/>
-                        </NavItem>
-                        <NavItem active={isActive('/reports/time')} onClick={() => go('/')} sx={{pl: 6}}>
-                            <ListItemText primary="Time Reports"/>
-                        </NavItem>
-                    </List>
-                </Collapse>
 
                 <Divider sx={{my: 3}}/>
 
