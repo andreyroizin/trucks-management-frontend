@@ -741,11 +741,18 @@ export default function EditDriverPage() {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     label="Workweek Duration Percentage"
-                                    value={workweekPercentage ? `${workweekPercentage}%` : ''}
-                                    disabled
+                                    value={`${workweekPercentage}%`}
                                     fullWidth
                                     margin="normal"
                                     variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: 'grey.50',
+                                        },
+                                    }}
                                 />
                             </Grid>
 
@@ -815,11 +822,18 @@ export default function EditDriverPage() {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     label="Monthly Compensation (Incl. VAT)"
-                                    value={monthlyCompensationInclVat ? `€${monthlyCompensationInclVat.toFixed(2)}` : ''}
-                                    disabled
+                                    value={monthlyCompensationInclVat.toFixed(2)}
                                     fullWidth
                                     margin="normal"
                                     variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: 'grey.50',
+                                        },
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
