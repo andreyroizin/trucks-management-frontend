@@ -124,14 +124,6 @@ export default function DriverCard({
                             <tbody>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Function</Typography>
-                                </td>
-                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{contractData?.function || (isLoading ? 'Loading...' : 'N/A')}</Typography>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">Workweek Duration</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
@@ -142,18 +134,31 @@ export default function DriverCard({
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Weekly Schedule</Typography>
+                                    <Typography variant="caption">Contract Date</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{contractData?.weeklySchedule || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                    <Typography variant="caption">{formatDate(contractData?.dateOfEmployment) || (isLoading ? 'Loading...' : 'N/A')}</Typography>
                                 </td>
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">Working Hours</Typography>
+                                    <Typography variant="caption">Next Contract</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{contractData?.workingHours || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                    <Typography variant="caption">{formatDate(contractData?.lastWorkingDay) || (isLoading ? 'Loading...' : 'N/A')}</Typography>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
+                                    <Typography variant="caption">Payscale Increase</Typography>
+                                </td>
+                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
+                                    <Typography variant="caption">
+                                        {(contractData?.payScale && contractData?.payScaleStep) 
+                                            ? `${contractData.payScale}${contractData.payScaleStep}`
+                                            : contractData?.payScale || (isLoading ? 'Loading...' : 'N/A')
+                                        }
+                                    </Typography>
                                 </td>
                             </tr>
                             <tr>
@@ -164,14 +169,6 @@ export default function DriverCard({
                                     <Typography variant="caption">
                                         {contractData?.vacationHoursLeft !== undefined ? `${contractData.vacationHoursLeft} hours` : (isLoading ? 'Loading...' : 'N/A')}
                                     </Typography>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap'}}>
-                                    <Typography variant="caption">Contract End Date</Typography>
-                                </td>
-                                <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{formatDate(contractData?.lastWorkingDay) || (isLoading ? 'Loading...' : 'N/A')}</Typography>
                                 </td>
                             </tr>
                             </tbody>
