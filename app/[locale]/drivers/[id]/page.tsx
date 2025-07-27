@@ -18,6 +18,7 @@ import {
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useDriverWithContract } from '@/hooks/useDriverWithContract';
+import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -26,6 +27,7 @@ export default function DriverDetailPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: driver, isLoading, isError, error } = useDriverWithContract(id as string);
+    const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
@@ -43,12 +45,11 @@ export default function DriverDetailPage() {
         }
     }, [authLoading, isAuthenticated, router, user?.roles]);
 
-    // Handle Delete - TODO: Implement when backend provides delete endpoint
+    // Handle Delete
     const handleDelete = async () => {
         setDeleteErrorMsg(null);
         try {
-            // TODO: Implement driver deletion
-            console.log('Delete driver:', id);
+            await deleteDriver(id as string);
             setOpenModal(false);
             router.push('/drivers');
         } catch (err: any) {
@@ -140,6 +141,7 @@ export default function DriverDetailPage() {
                             <IconButton
                                 size="large"
                                 onClick={() => setOpenModal(true)}
+                                disabled={isDeleting}
                                 sx={{
                                     bgcolor: 'grey.800',
                                     color: 'common.white',
@@ -425,9 +427,9 @@ export default function DriverDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Driver?"
-                message="Are you sure you want to delete this driver? This action cannot be undone."
-                onClose={() => setOpenModal(false)}
+                title="Terminate Driver?"
+                message={`Are you sure you want to terminate ${driver?.firstName} ${driver?.lastName}? This will deactivate their account and contract.`}
+                onClose={() => !isDeleting && setOpenModal(false)}
                 onConfirm={handleDelete}
             />
         </Box>

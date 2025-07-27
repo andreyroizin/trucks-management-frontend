@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDrivers } from '@/hooks/useDrivers';
+import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import DriverCard from '@/components/DriverCard';
 import { CircularProgress, Typography, Alert, Box, Button, Grid, IconButton, TablePagination } from '@mui/material';
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +18,7 @@ export default function DriversPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading } = useAuth();
     const { data: drivers, isLoading: isLoadingDrivers, isError: isErrorDrivers } = useDrivers();
+    const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     
     const queryClient = useQueryClient();
     
@@ -60,9 +62,7 @@ export default function DriversPage() {
     const confirmDelete = async () => {
         if (driverToDelete) {
             try {
-                // TODO: Implement driver deletion when backend provides the endpoint
-                console.log('Delete driver:', driverToDelete);
-                queryClient.invalidateQueries({ queryKey: ['drivers'] });
+                await deleteDriver(driverToDelete);
                 setOpenDeleteModal(false);
                 setDriverToDelete(null);
             } catch (error) {
@@ -147,11 +147,13 @@ export default function DriversPage() {
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openDeleteModal}
-                title="Delete Driver?"
-                message="Are you sure you want to delete this driver? This action cannot be undone."
+                title="Terminate Driver?"
+                message="Are you sure you want to terminate this driver? This will deactivate their account and contract."
                 onClose={() => {
-                    setOpenDeleteModal(false);
-                    setDriverToDelete(null);
+                    if (!isDeleting) {
+                        setOpenDeleteModal(false);
+                        setDriverToDelete(null);
+                    }
                 }}
                 onConfirm={confirmDelete}
             />
