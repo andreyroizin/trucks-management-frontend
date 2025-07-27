@@ -167,7 +167,7 @@ export default function DriverCard({
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
                                     <Typography variant="caption">
-                                        {contractData?.vacationHoursLeft !== undefined ? `${contractData.vacationHoursLeft} hours` : (isLoading ? 'Loading...' : 'N/A')}
+                                        {contractData?.vacationHoursLeft !== undefined ? `${Number(contractData.vacationHoursLeft).toFixed(2)} hours` : (isLoading ? 'Loading...' : 'N/A')}
                                     </Typography>
                                 </td>
                             </tr>
