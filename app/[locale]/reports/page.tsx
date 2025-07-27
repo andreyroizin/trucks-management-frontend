@@ -117,9 +117,23 @@ export default function ReportsPage() {
                 </Box>
             </Box>
 
+            {/* Table Section */}
+            <Box sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 3
+            }}>
+                <Typography variant="h4" fontWeight={500}>
+                    Periods Reports List
+                </Typography>
+            </Box>
+
             {/* Content Area */}
             {!selectedDriver || !selectedPeriod ? (
-                <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Box sx={{ py: 4 }}>
                     <Typography variant="body1" color="text.secondary">
                         Choose Driver and Period first, to find the report.
                     </Typography>
@@ -160,8 +174,13 @@ export default function ReportsPage() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {/* Generate 4 weeks for each period */}
-                                {[1, 2, 3, 4].map((weekNumber) => (
+                                {/* Generate 4 weeks for each period - using ISO week numbers */}
+                                {(() => {
+                                    // Calculate approximate ISO week numbers based on period
+                                    // This is a simplified calculation for display purposes
+                                    const baseWeek = (selectedPeriod.value.periodNr - 1) * 4 + 1;
+                                    return [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
+                                })().map((weekNumber) => (
                                     <TableRow key={weekNumber} hover>
                                         <TableCell sx={{ py: 2.6 }}>
                                             Week {weekNumber}
