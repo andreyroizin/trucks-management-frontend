@@ -1267,5 +1267,28 @@
       "delete": "Verwijderen",
       "cancel": "Annuleren"
     }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "workdays": {
+      "title": "Werkdagen",
+      "overviewList": "Overzichtslijst",
+      "disputesList": "Geschillenlijst",
+      "weeksToSubmit": "In te dienen weken"
+    },
+    "drivers": "Chauffeurs",
+    "vehicles": "Voertuigen",
+    "clients": "Klanten",
+    "companies": "Bedrijven",
+    "reports": "Rapporten",
+    "settings": "Instellingen",
+    "createNewWorkday": "Nieuwe Werkdag Aanmaken",
+    "profile": {
+      "title": "Profiel",
+      "menu": {
+        "profile": "Profiel",
+        "logout": "Uitloggen"
+      }
+    }
   }
 }

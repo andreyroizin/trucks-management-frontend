@@ -1267,5 +1267,28 @@
       "delete": "Изтриване",
       "cancel": "Отказ"
     }
+  },
+  "navigation": {
+    "dashboard": "Табло",
+    "workdays": {
+      "title": "Работни дни",
+      "overviewList": "Преглед на списъка",
+      "disputesList": "Списък със спорове",
+      "weeksToSubmit": "Седмици за изпращане"
+    },
+    "drivers": "Шофьори",
+    "vehicles": "Превозни средства",
+    "clients": "Клиенти",
+    "companies": "Компании",
+    "reports": "Отчети",
+    "settings": "Настройки",
+    "createNewWorkday": "Създаване на нов работен ден",
+    "profile": {
+      "title": "Профил",
+      "menu": {
+        "profile": "Профил",
+        "logout": "Излизане"
+      }
+    }
   }
 }

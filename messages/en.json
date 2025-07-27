@@ -1267,5 +1267,28 @@
       "delete": "Delete",
       "cancel": "Cancel"
     }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "workdays": {
+      "title": "Workdays",
+      "overviewList": "Overview List",
+      "disputesList": "Disputes List",
+      "weeksToSubmit": "Weeks to Submit"
+    },
+    "drivers": "Drivers",
+    "vehicles": "Vehicles",
+    "clients": "Clients",
+    "companies": "Companies",
+    "reports": "Reports",
+    "settings": "Settings",
+    "createNewWorkday": "Create New Workday",
+    "profile": {
+      "title": "Profile",
+      "menu": {
+        "profile": "Profile",
+        "logout": "Log out"
+      }
+    }
   }
 }
