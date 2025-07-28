@@ -65,6 +65,11 @@ const getPeriodOptions = (t: any) => [
     { value: '6', label: t('drivers.create.periodOptions.6') },
 ];
 
+const getProbationPeriodOptions = (t: any) => [
+    { value: '0', label: '0 months' },
+    { value: '1', label: '1 month' },
+];
+
 export default function CreateDriverPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -73,6 +78,7 @@ export default function CreateDriverPage() {
     const t = useTranslations();
     
     const periodOptions = getPeriodOptions(t);
+    const probationPeriodOptions = getProbationPeriodOptions(t);
     
     const schema = yup.object().shape({
         CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
@@ -566,7 +572,7 @@ export default function CreateDriverPage() {
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
-                                            options={periodOptions}
+                                            options={probationPeriodOptions}
                                             getOptionLabel={(option) => option.label}
                                             onChange={(_, value) => field.onChange(value?.value || '')}
                                             renderInput={(params) => (
@@ -581,7 +587,7 @@ export default function CreateDriverPage() {
                                                 />
                                             )}
                                             value={
-                                                periodOptions.find(option => option.value === field.value) || null
+                                                probationPeriodOptions.find(option => option.value === field.value) || null
                                             }
                                             isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />

@@ -68,6 +68,11 @@ const getPeriodOptions = (t: any) => [
     { value: '6', label: t('drivers.create.periodOptions.6') },
 ];
 
+const getProbationPeriodOptions = (t: any) => [
+    { value: '0', label: '0 months' },
+    { value: '1', label: '1 month' },
+];
+
 export default function EditDriverPage() {
     const { id } = useParams();
     const router = useRouter();
@@ -75,6 +80,7 @@ export default function EditDriverPage() {
     const t = useTranslations();
     
     const periodOptions = getPeriodOptions(t);
+    const probationPeriodOptions = getProbationPeriodOptions(t);
     
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const {
@@ -632,7 +638,7 @@ export default function EditDriverPage() {
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
-                                            options={periodOptions}
+                                            options={probationPeriodOptions}
                                             getOptionLabel={(option) => option.label}
                                             onChange={(_, value) => field.onChange(value?.value || '')}
                                             renderInput={(params) => (
@@ -647,7 +653,7 @@ export default function EditDriverPage() {
                                                 />
                                             )}
                                             value={
-                                                periodOptions.find(option => option.value === field.value) || null
+                                                probationPeriodOptions.find(option => option.value === field.value) || null
                                             }
                                             isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
