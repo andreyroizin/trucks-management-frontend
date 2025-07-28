@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import * as yup from 'yup';
 import {useRouter} from "next/navigation";
+import { getCurrentUser } from '@/utils/api';
 
 // Validation schema
 const loginSchema = yup.object().shape({
@@ -37,7 +38,12 @@ export default function LoginForm() {
             if (!response.isSuccess) {
                 setApiError(response.errors?.[0] || 'Unknown error occurred');
             } else {
-                router.push('/'); // Redirect to the home page
+                const user = await getCurrentUser();
+                if (user.roles.includes('driver')) {
+                    router.push('/dashboard/driver');
+                } else {
+                    router.push('/');
+                }
             }
         } catch (error: any) {
             console.error('Error:', error);
