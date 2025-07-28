@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import {
     Box,
@@ -52,7 +52,6 @@ type FormInputs = {
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
-    Atv?: number;                           // Optional - backend: atv
     Remark?: string;                        // Optional - backend: remark
 };
 
@@ -114,7 +113,6 @@ export default function EditDriverPage() {
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        Atv: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         Remark: yup.string().optional(),
     });
 
@@ -153,7 +151,6 @@ export default function EditDriverPage() {
             PayScale: '',
             PayScaleStep: undefined,
             CommuteKilometers: undefined,
-            Atv: undefined,
             Remark: '',
         },
     });
@@ -170,6 +167,20 @@ export default function EditDriverPage() {
     const payScaleStep = watch('PayScaleStep');
     const hourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
     const availableSteps = getAvailableSteps(payScale || '');
+
+    // Calculate ATV based on workweek duration
+    const calculateATV = (workweekDuration: number): number => {
+        if (!workweekDuration || workweekDuration <= 0) return 0;
+        if (workweekDuration >= 40) return 104;
+        // Proportional calculation: (workweekDuration / 40) * 104
+        return Math.round((workweekDuration / 40) * 104);
+    };
+
+    // Watch workweek duration to calculate ATV
+    const watchedWorkweekDuration = watch('WorkweekDuration');
+    const calculatedATV = useMemo(() => {
+        return calculateATV(watchedWorkweekDuration || 0);
+    }, [watchedWorkweekDuration]);
 
     // Pre-fill form when driver data is loaded
     useEffect(() => {
@@ -197,7 +208,6 @@ export default function EditDriverPage() {
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
-                Atv: driverData.atv ? Number(driverData.atv) : undefined,
                 Remark: driverData.remark || '',
             });
         }
@@ -268,7 +278,7 @@ export default function EditDriverPage() {
                 payScaleStep: cleanedData.PayScaleStep,
                 hourlyWage100Percent: cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined,
                 commuteKilometers: cleanedData.CommuteKilometers,
-                atv: cleanedData.Atv,
+                atv: calculateATV(cleanedData.WorkweekDuration || 0),
                 remark: cleanedData.Remark,
                 // Include file operations
                 newUploads: newUploads,
@@ -896,22 +906,21 @@ export default function EditDriverPage() {
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
-                                <Controller
-                                    name="Atv"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.atv.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.Atv}
-                                            helperText={errors.Atv?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
+                                <TextField
+                                    label={t('drivers.edit.fields.atv.label')}
+                                    type="number"
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                    value={calculatedATV}
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: '#f5f5f5',
+                                        },
+                                    }}
                                 />
                             </Grid>
                         </Grid>
