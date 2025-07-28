@@ -3,6 +3,7 @@
 import {useAuth} from '@/hooks/useAuth';
 import {useRouter} from 'next/navigation';
 import {useEffect} from 'react';
+import {useTranslations} from 'next-intl';
 import {
     Box,
     Card,
@@ -17,6 +18,7 @@ import {
 export default function ProfilePage() {
     const {user, isAuthenticated, loading} = useAuth();
     const router = useRouter();
+    const t = useTranslations('profile');
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
@@ -82,43 +84,43 @@ export default function ProfilePage() {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Company:</strong> {user?.companyId}
+                                <strong>{t('fields.company')}:</strong> {user?.companyId}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Roles:</strong>{' '}
-                                {user?.roles && user?.roles.length > 0 ? user.roles.join(', ') : 'No roles assigned'}
+                                <strong>{t('fields.roles')}:</strong>{' '}
+                                {user?.roles && user?.roles.length > 0 ? user.roles.join(', ') : t('noRolesAssigned')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Postcode:</strong> {user?.postcode || 'N/A'}
+                                <strong>{t('fields.postcode')}:</strong> {user?.postcode || t('notAvailable')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Phone Number:</strong> {user?.phoneNumber || 'N/A'}
+                                <strong>{t('fields.phoneNumber')}:</strong> {user?.phoneNumber || t('notAvailable')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Address:</strong> {user?.address || 'N/A'}
+                                <strong>{t('fields.address')}:</strong> {user?.address || t('notAvailable')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>City:</strong> {user?.city || 'N/A'}
+                                <strong>{t('fields.city')}:</strong> {user?.city || t('notAvailable')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Country:</strong> {user?.country || 'N/A'}
+                                <strong>{t('fields.country')}:</strong> {user?.country || t('notAvailable')}
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2" color="text.secondary">
-                                <strong>Remark:</strong> {user?.remark || 'N/A'}
+                                <strong>{t('fields.remark')}:</strong> {user?.remark || t('notAvailable')}
                             </Typography>
                         </Grid>
                     </Grid>

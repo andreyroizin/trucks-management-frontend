@@ -4678,5 +4678,20 @@
         "labelRowsPerPage": "Rijen per pagina:"
       }
     }
+  },
+  "profile": {
+    "title": "Profiel",
+    "fields": {
+      "company": "Bedrijf",
+      "roles": "Rollen",
+      "postcode": "Postcode",
+      "phoneNumber": "Telefoonnummer",
+      "address": "Adres",
+      "city": "Stad",
+      "country": "Land",
+      "remark": "Opmerking"
+    },
+    "noRolesAssigned": "Geen rollen toegewezen",
+    "notAvailable": "N.v.t."
   }
 }

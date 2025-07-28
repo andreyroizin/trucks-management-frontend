@@ -2019,5 +2019,20 @@
         "updateFailed": "Failed to update contract"
       }
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "fields": {
+      "company": "Company",
+      "roles": "Roles",
+      "postcode": "Postcode",
+      "phoneNumber": "Phone Number",
+      "address": "Address",
+      "city": "City",
+      "country": "Country",
+      "remark": "Remark"
+    },
+    "noRolesAssigned": "No roles assigned",
+    "notAvailable": "N/A"
   }
 }

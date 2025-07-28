@@ -2462,5 +2462,20 @@
         "labelRowsPerPage": "Редове на страница:"
       }
     }
+  },
+  "profile": {
+    "title": "Профил",
+    "fields": {
+      "company": "Компания",
+      "roles": "Роли",
+      "postcode": "Пощенски код",
+      "phoneNumber": "Телефонен номер",
+      "address": "Адрес",
+      "city": "Град",
+      "country": "Държава",
+      "remark": "Забележка"
+    },
+    "noRolesAssigned": "Няма присвоени роли",
+    "notAvailable": "Няма данни"
   }
 }
