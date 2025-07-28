@@ -174,6 +174,80 @@
     }
   },
   "partrides": {
+    "page": {
+      "title": "Управление на Работни Дни",
+      "filters": {
+        "weeks": "Седмица(и)",
+        "weekdays": "Делничен Ден(и)",
+        "statuses": "Статуси",
+        "vehicles": "Превозни Средства",
+        "drivers": "Шофьори",
+        "clients": "Клиенти",
+        "startDate": "Начална дата",
+        "endDate": "Крайна дата",
+        "weekdayOptions": {
+          "monday": "Понеделник",
+          "tuesday": "Вторник",
+          "wednesday": "Сряда",
+          "thursday": "Четвъртък",
+          "friday": "Петък",
+          "saturday": "Събота",
+          "sunday": "Неделя"
+        },
+        "statusOptions": {
+          "pendingAdmin": "В очакване на Админ",
+          "dispute": "Спор",
+          "accepted": "Приет",
+          "rejected": "Отхвърлен"
+        }
+      },
+      "table": {
+        "title": "Преглед на Списъка",
+        "headers": {
+          "date": "Дата",
+          "week": "Седмица",
+          "hoursCode": "Код на часове",
+          "driver": "Шофьор",
+          "hours": "Часове",
+          "statuses": "Статуси",
+          "actions": "Действия"
+        },
+        "noData": "Няма намерени записи.",
+        "loading": "Зареждане...",
+        "notAvailable": "Н/Д"
+      },
+      "bulkActions": {
+        "selected": "избрани",
+        "approve": "Одобри",
+        "reject": "Отхвърли",
+        "delete": "Изтрий"
+      },
+      "messages": {
+        "approvedSelected": "Одобрени избрани работни дни",
+        "rejectedSelected": "Отхвърлени избрани работни дни",
+        "deletedWorkday": "Изтрит работен ден",
+        "approveSuccess": "Работен ден одобрен",
+        "rejectSuccess": "Работен ден отхвърлен",
+        "approveFailed": "Одобрението неуспешно",
+        "rejectFailed": "Отхвърлянето неуспешно",
+        "deleteFailed": "Изтриването на работния ден неуспешно",
+        "approveSelectedFailed": "Неуспешно одобрение на един или повече работни дни",
+        "rejectSelectedFailed": "Неуспешно отхвърляне на един или повече работни дни",
+        "errorOccurred": "Възникна грешка при извличане на данните."
+      },
+      "confirmDelete": {
+        "title": "Потвърждение за Изтриване",
+        "message": "Сигурни ли сте, че искате да изтриете тази поездка?",
+        "confirmButton": "Изтрий",
+        "cancelButton": "Отказ"
+      },
+      "confirmBulkDelete": {
+        "title": "Потвърждение за Масово Изтриване",
+        "message": "Сигурни ли сте, че искате да изтриете {count} работни дни?",
+        "confirmButton": "Изтрий",
+        "cancelButton": "Отказ"
+      }
+    },
     "status": {
       "pendingAdmin": "В изчакване",
       "dispute": "Спор",
@@ -444,6 +518,52 @@
         "actions": {
           "edit": "Редактирай работния ден",
           "delete": "Изтрий работния ден"
+        }
+      }
+    },
+    "components": {
+      "actions": {
+        "approve": "Одобри",
+        "openDispute": "Отвори Спор",
+        "reject": "Отхвърли",
+        "editWorkday": "Редактирай Работен Ден",
+        "deleteWorkday": "Изтрий Работен Ден"
+      },
+      "status": {
+        "pendingAdmin": "В очакване на Админ",
+        "dispute": "Спор",
+        "accepted": "Приет",
+        "rejected": "Отхвърлен"
+      },
+      "disputeDialog": {
+        "title": "Спор",
+        "description": "Използвайте този формуляр, за да коригирате детайлите на работния ден и да обясните корекцията на шофьора. Всички полета трябва да бъдат попълнени точно.",
+        "sections": {
+          "driverVehicleInfo": "Информация за Шофьор и Превозно Средство",
+          "loggedTime": "Записано Време",
+          "disputeQuestion": "Какво искате да оспорите?",
+          "commentary": "Вашият коментар?"
+        },
+        "fields": {
+          "assignedDriver": "Назначен Шофьор:",
+          "auto": "Автомобил:",
+          "totalHours": "Общо Часове",
+          "date": "Дата",
+          "start": "Начало",
+          "end": "Край",
+          "restTime": "Време за Почивка",
+          "hoursCorrection": "Корекция на Часове",
+          "hoursCorrectionHelper": "Коригирайте окончателните работни часове, използвайки десетични + или – стойности. Началното и крайното време остават непроменени.",
+          "explainIssue": "Обяснете проблема",
+          "commentaryDescription": "Предоставете ясна причина за тази корекция, за да помогнете на шофьора да разбере промяната."
+        },
+        "buttons": {
+          "submit": "Изпрати",
+          "cancel": "Отказ"
+        },
+        "messages": {
+          "submitError": "Неуспешно създаване на спор. Моля, опитайте отново.",
+          "notAvailable": "Н/Д"
         }
       }
     }
@@ -1875,6 +1995,437 @@
       "errors": {
         "loadFailed": "Неуспешно зареждане на детайли за договор",
         "updateFailed": "Неуспешно обновяване на договор"
+      }
+    }
+  },
+  "partrides": {
+    "page": {
+      "title": "Управление на Работни Дни",
+      "filters": {
+        "weeks": "Седмица/и",
+        "weekdays": "Ден/и от седмицата",
+        "statuses": "Статуси",
+        "vehicles": "Превозни средства",
+        "drivers": "Шофьори",
+        "clients": "Клиенти",
+        "startDate": "Начална дата",
+        "endDate": "Крайна дата",
+        "weekdayOptions": {
+          "monday": "Понеделник",
+          "tuesday": "Вторник",
+          "wednesday": "Сряда",
+          "thursday": "Четвъртък",
+          "friday": "Петък",
+          "saturday": "Събота",
+          "sunday": "Неделя"
+        },
+        "statusOptions": {
+          "pendingAdmin": "Очаква Администратор",
+          "dispute": "Спор",
+          "accepted": "Приет",
+          "rejected": "Отхвърлен"
+        }
+      },
+      "table": {
+        "title": "Списък с Преглед",
+        "headers": {
+          "date": "Дата",
+          "week": "Седмица",
+          "hoursCode": "Код на часове",
+          "driver": "Шофьор",
+          "hours": "Часове",
+          "statuses": "Статуси",
+          "actions": "Действия"
+        },
+        "noData": "Няма намерени записи.",
+        "loading": "Зареждане...",
+        "notAvailable": "Н/Д"
+      },
+      "bulkActions": {
+        "selected": "избрани",
+        "approve": "Одобряване",
+        "reject": "Отхвърляне",
+        "delete": "Изтриване"
+      },
+      "messages": {
+        "approvedSelected": "Избраните работни дни са одобрени",
+        "rejectedSelected": "Избраните работни дни са отхвърлени",
+        "deletedWorkday": "Работният ден е изтрит",
+        "approveSuccess": "Работният ден е одобрен",
+        "rejectSuccess": "Работният ден е отхвърлен",
+        "approveFailed": "Одобряването е неуспешно",
+        "rejectFailed": "Отхвърлянето е неуспешно",
+        "deleteFailed": "Изтриването на работния ден е неуспешно",
+        "approveSelectedFailed": "Одобряването на един или повече работни дни е неуспешно",
+        "rejectSelectedFailed": "Отхвърлянето на един или повече работни дни е неуспешно",
+        "errorOccurred": "Възникна грешка при извличането на данни."
+      },
+      "confirmDelete": {
+        "title": "Потвърждение за Изтриване",
+        "message": "Сигурни ли сте, че искате да изтриете тази поездка?",
+        "confirmButton": "Изтриване",
+        "cancelButton": "Отказ"
+      },
+      "confirmBulkDelete": {
+        "title": "Потвърждение за Масово Изтриване",
+        "message": "Сигурни ли сте, че искате да изтриете {count} работни дни?",
+        "confirmButton": "Изтриване",
+        "cancelButton": "Отказ"
+      }
+    },
+    "create": {
+      "title": "Създаване на Работен Ден",
+      "submitTitle": "Създаване на Работен Ден",
+      "subtitle": "Попълнете формуляра по-долу, за да създадете нов запис за работен ден",
+      "submitButton": "Създаване на Работен Ден",
+      "backButton": "Назад към Работни Дни",
+      "saveButton": "Създаване на Работен Ден",
+      "cancelButton": "Отказ",
+      "sections": {
+        "basicInfo": "Основна Информация",
+        "timeAndLocation": "Време и Местоположение",
+        "financialInfo": "Финансова Информация",
+        "additionalInfo": "Допълнителна Информация",
+        "fileUploads": "Качване на Файлове"
+      },
+      "form": {
+        "section": {
+          "dateTime": "Дата и Час",
+          "specialHours": "Специални Часове",
+          "additionalFields": "Допълнителни Полета",
+          "distance": "Разстояние",
+          "expenses": "Разходи",
+          "uploadReceipts": "Качване на Разписки",
+          "comments": "Коментари"
+        },
+        "date": {
+          "label": "Дата",
+          "placeholder": "Изберете дата",
+          "helperText": "Изберете датата за този работен ден"
+        },
+        "startTime": {
+          "label": "Начален Час",
+          "placeholder": "08:00",
+          "helperText": "Въведете начален час (ЧЧ:ММ)"
+        },
+        "endTime": {
+          "label": "Краен Час", 
+          "placeholder": "17:00",
+          "helperText": "Въведете краен час (ЧЧ:ММ)"
+        },
+        "rest": {
+          "label": "Време за Почивка",
+          "placeholder": "00:30",
+          "helperText": "Въведете време за почивка (ЧЧ:ММ)"
+        },
+        "driver": {
+          "label": "Шофьор",
+          "placeholder": "Изберете шофьор",
+          "helperText": "Изберете шофьора за този работен ден"
+        },
+        "hoursCode": {
+          "label": "Код на Часове",
+          "placeholder": "Изберете код на часове"
+        },
+        "hoursOption": {
+          "label": "Опция за Часове",
+          "placeholder": "Изберете опция за часове"
+        },
+        "company": {
+          "label": "Компания",
+          "placeholder": "Изберете компания",
+          "helperText": "Изберете компанията"
+        },
+        "client": {
+          "label": "Клиент",
+          "placeholder": "Изберете клиент",
+          "helperText": "Изберете клиента"
+        },
+        "car": {
+          "label": "Превозно Средство",
+          "placeholder": "Изберете превозно средство",
+          "helperText": "Изберете превозното средство"
+        },
+        "ride": {
+          "label": "Поездка",
+          "placeholder": "Изберете поездка",
+          "helperText": "Изберете поездката"
+        },
+        "charter": {
+          "label": "Чартър",
+          "placeholder": "Изберете чартър",
+          "helperText": "Изберете чартъра"
+        },
+        "weekNumber": {
+          "label": "Номер на Седмицата",
+          "placeholder": "Номер на седмицата",
+          "helperText": "Номер на седмицата (автоматично изчислен)"
+        },
+        "hoursCorrection": {
+          "label": "Корекция на Часове",
+          "placeholder": "0",
+          "helperText": "Корекция на часове при нужда"
+        },
+        "variousCompensation": {
+          "label": "Различни Компенсации",
+          "placeholder": "0",
+          "helperText": "Допълнителна компенсация"
+        },
+        "totalKilometers": {
+          "label": "Общо Километри",
+          "placeholder": "0",
+          "helperText": "Общо изминато разстояние"
+        },
+        "extraKilometers": {
+          "label": "Допълнителни Километри", 
+          "placeholder": "0",
+          "helperText": "Допълнително разстояние извън планирания маршрут"
+        },
+        "costs": {
+          "label": "Разходи",
+          "placeholder": "0",
+          "helperText": "Общи разходи за този работен ден"
+        },
+        "uploadReceipts": {
+          "helperText": "Качете разписки и документи"
+        },
+        "remark": {
+          "label": "Забележка",
+          "placeholder": "Въведете коментари",
+          "helperText": "Допълнителни бележки за този работен ден"
+        }
+      },
+      "fields": {
+        "date": {
+          "label": "Дата",
+          "required": "Датата е задължителна"
+        },
+        "start": {
+          "label": "Начален Час",
+          "required": "Началният час е задължителен"
+        },
+        "end": {
+          "label": "Краен Час",
+          "required": "Крайният час е задължителен"
+        },
+        "rest": {
+          "label": "Време за Почивка",
+          "required": "Времето за почивка е задължително"
+        },
+        "driver": {
+          "label": "Шофьор",
+          "placeholder": "Изберете шофьор"
+        },
+        "vehicle": {
+          "label": "Превозно Средство",
+          "placeholder": "Изберете превозно средство"
+        },
+        "client": {
+          "label": "Клиент",
+          "placeholder": "Изберете клиент"
+        },
+        "company": {
+          "label": "Компания",
+          "placeholder": "Изберете компания"
+        },
+        "ride": {
+          "label": "Поездка",
+          "placeholder": "Изберете поездка"
+        },
+        "charter": {
+          "label": "Чартър",
+          "placeholder": "Изберете чартър"
+        },
+        "hoursCode": {
+          "label": "Код на Часове",
+          "placeholder": "Изберете код на часове"
+        },
+        "hoursOption": {
+          "label": "Опция за Часове",
+          "placeholder": "Изберете опция за часове"
+        },
+        "totalKilometers": {
+          "label": "Общо Километри"
+        },
+        "extraKilometers": {
+          "label": "Допълнителни Километри"
+        },
+        "costs": {
+          "label": "Разходи"
+        },
+        "costsDescription": {
+          "label": "Описание на Разходите"
+        },
+        "turnover": {
+          "label": "Оборот"
+        },
+        "hoursCorrection": {
+          "label": "Корекция на Часове"
+        },
+        "variousCompensation": {
+          "label": "Различни Компенсации"
+        },
+        "weekNumber": {
+          "label": "Номер на Седмицата"
+        },
+        "remark": {
+          "label": "Забележка",
+          "placeholder": "Въведете допълнителни забележки"
+        }
+      },
+      "success": "Работният ден е създаден успешно!",
+      "error": "Създаването на работен ден е неуспешно. Моля, опитайте отново."
+    },
+    "edit": {
+      "title": "Редактиране на Работен Ден",
+      "backButton": "Назад към Работни Дни",
+      "saveButton": "Обновяване на Работен Ден",
+      "cancelButton": "Отказ",
+      "sections": {
+        "basicInfo": "Основна Информация",
+        "timeAndLocation": "Време и Местоположение",
+        "financialInfo": "Финансова Информация",
+        "additionalInfo": "Допълнителна Информация",
+        "fileUploads": "Качване на Файлове"
+      },
+      "fields": {
+        "date": {
+          "label": "Дата",
+          "required": "Датата е задължителна"
+        },
+        "start": {
+          "label": "Начален Час",
+          "required": "Началният час е задължителен"
+        },
+        "end": {
+          "label": "Краен Час",
+          "required": "Крайният час е задължителен"
+        },
+        "rest": {
+          "label": "Време за Почивка",
+          "required": "Времето за почивка е задължително"
+        },
+        "driver": {
+          "label": "Шофьор",
+          "placeholder": "Изберете шофьор"
+        },
+        "vehicle": {
+          "label": "Превозно Средство",
+          "placeholder": "Изберете превозно средство"
+        },
+        "client": {
+          "label": "Клиент",
+          "placeholder": "Изберете клиент"
+        },
+        "company": {
+          "label": "Компания",
+          "placeholder": "Изберете компания"
+        },
+        "ride": {
+          "label": "Поездка",
+          "placeholder": "Изберете поездка"
+        },
+        "charter": {
+          "label": "Чартър",
+          "placeholder": "Изберете чартър"
+        },
+        "hoursCode": {
+          "label": "Код на Часове",
+          "placeholder": "Изберете код на часове"
+        },
+        "hoursOption": {
+          "label": "Опция за Часове",
+          "placeholder": "Изберете опция за часове"
+        },
+        "totalKilometers": {
+          "label": "Общо Километри"
+        },
+        "extraKilometers": {
+          "label": "Допълнителни Километри"
+        },
+        "costs": {
+          "label": "Разходи"
+        },
+        "costsDescription": {
+          "label": "Описание на Разходите"
+        },
+        "turnover": {
+          "label": "Оборот"
+        },
+        "hoursCorrection": {
+          "label": "Корекция на Часове"
+        },
+        "variousCompensation": {
+          "label": "Различни Компенсации"
+        },
+        "weekNumber": {
+          "label": "Номер на Седмицата"
+        },
+        "remark": {
+          "label": "Забележка",
+          "placeholder": "Въведете допълнителни забележки"
+        }
+      },
+      "success": "Работният ден е обновен успешно!",
+      "error": "Обновяването на работен ден е неуспешно. Моля, опитайте отново.",
+      "loading": "Зареждане на детайли за работния ден...",
+      "notFound": "Работният ден не е намерен."
+    },
+    "common": {
+      "formValidation": {
+        "id": "ID е задължително",
+        "date": "Датата е задължителна",
+        "start": "Началният час е задължителен",
+        "end": "Крайният час е задължителен",
+        "rest": "Времето за почивка е задължително",
+        "driver": "Шофьорът е задължителен",
+        "hoursCode": "Кодът на часове е задължителен"
+      }
+    },
+    "components": {
+      "actions": {
+        "approve": "Одобряване",
+        "openDispute": "Отваряне на Спор",
+        "reject": "Отхвърляне",
+        "editWorkday": "Редактиране на Работен Ден",
+        "deleteWorkday": "Изтриване на Работен Ден"
+      },
+      "status": {
+        "pendingAdmin": "Очаква Администратор",
+        "dispute": "Спор",
+        "accepted": "Приет",
+        "rejected": "Отхвърлен"
+      },
+      "disputeDialog": {
+        "title": "Спор",
+        "description": "Използвайте този формуляр за коригиране на детайлите на работния ден и обяснете корекцията на шофьора. Всички полета трябва да бъдат попълнени точно.",
+        "sections": {
+          "driverVehicleInfo": "Информация за Шофьор и Превозно Средство",
+          "loggedTime": "Регистрирано Време",
+          "disputeQuestion": "Какво искате да оспорите?",
+          "commentary": "Вашият коментар?"
+        },
+        "fields": {
+          "assignedDriver": "Назначен Шофьор:",
+          "auto": "Автомобил:",
+          "totalHours": "Общо Часове",
+          "date": "Дата",
+          "start": "Начало",
+          "end": "Край",
+          "restTime": "Време за Почивка",
+          "hoursCorrection": "Корекция на Часове",
+          "hoursCorrectionHelper": "Коригирайте окончателните работни часове с десетични + или – стойности. Времената за започване и завършване остават непроменени.",
+          "explainIssue": "Обяснете проблема",
+          "commentaryDescription": "Предоставете ясна причина за тази корекция, за да помогнете на шофьора да разбере промяната."
+        },
+        "buttons": {
+          "submit": "Изпращане",
+          "cancel": "Отказ"
+        },
+        "messages": {
+          "submitError": "Създаването на спор е неуспешно. Моля, опитайте отново.",
+          "notAvailable": "Н/Д"
+        }
       }
     }
   }

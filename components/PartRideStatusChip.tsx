@@ -1,13 +1,22 @@
+'use client';
+
 import React from 'react';
 import StatusChip from '@/components/StatusChip';
 import { PartRideStatus } from '@/utils/partRideStatus';
+import { useTranslations } from 'next-intl';
 
-export const PartRideStatusChip = (status: PartRideStatus) => {
+interface PartRideStatusChipProps {
+    status: PartRideStatus;
+}
+
+export const PartRideStatusChip: React.FC<PartRideStatusChipProps> = ({ status }) => {
+    const t = useTranslations('partrides.components.status');
+    
     const map: Record<PartRideStatus, { label: string; variant: 'info' | 'warning' | 'success' | 'danger' }> = {
-        [PartRideStatus.PendingAdmin]: { label: 'Pending Admin', variant: 'info' },
-        [PartRideStatus.Dispute]:      { label: 'Dispute',       variant: 'warning' },
-        [PartRideStatus.Accepted]:     { label: 'Accepted',      variant: 'success' },
-        [PartRideStatus.Rejected]:     { label: 'Rejected',      variant: 'danger' },
+        [PartRideStatus.PendingAdmin]: { label: t('pendingAdmin'), variant: 'info' },
+        [PartRideStatus.Dispute]:      { label: t('dispute'),       variant: 'warning' },
+        [PartRideStatus.Accepted]:     { label: t('accepted'),      variant: 'success' },
+        [PartRideStatus.Rejected]:     { label: t('rejected'),      variant: 'danger' },
     };
 
     const conf = map[status] ?? map[PartRideStatus.PendingAdmin];

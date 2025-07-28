@@ -174,6 +174,80 @@
     }
   },
   "partrides": {
+    "page": {
+      "title": "Workdays Management",
+      "filters": {
+        "weeks": "Week(s)",
+        "weekdays": "Weekday(s)",
+        "statuses": "Statuses",
+        "vehicles": "Vehicles",
+        "drivers": "Drivers",
+        "clients": "Clients",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "weekdayOptions": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        },
+        "statusOptions": {
+          "pendingAdmin": "Pending Admin",
+          "dispute": "Dispute",
+          "accepted": "Accepted",
+          "rejected": "Rejected"
+        }
+      },
+      "table": {
+        "title": "Overview List",
+        "headers": {
+          "date": "Date",
+          "week": "Week",
+          "hoursCode": "Hours code",
+          "driver": "Driver",
+          "hours": "Hours",
+          "statuses": "Statuses",
+          "actions": "Actions"
+        },
+        "noData": "No records found.",
+        "loading": "Loading...",
+        "notAvailable": "N/A"
+      },
+      "bulkActions": {
+        "selected": "selected",
+        "approve": "Approve",
+        "reject": "Reject",
+        "delete": "Delete"
+      },
+      "messages": {
+        "approvedSelected": "Approved selected workdays",
+        "rejectedSelected": "Rejected selected workdays",
+        "deletedWorkday": "Deleted the workday",
+        "approveSuccess": "Workday approved",
+        "rejectSuccess": "Workday rejected",
+        "approveFailed": "Approve failed",
+        "rejectFailed": "Reject failed",
+        "deleteFailed": "Failed to delete the workday",
+        "approveSelectedFailed": "Failed to approve one or more workdays",
+        "rejectSelectedFailed": "Failed to reject one or more workdays",
+        "errorOccurred": "An error occurred while fetching data."
+      },
+      "confirmDelete": {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to delete this ride?",
+        "confirmButton": "Delete",
+        "cancelButton": "Cancel"
+      },
+      "confirmBulkDelete": {
+        "title": "Confirm Bulk Deletion",
+        "message": "Are you sure you want to delete {count} workdays?",
+        "confirmButton": "Delete",
+        "cancelButton": "Cancel"
+      }
+    },
     "status": {
       "pendingAdmin": "Pending",
       "dispute": "Dispute",
@@ -444,6 +518,52 @@
         "actions": {
           "edit": "Edit Workday",
           "delete": "Delete Workday"
+        }
+      }
+    },
+    "components": {
+      "actions": {
+        "approve": "Approve",
+        "openDispute": "Open Dispute",
+        "reject": "Reject",
+        "editWorkday": "Edit Workday",
+        "deleteWorkday": "Delete Workday"
+      },
+      "status": {
+        "pendingAdmin": "Pending Admin",
+        "dispute": "Dispute",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "disputeDialog": {
+        "title": "Dispute",
+        "description": "Use this form to adjust the workday details and explain the correction to the driver. All fields must be completed accurately.",
+        "sections": {
+          "driverVehicleInfo": "Driver & Vehicle Info",
+          "loggedTime": "Logged Time",
+          "disputeQuestion": "What do you want to dispute?",
+          "commentary": "Your commentary?"
+        },
+        "fields": {
+          "assignedDriver": "Assigned Driver:",
+          "auto": "Auto:",
+          "totalHours": "Total Hours",
+          "date": "Date",
+          "start": "Start",
+          "end": "End",
+          "restTime": "Rest Time",
+          "hoursCorrection": "Hours Correction",
+          "hoursCorrectionHelper": "Correct the final work hours using decimal + or – values. Start and end times remain unchanged.",
+          "explainIssue": "Explain the issue",
+          "commentaryDescription": "Provide a clear reason for this adjustment to help the driver understand the change."
+        },
+        "buttons": {
+          "submit": "Submit",
+          "cancel": "Cancel"
+        },
+        "messages": {
+          "submitError": "Failed to create dispute. Please try again.",
+          "notAvailable": "N/A"
         }
       }
     }

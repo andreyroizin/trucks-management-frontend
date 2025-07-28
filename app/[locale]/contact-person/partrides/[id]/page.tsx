@@ -182,7 +182,7 @@ export default function PartRideDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.partrideDetail.fields.status')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {/* TODO: Replace with real status mapping when available */}
-                                {PartRideStatusChip(pr?.status)}
+                                {pr?.status && <PartRideStatusChip status={pr.status} />}
                             </TableCell>
                         </TableRow>
                     </TableBody>
