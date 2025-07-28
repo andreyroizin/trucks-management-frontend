@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
     Box,
@@ -15,17 +15,19 @@ import * as yup from 'yup';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateUnit, CreateUnitInput } from '@/hooks/useCreateUnit';
 import { useRouter } from 'next/navigation';
-
-// --- VALIDATION SCHEMA ---
-const unitSchema = yup.object().shape({
-    value: yup.string().required('Unit value is required'),
-});
+import { useTranslations } from 'next-intl';
 
 // --- COMPONENT ---
 export default function CreateUnitPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('units.create');
+
+    // --- VALIDATION SCHEMA ---
+    const unitSchema = useMemo(() => yup.object().shape({
+        value: yup.string().required(t('fields.value.required')),
+    }), [t]);
 
     // Check for global admin
     useEffect(() => {
@@ -72,7 +74,7 @@ export default function CreateUnitPage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Create Unit
+                {t('title')}
             </Typography>
 
             {/* Display any mutation error */}
@@ -89,7 +91,7 @@ export default function CreateUnitPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Unit Value"
+                            label={t('fields.value.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -102,7 +104,7 @@ export default function CreateUnitPage() {
 
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Create Unit'}
+                        {isPending ? <CircularProgress size={20} /> : t('button')}
                     </Button>
                 </Box>
             </form>

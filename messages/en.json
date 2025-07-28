@@ -2297,5 +2297,62 @@
       "successMessage": "Surcharge updated successfully!",
       "updateError": "An unexpected error occurred."
     }
+  },
+  "units": {
+    "overview": {
+      "title": "Units",
+      "createButton": "Create new unit",
+      "loadError": "Failed to load units.",
+      "table": {
+        "headers": {
+          "id": "ID",
+          "value": "Value"
+        },
+        "rowsPerPage": "Rows per page:"
+      }
+    },
+    "create": {
+      "title": "Create Unit",
+      "fields": {
+        "value": {
+          "label": "Unit Value",
+          "required": "Unit value is required"
+        }
+      },
+      "button": "Create Unit",
+      "submitting": "Creating..."
+    },
+    "detail": {
+      "title": "Unit Detail",
+      "loadError": "Failed to load unit details.",
+      "fields": {
+        "id": "ID",
+        "value": "Value"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Unit?",
+        "message": "Are you sure you want to delete this unit?"
+      },
+      "deleteError": "Failed to delete unit"
+    },
+    "edit": {
+      "title": "Edit Unit",
+      "loadError": "Failed to load unit details.",
+      "fields": {
+        "value": {
+          "label": "Unit Value",
+          "required": "Unit value is required"
+        }
+      },
+      "button": "Save Changes",
+      "submitting": "Saving...",
+      "successMessage": "Unit updated successfully!",
+      "updateError": "An unexpected error occurred"
+    }
   }
 }

@@ -4956,5 +4956,62 @@
       "successMessage": "Toeslag succesvol bijgewerkt!",
       "updateError": "Er is een onverwachte fout opgetreden."
     }
+  },
+  "units": {
+    "overview": {
+      "title": "Eenheden",
+      "createButton": "Nieuwe eenheid aanmaken",
+      "loadError": "Kon eenheden niet laden.",
+      "table": {
+        "headers": {
+          "id": "ID",
+          "value": "Waarde"
+        },
+        "rowsPerPage": "Rijen per pagina:"
+      }
+    },
+    "create": {
+      "title": "Eenheid Aanmaken",
+      "fields": {
+        "value": {
+          "label": "Eenheidwaarde",
+          "required": "Eenheidwaarde is verplicht"
+        }
+      },
+      "button": "Eenheid Aanmaken",
+      "submitting": "Aanmaken..."
+    },
+    "detail": {
+      "title": "Eenheiddetails",
+      "loadError": "Kon eenheiddetails niet laden.",
+      "fields": {
+        "id": "ID",
+        "value": "Waarde"
+      },
+      "actions": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Eenheid Verwijderen?",
+        "message": "Weet je zeker dat je deze eenheid wilt verwijderen?"
+      },
+      "deleteError": "Kon eenheid niet verwijderen"
+    },
+    "edit": {
+      "title": "Eenheid Bewerken",
+      "loadError": "Kon eenheiddetails niet laden.",
+      "fields": {
+        "value": {
+          "label": "Eenheidwaarde",
+          "required": "Eenheidwaarde is verplicht"
+        }
+      },
+      "button": "Wijzigingen Opslaan",
+      "submitting": "Opslaan...",
+      "successMessage": "Eenheid succesvol bijgewerkt!",
+      "updateError": "Er is een onverwachte fout opgetreden"
+    }
   }
 }

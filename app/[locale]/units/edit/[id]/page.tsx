@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Box, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
@@ -9,11 +9,7 @@ import * as yup from 'yup';
 import { useUnitDetail } from '@/hooks/useUnitDetail'; // If you have a fetch detail hook
 import { useEditUnit } from '@/hooks/useEditUnit';
 import { useAuth } from '@/hooks/useAuth';
-
-// --- VALIDATION SCHEMA ---
-const editUnitSchema = yup.object().shape({
-    value: yup.string().required('Unit value is required'),
-});
+import { useTranslations } from 'next-intl';
 
 // --- FORM INPUT TYPE ---
 type EditUnitFormInputs = {
@@ -25,6 +21,12 @@ export default function EditUnitPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('units.edit');
+
+    // --- VALIDATION SCHEMA ---
+    const editUnitSchema = useMemo(() => yup.object().shape({
+        value: yup.string().required(t('fields.value.required')),
+    }), [t]);
 
     // Fetch existing unit detail if you want to prefill
     const { data: unit, isLoading, isError, error } = useUnitDetail(id as string);
@@ -65,10 +67,10 @@ export default function EditUnitPage() {
 
         try {
             await mutateEditUnit({ id: id as string, value: data.value });
-            setSuccessMessage('Unit updated successfully!');
+            setSuccessMessage(t('successMessage'));
             router.push(`/units/${id}`); // Redirect to detail
         } catch (err: any) {
-            setApiError(err.message || 'An unexpected error occurred');
+            setApiError(err.message || t('updateError'));
         }
     };
 
@@ -83,7 +85,7 @@ export default function EditUnitPage() {
     if (isError || !unit) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load unit details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -91,7 +93,7 @@ export default function EditUnitPage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Edit Unit
+                {t('title')}
             </Typography>
 
             {apiError && (
@@ -113,7 +115,7 @@ export default function EditUnitPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Unit Value"
+                            label={t('fields.value.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -132,7 +134,7 @@ export default function EditUnitPage() {
                     disabled={isPending}
                     sx={{ mt: 3 }}
                 >
-                    {isPending ? <CircularProgress size={20} /> : 'Save Changes'}
+                    {isPending ? <CircularProgress size={20} /> : t('button')}
                 </Button>
             </form>
         </Box>

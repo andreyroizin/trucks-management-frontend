@@ -8,12 +8,14 @@ import { useDeleteUnit } from '@/hooks/useDeleteUnit';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
 export default function UnitDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('units.detail');
 
     // Fetch detail
     const { data: unit, isLoading, isError, error } = useUnitDetail(id as string);
@@ -38,7 +40,7 @@ export default function UnitDetailPage() {
             setOpenModal(false);
             router.push('/units');
         } catch (err: any) {
-            setDeleteError(err.message || 'Failed to delete unit');
+            setDeleteError(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -54,7 +56,7 @@ export default function UnitDetailPage() {
     if (isError || !unit) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load unit details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -71,18 +73,18 @@ export default function UnitDetailPage() {
             <Card>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
-                        Unit Detail
+                        {t('title')}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>ID:</strong> {unit.id}
+                        <strong>{t('fields.id')}:</strong> {unit.id}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Value:</strong> {unit.value}
+                        <strong>{t('fields.value')}:</strong> {unit.value}
                     </Typography>
                     {isGlobalAdmin && (
                         <Box display="flex" gap={1} mb={2}>
                             <Link href={`/units/edit/${unit.id}`} passHref>
-                                <Button variant="contained" color="primary">Edit</Button>
+                                <Button variant="contained" color="primary">{t('actions.edit')}</Button>
                             </Link>
                             <Button
                                 variant="contained"
@@ -90,7 +92,7 @@ export default function UnitDetailPage() {
                                 disabled={isDeleting}
                                 onClick={() => setOpenModal(true)}
                             >
-                                {isDeleting ? 'Deleting...' : 'Delete'}
+                                {isDeleting ? t('actions.deleting') : t('actions.delete')}
                             </Button>
                         </Box>
                     )}
@@ -100,8 +102,8 @@ export default function UnitDetailPage() {
             {/* Confirm Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Unit?"
-                message="Are you sure you want to delete this unit?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
