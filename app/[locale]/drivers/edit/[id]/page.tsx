@@ -52,10 +52,7 @@ type FormInputs = {
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
-    VacationAge?: number;                   // Optional - backend: vacationAge
-    VacationDays?: number;                  // Optional - backend: vacationDays
     Atv?: number;                           // Optional - backend: atv
-    VacationAllowance?: number;             // Optional - backend: vacationAllowance
     Remark?: string;                        // Optional - backend: remark
 };
 
@@ -117,10 +114,7 @@ export default function EditDriverPage() {
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         Atv: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationAllowance: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')).max(100, t('drivers.create.fields.vacationAllowance.maxPercent')),
         Remark: yup.string().optional(),
     });
 
@@ -159,10 +153,7 @@ export default function EditDriverPage() {
             PayScale: '',
             PayScaleStep: undefined,
             CommuteKilometers: undefined,
-            VacationAge: undefined,
-            VacationDays: undefined,
             Atv: undefined,
-            VacationAllowance: undefined,
             Remark: '',
         },
     });
@@ -206,10 +197,7 @@ export default function EditDriverPage() {
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
-                VacationAge: driverData.vacationAge ? Number(driverData.vacationAge) : undefined,
-                VacationDays: driverData.vacationDays ? Number(driverData.vacationDays) : undefined,
                 Atv: driverData.atv ? Number(driverData.atv) : undefined,
-                VacationAllowance: driverData.vacationAllowance ? Number(driverData.vacationAllowance) : undefined,
                 Remark: driverData.remark || '',
             });
         }
@@ -280,10 +268,7 @@ export default function EditDriverPage() {
                 payScaleStep: cleanedData.PayScaleStep,
                 hourlyWage100Percent: cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined,
                 commuteKilometers: cleanedData.CommuteKilometers,
-                vacationAge: cleanedData.VacationAge,
-                vacationDays: cleanedData.VacationDays,
                 atv: cleanedData.Atv,
-                vacationAllowance: cleanedData.VacationAllowance,
                 remark: cleanedData.Remark,
                 // Include file operations
                 newUploads: newUploads,
@@ -910,45 +895,7 @@ export default function EditDriverPage() {
                             {t('drivers.edit.sections.vacation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationAge"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.vacationAge.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationAge}
-                                            helperText={errors.VacationAge?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationDays"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.vacationDays.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationDays}
-                                            helperText={errors.VacationDays?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <Controller
                                     name="Atv"
                                     control={control}
@@ -962,25 +909,6 @@ export default function EditDriverPage() {
                                             variant="outlined"
                                             error={!!errors.Atv}
                                             helperText={errors.Atv?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationAllowance"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.vacationAllowance.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationAllowance}
-                                            helperText={errors.VacationAllowance?.message}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                                         />
                                     )}

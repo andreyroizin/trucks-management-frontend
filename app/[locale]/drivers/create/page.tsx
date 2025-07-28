@@ -49,10 +49,7 @@ type FormInputs = {
     PayScale?: string;                      // Optional - backend: PayScale
     PayScaleStep?: number;                  // Optional - backend: PayScaleStep
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
-    VacationAge?: number;                   // Optional - backend: VacationAge
-    VacationDays?: number;                  // Optional - backend: VacationDays
     Atv?: number;                           // Optional - backend: Atv
-    VacationAllowance?: number;             // Optional - backend: VacationAllowance
     Remark?: string;                        // Optional - backend: Remark
 };
 
@@ -104,10 +101,7 @@ export default function CreateDriverPage() {
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         Atv: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        VacationAllowance: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')).max(100, t('drivers.create.fields.vacationAllowance.maxPercent')),
         Remark: yup.string().optional(),
     });
 
@@ -145,16 +139,13 @@ export default function CreateDriverPage() {
             ProbationPeriod: '',
             NoticePeriod: '',
             Function: '',
-            WorkweekDuration: 40, // Keep 40 as reasonable default for work hours
+            WorkweekDuration: undefined,
             WeeklySchedule: '',
             WorkingHours: '',
             PayScale: '',
             PayScaleStep: undefined,
             CommuteKilometers: undefined,
-            VacationAge: undefined,
-            VacationDays: undefined,
             Atv: undefined,
-            VacationAllowance: undefined,
             Remark: '',
         },
     });
@@ -852,56 +843,7 @@ export default function CreateDriverPage() {
                             {t('drivers.create.sections.vacation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            {/* Vacation Age Threshold & Vacation Days */}
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationAge"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.vacationAge.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationAge}
-                                            helperText={errors.VacationAge?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0"
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationDays"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.vacationDays.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationDays}
-                                            helperText={errors.VacationDays?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0"
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-
-                            {/* ATV & Vacation Allowance Percentage */}
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <Controller
                                     name="Atv"
                                     control={control}
@@ -919,30 +861,6 @@ export default function CreateDriverPage() {
                                             inputProps={{
                                                 step: "0.01",
                                                 min: "0"
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="VacationAllowance"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.vacationAllowance.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.VacationAllowance}
-                                            helperText={errors.VacationAllowance?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0",
-                                                max: "100"
                                             }}
                                         />
                                     )}
