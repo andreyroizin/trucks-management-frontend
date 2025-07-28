@@ -11,6 +11,8 @@ import {
     CircularProgress,
     Autocomplete,
     Grid,
+    Checkbox,
+    FormControlLabel,
 } from '@mui/material';
 import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -49,6 +51,7 @@ type FormInputs = {
     PayScale?: string;                      // Optional - backend: PayScale
     PayScaleStep?: number;                  // Optional - backend: PayScaleStep
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
+    KilometersAllowanceAllowed?: boolean;   // Optional - backend: KilometersAllowanceAllowed
     Remark?: string;                        // Optional - backend: Remark
 };
 
@@ -100,6 +103,7 @@ export default function CreateDriverPage() {
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        KilometersAllowanceAllowed: yup.boolean().optional(),
         Remark: yup.string().optional(),
     });
 
@@ -143,6 +147,7 @@ export default function CreateDriverPage() {
             PayScale: '',
             PayScaleStep: undefined,
             CommuteKilometers: undefined,
+            KilometersAllowanceAllowed: false,
             Remark: '',
         },
     });
@@ -821,8 +826,7 @@ export default function CreateDriverPage() {
                             {t('drivers.create.sections.commute')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            {/* Commute Kilometers - Full Width */}
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="CommuteKilometers"
                                     control={control}
@@ -845,8 +849,25 @@ export default function CreateDriverPage() {
                                     )}
                                 />
                             </Grid>
-
-
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="KilometersAllowanceAllowed"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    {...field}
+                                                    checked={field.value || false}
+                                                    onChange={(e) => field.onChange(e.target.checked)}
+                                                />
+                                            }
+                                            label={t('drivers.create.fields.kilometersAllowanceAllowed.label')}
+                                            sx={{ mt: 2 }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
                         </Grid>
                     </Box>
 

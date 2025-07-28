@@ -11,6 +11,8 @@ import {
     CircularProgress,
     Autocomplete,
     Grid,
+    Checkbox,
+    FormControlLabel,
 } from '@mui/material';
 import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -52,6 +54,7 @@ type FormInputs = {
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
+    KilometersAllowanceAllowed?: boolean;   // Optional - backend: kilometersAllowanceAllowed
     Remark?: string;                        // Optional - backend: remark
 };
 
@@ -113,6 +116,7 @@ export default function EditDriverPage() {
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        KilometersAllowanceAllowed: yup.boolean().optional(),
         Remark: yup.string().optional(),
     });
 
@@ -151,6 +155,7 @@ export default function EditDriverPage() {
             PayScale: '',
             PayScaleStep: undefined,
             CommuteKilometers: undefined,
+            KilometersAllowanceAllowed: false,
             Remark: '',
         },
     });
@@ -208,6 +213,7 @@ export default function EditDriverPage() {
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
+                KilometersAllowanceAllowed: (driverData as any).kilometersAllowanceAllowed || false,
                 Remark: driverData.remark || '',
             });
         }
@@ -278,6 +284,7 @@ export default function EditDriverPage() {
                 payScaleStep: cleanedData.PayScaleStep,
                 hourlyWage100Percent: cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined,
                 commuteKilometers: cleanedData.CommuteKilometers,
+                kilometersAllowanceAllowed: cleanedData.KilometersAllowanceAllowed,
                 atv: calculateATV(cleanedData.WorkweekDuration || 0),
                 remark: cleanedData.Remark,
                 // Include file operations
@@ -876,7 +883,7 @@ export default function EditDriverPage() {
                             {t('drivers.edit.sections.commute')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="CommuteKilometers"
                                     control={control}
@@ -895,7 +902,25 @@ export default function EditDriverPage() {
                                     )}
                                 />
                             </Grid>
-
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="KilometersAllowanceAllowed"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    {...field}
+                                                    checked={field.value || false}
+                                                    onChange={(e) => field.onChange(e.target.checked)}
+                                                />
+                                            }
+                                            label={t('drivers.edit.fields.kilometersAllowanceAllowed.label')}
+                                            sx={{ mt: 2 }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
                         </Grid>
                     </Box>
 

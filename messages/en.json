@@ -1003,6 +1003,9 @@
         "commuteKilometers": {
           "label": "Commute Kilometers"
         },
+        "kilometersAllowanceAllowed": {
+          "label": "Kilometers Allowance Allowed"
+        },
         "travelExpenses": {
           "label": "Travel Expenses Rate"
         },
@@ -1212,6 +1215,9 @@
         },
         "commuteKilometers": {
           "label": "Commute Kilometers"
+        },
+        "kilometersAllowanceAllowed": {
+          "label": "Kilometers Allowance Allowed"
         },
         "travelExpenses": {
           "label": "Travel Expenses Rate"

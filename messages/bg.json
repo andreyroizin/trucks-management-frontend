@@ -1003,6 +1003,9 @@
         "commuteKilometers": {
           "label": "Километри до работа"
         },
+        "kilometersAllowanceAllowed": {
+          "label": "Разрешено обезщетение за километри"
+        },
         "travelExpenses": {
           "label": "Тарифа за пътни разходи"
         },
@@ -1089,6 +1092,7 @@
         "hourlyWage100Percent": "Почасова заплата (100%)",
         "deviatingWage": "Отклоняваща се заплата",
         "commuteKilometers": "Километри до работа",
+        "kilometersAllowanceAllowed": "Разрешено обезщетение за километри",
         "travelExpensesRate": "Тарифа за пътни разходи",
         "maxTravelExpenses": "Максимални пътни разходи",
         "vacationAgeThreshold": "Праг на възраст за отпуск",
@@ -1212,6 +1216,9 @@
         },
         "commuteKilometers": {
           "label": "Километри до работа"
+        },
+        "kilometersAllowanceAllowed": {
+          "label": "Разрешено обезщетение за километри"
         },
         "travelExpenses": {
           "label": "Ставка за пътни разходи"
@@ -1701,24 +1708,7 @@
         "nightHoursAllowed": "Нощни Часове Разрешени",
         "kilometersAllowance": "Километрична Надбавка",
         "commuteKilometers": "Километри до Работа",
-        "employeeName": "Име на Служител",
-        "employeeAddress": "Адрес на Служител",
-        "employeePostcode": "Пощенски Код на Служител",
-        "employeeCity": "Град на Служител",
-        "dateOfBirth": "Дата на Раждане",
-        "bsn": "БСН",
-        "dateOfEmployment": "Дата на Назначаване",
-        "lastWorkingDay": "Последен Работен Ден",
-        "function": "Функция",
-        "probationPeriod": "Изпитателен Срок",
-        "workweekDuration": "Продължителност на Работната Седмица",
-        "weeklySchedule": "Седмично Разписание",
-        "workingHours": "Работно Време",
-        "noticePeriod": "Срок за Предизвестие",
-        "payScale": "Заплатна Скала",
-        "payScaleStep": "Стъпка от Заплатната Скала",
-        "hourlyWage100Percent": "Часова Заплата 100%",
-        "deviatingWage": "Отклоняваща се Заплата",
+        "kilometersAllowanceAllowed": "Разрешено обезщетение за километри",
         "travelExpenses": "Пътни Разходи",
         "maxTravelExpenses": "Максимални Пътни Разходи",
         "vacationAge": "Възраст за Отпуск",
