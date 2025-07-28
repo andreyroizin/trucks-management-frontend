@@ -799,14 +799,21 @@ export default function EditDriverPage() {
                                     name="PayScale"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.payScale.label')}
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.PayScale}
-                                            helperText={errors.PayScale?.message}
+                                        <Autocomplete
+                                            options={['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']}
+                                            value={field.value || null}
+                                            onChange={(_, value) => field.onChange(value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.edit.fields.payScale.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.PayScale}
+                                                    helperText={errors.PayScale?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
@@ -816,16 +823,21 @@ export default function EditDriverPage() {
                                     name="PayScaleStep"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.payScaleStep.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.PayScaleStep}
-                                            helperText={errors.PayScaleStep?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                        <Autocomplete
+                                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                                            value={field.value || null}
+                                            onChange={(_, value) => field.onChange(value || undefined)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.edit.fields.payScaleStep.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.PayScaleStep}
+                                                    helperText={errors.PayScaleStep?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />

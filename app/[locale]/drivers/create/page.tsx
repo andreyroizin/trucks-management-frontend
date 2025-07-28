@@ -729,14 +729,21 @@ export default function CreateDriverPage() {
                                     name="PayScale"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.payScale.label')}
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.PayScale}
-                                            helperText={errors.PayScale?.message}
+                                        <Autocomplete
+                                            options={['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']}
+                                            value={field.value || null}
+                                            onChange={(_, value) => field.onChange(value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.create.fields.payScale.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.PayScale}
+                                                    helperText={errors.PayScale?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
@@ -746,20 +753,21 @@ export default function CreateDriverPage() {
                                     name="PayScaleStep"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.payScaleStep.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.PayScaleStep}
-                                            helperText={errors.PayScaleStep?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0"
-                                            }}
+                                        <Autocomplete
+                                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                                            value={field.value || null}
+                                            onChange={(_, value) => field.onChange(value || undefined)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.create.fields.payScaleStep.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.PayScaleStep}
+                                                    helperText={errors.PayScaleStep?.message}
+                                                />
+                                            )}
                                         />
                                     )}
                                 />
