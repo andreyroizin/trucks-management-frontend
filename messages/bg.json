@@ -426,6 +426,10 @@
         "label": "Корекция на време",
         "placeholder": "00:00"
       },
+      "correction": {
+        "label": "Корекция на Часове",
+        "placeholder": "0"
+      },
       "weekNumber": {
         "label": "Седмичен номер (напр. 23)",
         "placeholder": "23",

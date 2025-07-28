@@ -426,6 +426,10 @@
         "label": "Correctietijd",
         "placeholder": "00:00"
       },
+      "correction": {
+        "label": "Uren Correctie",
+        "placeholder": "0"
+      },
       "weekNumber": {
         "label": "Weeknummer (bijv. 23)",
         "placeholder": "23",

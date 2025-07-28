@@ -426,6 +426,10 @@
         "label": "Correction time",
         "placeholder": "00:00"
       },
+      "correction": {
+        "label": "Hours Correction",
+        "placeholder": "0"
+      },
       "weekNumber": {
         "label": "Week Number (e.g. 23)",
         "placeholder": "23",
