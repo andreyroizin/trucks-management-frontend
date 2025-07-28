@@ -180,6 +180,27 @@ export default function EditDriverPage() {
     // Watch permanent contract to show/hide duration field
     const watchedPermanentContract = watch('PermanentContract');
 
+    // Calculate contract duration in months based on start and end dates
+    const calculateContractDuration = (startDate: string, endDate: string): number => {
+        if (!startDate || !endDate) return 0;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        // Calculate the difference in months
+        const yearsDiff = end.getFullYear() - start.getFullYear();
+        const monthsDiff = end.getMonth() - start.getMonth();
+        const daysDiff = end.getDate() - start.getDate();
+        
+        let totalMonths = yearsDiff * 12 + monthsDiff;
+        
+        // If the end day is before the start day, subtract one month
+        if (daysDiff < 0) {
+            totalMonths -= 1;
+        }
+        
+        return Math.max(0, totalMonths);
+    };
+
     // Calculate contract end date if duration is specified
     const calculateContractEndDate = (startDate: string, durationMonths: number): string => {
         if (!startDate || !durationMonths) return '';
@@ -220,7 +241,9 @@ export default function EditDriverPage() {
                 BSN: driverData.bsn || '',
                 EmploymentStartDate: driverData.dateOfEmployment ? dayjs(driverData.dateOfEmployment).format('YYYY-MM-DD') : '',
                 PermanentContract: (driverData as any).permanentContract || false,
-                ContractDuration: (driverData as any).contractDuration ? Number((driverData as any).contractDuration) : undefined,
+                ContractDuration: !(driverData as any).permanentContract && driverData.dateOfEmployment && driverData.lastWorkingDay ? 
+                    calculateContractDuration(driverData.dateOfEmployment, driverData.lastWorkingDay) : 
+                    ((driverData as any).contractDuration ? Number((driverData as any).contractDuration) : undefined),
                 ProbationPeriod: driverData.probationPeriod || '',
                 NoticePeriod: driverData.noticePeriod || '',
                 Function: driverData.function || '',
