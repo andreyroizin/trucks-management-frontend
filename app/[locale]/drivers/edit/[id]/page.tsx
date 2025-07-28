@@ -55,8 +55,6 @@ type FormInputs = {
     HourlyWage100Percent?: number;          // Optional - backend: hourlyWage100Percent
     DeviatingWage?: number;                 // Optional - backend: deviatingWage
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
-    TravelExpenses?: number;                // Optional - backend: travelExpenses
-    MaxTravelExpenses?: number;             // Optional - backend: maxTravelExpenses
     VacationAge?: number;                   // Optional - backend: vacationAge
     VacationDays?: number;                  // Optional - backend: vacationDays
     Atv?: number;                           // Optional - backend: atv
@@ -119,8 +117,6 @@ export default function EditDriverPage() {
         HourlyWage100Percent: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         DeviatingWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        TravelExpenses: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        MaxTravelExpenses: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         Atv: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -166,8 +162,6 @@ export default function EditDriverPage() {
             HourlyWage100Percent: undefined,
             DeviatingWage: undefined,
             CommuteKilometers: undefined,
-            TravelExpenses: undefined,
-            MaxTravelExpenses: undefined,
             VacationAge: undefined,
             VacationDays: undefined,
             Atv: undefined,
@@ -227,8 +221,6 @@ export default function EditDriverPage() {
                 HourlyWage100Percent: driverData.hourlyWage100Percent ? Number(driverData.hourlyWage100Percent) : undefined,
                 DeviatingWage: driverData.deviatingWage ? Number(driverData.deviatingWage) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
-                TravelExpenses: driverData.travelExpenses ? Number(driverData.travelExpenses) : undefined,
-                MaxTravelExpenses: driverData.maxTravelExpenses ? Number(driverData.maxTravelExpenses) : undefined,
                 VacationAge: driverData.vacationAge ? Number(driverData.vacationAge) : undefined,
                 VacationDays: driverData.vacationDays ? Number(driverData.vacationDays) : undefined,
                 Atv: driverData.atv ? Number(driverData.atv) : undefined,
@@ -311,8 +303,6 @@ export default function EditDriverPage() {
                 hourlyWage100Percent: cleanedData.HourlyWage100Percent,
                 deviatingWage: cleanedData.DeviatingWage,
                 commuteKilometers: cleanedData.CommuteKilometers,
-                travelExpenses: cleanedData.TravelExpenses,
-                maxTravelExpenses: cleanedData.MaxTravelExpenses,
                 vacationAge: cleanedData.VacationAge,
                 vacationDays: cleanedData.VacationDays,
                 atv: cleanedData.Atv,
@@ -971,44 +961,7 @@ export default function EditDriverPage() {
                                     )}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="TravelExpenses"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.travelExpenses.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.TravelExpenses}
-                                            helperText={errors.TravelExpenses?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="MaxTravelExpenses"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.maxTravelExpenses.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.MaxTravelExpenses}
-                                            helperText={errors.MaxTravelExpenses?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
+
                         </Grid>
                     </Box>
 
