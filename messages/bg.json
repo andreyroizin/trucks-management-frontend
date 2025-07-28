@@ -954,12 +954,22 @@
           "label": "BSN"
         },
         "dateOfEmployment": {
-          "label": "Дата на наемане",
-          "required": "Датата на наемане е задължителна"
+          "label": "Дата на назначаване",
+          "required": "Дата на назначаване е задължителна"
+        },
+        "employmentStartDate": {
+          "label": "Начална дата на трудовия договор",
+          "required": "Начална дата на трудовия договор е задължителна"
+        },
+        "permanentContract": {
+          "label": "Постоянен договор"
+        },
+        "contractDuration": {
+          "label": "Продължителност на договора (месеци)"
         },
         "lastWorkingDay": {
-          "label": "Дата на край на договора",
-          "required": "Датата на край на договора е задължителна"
+          "label": "Последен работен ден",
+          "required": "Последен работен ден е задължителен"
         },
         "probationPeriod": {
           "label": "Пробен период"
@@ -1171,10 +1181,20 @@
           "label": "БСН"
         },
         "dateOfEmployment": {
-          "label": "Дата на започване на работа"
+          "label": "Дата на назначаване"
+        },
+        "employmentStartDate": {
+          "label": "Начална дата на трудовия договор",
+          "required": "Начална дата на трудовия договор е задължителна"
+        },
+        "permanentContract": {
+          "label": "Постоянен договор"
+        },
+        "contractDuration": {
+          "label": "Продължителност на договора (месеци)"
         },
         "lastWorkingDay": {
-          "label": "Дата на приключване на договора"
+          "label": "Последен работен ден"
         },
         "probationPeriod": {
           "label": "Изпитателен срок"
@@ -1767,12 +1787,11 @@
         "dateOfBirthHelp": "ДД-ММ-ГГГГ",
         "bsn": "БСН",
         "bsnHelp": "Номер на гражданска услуга (по избор)",
-        "dateOfEmployment": "Дата на Назначаване",
-        "dateOfEmploymentHelp": "ДД-ММ-ГГГГ",
-        "lastWorkingDay": "Последен Работен Ден",
-        "lastWorkingDayHelp": "ДД-ММ-ГГГГ",
-        "function": "Функция",
-        "functionHelp": "Длъжност (по избор)",
+        "dateOfEmployment": "Дата на назначаване",
+        "employmentStartDate": "Начална дата на трудовия договор",
+        "permanentContract": "Постоянен договор",
+        "contractDuration": "Продължителност на договора (месеци)",
+        "lastWorkingDay": "Последен работен ден",
         "probationPeriod": "Изпитателен Срок",
         "probationPeriodHelp": "напр. '2 месеца' (по избор)",
         "workweekDuration": "Работна Седмица (часа)",

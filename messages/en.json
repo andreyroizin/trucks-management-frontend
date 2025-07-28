@@ -954,12 +954,22 @@
           "label": "BSN"
         },
         "dateOfEmployment": {
+          "label": "Date of Employment",
+          "required": "Date of employment is required"
+        },
+        "employmentStartDate": {
           "label": "Employment Start Date",
           "required": "Employment start date is required"
         },
+        "permanentContract": {
+          "label": "Permanent Contract"
+        },
+        "contractDuration": {
+          "label": "Contract Duration (months)"
+        },
         "lastWorkingDay": {
-          "label": "Contract End Date",
-          "required": "Contract end date is required"
+          "label": "Last Working Day",
+          "required": "Last working day is required"
         },
         "probationPeriod": {
           "label": "Probation Period"
@@ -1170,10 +1180,20 @@
           "label": "BSN"
         },
         "dateOfEmployment": {
-          "label": "Employment Start Date"
+          "label": "Date of Employment"
+        },
+        "employmentStartDate": {
+          "label": "Employment Start Date",
+          "required": "Employment start date is required"
+        },
+        "permanentContract": {
+          "label": "Permanent Contract"
+        },
+        "contractDuration": {
+          "label": "Contract Duration (months)"
         },
         "lastWorkingDay": {
-          "label": "Contract End Date"
+          "label": "Last Working Day"
         },
         "probationPeriod": {
           "label": "Probation Period"

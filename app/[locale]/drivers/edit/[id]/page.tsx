@@ -27,6 +27,7 @@ import FileTile from '@/components/FileTile';
 import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import { ApplicationFile } from '@/types/file';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
+import dayjs from 'dayjs';
 
 // Schema will be defined inside the component to access translations
 
@@ -42,8 +43,9 @@ type FormInputs = {
     City?: string;                          // Optional - backend: city
     Country?: string;                       // Optional - backend: country
     BSN?: string;                           // Optional - backend: bsn
-    DateOfEmployment: string;               // Required - backend: dateOfEmployment
-    LastWorkingDay: string;                 // Required - backend: lastWorkingDay
+    EmploymentStartDate: string;            // Required - backend: employmentStartDate
+    PermanentContract?: boolean;            // Optional - backend: permanentContract
+    ContractDuration?: number;              // Optional - backend: contractDuration (in months)
     ProbationPeriod?: string;               // Optional - backend: probationPeriod
     NoticePeriod?: string;                  // Optional - backend: noticePeriod
     Function: string;                       // Required - backend: function
@@ -105,8 +107,9 @@ export default function EditDriverPage() {
         City: yup.string().optional(),
         Country: yup.string().optional(),
         BSN: yup.string().optional(),
-        DateOfEmployment: yup.string().required(t('drivers.create.fields.dateOfEmployment.required')),
-        LastWorkingDay: yup.string().required(t('drivers.create.fields.lastWorkingDay.required')),
+        EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
+        PermanentContract: yup.boolean().optional(),
+        ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
         ProbationPeriod: yup.string().optional(),
         NoticePeriod: yup.string().optional(),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
@@ -144,8 +147,9 @@ export default function EditDriverPage() {
             City: '',
             Country: '',
             BSN: '',
-            DateOfEmployment: '',
-            LastWorkingDay: '',
+            EmploymentStartDate: '',
+            PermanentContract: false,
+            ContractDuration: undefined,
             ProbationPeriod: '',
             NoticePeriod: '',
             Function: '',
@@ -172,6 +176,18 @@ export default function EditDriverPage() {
     const payScaleStep = watch('PayScaleStep');
     const hourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
     const availableSteps = getAvailableSteps(payScale || '');
+
+    // Watch permanent contract to show/hide duration field
+    const watchedPermanentContract = watch('PermanentContract');
+
+    // Calculate contract end date if duration is specified
+    const calculateContractEndDate = (startDate: string, durationMonths: number): string => {
+        if (!startDate || !durationMonths) return '';
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + durationMonths);
+        return end.toISOString();
+    };
 
     // Calculate ATV based on workweek duration
     const calculateATV = (workweekDuration: number): number => {
@@ -202,8 +218,9 @@ export default function EditDriverPage() {
                 City: driverData.city || '',
                 Country: driverData.country || '',
                 BSN: driverData.bsn || '',
-                DateOfEmployment: driverData.dateOfEmployment ? driverData.dateOfEmployment.split('T')[0] : '',
-                LastWorkingDay: driverData.lastWorkingDay ? driverData.lastWorkingDay.split('T')[0] : '',
+                EmploymentStartDate: driverData.dateOfEmployment ? dayjs(driverData.dateOfEmployment).format('YYYY-MM-DD') : '',
+                PermanentContract: (driverData as any).permanentContract || false,
+                ContractDuration: (driverData as any).contractDuration ? Number((driverData as any).contractDuration) : undefined,
                 ProbationPeriod: driverData.probationPeriod || '',
                 NoticePeriod: driverData.noticePeriod || '',
                 Function: driverData.function || '',
@@ -251,11 +268,14 @@ export default function EditDriverPage() {
             if (cleanedData.DateOfBirth) {
                 cleanedData.DateOfBirth = new Date(cleanedData.DateOfBirth).toISOString();
             }
-            if (cleanedData.DateOfEmployment) {
-                cleanedData.DateOfEmployment = new Date(cleanedData.DateOfEmployment).toISOString();
+            if (cleanedData.EmploymentStartDate) {
+                cleanedData.EmploymentStartDate = new Date(cleanedData.EmploymentStartDate).toISOString();
             }
-            if (cleanedData.LastWorkingDay) {
-                cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
+            if (cleanedData.ContractDuration) {
+                cleanedData.ContractDuration = Number(cleanedData.ContractDuration);
+            }
+            if (cleanedData.ContractDuration && cleanedData.EmploymentStartDate) {
+                cleanedData.contractEndDate = calculateContractEndDate(cleanedData.EmploymentStartDate, cleanedData.ContractDuration);
             }
 
             // Prepare data for backend
@@ -271,8 +291,11 @@ export default function EditDriverPage() {
                 city: cleanedData.City,
                 country: cleanedData.Country,
                 bsn: cleanedData.BSN,
-                dateOfEmployment: cleanedData.DateOfEmployment,
-                lastWorkingDay: cleanedData.LastWorkingDay,
+                employmentStartDate: cleanedData.EmploymentStartDate ? new Date(cleanedData.EmploymentStartDate).toISOString() : undefined,
+                permanentContract: cleanedData.PermanentContract,
+                contractDuration: cleanedData.ContractDuration,
+                lastWorkingDay: !cleanedData.PermanentContract && cleanedData.ContractDuration && cleanedData.EmploymentStartDate ? 
+                    calculateContractEndDate(cleanedData.EmploymentStartDate, cleanedData.ContractDuration) : undefined,
                 probationPeriod: cleanedData.ProbationPeriod,
                 noticePeriod: cleanedData.NoticePeriod,
                 function: cleanedData.Function,
@@ -587,22 +610,20 @@ export default function EditDriverPage() {
                             {t('drivers.edit.sections.employmentDates')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            {/* Employment Start Date & Contract End Date */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="DateOfEmployment"
+                                    name="EmploymentStartDate"
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label={t('drivers.edit.fields.dateOfEmployment.label')}
+                                            label={t('drivers.edit.fields.employmentStartDate.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
-                                            error={!!errors.DateOfEmployment}
-                                            helperText={errors.DateOfEmployment?.message}
-                                            required
+                                            error={!!errors.EmploymentStartDate}
+                                            helperText={errors.EmploymentStartDate?.message}
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
@@ -612,28 +633,57 @@ export default function EditDriverPage() {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name="LastWorkingDay"
+                                    name="PermanentContract"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.lastWorkingDay.label')}
-                                            type="date"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.LastWorkingDay}
-                                            helperText={errors.LastWorkingDay?.message}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    {...field}
+                                                    checked={field.value || false}
+                                                    onChange={(e) => field.onChange(e.target.checked)}
+                                                />
+                                            }
+                                            label={t('drivers.edit.fields.permanentContract.label')}
+                                            sx={{ mt: 2 }}
                                         />
                                     )}
                                 />
                             </Grid>
+                            {!watchedPermanentContract && (
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="ContractDuration"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label={t('drivers.edit.fields.contractDuration.label')}
+                                                type="number"
+                                                fullWidth
+                                                margin="normal"
+                                                variant="outlined"
+                                                error={!!errors.ContractDuration}
+                                                helperText={errors.ContractDuration?.message}
+                                                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                                inputProps={{
+                                                    min: "1",
+                                                    step: "1"
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Box>
 
-                            {/* Probation Period & Notice Period */}
+                    {/* Work Conditions Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            {t('drivers.edit.sections.workConditions')}
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="ProbationPeriod"
@@ -693,13 +743,12 @@ export default function EditDriverPage() {
                         </Grid>
                     </Box>
 
-                    {/* Work Conditions Block */}
+                    {/* Function Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                            {t('drivers.edit.sections.workConditions')}
+                            Function
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            {/* Function - Full Width */}
                             <Grid item xs={12}>
                                 <Controller
                                     name="Function"
@@ -718,8 +767,15 @@ export default function EditDriverPage() {
                                     )}
                                 />
                             </Grid>
+                        </Grid>
+                    </Box>
 
-                            {/* Workweek Duration & Percentage */}
+                    {/* Work Details Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Work Details
+                        </Typography>
+                        <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="WorkweekDuration"
@@ -757,8 +813,6 @@ export default function EditDriverPage() {
                                     }}
                                 />
                             </Grid>
-
-                            {/* Weekly Schedule & Working Hours */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="WeeklySchedule"

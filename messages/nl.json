@@ -957,9 +957,19 @@
           "label": "Datum van indiensttreding",
           "required": "Datum van indiensttreding is verplicht"
         },
+        "employmentStartDate": {
+          "label": "Startdatum dienstverband",
+          "required": "Startdatum dienstverband is verplicht"
+        },
+        "permanentContract": {
+          "label": "Vast contract"
+        },
+        "contractDuration": {
+          "label": "Contractduur (maanden)"
+        },
         "lastWorkingDay": {
-          "label": "Contract einddatum",
-          "required": "Contract einddatum is verplicht"
+          "label": "Laatste werkdag",
+          "required": "Laatste werkdag is verplicht"
         },
         "probationPeriod": {
           "label": "Proeftijd"
@@ -1170,10 +1180,20 @@
           "label": "BSN"
         },
         "dateOfEmployment": {
-          "label": "Startdatum Dienstverband"
+          "label": "Datum van indiensttreding"
+        },
+        "employmentStartDate": {
+          "label": "Startdatum dienstverband",
+          "required": "Startdatum dienstverband is verplicht"
+        },
+        "permanentContract": {
+          "label": "Vast contract"
+        },
+        "contractDuration": {
+          "label": "Contractduur (maanden)"
         },
         "lastWorkingDay": {
-          "label": "Einddatum Contract"
+          "label": "Laatste werkdag"
         },
         "probationPeriod": {
           "label": "Proeftijd"
