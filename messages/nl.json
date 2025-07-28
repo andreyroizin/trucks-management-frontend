@@ -4854,5 +4854,43 @@
       "submitting": "Opslaan...",
       "updateError": "Kon rit niet bijwerken"
     }
+  },
+  "signContract": {
+    "title": "Arbeidscontract",
+    "noAccessCode": {
+      "title": "Geen geldige toegangscode opgegeven",
+      "button": "Toegangscode Handmatig Invoeren"
+    },
+    "enterCode": {
+      "title": "Toegangscode Invoeren",
+      "label": "Toegangscode",
+      "button": "Contract Bekijken",
+      "error": "Verkeerde code. Probeer opnieuw."
+    },
+    "loadError": "Kon contract niet laden.",
+    "contract": {
+      "fields": {
+        "contractId": "Contract ID",
+        "employeeName": "Naam Werknemer",
+        "companyName": "Bedrijfsnaam",
+        "function": "Functie"
+      },
+      "notAvailable": "N.v.t."
+    },
+    "signature": {
+      "instruction": "Gelieve hieronder te tekenen:",
+      "clearButton": "Wissen",
+      "agreementLabel": "Ik ga akkoord om dit contract elektronisch te ondertekenen",
+      "signButton": "Contract Ondertekenen",
+      "signing": "Ondertekenen...",
+      "alerts": {
+        "noSignaturePad": "Geen handtekeningveld gevonden",
+        "mustAgree": "U moet akkoord gaan om elektronisch te ondertekenen",
+        "provideSignature": "Gelieve een handtekening te plaatsen",
+        "contractNotRendered": "Contract is nog niet geladen.",
+        "success": "Contract succesvol ondertekend!",
+        "error": "Fout bij ondertekenen contract"
+      }
+    }
   }
 }

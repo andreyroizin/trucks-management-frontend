@@ -2195,5 +2195,43 @@
       "submitting": "Saving...",
       "updateError": "Failed to update ride"
     }
+  },
+  "signContract": {
+    "title": "Employment Contract",
+    "noAccessCode": {
+      "title": "No valid access code provided",
+      "button": "Enter Access Code Manually"
+    },
+    "enterCode": {
+      "title": "Enter Access Code",
+      "label": "Access Code",
+      "button": "View Contract",
+      "error": "Wrong code. Please try again."
+    },
+    "loadError": "Failed to load contract.",
+    "contract": {
+      "fields": {
+        "contractId": "Contract ID",
+        "employeeName": "Employee Name",
+        "companyName": "Company Name",
+        "function": "Function"
+      },
+      "notAvailable": "N/A"
+    },
+    "signature": {
+      "instruction": "Please sign below:",
+      "clearButton": "Clear",
+      "agreementLabel": "I agree to sign this contract electronically",
+      "signButton": "Sign Contract",
+      "signing": "Signing...",
+      "alerts": {
+        "noSignaturePad": "No signature pad found",
+        "mustAgree": "You must agree to sign electronically",
+        "provideSignature": "Please provide a signature",
+        "contractNotRendered": "Contract is not rendered yet.",
+        "success": "Contract signed successfully!",
+        "error": "Error signing contract"
+      }
+    }
   }
 }

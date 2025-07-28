@@ -19,6 +19,7 @@ import type {SignatureCanvasProps, SignatureCanvas} from 'react-signature-canvas
 import {usePublicContractDetail} from '@/hooks/usePublicContractDetail';
 import {useSignPublicContract} from '@/hooks/useSignPublicContract';
 import {generateContractPdf} from "@/utils/pdf/generateContractPdf";
+import { useTranslations } from 'next-intl';
 
 // We must dynamically import SignatureCanvas in Next.js
 const SignatureCanvasComponent = dynamic(
@@ -33,6 +34,7 @@ function SignContractPageInner() {
     const searchParams = useSearchParams();
     const contractId = params?.id as string || '';
     const codeFromUrl = searchParams?.get('access') || '';
+    const t = useTranslations('signContract');
 
     // If codeFromUrl is invalid or empty, user must type it. If it’s correct but leads to error => we also ask user again
     const [accessCode, setAccessCode] = useState(codeFromUrl);
@@ -70,22 +72,22 @@ function SignContractPageInner() {
 
     const handleSign = async () => {
         if (!signatureRef.current) {
-            alert('No signature pad found');
+            alert(t('signature.alerts.noSignaturePad'));
             return;
         }
         if (!agree) {
-            alert('You must agree to sign electronically');
+            alert(t('signature.alerts.mustAgree'));
             return;
         }
         // Ensure user has actually drawn something
         if (signatureRef.current.isEmpty()) {
-            alert('Please provide a signature');
+            alert(t('signature.alerts.provideSignature'));
             return;
         }
         const signature = signatureRef.current.toDataURL();
 
         if (!contractRef.current) {
-            alert('Contract is not rendered yet.');
+            alert(t('signature.alerts.contractNotRendered'));
             return;
         }
 
@@ -98,9 +100,9 @@ function SignContractPageInner() {
                 signature,
                 pdfFile: pdfBlob
             });
-            alert('Contract signed successfully!');
+            alert(t('signature.alerts.success'));
         } catch (err: any) {
-            alert(err.message || 'Error signing contract');
+            alert(err.message || t('signature.alerts.error'));
         }
     };
 
@@ -113,10 +115,10 @@ function SignContractPageInner() {
         return (
             <Box textAlign="center" mt={4}>
                 <Typography variant="h6" mb={2}>
-                    No valid access code provided
+                    {t('noAccessCode.title')}
                 </Typography>
                 <Button variant="contained" onClick={() => setManuallyAsked(true)}>
-                    Enter Access Code Manually
+                    {t('noAccessCode.button')}
                 </Button>
             </Box>
         );
@@ -127,22 +129,22 @@ function SignContractPageInner() {
         return (
             <Box display="flex" flexDirection="column" maxWidth="400px" mx="auto" mt={4}>
                 <Typography variant="h6" mb={2}>
-                    Enter Access Code
+                    {t('enterCode.title')}
                 </Typography>
                 {isError && (
                     <Alert severity="error" sx={{mb: 2}}>
-                        {error?.message || 'Wrong code. Please try again.'}
+                        {error?.message || t('enterCode.error')}
                     </Alert>
                 )}
                 <TextField
                     value={userCode}
                     onChange={(e) => setUserCode(e.target.value)}
-                    label="Access Code"
+                    label={t('enterCode.label')}
                     fullWidth
                     margin="normal"
                 />
                 <Button variant="contained" onClick={handleViewContract}>
-                    View Contract
+                    {t('enterCode.button')}
                 </Button>
             </Box>
         );
@@ -162,7 +164,7 @@ function SignContractPageInner() {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
                 <Alert severity="error">
-                    {error?.message || 'Failed to load contract.'}
+                    {error?.message || t('loadError')}
                 </Alert>
             </Box>
         );
@@ -173,24 +175,24 @@ function SignContractPageInner() {
         <Box maxWidth="700px" mx="auto" mt={4} mb={4}>
             <Paper sx={{p: 2}} ref={contractRef}>
                 <Typography variant="h4" mb={2} align="center">
-                    Employment Contract
+                    {t('title')}
                 </Typography>
 
                 {/* Basic fields for demonstration */}
                 <Typography variant="body1" gutterBottom>
-                    <strong>Contract ID: </strong>{contractData.id}
+                    <strong>{t('contract.fields.contractId')}: </strong>{contractData.id}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    <strong>Employee Name: </strong>
+                    <strong>{t('contract.fields.employeeName')}: </strong>
                     {contractData.employeeFirstName} {contractData.employeeLastName}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    <strong>Company Name: </strong>
-                    {contractData.companyName || 'N/A'}
+                    <strong>{t('contract.fields.companyName')}: </strong>
+                    {contractData.companyName || t('contract.notAvailable')}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    <strong>Function: </strong>
-                    {contractData.function || 'N/A'}
+                    <strong>{t('contract.fields.function')}: </strong>
+                    {contractData.function || t('contract.notAvailable')}
                 </Typography>
 
                 {/* Use below page breaker to break the page and add a new one */}
@@ -199,7 +201,7 @@ function SignContractPageInner() {
                 {/* Show signature button or pad */}
                 <>
                     <Box mt={2}>
-                        <Typography>Please sign below:</Typography>
+                        <Typography>{t('signature.instruction')}</Typography>
                         <SignatureCanvasComponent
                             ref={signatureRef}
                             penColor="black"
@@ -211,7 +213,7 @@ function SignContractPageInner() {
                         />
                         <Box mt={1}>
                             <Button variant="outlined" onClick={handleClearSignature}>
-                                Clear
+                                {t('signature.clearButton')}
                             </Button>
                         </Box>
                     </Box>
@@ -220,7 +222,7 @@ function SignContractPageInner() {
                         control={
                             <Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)}/>
                         }
-                        label="I agree to sign this contract electronically"
+                        label={t('signature.agreementLabel')}
                     />
                     <Button
                         variant="contained"
@@ -228,7 +230,7 @@ function SignContractPageInner() {
                         disabled={signing}
                         onClick={handleSign}
                     >
-                        {signing ? 'Signing...' : 'Sign Contract'}
+                        {signing ? t('signature.signing') : t('signature.signButton')}
                     </Button>
                 </>
             </Paper>
