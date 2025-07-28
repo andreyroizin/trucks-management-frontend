@@ -45,12 +45,9 @@ type FormInputs = {
     WorkweekDurationPercentage?: number;    // Calculated - backend: WorkweekDurationPercentage
     WeeklySchedule?: string;                // Optional - backend: WeeklySchedule
     WorkingHours?: string;                  // Optional - backend: WorkingHours
-    CompensationPerMonthExclBtw?: number;   // Optional - backend: CompensationPerMonthExclBtw
-    CompensationPerMonthInclBtw?: number;   // Calculated - backend: CompensationPerMonthInclBtw
     PayScale?: string;                      // Optional - backend: PayScale
     PayScaleStep?: number;                  // Optional - backend: PayScaleStep
     HourlyWage100Percent?: number;          // Optional - backend: HourlyWage100Percent
-    DeviatingWage?: number;                 // Optional - backend: DeviatingWage
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
     VacationAge?: number;                   // Optional - backend: VacationAge
     VacationDays?: number;                  // Optional - backend: VacationDays
@@ -98,11 +95,9 @@ export default function CreateDriverPage() {
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
         WeeklySchedule: yup.string().optional(),
         WorkingHours: yup.string().optional(),
-        CompensationPerMonthExclBtw: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         HourlyWage100Percent: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        DeviatingWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -148,11 +143,9 @@ export default function CreateDriverPage() {
             WorkweekDuration: 40, // Keep 40 as reasonable default for work hours
             WeeklySchedule: '',
             WorkingHours: '',
-            CompensationPerMonthExclBtw: undefined,
             PayScale: '',
             PayScaleStep: undefined,
             HourlyWage100Percent: undefined,
-            DeviatingWage: undefined,
             CommuteKilometers: undefined,
             VacationAge: undefined,
             VacationDays: undefined,
@@ -170,10 +163,7 @@ export default function CreateDriverPage() {
     const workweekDuration = watch('WorkweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
 
-    // Watch monthly compensation to calculate VAT inclusion
-    const monthlyCompensationExclVat = watch('CompensationPerMonthExclBtw');
-    const monthlyCompensationInclVat = monthlyCompensationExclVat ? 
-        Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
+
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -731,47 +721,7 @@ export default function CreateDriverPage() {
                             {t('drivers.create.sections.compensation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            {/* Monthly Compensation Excl. VAT & Incl. VAT */}
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="CompensationPerMonthExclBtw"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.compensationPerMonthExclBtw.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.CompensationPerMonthExclBtw}
-                                            helperText={errors.CompensationPerMonthExclBtw?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0"
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label={t('drivers.create.fields.monthlyCompensationIncl.label')}
-                                    value={monthlyCompensationInclVat.toFixed(2)}
-                                    fullWidth
-                                    margin="normal"
-                                    variant="outlined"
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                    sx={{
-                                        '& .MuiInputBase-input': {
-                                            backgroundColor: 'grey.50',
-                                        },
-                                    }}
-                                />
-                            </Grid>
+
 
                             {/* Pay Scale & Pay Step */}
                             <Grid item xs={12} sm={6}>
@@ -830,29 +780,6 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.HourlyWage100Percent}
                                             helperText={errors.HourlyWage100Percent?.message}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0"
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="DeviatingWage"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.deviatingWage.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.DeviatingWage}
-                                            helperText={errors.DeviatingWage?.message}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             inputProps={{
                                                 step: "0.01",

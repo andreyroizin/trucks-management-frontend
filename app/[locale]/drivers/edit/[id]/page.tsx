@@ -48,12 +48,9 @@ type FormInputs = {
     WorkweekDurationPercentage?: number;    // Calculated - backend: workweekDurationPercentage
     WeeklySchedule?: string;                // Optional - backend: weeklySchedule
     WorkingHours?: string;                  // Optional - backend: workingHours
-    CompensationPerMonthExclBtw?: number;   // Optional - backend: compensationPerMonthExclBtw
-    CompensationPerMonthInclBtw?: number;   // Calculated - backend: compensationPerMonthInclBtw
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
     HourlyWage100Percent?: number;          // Optional - backend: hourlyWage100Percent
-    DeviatingWage?: number;                 // Optional - backend: deviatingWage
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
     VacationAge?: number;                   // Optional - backend: vacationAge
     VacationDays?: number;                  // Optional - backend: vacationDays
@@ -111,11 +108,9 @@ export default function EditDriverPage() {
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
         WeeklySchedule: yup.string().optional(),
         WorkingHours: yup.string().optional(),
-        CompensationPerMonthExclBtw: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         HourlyWage100Percent: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        DeviatingWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -153,14 +148,12 @@ export default function EditDriverPage() {
             ProbationPeriod: '',
             NoticePeriod: '',
             Function: '',
-            WorkweekDuration: 40 as number,
+            WorkweekDuration: undefined,
             WeeklySchedule: '',
             WorkingHours: '',
-            CompensationPerMonthExclBtw: undefined,
             PayScale: '',
             PayScaleStep: undefined,
             HourlyWage100Percent: undefined,
-            DeviatingWage: undefined,
             CommuteKilometers: undefined,
             VacationAge: undefined,
             VacationDays: undefined,
@@ -177,49 +170,32 @@ export default function EditDriverPage() {
     const workweekDuration = watch('WorkweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
 
-    // Watch monthly compensation to calculate VAT inclusion
-    const monthlyCompensationExclVat = watch('CompensationPerMonthExclBtw');
-    const monthlyCompensationInclVat = monthlyCompensationExclVat ? 
-        Math.round((monthlyCompensationExclVat + (monthlyCompensationExclVat * 0.21)) * 100) / 100 : 0;
-
-    // Prefill data once fetched
+    // Pre-fill form when driver data is loaded
     useEffect(() => {
         if (driverData) {
-            // Format dates for HTML input
-            const formatDateForInput = (dateString?: string) => {
-                if (!dateString) return '';
-                try {
-                    return new Date(dateString).toISOString().split('T')[0];
-                } catch {
-                    return '';
-                }
-            };
-
             reset({
                 CompanyId: driverData.companyId || '',
                 Email: driverData.email || '',
                 FirstName: driverData.firstName || '',
                 LastName: driverData.lastName || '',
-                DateOfBirth: formatDateForInput(driverData.dateOfBirth),
+                DateOfBirth: driverData.dateOfBirth ? driverData.dateOfBirth.split('T')[0] : '',
                 PhoneNumber: driverData.phoneNumber || '',
                 Address: driverData.address || '',
                 Postcode: driverData.postcode || '',
                 City: driverData.city || '',
                 Country: driverData.country || '',
                 BSN: driverData.bsn || '',
-                DateOfEmployment: formatDateForInput(driverData.dateOfEmployment),
-                LastWorkingDay: formatDateForInput(driverData.lastWorkingDay),
+                DateOfEmployment: driverData.dateOfEmployment ? driverData.dateOfEmployment.split('T')[0] : '',
+                LastWorkingDay: driverData.lastWorkingDay ? driverData.lastWorkingDay.split('T')[0] : '',
                 ProbationPeriod: driverData.probationPeriod || '',
                 NoticePeriod: driverData.noticePeriod || '',
                 Function: driverData.function || '',
-                WorkweekDuration: driverData.workweekDuration ? Number(driverData.workweekDuration) : 40,
+                WorkweekDuration: driverData.workweekDuration ? Number(driverData.workweekDuration) : undefined,
                 WeeklySchedule: driverData.weeklySchedule || '',
                 WorkingHours: driverData.workingHours || '',
-                CompensationPerMonthExclBtw: driverData.compensationPerMonthExclBtw ? Number(driverData.compensationPerMonthExclBtw) : undefined,
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
                 HourlyWage100Percent: driverData.hourlyWage100Percent ? Number(driverData.hourlyWage100Percent) : undefined,
-                DeviatingWage: driverData.deviatingWage ? Number(driverData.deviatingWage) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
                 VacationAge: driverData.vacationAge ? Number(driverData.vacationAge) : undefined,
                 VacationDays: driverData.vacationDays ? Number(driverData.vacationDays) : undefined,
@@ -247,20 +223,15 @@ export default function EditDriverPage() {
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            // Clean data by removing empty strings and undefined values
-            const cleanedData = Object.fromEntries(
-                Object.entries(data).filter(([key, value]) => 
-                    value !== undefined && value !== null && value !== ''
-                )
-            ) as FormInputs;
+            // Clean data by removing empty strings and null values
+            const cleanedEntries = Object.entries(data).filter(([key, value]) => 
+                value !== undefined && value !== null && value !== ''
+            );
+            const cleanedData = Object.fromEntries(cleanedEntries) as any;
 
-            // Calculate computed fields
+            // Add calculated fields
             if (cleanedData.WorkweekDuration) {
                 cleanedData.WorkweekDurationPercentage = Math.round((cleanedData.WorkweekDuration / 40) * 100);
-            }
-            
-            if (cleanedData.CompensationPerMonthExclBtw) {
-                cleanedData.CompensationPerMonthInclBtw = Math.round((cleanedData.CompensationPerMonthExclBtw + (cleanedData.CompensationPerMonthExclBtw * 0.21)) * 100) / 100;
             }
 
             // Format dates to ISO 8601 format if they exist
@@ -274,7 +245,7 @@ export default function EditDriverPage() {
                 cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
             }
 
-            // Convert field names to backend format (camelCase)
+            // Prepare data for backend
             const backendData = {
                 companyId: cleanedData.CompanyId,
                 email: cleanedData.Email,
@@ -296,12 +267,9 @@ export default function EditDriverPage() {
                 workweekDurationPercentage: cleanedData.WorkweekDurationPercentage,
                 weeklySchedule: cleanedData.WeeklySchedule,
                 workingHours: cleanedData.WorkingHours,
-                compensationPerMonthExclBtw: cleanedData.CompensationPerMonthExclBtw,
-                compensationPerMonthInclBtw: cleanedData.CompensationPerMonthInclBtw,
                 payScale: cleanedData.PayScale,
                 payScaleStep: cleanedData.PayScaleStep,
                 hourlyWage100Percent: cleanedData.HourlyWage100Percent,
-                deviatingWage: cleanedData.DeviatingWage,
                 commuteKilometers: cleanedData.CommuteKilometers,
                 vacationAge: cleanedData.VacationAge,
                 vacationDays: cleanedData.VacationDays,
@@ -825,42 +793,7 @@ export default function EditDriverPage() {
                             {t('drivers.edit.sections.compensation')}
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="CompensationPerMonthExclBtw"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.compensationPerMonthExclBtw.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.CompensationPerMonthExclBtw}
-                                            helperText={errors.CompensationPerMonthExclBtw?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    label={t('drivers.edit.fields.monthlyCompensationIncl.label')}
-                                    value={monthlyCompensationInclVat.toFixed(2)}
-                                    fullWidth
-                                    margin="normal"
-                                    variant="outlined"
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                    sx={{
-                                        '& .MuiInputBase-input': {
-                                            backgroundColor: 'grey.50',
-                                        },
-                                    }}
-                                />
-                            </Grid>
+                            {/* Pay Scale & Pay Step */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="PayScale"
@@ -897,6 +830,8 @@ export default function EditDriverPage() {
                                     )}
                                 />
                             </Grid>
+
+                            {/* Hourly Wage (100%) */}
                             <Grid item xs={12} sm={6}>
                                 <Controller
                                     name="HourlyWage100Percent"
@@ -911,25 +846,6 @@ export default function EditDriverPage() {
                                             variant="outlined"
                                             error={!!errors.HourlyWage100Percent}
                                             helperText={errors.HourlyWage100Percent?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="DeviatingWage"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.deviatingWage.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.DeviatingWage}
-                                            helperText={errors.DeviatingWage?.message}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                                         />
                                     )}
