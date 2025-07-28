@@ -4648,5 +4648,35 @@
         }
       }
     }
+  },
+  "periods": {
+    "driver": {
+      "pending": {
+        "title": "Openstaande Periodes",
+        "description": "Deze periodes wachten op goedkeuring of voltooiing. Klik op een periode om details te bekijken."
+      },
+      "archived": {
+        "title": "Gearchiveerde Periodes",
+        "description": "Bekijk uw voltooide en afgesloten periodes. Alle gegevens worden bewaard voor uw administratie."
+      },
+      "current": {
+        "title": "Huidige Periode",
+        "subtitle": "Hier is een overzicht van uw huidige werkperiode. Volg uw voortgang en aankomende deadlines.",
+        "error": "Kon huidige periode niet laden.",
+        "viewOlder": "Bekijk Oudere Periodes"
+      },
+      "detail": {
+        "title": "Periode {period}",
+        "summary": "Gedetailleerde weergave van uw werkperiode inclusief verdiensten en urenopstelling.",
+        "forecasted": "Verwachte Verdiensten",
+        "totalHoursWorked": "Totaal Gewerkte Uren",
+        "loadError": "Kon periode niet laden."
+      },
+      "common": {
+        "loadError": "Kon periodes niet laden.",
+        "period": "Periode",
+        "labelRowsPerPage": "Rijen per pagina:"
+      }
+    }
   }
 }
