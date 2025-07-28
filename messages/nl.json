@@ -4693,5 +4693,75 @@
     },
     "noRolesAssigned": "Geen rollen toegewezen",
     "notAvailable": "N.v.t."
+  },
+  "rates": {
+    "overview": {
+      "title": "Tarieven voor Klant",
+      "createButton": "Nieuw tarief aanmaken",
+      "loadError": "Kon tarieven niet laden.",
+      "table": {
+        "headers": {
+          "name": "Naam",
+          "value": "Waarde",
+          "company": "Bedrijf"
+        },
+        "rowsPerPage": "Rijen per pagina:"
+      }
+    },
+    "create": {
+      "title": "Tarief Aanmaken",
+      "loadingText": "Toeslag aanmaakformulier laden...",
+      "fields": {
+        "name": {
+          "label": "Tariefnaam",
+          "required": "Naam is verplicht"
+        },
+        "value": {
+          "label": "Tariefwaarde",
+          "required": "Waarde is verplicht",
+          "positive": "Waarde moet groter zijn dan nul"
+        }
+      },
+      "button": "Tarief Aanmaken",
+      "submitting": "Aanmaken..."
+    },
+    "detail": {
+      "title": "Tariefdetails",
+      "loadError": "Kon tariefdetails niet laden.",
+      "fields": {
+        "name": "Naam",
+        "value": "Waarde",
+        "receiver": "Ontvanger",
+        "transporter": "Vervoerder"
+      },
+      "actions": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Tarief Verwijderen?",
+        "message": "Weet je zeker dat je dit tarief wilt verwijderen?"
+      },
+      "deleteError": "Kon tarief niet verwijderen"
+    },
+    "edit": {
+      "title": "Tarief Bewerken",
+      "loadError": "Kon tariefdetails niet laden.",
+      "fields": {
+        "name": {
+          "label": "Tariefnaam",
+          "required": "Tariefnaam is verplicht"
+        },
+        "value": {
+          "label": "Tariefwaarde",
+          "required": "Waarde is verplicht",
+          "positive": "Waarde moet groter zijn dan nul"
+        }
+      },
+      "button": "Wijzigingen Opslaan",
+      "submitting": "Opslaan...",
+      "updateError": "Kon tarief niet bijwerken."
+    }
   }
 }

@@ -2034,5 +2034,75 @@
     },
     "noRolesAssigned": "No roles assigned",
     "notAvailable": "N/A"
+  },
+  "rates": {
+    "overview": {
+      "title": "Rates for Client",
+      "createButton": "Create new rate",
+      "loadError": "Failed to load rates.",
+      "table": {
+        "headers": {
+          "name": "Name",
+          "value": "Value",
+          "company": "Company"
+        },
+        "rowsPerPage": "Rows per page:"
+      }
+    },
+    "create": {
+      "title": "Create Rate",
+      "loadingText": "Loading create surcharge form...",
+      "fields": {
+        "name": {
+          "label": "Rate Name",
+          "required": "Name is required"
+        },
+        "value": {
+          "label": "Rate Value",
+          "required": "Value is required",
+          "positive": "Value must be greater than zero"
+        }
+      },
+      "button": "Create Rate",
+      "submitting": "Creating..."
+    },
+    "detail": {
+      "title": "Rate Detail",
+      "loadError": "Failed to load rate details.",
+      "fields": {
+        "name": "Name",
+        "value": "Value",
+        "receiver": "Receiver",
+        "transporter": "Transporter"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Rate?",
+        "message": "Are you sure you want to delete this rate?"
+      },
+      "deleteError": "Failed to delete rate"
+    },
+    "edit": {
+      "title": "Edit Rate",
+      "loadError": "Failed to load rate details.",
+      "fields": {
+        "name": {
+          "label": "Rate Name",
+          "required": "Rate name is required"
+        },
+        "value": {
+          "label": "Rate Value",
+          "required": "Value is required",
+          "positive": "Value must be greater than zero"
+        }
+      },
+      "button": "Save Changes",
+      "submitting": "Saving...",
+      "updateError": "Failed to update rate."
+    }
   }
 }

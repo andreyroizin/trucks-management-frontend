@@ -8,6 +8,7 @@ import { useDeleteRate } from '@/hooks/useDeleteRate';
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function RateDetailPage() {
     const { id } = useParams();
@@ -15,6 +16,7 @@ export default function RateDetailPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const t = useTranslations('rates.detail');
 
     // Fetch rate details
     const { data: rate, isLoading, isError, error } = useRateDetail(id as string);
@@ -39,7 +41,7 @@ export default function RateDetailPage() {
             setOpenModal(false);
             router.push('/clients');
         } catch (err: any) {
-            setDeleteError(err.message || 'Failed to delete rate');
+            setDeleteError(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -55,7 +57,7 @@ export default function RateDetailPage() {
     if (isError || !rate) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load rate details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -71,12 +73,12 @@ export default function RateDetailPage() {
             <Card>
                 <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h5">Rate Detail</Typography>
+                        <Typography variant="h5">{t('title')}</Typography>
                         {(isGlobalAdmin || isCustomerAdmin) && (
                             <Box>
                                 <Link href={`/rates/edit/${rate.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
-                                        Edit
+                                        {t('actions.edit')}
                                     </Button>
                                 </Link>
                                 <Button
@@ -85,19 +87,19 @@ export default function RateDetailPage() {
                                     disabled={isDeleting}
                                     onClick={() => setOpenModal(true)}
                                 >
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
+                                    {isDeleting ? t('actions.deleting') : t('actions.delete')}
                                 </Button>
                             </Box>
                         )}
                     </Box>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Name:</strong> {rate.name}
+                        <strong>{t('fields.name')}:</strong> {rate.name}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Value:</strong> {rate.value?.toFixed(2)}
+                        <strong>{t('fields.value')}:</strong> {rate.value?.toFixed(2)}
                     </Typography>
                     <Typography variant="body1">
-                        <strong>Receiver:</strong>{' '}
+                        <strong>{t('fields.receiver')}:</strong>{' '}
                         <Link href={`/clients/${rate.clientId}`} passHref>
                             <Button variant="text" size="small">
                                 {rate.clientName}
@@ -106,7 +108,7 @@ export default function RateDetailPage() {
                     </Typography>
 
                     <Typography variant="body1">
-                        <strong>Transporter:</strong>{' '}
+                        <strong>{t('fields.transporter')}:</strong>{' '}
                         <Link href={`/companies/${rate.companyId}`} passHref>
                             <Button variant="text" size="small">
                                 {rate.companyName}
@@ -118,8 +120,8 @@ export default function RateDetailPage() {
 
             <ConfirmModal
                 open={openModal}
-                title="Delete Rate?"
-                message="Are you sure you want to delete this rate?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />

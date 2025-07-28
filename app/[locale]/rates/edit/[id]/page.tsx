@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import {
@@ -16,17 +16,19 @@ import * as yup from 'yup';
 import { useAuth } from '@/hooks/useAuth';
 import { useRateDetail } from '@/hooks/useRateDetail';
 import { useEditRate, EditRateInput } from '@/hooks/useEditRate';
-
-// Validation Schema
-const rateSchema = yup.object().shape({
-    name: yup.string().required('Rate name is required'),
-    value: yup.number().positive('Value must be greater than zero').required('Value is required'),
-});
+import { useTranslations } from 'next-intl';
 
 export default function EditRatePage() {
     const router = useRouter();
     const { id } = useParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('rates.edit');
+
+    // Validation Schema
+    const rateSchema = useMemo(() => yup.object().shape({
+        name: yup.string().required(t('fields.name.required')),
+        value: yup.number().positive(t('fields.value.positive')).required(t('fields.value.required')),
+    }), [t]);
 
     // Fetch rate details
     const { data: rate, isLoading, isError, error } = useRateDetail(id as string);
@@ -73,7 +75,7 @@ export default function EditRatePage() {
             await mutateAsync({ id: id as string, ...data });
             router.push(`/rates/detail/${id}`);
         } catch (err: any) {
-            setMutationError(err.message || 'Failed to update rate.');
+            setMutationError(err.message || t('updateError'));
         }
     };
 
@@ -88,7 +90,7 @@ export default function EditRatePage() {
     if (isError || !rate) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load rate details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -96,7 +98,7 @@ export default function EditRatePage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Edit Rate
+                {t('title')}
             </Typography>
 
             {/* Display Mutation Error */}
@@ -114,7 +116,7 @@ export default function EditRatePage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Rate Name"
+                            label={t('fields.name.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -132,7 +134,7 @@ export default function EditRatePage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Rate Value"
+                            label={t('fields.value.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -147,7 +149,7 @@ export default function EditRatePage() {
                 {/* Submit Button */}
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Save Changes'}
+                        {isPending ? <CircularProgress size={20} /> : t('button')}
                     </Button>
                 </Box>
             </form>
