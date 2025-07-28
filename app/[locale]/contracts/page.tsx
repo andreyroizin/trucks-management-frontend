@@ -44,7 +44,7 @@ export default function ContractsPage() {
 
     // Fetch data for drivers + companies
     const { data: driversData, isLoading: loadingDrivers } = useDrivers();
-    const { data: companiesData, isLoading: loadingCompanies } = useCompanies();
+    const { data: companiesData, isLoading: loadingCompanies } = useCompanies(1, 1000);
 
     // Main query
     const { data, isLoading, isError, error } = useEmployeeContracts(

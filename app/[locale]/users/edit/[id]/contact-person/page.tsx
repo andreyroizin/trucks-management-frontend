@@ -51,7 +51,7 @@ export default function EditContactPersonPage() {
         data: companiesData,
         isLoading: isLoadingCompanies,
         isError: isErrorCompanies,
-    } = useCompanies();
+    } = useCompanies(1, 1000);
 
     // Fetch clients
     const {

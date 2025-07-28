@@ -44,7 +44,7 @@ export default function EditRidePage() {
     const { data: ride, isLoading, isError, error } = useRideDetail(id as string);
 
     // Companies for Autocomplete
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
+    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies(1, 1000);
 
     // Hook to update ride
     const { mutateAsync: editRide, isPending, isError: isEditError, error: editError } = useEditRide();

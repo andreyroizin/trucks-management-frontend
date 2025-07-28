@@ -116,7 +116,7 @@ function EditPartRidePageWrapper() {
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
-    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
+    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(1, 1000);
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(companyId ? [companyId] : [], 1, 1000);

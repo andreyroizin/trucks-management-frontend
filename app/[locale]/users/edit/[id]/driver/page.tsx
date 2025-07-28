@@ -39,7 +39,7 @@ export default function EditDriverPage() {
     const { data: userDetails, isLoading: isLoadingUser, isError: isErrorUser } = useUserDetails(userId);
 
     // Fetch companies
-    const { data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies } = useCompanies();
+    const { data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies } = useCompanies(1, 1000);
 
     // Initialize the update hook
     const { mutateAsync: mutateUpdateDriver, isPending: isUpdatingDriver } = useUpdateUserDriver();

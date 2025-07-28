@@ -30,7 +30,7 @@ export default function CreateSurchargeComponent() {
     const clientId = searchParams.get('clientId') ?? '';
 
     // Fetch companies
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
+    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies(1, 1000);
 
     // Mutation Hook
     const { mutateAsync, isPending } = useCreateSurcharge();

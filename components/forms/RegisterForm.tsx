@@ -69,7 +69,7 @@ export default function RegisterForm() {
         },
     });
 
-    const {data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies} = useCompanies();
+    const {data: companies, isLoading: isLoadingCompanies, isError: isErrorCompanies} = useCompanies(1, 1000);
     const {data: clients, isLoading: isLoadingClients, isError: isErrorClients} = useClients(1, 1000);
     const {data: roles, isLoading: isLoadingRoles, isError: isErrorRoles} = useRoles();
 

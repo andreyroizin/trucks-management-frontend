@@ -70,7 +70,7 @@ export default function EditEmployeeContractPage() {
 
     // 2) Fetch data for Autocomplete
     const {data: driversData, isLoading: loadingDrivers} = useDrivers();
-    const {data: companiesData, isLoading: loadingCompanies} = useCompanies();
+    const {data: companiesData, isLoading: loadingCompanies} = useCompanies(1, 1000);
 
     // 3) Fetch existing contract detail
     const {

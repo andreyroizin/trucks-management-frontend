@@ -42,7 +42,7 @@ function ChartersInner() {
 
     // Query
     const {data: chartersData, isLoading, isError, error} = useCharters(companyId, clientId, page + 1, pageSize);
-    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies();
+    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(1, 1000);
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
 
     useEffect(() => {
