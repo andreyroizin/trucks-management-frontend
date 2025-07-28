@@ -1656,5 +1656,214 @@
         "loadFailed": "Неуспешно зареждане на детайлите за контактното лице."
       }
     }
+  },
+  "contracts": {
+    "title": "Трудови Договори",
+    "overview": {
+      "createContract": "Създай Договор",
+      "filters": {
+        "driver": "Шофьор",
+        "company": "Компания"
+      },
+      "table": {
+        "headers": {
+          "contractId": "ID на Договор",
+          "contractEmployee": "Служител по Договор",
+          "driverName": "Име на Шофьор",
+          "companyName": "Име на Компанията"
+        },
+        "rowsPerPage": "Редове на страница:"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на договори."
+      }
+    },
+    "detail": {
+      "title": "Детайли за Договор",
+      "actions": {
+        "edit": "Редактиране",
+        "delete": "Изтриване",
+        "deleting": "Изтриване...",
+        "downloadContract": "Изтегли Подписан Договор",
+        "downloading": "Изтегляне…"
+      },
+      "fields": {
+        "driver": "Шофьор",
+        "company": "Компания",
+        "contractStatus": "Статус на договор",
+        "contractSignedOn": "Договор подписан на",
+        "contractAccessCode": "Код за достъп до договор",
+        "releaseVersion": "Версия на Издание",
+        "nightHoursAllowed": "Нощни Часове Разрешени",
+        "kilometersAllowance": "Километрична Надбавка",
+        "commuteKilometers": "Километри до Работа",
+        "employeeName": "Име на Служител",
+        "employeeAddress": "Адрес на Служител",
+        "employeePostcode": "Пощенски Код на Служител",
+        "employeeCity": "Град на Служител",
+        "dateOfBirth": "Дата на Раждане",
+        "bsn": "БСН",
+        "dateOfEmployment": "Дата на Назначаване",
+        "lastWorkingDay": "Последен Работен Ден",
+        "function": "Функция",
+        "probationPeriod": "Изпитателен Срок",
+        "workweekDuration": "Продължителност на Работната Седмица",
+        "weeklySchedule": "Седмично Разписание",
+        "workingHours": "Работно Време",
+        "noticePeriod": "Срок за Предизвестие",
+        "payScale": "Заплатна Скала",
+        "payScaleStep": "Стъпка от Заплатната Скала",
+        "hourlyWage100Percent": "Часова Заплата 100%",
+        "deviatingWage": "Отклоняваща се Заплата",
+        "travelExpenses": "Пътни Разходи",
+        "maxTravelExpenses": "Максимални Пътни Разходи",
+        "vacationAge": "Възраст за Отпуск",
+        "vacationDays": "Дни Отпуск",
+        "atv": "АТВ",
+        "vacationAllowance": "Отпускна Надбавка",
+        "compensationPerMonthExclBtw": "Обезщетение/Месец (Без ДДС)",
+        "compensationPerMonthInclBtw": "Обезщетение/Месец (С ДДС)",
+        "companyName": "Име на Компанията",
+        "employerName": "Име на Работодател",
+        "companyAddress": "Адрес на Компанията",
+        "companyPostcode": "Пощенски Код на Компанията",
+        "companyCity": "Град на Компанията",
+        "companyPhoneNumber": "Телефон на Компанията",
+        "companyBtw": "ДДС на Компанията"
+      },
+      "status": {
+        "signed": "Подписан",
+        "pending": "В очакване"
+      },
+      "booleans": {
+        "yes": "Да",
+        "no": "Не"
+      },
+      "notAvailable": "Н/Д",
+      "hours": "часа",
+      "deleteModal": {
+        "title": "Изтриване на Договор",
+        "message": "Сигурни ли сте, че искате да изтриете този договор? Това действие не може да бъде отменено."
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на договор.",
+        "deleteFailed": "Неуспешно изтриване на договор",
+        "missingAccessCode": "Липсва код за достъп",
+        "downloadFailed": "Неуспешно изтегляне"
+      }
+    },
+    "create": {
+      "title": "Създаване на Трудов Договор",
+      "fields": {
+        "driver": "Шофьор (по избор)",
+        "driverHelp": "Ако е избран, ще попълним името автоматично",
+        "commuteKilometers": "Километри до Работа",
+        "commuteKilometersHelp": "Разстояние от дома до работа в км (по избор)",
+        "employeeFirstName": "Име на Служител *",
+        "employeeFirstNameHelp": "Това е задължително поле",
+        "employeeLastName": "Фамилия на Служител *",
+        "employeeLastNameHelp": "Това е задължително поле",
+        "employeeAddress": "Адрес на Служител",
+        "employeeAddressHelp": "Улица + Номер (по избор)",
+        "employeePostcode": "Пощенски Код на Служител",
+        "employeePostcodeHelp": "Пощенски код (по избор)",
+        "employeeCity": "Град на Служител",
+        "employeeCityHelp": "Град (по избор)",
+        "dateOfBirth": "Дата на Раждане",
+        "dateOfBirthHelp": "ДД-ММ-ГГГГ",
+        "bsn": "БСН",
+        "bsnHelp": "Номер на гражданска услуга (по избор)",
+        "dateOfEmployment": "Дата на Назначаване",
+        "dateOfEmploymentHelp": "ДД-ММ-ГГГГ",
+        "lastWorkingDay": "Последен Работен Ден",
+        "lastWorkingDayHelp": "ДД-ММ-ГГГГ",
+        "function": "Функция",
+        "functionHelp": "Длъжност (по избор)",
+        "probationPeriod": "Изпитателен Срок",
+        "probationPeriodHelp": "напр. '2 месеца' (по избор)",
+        "workweekDuration": "Работна Седмица (часа)",
+        "workweekDurationHelp": "Часове/седмица (по избор)",
+        "weeklySchedule": "Седмично Разписание",
+        "weeklyScheduleHelp": "напр. 'Пон-Пет' (по избор)",
+        "workingHours": "Работно Време",
+        "workingHoursHelp": "напр. '07:00 - 19:00' (по избор)",
+        "noticePeriod": "Срок за Предизвестие",
+        "noticePeriodHelp": "напр. '1 месец' (по izbor)",
+        "nightHoursAllowed": "Нощни Часове Разрешени?",
+        "kilometersAllowanceAllowed": "Километрична Надбавка Разрешена?",
+        "company": "Компания (по избор)",
+        "companyHelp": "Свържете този договор с съществуваща компания",
+        "companyName": "Име на Компанията *",
+        "companyNameHelp": "Задължително име на компанията",
+        "employerName": "Име на Работодател *",
+        "employerNameHelp": "Име на лицето/работодателя",
+        "companyAddress": "Адрес на Компанията",
+        "companyAddressHelp": "Улица + Номер (по избор)",
+        "companyPostcode": "Пощенски Код на Компанията",
+        "companyPostcodeHelp": "Пощенски код (по избор)",
+        "companyCity": "Град на Компанията",
+        "companyCityHelp": "Град (по избор)",
+        "companyPhoneNumber": "Телефон на Компанията",
+        "companyPhoneNumberHelp": "Телефон за контакт (по избор)",
+        "companyBtw": "ДДС на Компанията",
+        "companyBtwHelp": "Данъчен номер (по избор)",
+        "payScale": "Заплатна Скала",
+        "payScaleHelp": "А, Б, В, Г, и т.н. (по избор)",
+        "payScaleStep": "Стъпка от Заплатната Скала",
+        "payScaleStepHelp": "1, 2, 3, и т.н. (по избор)",
+        "hourlyWage100Percent": "Часова Заплата 100%",
+        "hourlyWage100PercentHelp": "Основна часова ставка (по избор)",
+        "deviatingWage": "Отклоняваща се Заплата",
+        "deviatingWageHelp": "Различна часова ставка ако е приложимо (по избор)",
+        "travelExpenses": "Пътни Разходи",
+        "travelExpensesHelp": "Ставка на км (по избор)",
+        "maxTravelExpenses": "Максимални Пътни Разходи",
+        "maxTravelExpensesHelp": "Максимално обезщетение (по избор)",
+        "vacationAge": "Възраст за Отпуск",
+        "vacationAgeHelp": "Възраст за изчисляване на отпуск (по избор)",
+        "vacationDays": "Дни Отпуск",
+        "vacationDaysHelp": "Годишни дни отпуск (по избор)",
+        "atv": "АТВ",
+        "atvHelp": "Допълнително свободно време процент (по избор)",
+        "vacationAllowance": "Отпускна Надбавка",
+        "vacationAllowanceHelp": "Процент отпускни (по избор)",
+        "compensationPerMonthExclBtw": "Месечно Обезщетение (Без ДДС)",
+        "compensationPerMonthExclBtwHelp": "Сума без данък (по избор)",
+        "compensationPerMonthInclBtw": "Месечно Обезщетение (С ДДС)",
+        "compensationPerMonthInclBtwHelp": "Сума с данък (по избор)"
+      },
+      "actions": {
+        "submit": "Създай Договор",
+        "submitting": "Създаване..."
+      },
+      "validation": {
+        "employeeFirstNameRequired": "Името на служителя е задължително",
+        "employeeLastNameRequired": "Фамилията на служителя е задължителна",
+        "companyNameRequired": "Името на компанията е задължително",
+        "employerNameRequired": "Името на работодателя е задължително"
+      },
+      "errors": {
+        "createFailed": "Неуспешно създаване на договор"
+      }
+    },
+    "edit": {
+      "title": "Редактиране на Трудов Договор",
+      "actions": {
+        "submit": "Обнови Договор",
+        "submitting": "Обновяване..."
+      },
+      "validation": {
+        "contractIdRequired": "ID на договор е задължително",
+        "companyRequired": "Компанията е задължителна",
+        "employeeFirstNameRequired": "Името на служителя е задължително",
+        "employeeLastNameRequired": "Фамилията на служителя е задължителна",
+        "companyNameRequired": "Името на компанията е задължително",
+        "employerNameRequired": "Името на работодателя е задължително"
+      },
+      "errors": {
+        "loadFailed": "Неуспешно зареждане на детайли за договор",
+        "updateFailed": "Неуспешно обновяване на договор"
+      }
+    }
   }
 }

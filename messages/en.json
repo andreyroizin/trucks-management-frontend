@@ -1656,5 +1656,214 @@
         "loadFailed": "Failed to load contact person details."
       }
     }
+  },
+  "contracts": {
+    "title": "Employee Contracts",
+    "overview": {
+      "createContract": "Create Contract",
+      "filters": {
+        "driver": "Driver",
+        "company": "Company"
+      },
+      "table": {
+        "headers": {
+          "contractId": "Contract ID",
+          "contractEmployee": "Contract Employee",
+          "driverName": "Driver Name",
+          "companyName": "Company Name"
+        },
+        "rowsPerPage": "Rows per page:"
+      },
+      "errors": {
+        "loadFailed": "Failed to load contracts."
+      }
+    },
+    "detail": {
+      "title": "Contract Detail",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "downloadContract": "Download Signed Contract",
+        "downloading": "Downloading…"
+      },
+      "fields": {
+        "driver": "Driver",
+        "company": "Company",
+        "contractStatus": "Contract status",
+        "contractSignedOn": "Contract signed on",
+        "contractAccessCode": "Contract access code",
+        "releaseVersion": "Release Version",
+        "nightHoursAllowed": "Night Hours Allowed",
+        "kilometersAllowance": "Kilometers Allowance",
+        "commuteKilometers": "Commute Kilometers",
+        "employeeName": "Employee Name",
+        "employeeAddress": "Employee Address",
+        "employeePostcode": "Employee Postcode",
+        "employeeCity": "Employee City",
+        "dateOfBirth": "Date of Birth",
+        "bsn": "BSN",
+        "dateOfEmployment": "Date of Employment",
+        "lastWorkingDay": "Last Working Day",
+        "function": "Function",
+        "probationPeriod": "Probation Period",
+        "workweekDuration": "Workweek Duration",
+        "weeklySchedule": "Weekly Schedule",
+        "workingHours": "Working Hours",
+        "noticePeriod": "Notice Period",
+        "payScale": "Pay Scale",
+        "payScaleStep": "Pay Scale Step",
+        "hourlyWage100Percent": "Hourly Wage 100%",
+        "deviatingWage": "Deviating Wage",
+        "travelExpenses": "Travel Expenses",
+        "maxTravelExpenses": "Max Travel Expenses",
+        "vacationAge": "Vacation Age",
+        "vacationDays": "Vacation Days",
+        "atv": "ATV",
+        "vacationAllowance": "Vacation Allowance",
+        "compensationPerMonthExclBtw": "Compensation/Month (Excl. BTW)",
+        "compensationPerMonthInclBtw": "Compensation/Month (Incl. BTW)",
+        "companyName": "Company Name",
+        "employerName": "Employer Name",
+        "companyAddress": "Company Address",
+        "companyPostcode": "Company Postcode",
+        "companyCity": "Company City",
+        "companyPhoneNumber": "Company Phone",
+        "companyBtw": "Company BTW"
+      },
+      "status": {
+        "signed": "Signed",
+        "pending": "Pending"
+      },
+      "booleans": {
+        "yes": "Yes",
+        "no": "No"
+      },
+      "notAvailable": "N/A",
+      "hours": "hrs",
+      "deleteModal": {
+        "title": "Delete Contract",
+        "message": "Are you sure you want to delete this contract? This action cannot be undone."
+      },
+      "errors": {
+        "loadFailed": "Failed to load contract.",
+        "deleteFailed": "Failed to delete contract",
+        "missingAccessCode": "Missing access code",
+        "downloadFailed": "Download failed"
+      }
+    },
+    "create": {
+      "title": "Create Employee Contract",
+      "fields": {
+        "driver": "Driver (optional)",
+        "driverHelp": "If selected, we prefill the name",
+        "commuteKilometers": "Commute Kilometers",
+        "commuteKilometersHelp": "Distance from home to work in km (optional)",
+        "employeeFirstName": "Employee First Name *",
+        "employeeFirstNameHelp": "This is a required field",
+        "employeeLastName": "Employee Last Name *",
+        "employeeLastNameHelp": "This is a required field",
+        "employeeAddress": "Employee Address",
+        "employeeAddressHelp": "Street + Number (optional)",
+        "employeePostcode": "Employee Postcode",
+        "employeePostcodeHelp": "Postal code (optional)",
+        "employeeCity": "Employee City",
+        "employeeCityHelp": "City (optional)",
+        "dateOfBirth": "Date of Birth",
+        "dateOfBirthHelp": "DD-MM-YYYY",
+        "bsn": "BSN",
+        "bsnHelp": "Citizen service number (optional)",
+        "dateOfEmployment": "Date of Employment",
+        "dateOfEmploymentHelp": "DD-MM-YYYY",
+        "lastWorkingDay": "Last Working Day",
+        "lastWorkingDayHelp": "DD-MM-YYYY",
+        "function": "Function",
+        "functionHelp": "Job title (optional)",
+        "probationPeriod": "Probation Period",
+        "probationPeriodHelp": "e.g. '2 months' (optional)",
+        "workweekDuration": "Workweek (hrs)",
+        "workweekDurationHelp": "Hours/week (optional)",
+        "weeklySchedule": "Weekly Schedule",
+        "weeklyScheduleHelp": "e.g. 'Mon-Fri' (optional)",
+        "workingHours": "Working Hours",
+        "workingHoursHelp": "e.g. '07:00 - 19:00' (optional)",
+        "noticePeriod": "Notice Period",
+        "noticePeriodHelp": "e.g. '1 month' (optional)",
+        "nightHoursAllowed": "Night Hours Allowed?",
+        "kilometersAllowanceAllowed": "Kilometers Allowance Allowed?",
+        "company": "Company (optional)",
+        "companyHelp": "Link this contract to existing company",
+        "companyName": "Company Name *",
+        "companyNameHelp": "Required company name",
+        "employerName": "Employer Name *",
+        "employerNameHelp": "Name of the person/employer",
+        "companyAddress": "Company Address",
+        "companyAddressHelp": "Street + Number (optional)",
+        "companyPostcode": "Company Postcode",
+        "companyPostcodeHelp": "Postal code (optional)",
+        "companyCity": "Company City",
+        "companyCityHelp": "City (optional)",
+        "companyPhoneNumber": "Company Phone",
+        "companyPhoneNumberHelp": "Contact phone (optional)",
+        "companyBtw": "Company BTW",
+        "companyBtwHelp": "Tax number (optional)",
+        "payScale": "Pay Scale",
+        "payScaleHelp": "A, B, C, D, etc. (optional)",
+        "payScaleStep": "Pay Scale Step",
+        "payScaleStepHelp": "1, 2, 3, etc. (optional)",
+        "hourlyWage100Percent": "Hourly Wage 100%",
+        "hourlyWage100PercentHelp": "Base hourly rate (optional)",
+        "deviatingWage": "Deviating Wage",
+        "deviatingWageHelp": "Different hourly rate if applicable (optional)",
+        "travelExpenses": "Travel Expenses",
+        "travelExpensesHelp": "Per km rate (optional)",
+        "maxTravelExpenses": "Max Travel Expenses",
+        "maxTravelExpensesHelp": "Maximum reimbursement (optional)",
+        "vacationAge": "Vacation Age",
+        "vacationAgeHelp": "Age for vacation calculation (optional)",
+        "vacationDays": "Vacation Days",
+        "vacationDaysHelp": "Annual vacation days (optional)",
+        "atv": "ATV",
+        "atvHelp": "Additional time off percentage (optional)",
+        "vacationAllowance": "Vacation Allowance",
+        "vacationAllowanceHelp": "Vacation pay percentage (optional)",
+        "compensationPerMonthExclBtw": "Monthly Compensation (Excl. BTW)",
+        "compensationPerMonthExclBtwHelp": "Amount excluding tax (optional)",
+        "compensationPerMonthInclBtw": "Monthly Compensation (Incl. BTW)",
+        "compensationPerMonthInclBtwHelp": "Amount including tax (optional)"
+      },
+      "actions": {
+        "submit": "Create Contract",
+        "submitting": "Creating..."
+      },
+      "validation": {
+        "employeeFirstNameRequired": "Employee first name is required",
+        "employeeLastNameRequired": "Employee last name is required",
+        "companyNameRequired": "Company name is required",
+        "employerNameRequired": "Employer name is required"
+      },
+      "errors": {
+        "createFailed": "Failed to create contract"
+      }
+    },
+    "edit": {
+      "title": "Edit Employee Contract",
+      "actions": {
+        "submit": "Update Contract",
+        "submitting": "Updating..."
+      },
+      "validation": {
+        "contractIdRequired": "Contract id required",
+        "companyRequired": "Company is required",
+        "employeeFirstNameRequired": "Employee first name is required",
+        "employeeLastNameRequired": "Employee last name is required",
+        "companyNameRequired": "Company name is required",
+        "employerNameRequired": "Employer name is required"
+      },
+      "errors": {
+        "loadFailed": "Failed to load contract detail",
+        "updateFailed": "Failed to update contract"
+      }
+    }
   }
 }
