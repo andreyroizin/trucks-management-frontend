@@ -24,6 +24,7 @@ import FileUploadBox from '@/components/FileUploadBox';
 import FileTile from '@/components/FileTile';
 import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import { ApplicationFile } from '@/types/file';
+import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 
 // Schema will be defined inside the component to access translations
 
@@ -50,7 +51,6 @@ type FormInputs = {
     WorkingHours?: string;                  // Optional - backend: workingHours
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
-    HourlyWage100Percent?: number;          // Optional - backend: hourlyWage100Percent
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
     VacationAge?: number;                   // Optional - backend: vacationAge
     VacationDays?: number;                  // Optional - backend: vacationDays
@@ -110,7 +110,6 @@ export default function EditDriverPage() {
         WorkingHours: yup.string().optional(),
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
-        HourlyWage100Percent: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationAge: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         VacationDays: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -153,7 +152,6 @@ export default function EditDriverPage() {
             WorkingHours: '',
             PayScale: '',
             PayScaleStep: undefined,
-            HourlyWage100Percent: undefined,
             CommuteKilometers: undefined,
             VacationAge: undefined,
             VacationDays: undefined,
@@ -169,6 +167,12 @@ export default function EditDriverPage() {
     // Watch workweek duration to calculate percentage
     const workweekDuration = watch('WorkweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
+
+    // Watch pay scale and step to calculate hourly wage
+    const payScale = watch('PayScale');
+    const payScaleStep = watch('PayScaleStep');
+    const hourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
+    const availableSteps = getAvailableSteps(payScale || '');
 
     // Pre-fill form when driver data is loaded
     useEffect(() => {
@@ -195,7 +199,6 @@ export default function EditDriverPage() {
                 WorkingHours: driverData.workingHours || '',
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
-                HourlyWage100Percent: driverData.hourlyWage100Percent ? Number(driverData.hourlyWage100Percent) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
                 VacationAge: driverData.vacationAge ? Number(driverData.vacationAge) : undefined,
                 VacationDays: driverData.vacationDays ? Number(driverData.vacationDays) : undefined,
@@ -269,7 +272,7 @@ export default function EditDriverPage() {
                 workingHours: cleanedData.WorkingHours,
                 payScale: cleanedData.PayScale,
                 payScaleStep: cleanedData.PayScaleStep,
-                hourlyWage100Percent: cleanedData.HourlyWage100Percent,
+                hourlyWage100Percent: cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined,
                 commuteKilometers: cleanedData.CommuteKilometers,
                 vacationAge: cleanedData.VacationAge,
                 vacationDays: cleanedData.VacationDays,
@@ -824,9 +827,11 @@ export default function EditDriverPage() {
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
-                                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                                            options={availableSteps.length > 0 ? availableSteps : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
                                             value={field.value || null}
                                             onChange={(_, value) => field.onChange(value || undefined)}
+                                            disabled={!payScale}
+                                            getOptionLabel={(option) => String(option)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -835,7 +840,7 @@ export default function EditDriverPage() {
                                                     margin="normal"
                                                     fullWidth
                                                     error={!!errors.PayScaleStep}
-                                                    helperText={errors.PayScaleStep?.message}
+                                                    helperText={errors.PayScaleStep?.message || (!payScale ? 'Select Pay Scale first' : '')}
                                                 />
                                             )}
                                         />
@@ -843,24 +848,22 @@ export default function EditDriverPage() {
                                 />
                             </Grid>
 
-                            {/* Hourly Wage (100%) */}
+                            {/* Hourly Wage (Calculated) */}
                             <Grid item xs={12} sm={6}>
-                                <Controller
-                                    name="HourlyWage100Percent"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.hourlyWage100Percent.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.HourlyWage100Percent}
-                                            helperText={errors.HourlyWage100Percent?.message}
-                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                        />
-                                    )}
+                                <TextField
+                                    label={t('drivers.edit.fields.hourlyWage100Percent.label')}
+                                    value={hourlyWage ? `€${hourlyWage.toFixed(2)}` : ''}
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    sx={{
+                                        '& .MuiInputBase-input': {
+                                            backgroundColor: 'grey.50',
+                                        },
+                                    }}
                                 />
                             </Grid>
                         </Grid>
