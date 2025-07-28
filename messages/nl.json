@@ -4892,5 +4892,69 @@
         "error": "Fout bij ondertekenen contract"
       }
     }
+  },
+  "surcharges": {
+    "overview": {
+      "title": "Toeslagen",
+      "createButton": "Nieuwe toeslag aanmaken",
+      "loadError": "Kon toeslagen niet laden.",
+      "table": {
+        "headers": {
+          "value": "Waarde",
+          "company": "Bedrijf"
+        },
+        "rowsPerPage": "Rijen per pagina:"
+      }
+    },
+    "create": {
+      "title": "Toeslag Aanmaken",
+      "loadingText": "Toeslag aanmaakformulier laden...",
+      "fields": {
+        "value": {
+          "label": "Toeslagwaarde",
+          "required": "Waarde is verplicht",
+          "positive": "Waarde moet > 0 zijn"
+        },
+        "company": {
+          "label": "Selecteer Bedrijf",
+          "required": "Bedrijf is verplicht"
+        }
+      },
+      "button": "Toeslag Aanmaken",
+      "submitting": "Aanmaken..."
+    },
+    "detail": {
+      "title": "Toeslagdetails",
+      "loadError": "Kon toeslagdetails niet laden.",
+      "fields": {
+        "value": "Waarde",
+        "client": "Klant",
+        "company": "Bedrijf"
+      },
+      "actions": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      },
+      "deleteModal": {
+        "title": "Toeslag Verwijderen?",
+        "message": "Weet je zeker dat je deze toeslag wilt verwijderen?"
+      },
+      "deleteError": "Kon toeslag niet verwijderen."
+    },
+    "edit": {
+      "title": "Toeslag Bewerken",
+      "loadError": "Kon toeslagdetails niet laden. Probeer het later opnieuw.",
+      "fields": {
+        "value": {
+          "label": "Toeslagwaarde",
+          "required": "Waarde is verplicht",
+          "positive": "Waarde moet groter zijn dan nul"
+        }
+      },
+      "button": "Wijzigingen Opslaan",
+      "submitting": "Opslaan...",
+      "successMessage": "Toeslag succesvol bijgewerkt!",
+      "updateError": "Er is een onverwachte fout opgetreden."
+    }
   }
 }

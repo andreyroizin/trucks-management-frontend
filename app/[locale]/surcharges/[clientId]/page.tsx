@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSurcharges } from '@/hooks/useSurcharges';
+import { useTranslations } from 'next-intl';
 
 export default function SurchargesPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -27,6 +28,7 @@ export default function SurchargesPage() {
     const clientId = params.clientId as string;
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('surcharges.overview');
 
     // Pagination state
     const [page, setPage] = useState(0);
@@ -55,7 +57,7 @@ export default function SurchargesPage() {
     if (isError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load surcharges.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -70,19 +72,19 @@ export default function SurchargesPage() {
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Surcharges
+                {t('title')}
             </Typography>
             {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/surcharges/create?clientId=${clientId}`} passHref>
                 <Button variant="contained" color="primary">
-                    Create new surcharge
+                    {t('createButton')}
                 </Button>
             </Link>}
             <TableContainer component={Paper}>
                 <Table aria-label="surcharges table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Company</TableCell>
+                            <TableCell>{t('table.headers.value')}</TableCell>
+                            <TableCell>{t('table.headers.company')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -112,7 +114,7 @@ export default function SurchargesPage() {
                     rowsPerPage={pageSize}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>

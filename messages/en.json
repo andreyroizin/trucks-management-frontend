@@ -2233,5 +2233,69 @@
         "error": "Error signing contract"
       }
     }
+  },
+  "surcharges": {
+    "overview": {
+      "title": "Surcharges",
+      "createButton": "Create new surcharge",
+      "loadError": "Failed to load surcharges.",
+      "table": {
+        "headers": {
+          "value": "Value",
+          "company": "Company"
+        },
+        "rowsPerPage": "Rows per page:"
+      }
+    },
+    "create": {
+      "title": "Create Surcharge",
+      "loadingText": "Loading create surcharge form...",
+      "fields": {
+        "value": {
+          "label": "Surcharge Value",
+          "required": "Value is required",
+          "positive": "Value must be > 0"
+        },
+        "company": {
+          "label": "Select Company",
+          "required": "Company is required"
+        }
+      },
+      "button": "Create Surcharge",
+      "submitting": "Creating..."
+    },
+    "detail": {
+      "title": "Surcharge Details",
+      "loadError": "Failed to load surcharge details.",
+      "fields": {
+        "value": "Value",
+        "client": "Client",
+        "company": "Company"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteModal": {
+        "title": "Delete Surcharge?",
+        "message": "Are you sure you want to delete this surcharge?"
+      },
+      "deleteError": "Failed to delete surcharge."
+    },
+    "edit": {
+      "title": "Edit Surcharge",
+      "loadError": "Failed to load surcharge details. Please try again later.",
+      "fields": {
+        "value": {
+          "label": "Surcharge Value",
+          "required": "Value is required",
+          "positive": "Value must be greater than zero"
+        }
+      },
+      "button": "Save Changes",
+      "submitting": "Saving...",
+      "successMessage": "Surcharge updated successfully!",
+      "updateError": "An unexpected error occurred."
+    }
   }
 }
