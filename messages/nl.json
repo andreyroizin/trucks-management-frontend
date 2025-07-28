@@ -978,10 +978,12 @@
           "minHours": "Moet minimaal 1 uur zijn"
         },
         "weeklySchedule": {
-          "label": "Wekelijkse planning"
+          "label": "Wekelijkse planning",
+          "placeholder": "Maandag-Vrijdag"
         },
         "workingHours": {
-          "label": "Werkuren"
+          "label": "Werkuren",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Maandelijkse vergoeding (Excl. BTW)"
@@ -1183,10 +1185,12 @@
           "label": "Werkweekduur (uren)"
         },
         "weeklySchedule": {
-          "label": "Weekrooster"
+          "label": "Weekrooster",
+          "placeholder": "Maandag-Vrijdag"
         },
         "workingHours": {
-          "label": "Werktijden"
+          "label": "Werktijden",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Maandelijkse Vergoeding (Excl. BTW)"

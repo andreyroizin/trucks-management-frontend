@@ -978,10 +978,12 @@
           "minHours": "Must be at least 1 hour"
         },
         "weeklySchedule": {
-          "label": "Weekly Schedule"
+          "label": "Weekly Schedule",
+          "placeholder": "Monday-Friday"
         },
         "workingHours": {
-          "label": "Working Hours"
+          "label": "Working Hours",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Monthly Compensation (Excl. VAT)"
@@ -1183,10 +1185,12 @@
           "label": "Workweek Duration (hours)"
         },
         "weeklySchedule": {
-          "label": "Weekly Schedule"
+          "label": "Weekly Schedule",
+          "placeholder": "Monday-Friday"
         },
         "workingHours": {
-          "label": "Working Hours"
+          "label": "Working Hours",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Monthly Compensation (Excl. VAT)"

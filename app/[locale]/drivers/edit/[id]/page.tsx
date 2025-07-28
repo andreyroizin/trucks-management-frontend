@@ -788,6 +788,7 @@ export default function EditDriverPage() {
                                         <TextField
                                             {...field}
                                             label={t('drivers.edit.fields.weeklySchedule.label')}
+                                            placeholder={t('drivers.edit.fields.weeklySchedule.placeholder')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -805,6 +806,7 @@ export default function EditDriverPage() {
                                         <TextField
                                             {...field}
                                             label={t('drivers.edit.fields.workingHours.label')}
+                                            placeholder={t('drivers.edit.fields.workingHours.placeholder')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"

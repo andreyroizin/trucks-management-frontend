@@ -694,6 +694,7 @@ export default function CreateDriverPage() {
                                         <TextField
                                             {...field}
                                             label={t('drivers.create.fields.weeklySchedule.label')}
+                                            placeholder={t('drivers.create.fields.weeklySchedule.placeholder')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -711,6 +712,7 @@ export default function CreateDriverPage() {
                                         <TextField
                                             {...field}
                                             label={t('drivers.create.fields.workingHours.label')}
+                                            placeholder={t('drivers.create.fields.workingHours.placeholder')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"

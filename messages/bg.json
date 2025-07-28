@@ -978,10 +978,12 @@
           "minHours": "Трябва да бъде поне 1 час"
         },
         "weeklySchedule": {
-          "label": "Седмичен график"
+          "label": "Седмичен график",
+          "placeholder": "Понеделник-Петък"
         },
         "workingHours": {
-          "label": "Работни часове"
+          "label": "Работни часове",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Месечно възнаграждение (Без ДДС)"
@@ -1183,10 +1185,12 @@
           "label": "Продължителност на работната седмица (часове)"
         },
         "weeklySchedule": {
-          "label": "Седмичен график"
+          "label": "Седмичен график",
+          "placeholder": "Понеделник-Петък"
         },
         "workingHours": {
-          "label": "Работно време"
+          "label": "Работно време",
+          "placeholder": "09:00-18:00"
         },
         "compensationPerMonthExclBtw": {
           "label": "Месечно възнаграждение (без ДДС)"
