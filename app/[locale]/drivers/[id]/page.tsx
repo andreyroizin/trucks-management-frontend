@@ -233,7 +233,12 @@ export default function DriverDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.contractEndDate')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatDate(driver.lastWorkingDay)}</TableCell>
+                            <TableCell sx={{border: 'none'}}>
+                                {(driver as any).permanentContract ? 
+                                    t('drivers.detail.permanent') : 
+                                    formatDate(driver.lastWorkingDay)
+                                }
+                            </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.probationPeriod')}</TableCell>
@@ -290,20 +295,8 @@ export default function DriverDetailPage() {
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.monthlyCompensationExcl')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.compensationPerMonthExclBtw)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.monthlyCompensationIncl')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.compensationPerMonthInclBtw)}</TableCell>
-                        </TableRow>
-                        <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.hourlyWage100Percent')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatCurrency(driver.hourlyWage100Percent)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.deviatingWage')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.deviatingWage)}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -323,12 +316,10 @@ export default function DriverDetailPage() {
                             <TableCell sx={{border: 'none'}}>{driver.commuteKilometers ? `${driver.commuteKilometers} km` : t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.travelExpensesRate')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.travelExpenses)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.maxTravelExpenses')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.maxTravelExpenses)}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.kilometersAllowanceAllowed')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>
+                                {(driver as any).kilometersAllowanceAllowed ? t('drivers.detail.yes') : t('drivers.detail.no')}
+                            </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -343,21 +334,9 @@ export default function DriverDetailPage() {
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                {t('drivers.detail.fields.vacationAgeThreshold')}
+                                {t('drivers.detail.fields.atv')}
                             </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.vacationAge ? `${driver.vacationAge} years` : t('drivers.detail.notAvailable')}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.vacationDays')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.vacationDays ? `${driver.vacationDays} days` : t('drivers.detail.notAvailable')}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.atv')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{driver.atv ? `${driver.atv} hours` : t('drivers.detail.notAvailable')}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.vacationAllowance')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatCurrency(driver.vacationAllowance)}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

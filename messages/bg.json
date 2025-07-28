@@ -1103,12 +1103,7 @@
         "deviatingWage": "Отклоняваща се заплата",
         "commuteKilometers": "Километри до работа",
         "kilometersAllowanceAllowed": "Разрешено обезщетение за километри",
-        "travelExpensesRate": "Тарифа за пътни разходи",
-        "maxTravelExpenses": "Максимални пътни разходи",
-        "vacationAgeThreshold": "Праг на възраст за отпуск",
-        "vacationDays": "Дни отпуск",
         "atv": "ATV (Намалени работни часове)",
-        "vacationAllowance": "Надбавка за отпуск",
         "assignedCar": "Назначен автомобил",
         "noCarAssigned": "Няма назначен автомобил",
         "status": "Статус",
@@ -1129,6 +1124,9 @@
         "title": "Прекратяване на шофьор?",
         "message": "Сигурни ли сте, че искате да прекратите {firstName} {lastName}? Това ще деактивира техния акаунт и договор."
       },
+      "permanent": "Постоянен",
+      "yes": "Да",
+      "no": "Не",
       "notAvailable": "Н/Д"
     },
     "edit": {

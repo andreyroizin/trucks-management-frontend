@@ -39,7 +39,7 @@ type FormInputs = {
     City?: string;                          // Optional - backend: City
     Country?: string;                       // Optional - backend: Country
     BSN?: string;                           // Optional - backend: BSN
-    EmploymentStartDate: string;            // Required - backend: EmploymentStartDate
+    EmploymentStartDate: string;            // Required - form field, converts to DateOfEmployment for backend
     PermanentContract?: boolean;            // Optional - backend: PermanentContract
     ContractDuration?: number;              // Optional - backend: ContractDuration (in months)
     ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
@@ -220,7 +220,8 @@ export default function CreateDriverPage() {
                 cleanedData.DateOfBirth = new Date(cleanedData.DateOfBirth).toISOString();
             }
             if (cleanedData.EmploymentStartDate) {
-                cleanedData.EmploymentStartDate = new Date(cleanedData.EmploymentStartDate).toISOString();
+                cleanedData.DateOfEmployment = new Date(cleanedData.EmploymentStartDate).toISOString();
+                delete cleanedData.EmploymentStartDate; // Remove the temporary field name
             }
 
             // Calculate contract end date if not permanent contract

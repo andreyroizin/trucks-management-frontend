@@ -1102,18 +1102,18 @@
         "hourlyWage100Percent": "Hourly Wage (100%)",
         "deviatingWage": "Deviating Wage",
         "commuteKilometers": "Commute Kilometers",
-        "travelExpensesRate": "Travel Expenses Rate",
-        "maxTravelExpenses": "Maximum Travel Expenses",
-        "vacationAgeThreshold": "Vacation Age Threshold",
-        "vacationDays": "Vacation Days",
+        "kilometersAllowanceAllowed": "Kilometers Allowance Allowed",
         "atv": "ATV (Reduced Working Hours)",
-        "vacationAllowance": "Vacation Allowance",
         "assignedCar": "Assigned Car",
         "noCarAssigned": "No car assigned",
         "status": "Status",
         "signedDate": "Signed Date",
         "accessCode": "Access Code"
       },
+      "permanent": "Permanent",
+      "yes": "Yes",
+      "no": "No",
+      "notAvailable": "N/A",
       "noRemark": "No remark provided",
       "noDocuments": "No documents uploaded.",
       "buttons": {
@@ -1127,8 +1127,7 @@
       "deleteConfirm": {
         "title": "Terminate Driver?",
         "message": "Are you sure you want to terminate {firstName} {lastName}? This will deactivate their account and contract."
-      },
-      "notAvailable": "N/A"
+      }
     },
     "edit": {
       "title": "Edit Driver Contract",

@@ -1102,12 +1102,8 @@
         "hourlyWage100Percent": "Uurloon (100%)",
         "deviatingWage": "Afwijkend loon",
         "commuteKilometers": "Woon-werkverkeer kilometers",
-        "travelExpensesRate": "Reisuitgaven tarief",
-        "maxTravelExpenses": "Maximale reisuitgaven",
-        "vacationAgeThreshold": "Vakantie leeftijdsdrempel",
-        "vacationDays": "Vakantiedagen",
+        "kilometersAllowanceAllowed": "Kilometervergoeding toegestaan",
         "atv": "ATV (Verkorte werkuren)",
-        "vacationAllowance": "Vakantietoeslag",
         "assignedCar": "Toegewezen auto",
         "noCarAssigned": "Geen auto toegewezen",
         "status": "Status",
@@ -1128,6 +1124,9 @@
         "title": "Chauffeur Beëindigen?",
         "message": "Weet u zeker dat u {firstName} {lastName} wilt beëindigen? Dit zal hun account en contract deactiveren."
       },
+      "permanent": "Permanent",
+      "yes": "Ja",
+      "no": "Nee",
       "notAvailable": "N/B"
     },
     "edit": {

@@ -291,7 +291,7 @@ export default function EditDriverPage() {
                 city: cleanedData.City,
                 country: cleanedData.Country,
                 bsn: cleanedData.BSN,
-                employmentStartDate: cleanedData.EmploymentStartDate ? new Date(cleanedData.EmploymentStartDate).toISOString() : undefined,
+                dateOfEmployment: cleanedData.EmploymentStartDate ? new Date(cleanedData.EmploymentStartDate).toISOString() : undefined,
                 permanentContract: cleanedData.PermanentContract,
                 contractDuration: cleanedData.ContractDuration,
                 lastWorkingDay: !cleanedData.PermanentContract && cleanedData.ContractDuration && cleanedData.EmploymentStartDate ? 
