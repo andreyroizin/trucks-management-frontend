@@ -8,6 +8,7 @@ import { useState } from 'react';
 import * as yup from 'yup';
 import {useRouter} from "next/navigation";
 import {useTranslations} from 'next-intl';
+import { getCurrentUser } from '@/utils/api';
 
 type LoginFormInputs = {
     email: string;
@@ -40,7 +41,12 @@ export default function LoginForm() {
             if (!response.isSuccess) {
                 setApiError(response.errors?.[0] || t('auth.login.errors.unknownError'));
             } else {
-                router.push('/'); // Redirect to the home page
+                const user = await getCurrentUser();
+                if (user.roles.includes('driver')) {
+                    router.push('/dashboard/driver');
+                } else {
+                    router.push('/');
+                }
             }
         } catch (error: any) {
             console.error('Error:', error);

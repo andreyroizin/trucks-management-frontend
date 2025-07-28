@@ -42,7 +42,7 @@ function RideCreatePageWrapper() {
     const prefillCompanyId = searchParams.get('companyId') || '';
 
     // Fetch Companies
-    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies();
+    const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies(1, 1000);
 
     // Create Mutation Hook
     const { mutateAsync: createRide, isPending, isError, error } = useCreateRide();

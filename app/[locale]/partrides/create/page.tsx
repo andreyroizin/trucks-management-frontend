@@ -92,7 +92,7 @@ export default function CreatePartRidePage() {
     const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
     // Data hooks for Autocomplete:
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
-    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(/* e.g. pass companyId if needed */);
+    const {data: companiesData, isLoading: isLoadingCompanies} = useCompanies(1, 1000);
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(selectedCompanyId ? [selectedCompanyId] : [], 1, 1000);

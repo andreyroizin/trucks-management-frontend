@@ -59,7 +59,7 @@ export default function CreateEmployeeContractPage() {
 
     // Fetch data
     const {data: driversData, isLoading: loadingDrivers} = useDrivers();
-    const {data: companiesData, isLoading: loadingCompanies} = useCompanies();
+    const {data: companiesData, isLoading: loadingCompanies} = useCompanies(1, 1000);
 
     // React Hook Form
     const {

@@ -17,11 +17,12 @@ export type WeekToSubmit = {
         firstName: string;
         lastName: string;
     };
-    summaryStatus: 'Has Pending' | 'Has Disputes' | 'All Approved';
+    summaryStatus: 'Has Pending' | 'Has Disputes' | 'All Approved' | 'Has Rejected';
     partRideCount: number;
     totalHours: number;
     pendingAdminCount: number;
     disputeCount: number;
+    rejectedCount: number;
     forecastedEarning: number;
 };
 
@@ -46,7 +47,7 @@ const fetchWeeksToSubmit = async ({
                                   }: {
     driverId?: string;
     weekNr?: number;
-    status?: 'hasDisputes' | 'allApprovedOrRejected' | 'hasPending';
+    status?: 'hasDisputes' | 'allApproved' | 'hasPending' | 'hasRejected';
     pageNumber: number;
     pageSize: number;
 }): Promise<WeeksToSubmitResponse> => {
@@ -78,7 +79,7 @@ export const useWeeksToSubmit = ({
                                  }: {
     driverId?: string;
     weekNr?: number;
-    status?: 'hasDisputes' | 'allApprovedOrRejected' | 'hasPending';
+    status?: 'hasDisputes' | 'allApproved' | 'hasPending' | 'hasRejected';
     pageNumber?: number;
     pageSize?: number;
 }) =>

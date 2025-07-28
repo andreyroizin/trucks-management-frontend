@@ -42,6 +42,7 @@ const STATUS_OPTIONS = [
     { label: 'Has Disputes', value: 'hasDisputes' },
     { label: 'All Approved', value: 'allApprovedOrRejected' },
     { label: 'Has Pending', value: 'hasPending' },
+    { label: 'Has Rejected', value: 'hasRejected' },
 ];
 
 // Dutch ISO weeks 1-53
@@ -62,7 +63,7 @@ export default function WeeksToSubmitPage() {
     const [driverId, setDriverId] = useState<string | undefined>();
     const [weekNr, setWeekNr] = useState<number | undefined>();
     const [status, setStatus] = useState<
-        'hasDisputes' | 'allApprovedOrRejected' | 'hasPending' | undefined
+        'hasDisputes' | 'allApproved' | 'hasPending' | 'hasRejected' | undefined
     >();
     const [weekApprovalId, setWeekApprovalId] = useState<string | null>(null);
     const [weekApprovalOverviewOpen, setWeekApprovalOverviewOpen] = useState(false);
@@ -252,7 +253,8 @@ export default function WeeksToSubmitPage() {
                                 data?.data?.map((w) => {
                                     const disabled =
                                         w.summaryStatus === 'Has Pending' ||
-                                        w.summaryStatus === 'Has Disputes';
+                                        w.summaryStatus === 'Has Disputes' ||
+                                        w.summaryStatus === 'Has Rejected';
 
                                     return (
                                         <TableRow
@@ -275,21 +277,29 @@ export default function WeeksToSubmitPage() {
                                                 {w.totalHours.toFixed(1)} h.
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
-                                                {w.disputeCount > 0 ? (
+                                               {w.rejectedCount > 0 ? (
                                                     <Link
-                                                      href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
-                                                      style={{ textDecoration: 'underline' }}
-                                                      onClick={(e) => e.stopPropagation()} // don’t select the row
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=3`}
+                                                        style={{ textDecoration: 'underline' }}
+                                                        onClick={(e) => e.stopPropagation()}
                                                     >
-                                                      {w.disputeCount} {w.disputeCount === 1 ? 'Dispute' : 'Disputes'}
+                                                        {w.rejectedCount} {w.rejectedCount === 1 ? 'Rejected' : 'Rejects'}
+                                                    </Link>
+                                                ) : w.disputeCount > 0 ? (
+                                                    <Link
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
+                                                        style={{ textDecoration: 'underline' }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        {w.disputeCount} {w.disputeCount === 1 ? 'Dispute' : 'Disputes'}
                                                     </Link>
                                                 ) : w.pendingAdminCount > 0 ? (
                                                     <Link
-                                                      href={`/partrides?weekNumber=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
-                                                      style={{ textDecoration: 'underline' }}
-                                                      onClick={(e) => e.stopPropagation()}
+                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
+                                                        style={{ textDecoration: 'underline' }}
+                                                        onClick={(e) => e.stopPropagation()}
                                                     >
-                                                      {w.pendingAdminCount}{' '} Pending
+                                                        {w.pendingAdminCount} Pending
                                                     </Link>
                                                 ) : (
                                                     w.summaryStatus
