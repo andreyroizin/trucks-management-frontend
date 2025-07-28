@@ -144,10 +144,16 @@ export default function DriverCard({
                             </tr>
                             <tr>
                                 <td style={{padding: '4px 8px 4px 0px', width: '40%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{t('drivers.card.fields.nextContract')}</Typography>
+                                    <Typography variant="caption">{t('drivers.card.fields.contractEndDate')}</Typography>
                                 </td>
                                 <td style={{padding: '4px 0px', width: '60%', textAlign: 'left', verticalAlign: 'top'}}>
-                                    <Typography variant="caption">{formatDate(contractData?.lastWorkingDay) || (isLoading ? t('drivers.card.loading') : t('drivers.card.notAvailable'))}</Typography>
+                                    <Typography variant="caption">
+                                        {isLoading ? t('drivers.card.loading') : 
+                                            (contractData as any)?.permanentContract ? 
+                                                t('drivers.card.permanent') : 
+                                                formatDate(contractData?.lastWorkingDay) || t('drivers.card.notAvailable')
+                                        }
+                                    </Typography>
                                 </td>
                             </tr>
                             <tr>

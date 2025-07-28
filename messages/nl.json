@@ -1279,10 +1279,11 @@
       "fields": {
         "workweekDuration": "Werkweekduur",
         "contractDate": "Contractdatum",
-        "nextContract": "Volgend Contract",
+        "contractEndDate": "Contract Einddatum",
         "payscaleIncrease": "Salarisschaal Verhoging",
         "vacationHoursLeft": "Vakantie Uren Over"
       },
+      "permanent": "Permanent",
       "menu": {
         "edit": "Bewerken",
         "delete": "Verwijderen"

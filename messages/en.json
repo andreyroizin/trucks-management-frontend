@@ -1279,10 +1279,11 @@
       "fields": {
         "workweekDuration": "Workweek Duration",
         "contractDate": "Contract Date",
-        "nextContract": "Next Contract",
+        "contractEndDate": "Contract End Date",
         "payscaleIncrease": "Payscale Increase",
         "vacationHoursLeft": "Vacation Hours Left"
       },
+      "permanent": "Permanent",
       "menu": {
         "edit": "Edit",
         "delete": "Delete"

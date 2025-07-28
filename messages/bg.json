@@ -1280,10 +1280,11 @@
       "fields": {
         "workweekDuration": "Продължителност на работната седмица",
         "contractDate": "Дата на договора",
-        "nextContract": "Следващ договор",
+        "contractEndDate": "Крайна дата на договора",
         "payscaleIncrease": "Увеличаване на възнаградителната скала",
         "vacationHoursLeft": "Оставащи часове отпуск"
       },
+      "permanent": "Постоянен",
       "menu": {
         "edit": "Редактиране",
         "delete": "Изтриване"
