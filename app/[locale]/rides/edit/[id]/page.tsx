@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -12,13 +12,7 @@ import {useEditRide} from '@/hooks/useEditRide';
 import {useRideDetail} from '@/hooks/useRideDetail'; // to fetch existing ride data
 import {useCompanies} from '@/hooks/useCompanies';
 import {useAuth} from '@/hooks/useAuth';
-
-// --- Validation Schema ---
-const updateRideSchema = yup.object().shape({
-    name: yup.string().required('Ride name is required'),
-    remark: yup.string().optional(),
-    companyId: yup.string().required('Company is required'),
-});
+import { useTranslations } from 'next-intl';
 
 type UpdateRideFormInputs = {
     name: string;
@@ -31,6 +25,14 @@ export default function EditRidePage() {
     const { id } = useParams();
 
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('rides.edit');
+
+    // --- Validation Schema ---
+    const updateRideSchema = useMemo(() => yup.object().shape({
+        name: yup.string().required(t('fields.name.required')),
+        remark: yup.string().optional(),
+        companyId: yup.string().required(t('fields.company.required')),
+    }), [t]);
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant', 'employer'];
@@ -99,7 +101,7 @@ export default function EditRidePage() {
     if (isError || !ride) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load ride details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -107,7 +109,7 @@ export default function EditRidePage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Update Ride
+                {t('title')}
             </Typography>
 
             {apiError && (
@@ -118,7 +120,7 @@ export default function EditRidePage() {
 
             {isEditError && (
                 <Alert severity="error" sx={{ mb: 2 }}>
-                    {editError?.message || 'Failed to update ride'}
+                    {editError?.message || t('updateError')}
                 </Alert>
             )}
 
@@ -131,7 +133,7 @@ export default function EditRidePage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Ride Name"
+                                label={t('fields.name.label')}
                                 variant="outlined"
                                 error={!!errors.name}
                                 helperText={errors.name?.message}
@@ -146,7 +148,7 @@ export default function EditRidePage() {
                         name="remark"
                         control={control}
                         render={({ field }) => (
-                            <TextField {...field} label="Remark" variant="outlined" />
+                            <TextField {...field} label={t('fields.remark.label')} variant="outlined" />
                         )}
                     />
                 </FormControl>
@@ -166,7 +168,7 @@ export default function EditRidePage() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Select Company"
+                                        label={t('fields.company.label')}
                                         variant="outlined"
                                         error={!!errors.companyId}
                                         helperText={errors.companyId?.message}
@@ -184,7 +186,7 @@ export default function EditRidePage() {
                     fullWidth
                     disabled={isPending}
                 >
-                    {isPending ? <CircularProgress size={20} color="inherit" /> : 'Save Changes'}
+                    {isPending ? <CircularProgress size={20} color="inherit" /> : t('button')}
                 </Button>
             </form>
         </Box>

@@ -2104,5 +2104,96 @@
       "submitting": "Saving...",
       "updateError": "Failed to update rate."
     }
+  },
+  "rides": {
+    "overview": {
+      "title": "Rides",
+      "createButton": "Create Ride",
+      "loadError": "Failed to load rides.",
+      "table": {
+        "headers": {
+          "name": "Name",
+          "remark": "Remark",
+          "company": "Company"
+        },
+        "rowsPerPage": "Rows per page:",
+        "notAvailable": "N/A"
+      }
+    },
+    "create": {
+      "title": "Create Ride",
+      "fields": {
+        "name": {
+          "label": "Ride Name",
+          "required": "Ride name is required"
+        },
+        "remark": {
+          "label": "Remark"
+        },
+        "company": {
+          "label": "Select Company",
+          "required": "Company is required"
+        }
+      },
+      "button": "Create Ride",
+      "submitting": "Creating...",
+      "createError": "Failed to create ride"
+    },
+    "detail": {
+      "title": "Ride Detail",
+      "loadError": "Failed to load ride detail.",
+      "fields": {
+        "name": "Name",
+        "remark": "Remark",
+        "company": "Company"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Ride?",
+        "message": "Are you sure you want to delete this ride?"
+      },
+      "deleteError": "Failed to delete ride",
+      "partRides": {
+        "title": "Part Rides",
+        "noData": "No part rides available.",
+        "table": {
+          "headers": {
+            "date": "Date",
+            "start": "Start",
+            "end": "End",
+            "kilometers": "Kilometers",
+            "turnover": "Turnover",
+            "client": "Client",
+            "driver": "Driver",
+            "car": "Car"
+          }
+        }
+      },
+      "notAvailable": "N/A"
+    },
+    "edit": {
+      "title": "Update Ride",
+      "loadError": "Failed to load ride details.",
+      "fields": {
+        "name": {
+          "label": "Ride Name",
+          "required": "Ride name is required"
+        },
+        "remark": {
+          "label": "Remark"
+        },
+        "company": {
+          "label": "Select Company",
+          "required": "Company is required"
+        }
+      },
+      "button": "Save Changes",
+      "submitting": "Saving...",
+      "updateError": "Failed to update ride"
+    }
   }
 }

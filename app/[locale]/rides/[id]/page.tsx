@@ -23,11 +23,13 @@ import { useRideDetail } from '@/hooks/useRideDetail';
 import { useDeleteRide } from '@/hooks/useDeleteRide'; // The delete hook
 import ConfirmModal from '@/components/ConfirmModal';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslations } from 'next-intl';
 
 export default function RideDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('rides.detail');
 
     // We assume only globalAdmins can delete or update
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
@@ -56,7 +58,7 @@ export default function RideDetailPage() {
             setOpenModal(false);
             router.push('/rides'); // or wherever you want to go
         } catch (err: any) {
-            setDeleteError(err.message || 'Failed to delete ride');
+            setDeleteError(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -72,7 +74,7 @@ export default function RideDetailPage() {
     if (isError || !ride) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load ride detail.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -90,12 +92,12 @@ export default function RideDetailPage() {
                 <CardContent>
                     {/* Title + Buttons */}
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                        <Typography variant="h5">Ride Detail</Typography>
+                        <Typography variant="h5">{t('title')}</Typography>
                         {isGlobalAdmin && (
                             <Box>
                                 <Link href={`/rides/edit/${ride.id}`} passHref>
                                     <Button variant="contained" color="primary" sx={{ mr: 1 }}>
-                                        Edit
+                                        {t('actions.edit')}
                                     </Button>
                                 </Link>
                                 <Button
@@ -104,21 +106,21 @@ export default function RideDetailPage() {
                                     disabled={isDeleting}
                                     onClick={() => setOpenModal(true)}
                                 >
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
+                                    {isDeleting ? t('actions.deleting') : t('actions.delete')}
                                 </Button>
                             </Box>
                         )}
                     </Box>
 
                     <Typography variant="body1" gutterBottom>
-                        <strong>Name:</strong> {ride.name}
+                        <strong>{t('fields.name')}:</strong> {ride.name}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        <strong>Remark:</strong> {ride.remark || 'N/A'}
+                        <strong>{t('fields.remark')}:</strong> {ride.remark || t('notAvailable')}
                     </Typography>
                     {/* Company Link */}
                     <Typography variant="body1" gutterBottom>
-                        <strong>Company:</strong>{' '}
+                        <strong>{t('fields.company')}:</strong>{' '}
                         <Link href={`/companies/${ride.companyId}`} passHref>
                             <Button variant="text" size="small">
                                 {ride.companyName}
@@ -131,23 +133,23 @@ export default function RideDetailPage() {
             {/* Part Rides Table */}
             <Box mt={4}>
                 <Typography variant="h6" gutterBottom>
-                    Part Rides
+                    {t('partRides.title')}
                 </Typography>
                 {ride.partRides.length === 0 ? (
-                    <Alert severity="info">No part rides available.</Alert>
+                    <Alert severity="info">{t('partRides.noData')}</Alert>
                 ) : (
                     <TableContainer component={Paper}>
                         <Table aria-label="part rides table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Start</TableCell>
-                                    <TableCell>End</TableCell>
-                                    <TableCell>Kilometers</TableCell>
-                                    <TableCell>Turnover</TableCell>
-                                    <TableCell>Client</TableCell>
-                                    <TableCell>Driver</TableCell>
-                                    <TableCell>Car</TableCell>
+                                    <TableCell>{t('partRides.table.headers.date')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.start')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.end')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.kilometers')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.turnover')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.client')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.driver')}</TableCell>
+                                    <TableCell>{t('partRides.table.headers.car')}</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -165,7 +167,7 @@ export default function RideDetailPage() {
                                                         {partRide.client.name}
                                                     </Button>
                                                 </Link>
-                                            ) : 'N/A'}
+                                            ) : t('notAvailable')}
                                         </TableCell>
                                         <TableCell>
                                             {partRide.driver ? (
@@ -175,7 +177,7 @@ export default function RideDetailPage() {
                                                     </Button>
                                                 </Link>
                                             ) : (
-                                                'N/A'
+                                                t('notAvailable')
                                             )}
                                         </TableCell>
                                         <TableCell>
@@ -185,7 +187,7 @@ export default function RideDetailPage() {
                                                         {partRide.car.licensePlate}
                                                     </Button>
                                                 </Link>
-                                            ) : 'N/A'}
+                                            ) : t('notAvailable')}
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -198,8 +200,8 @@ export default function RideDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Ride?"
-                message="Are you sure you want to delete this ride?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />

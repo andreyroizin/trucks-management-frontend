@@ -4763,5 +4763,96 @@
       "submitting": "Opslaan...",
       "updateError": "Kon tarief niet bijwerken."
     }
+  },
+  "rides": {
+    "overview": {
+      "title": "Ritten",
+      "createButton": "Rit Aanmaken",
+      "loadError": "Kon ritten niet laden.",
+      "table": {
+        "headers": {
+          "name": "Naam",
+          "remark": "Opmerking",
+          "company": "Bedrijf"
+        },
+        "rowsPerPage": "Rijen per pagina:",
+        "notAvailable": "N.v.t."
+      }
+    },
+    "create": {
+      "title": "Rit Aanmaken",
+      "fields": {
+        "name": {
+          "label": "Ritnaam",
+          "required": "Ritnaam is verplicht"
+        },
+        "remark": {
+          "label": "Opmerking"
+        },
+        "company": {
+          "label": "Selecteer Bedrijf",
+          "required": "Bedrijf is verplicht"
+        }
+      },
+      "button": "Rit Aanmaken",
+      "submitting": "Aanmaken...",
+      "createError": "Kon rit niet aanmaken"
+    },
+    "detail": {
+      "title": "Ritdetails",
+      "loadError": "Kon ritdetails niet laden.",
+      "fields": {
+        "name": "Naam",
+        "remark": "Opmerking",
+        "company": "Bedrijf"
+      },
+      "actions": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Rit Verwijderen?",
+        "message": "Weet je zeker dat je deze rit wilt verwijderen?"
+      },
+      "deleteError": "Kon rit niet verwijderen",
+      "partRides": {
+        "title": "Deelritten",
+        "noData": "Geen deelritten beschikbaar.",
+        "table": {
+          "headers": {
+            "date": "Datum",
+            "start": "Start",
+            "end": "Eind",
+            "kilometers": "Kilometers",
+            "turnover": "Omzet",
+            "client": "Klant",
+            "driver": "Chauffeur",
+            "car": "Auto"
+          }
+        }
+      },
+      "notAvailable": "N.v.t."
+    },
+    "edit": {
+      "title": "Rit Bijwerken",
+      "loadError": "Kon ritdetails niet laden.",
+      "fields": {
+        "name": {
+          "label": "Ritnaam",
+          "required": "Ritnaam is verplicht"
+        },
+        "remark": {
+          "label": "Opmerking"
+        },
+        "company": {
+          "label": "Selecteer Bedrijf",
+          "required": "Bedrijf is verplicht"
+        }
+      },
+      "button": "Wijzigingen Opslaan",
+      "submitting": "Opslaan...",
+      "updateError": "Kon rit niet bijwerken"
+    }
   }
 }
