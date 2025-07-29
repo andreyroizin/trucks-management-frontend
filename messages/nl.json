@@ -5173,5 +5173,83 @@
       },
       "button": "Opslaan"
     }
+  },
+  "weeks": {
+    "driver": {
+      "sign": {
+        "title": "Werkweek Ondertekenen",
+        "errorLoad": "Kon weekdetails niet laden.",
+        "errorSign": "Kon de week niet ondertekenen. Probeer het opnieuw.",
+        "warning": "Controleer uw werkweek zorgvuldig voordat u ondertekent. Eenmaal ondertekend kunt u geen wijzigingen meer aanbrengen.",
+        "submit": "Werkweek Ondertekenen",
+        "alreadySigned": "Deze werkweek is al ondertekend.",
+        "viewSigned": "Ondertekende Week Bekijken",
+        "success": {
+          "title": "Werkweek Succesvol Ondertekend!",
+          "submitted": "Uw werkweek {week} van {year} is succesvol ingediend.",
+          "processed": "Uw urenstaat wordt verwerkt en u ontvangt binnenkort bevestiging.",
+          "view": "Ondertekende Week Bekijken",
+          "back": "Terug naar Huidige Periode"
+        }
+      },
+      "signed": {
+        "title": "Ondertekende Werkweek {week}",
+        "notSigned": "Deze werkweek is nog niet ondertekend.",
+        "goToCurrent": "Ga naar Huidige Periode",
+        "loadError": "Kon weekdetails niet laden"
+      }
+    }
+  },
+  "weeksToSubmit": {
+    "title": "Weken In te Dienen",
+    "subtitle": "Aftekenweek",
+    "description": "Dien goedgekeurde wekelijkse perioden in voor ondertekening",
+    "filters": {
+      "driver": "Chauffeur",
+      "week": "Week",
+      "status": "Status"
+    },
+    "statusOptions": {
+      "hasDisputes": "Heeft Geschillen",
+      "allApproved": "Alles Goedgekeurd",
+      "hasPending": "Heeft Openstaand",
+      "hasRejected": "Heeft Afgewezen"
+    },
+    "actions": {
+      "sendAllSelected": "Verstuur Alle Geselecteerde",
+      "sending": "Versturen…",
+      "seeOverview": "Bekijk Overzicht"
+    },
+    "table": {
+      "headers": {
+        "driver": "Chauffeur",
+        "week": "Week",
+        "totalHours": "Totale Uren",
+        "status": "Status",
+        "forecasted": "Voorspeld (€)",
+        "actions": "Acties"
+      },
+      "weekNumber": "Week {number}",
+      "hours": "{hours} u.",
+      "rejected": "Afgewezen",
+      "rejects": "Afwijzingen",
+      "dispute": "Geschil",
+      "disputes": "Geschillen",
+      "pending": "Openstaand"
+    },
+    "confirmDialog": {
+      "title": "Weet u zeker dat u deze weken wilt indienen voor ondertekening door chauffeurs?",
+      "subtitle": "Deze actie kan niet ongedaan worden gemaakt.",
+      "submit": "Indienen",
+      "cancel": "Annuleren"
+    },
+    "successDialog": {
+      "title": "Weken ingediend",
+      "subtitle": "U heeft deze weken ingediend voor ondertekening door chauffeurs",
+      "goToOverview": "Ga naar Werkdag Overzicht"
+    },
+    "error": {
+      "submitFailed": "Indienen van weken mislukt"
+    }
   }
 }

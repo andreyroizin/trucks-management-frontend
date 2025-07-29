@@ -28,7 +28,7 @@ export default function SignWorkWeekPage() {
     if (!data || error) {
         return (
             <Typography color="error" mt={4} textAlign="center">
-                {error instanceof Error ? error.message : 'Failed to load week details'}
+                {error instanceof Error ? error.message : t('loadError')}
             </Typography>
         );
     }

@@ -2514,5 +2514,57 @@
       },
       "button": "Save"
     }
+  },
+  "weeksToSubmit": {
+    "title": "Weeks to Submit",
+    "subtitle": "Sign-Off weeks",
+    "description": "Submit approved weekly periods for signature",
+    "filters": {
+      "driver": "Driver",
+      "week": "Week",
+      "status": "Status"
+    },
+    "statusOptions": {
+      "hasDisputes": "Has Disputes",
+      "allApproved": "All Approved",
+      "hasPending": "Has Pending",
+      "hasRejected": "Has Rejected"
+    },
+    "actions": {
+      "sendAllSelected": "Send All Selected",
+      "sending": "Sending…",
+      "seeOverview": "See Overview"
+    },
+    "table": {
+      "headers": {
+        "driver": "Driver",
+        "week": "Week",
+        "totalHours": "Total Hours",
+        "status": "Status",
+        "forecasted": "Forecasted (€)",
+        "actions": "Actions"
+      },
+      "weekNumber": "Week {number}",
+      "hours": "{hours} h.",
+      "rejected": "Rejected",
+      "rejects": "Rejects",
+      "dispute": "Dispute",
+      "disputes": "Disputes",
+      "pending": "Pending"
+    },
+    "confirmDialog": {
+      "title": "Are you sure you want to submit these weeks to drivers for signing?",
+      "subtitle": "This action can't be undone.",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "successDialog": {
+      "title": "Weeks submitted",
+      "subtitle": "You've submitted these weeks to drivers for signing",
+      "goToOverview": "Go To Workday Overview"
+    },
+    "error": {
+      "submitFailed": "Failed to submit weeks"
+    }
   }
 }
