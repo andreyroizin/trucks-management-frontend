@@ -1,6 +1,6 @@
 'use client';
 
-import React, {Suspense, useEffect} from 'react';
+import React, {Suspense, useEffect, useMemo} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Alert, Box, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -10,13 +10,7 @@ import * as yup from 'yup';
 import {useCreateRide} from '@/hooks/useCreateRide';
 import {useCompanies} from '@/hooks/useCompanies';
 import {useAuth} from '@/hooks/useAuth';
-
-// --- VALIDATION SCHEMA ---
-const rideSchema = yup.object().shape({
-    name: yup.string().required('Ride name is required'),
-    remark: yup.string().optional(),
-    companyId: yup.string().required('Company is required'),
-});
+import { useTranslations } from 'next-intl';
 
 // --- FORM INPUT TYPE ---
 type RideFormInputs = {
@@ -29,6 +23,14 @@ function RideCreatePageWrapper() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('rides.create');
+
+    // --- VALIDATION SCHEMA ---
+    const rideSchema = useMemo(() => yup.object().shape({
+        name: yup.string().required(t('fields.name.required')),
+        remark: yup.string().optional(),
+        companyId: yup.string().required(t('fields.company.required')),
+    }), [t]);
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant', 'employer'];
@@ -75,10 +77,10 @@ function RideCreatePageWrapper() {
     return (
         <Box maxWidth="500px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Create Ride
+                {t('title')}
             </Typography>
 
-            {isError && <Alert severity="error">{error?.message || 'Failed to create ride'}</Alert>}
+            {isError && <Alert severity="error">{error?.message || t('createError')}</Alert>}
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 {/* Ride Name */}
@@ -89,7 +91,7 @@ function RideCreatePageWrapper() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Ride Name"
+                                label={t('fields.name.label')}
                                 variant="outlined"
                                 error={!!errors.name}
                                 helperText={errors.name?.message}
@@ -104,7 +106,7 @@ function RideCreatePageWrapper() {
                         name="remark"
                         control={control}
                         render={({ field }) => (
-                            <TextField {...field} label="Remark" variant="outlined" />
+                            <TextField {...field} label={t('fields.remark.label')} variant="outlined" />
                         )}
                     />
                 </FormControl>
@@ -126,7 +128,7 @@ function RideCreatePageWrapper() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Select Company"
+                                        label={t('fields.company.label')}
                                         variant="outlined"
                                         error={!!errors.companyId}
                                         helperText={errors.companyId?.message}
@@ -146,7 +148,7 @@ function RideCreatePageWrapper() {
                     disabled={isPending}
                     sx={{ mt: 2 }}
                 >
-                    {isPending ? <CircularProgress size={24} color="inherit" /> : 'Create Ride'}
+                    {isPending ? <CircularProgress size={24} color="inherit" /> : t('button')}
                 </Button>
             </form>
         </Box>

@@ -92,7 +92,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                             {pr.decimalHours.toString().replace('.', ',')} h.
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {PartRideStatusChip(pr.status)}
+                                                            <PartRideStatusChip status={pr.status} />
                                                         </TableCell>
                                                     </TableRow>
                                                 );

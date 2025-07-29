@@ -24,11 +24,13 @@ import {useEmployeeContractDetail} from '@/hooks/useEmployeeContractDetail';
 import {useDeleteEmployeeContract} from "@/hooks/useDeleteEmployeeContract";
 import ConfirmModal from '@/components/ConfirmModal';
 import {useDownloadContract} from "@/hooks/useDownloadContract";
+import {useTranslations} from 'next-intl';
 
 export default function ContractDetailPage() {
     const router = useRouter();
     const {id} = useParams(); // /contracts/[id]
     const {isAuthenticated, loading: authLoading} = useAuth();
+    const t = useTranslations();
 
     // 1) Restrict access
     useEffect(() => {
@@ -61,14 +63,14 @@ export default function ContractDetailPage() {
             setDeleteDialogOpen(false);
             router.push('/contracts'); // Return to listing
         } catch (err: any) {
-            setDeleteError(err.message || 'Failed to delete contract');
+            setDeleteError(err.message || t('contracts.detail.errors.deleteFailed'));
         }
     };
 
     const handleContractDownload = async () => {
         try {
             if (!contract?.accessCode) {
-                throw new Error('Missing access code');
+                throw new Error(t('contracts.detail.errors.missingAccessCode'));
             }
             const res = await downloadContract({
                 id: contract.id,
@@ -77,7 +79,7 @@ export default function ContractDetailPage() {
 
             downloadBase64Pdf(res.contentBase64, contract?.employeeFirstName + '-' +  contract?.employeeLastName + '-' + res.fileName);
         } catch (err: any) {
-            alert(err.message || 'Download failed');
+            alert(err.message || t('contracts.detail.errors.downloadFailed'));
         }
     };
 
@@ -93,7 +95,7 @@ export default function ContractDetailPage() {
     if (isError || !contract) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <Alert severity="error">{error?.message || 'Failed to load contract.'}</Alert>
+                <Alert severity="error">{error?.message || t('contracts.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -109,7 +111,7 @@ export default function ContractDetailPage() {
 
             {/* Header + actions */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">Contract Detail</Typography>
+                <Typography variant="h5">{t('contracts.detail.title')}</Typography>
                 <Box display="flex" gap={2}>
                     {contractSigned && (
                         <Button
@@ -117,12 +119,12 @@ export default function ContractDetailPage() {
                             disabled={downloading}
                             onClick={handleContractDownload}
                         >
-                            {downloading ? 'Downloading…' : 'Download Signed Contract'}
+                            {downloading ? t('contracts.detail.actions.downloading') : t('contracts.detail.actions.downloadContract')}
                         </Button>
                     )}
                     <Link href={`/contracts/edit/${contract.id}`} passHref>
                         <Button variant="contained" color="primary">
-                            Edit
+                            {t('contracts.detail.actions.edit')}
                         </Button>
                     </Link>
                     <Button
@@ -131,7 +133,7 @@ export default function ContractDetailPage() {
                         onClick={() => setDeleteDialogOpen(true)}
                         disabled={isPending}
                     >
-                        {isPending ? 'Deleting...' : 'Delete'}
+                        {isPending ? t('contracts.detail.actions.deleting') : t('contracts.detail.actions.delete')}
                     </Button>
                 </Box>
             </Box>
@@ -141,290 +143,288 @@ export default function ContractDetailPage() {
                     <TableBody>
                         {/* Driver (clickable) */}
                         <TableRow>
-                            <TableCell><strong>Driver</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.driver')}</strong></TableCell>
                             <TableCell>
                                 {contract.driver ? (
                                     <Link href={`/drivers/${contract.driver.aspNetUserId}`}>
                                         {contract.driver.fullName}
                                     </Link>
-                                ) : 'N/A'}
+                                ) : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
 
                         {/* Company (clickable) */}
                         <TableRow>
-                            <TableCell><strong>Company</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.company')}</strong></TableCell>
                             <TableCell>
                                 {contract.company ? (
                                     <Link href={`/companies/${contract.company.id}`}>
                                         {contract.company.name}
                                     </Link>
-                                ) : 'N/A'}
+                                ) : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell><strong>Contract status</strong></TableCell>
-                            <TableCell>{contractSigned ? 'Signed' : 'Pending'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.contractStatus')}</strong></TableCell>
+                            <TableCell>{contractSigned ? t('contracts.detail.status.signed') : t('contracts.detail.status.pending')}</TableCell>
                         </TableRow>
 
                         <TableRow>
-                            <TableCell><strong>Contract signed on</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.contractSignedOn')}</strong></TableCell>
                             <TableCell>
                                 {contract.signedAt
                                     ? dayjs(contract.signedAt).format('DD-MM-YYYY HH:mm')
-                                    : 'N/A'}
+                                    : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell><strong>Contract access code</strong></TableCell>
-                            <TableCell>{contract.accessCode || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.contractAccessCode')}</strong></TableCell>
+                            <TableCell>{contract.accessCode || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
                         {/* releaseVersion */}
                         <TableRow>
-                            <TableCell><strong>Release Version</strong></TableCell>
-                            <TableCell>{contract.releaseVersion ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.releaseVersion')}</strong></TableCell>
+                            <TableCell>{contract.releaseVersion ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* nightHoursAllowed */}
                         <TableRow>
-                            <TableCell><strong>Night Hours Allowed</strong></TableCell>
-                            <TableCell>{contract.nightHoursAllowed ? 'Yes' : 'No'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.nightHoursAllowed')}</strong></TableCell>
+                            <TableCell>{contract.nightHoursAllowed ? t('contracts.detail.booleans.yes') : t('contracts.detail.booleans.no')}</TableCell>
                         </TableRow>
 
                         {/* kilometersAllowanceAllowed */}
                         <TableRow>
-                            <TableCell><strong>Kilometers Allowance</strong></TableCell>
-                            <TableCell>{contract.kilometersAllowanceAllowed ? 'Yes' : 'No'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.kilometersAllowance')}</strong></TableCell>
+                            <TableCell>{contract.kilometersAllowanceAllowed ? t('contracts.detail.booleans.yes') : t('contracts.detail.booleans.no')}</TableCell>
                         </TableRow>
 
                         {/* commuteKilometers */}
                         <TableRow>
-                            <TableCell><strong>Commute Kilometers</strong></TableCell>
-                            <TableCell>{contract.commuteKilometers ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.commuteKilometers')}</strong></TableCell>
+                            <TableCell>{contract.commuteKilometers ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* employeeFirstName / LastName */}
                         <TableRow>
-                            <TableCell><strong>Employee Name</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.employeeName')}</strong></TableCell>
                             <TableCell>{contract.employeeFirstName} {contract.employeeLastName}</TableCell>
                         </TableRow>
 
                         {/* employeeAddress */}
                         <TableRow>
-                            <TableCell><strong>Employee Address</strong></TableCell>
-                            <TableCell>{contract.employeeAddress || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.employeeAddress')}</strong></TableCell>
+                            <TableCell>{contract.employeeAddress || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* employeePostcode */}
                         <TableRow>
-                            <TableCell><strong>Employee Postcode</strong></TableCell>
-                            <TableCell>{contract.employeePostcode || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.employeePostcode')}</strong></TableCell>
+                            <TableCell>{contract.employeePostcode || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* employeeCity */}
                         <TableRow>
-                            <TableCell><strong>Employee City</strong></TableCell>
-                            <TableCell>{contract.employeeCity || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.employeeCity')}</strong></TableCell>
+                            <TableCell>{contract.employeeCity || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* dateOfBirth */}
                         <TableRow>
-                            <TableCell><strong>Date of Birth</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.dateOfBirth')}</strong></TableCell>
                             <TableCell>
                                 {contract.dateOfBirth
                                     ? dayjs(contract.dateOfBirth).format('DD-MM-YYYY')
-                                    : 'N/A'}
+                                    : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
 
                         {/* bsn */}
                         <TableRow>
-                            <TableCell><strong>BSN</strong></TableCell>
-                            <TableCell>{contract.bsn || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.bsn')}</strong></TableCell>
+                            <TableCell>{contract.bsn || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* dateOfEmployment */}
                         <TableRow>
-                            <TableCell><strong>Date of Employment</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.dateOfEmployment')}</strong></TableCell>
                             <TableCell>
                                 {contract.dateOfEmployment
                                     ? dayjs(contract.dateOfEmployment).format('DD-MM-YYYY')
-                                    : 'N/A'}
+                                    : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
 
                         {/* lastWorkingDay */}
                         <TableRow>
-                            <TableCell><strong>Last Working Day</strong></TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.lastWorkingDay')}</strong></TableCell>
                             <TableCell>
                                 {contract.lastWorkingDay
                                     ? dayjs(contract.lastWorkingDay).format('DD-MM-YYYY')
-                                    : 'N/A'}
+                                    : t('contracts.detail.notAvailable')}
                             </TableCell>
                         </TableRow>
 
                         {/* function */}
                         <TableRow>
-                            <TableCell><strong>Function</strong></TableCell>
-                            <TableCell>{contract.function || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.function')}</strong></TableCell>
+                            <TableCell>{contract.function || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* probationPeriod */}
                         <TableRow>
-                            <TableCell><strong>Probation Period</strong></TableCell>
-                            <TableCell>{contract.probationPeriod || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.probationPeriod')}</strong></TableCell>
+                            <TableCell>{contract.probationPeriod || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* workweekDuration */}
                         <TableRow>
-                            <TableCell><strong>Workweek Duration</strong></TableCell>
-                            <TableCell>{contract.workweekDuration ?? 'N/A'} hrs</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.workweekDuration')}</strong></TableCell>
+                            <TableCell>{contract.workweekDuration ?? t('contracts.detail.notAvailable')} {contract.workweekDuration ? t('contracts.detail.hours') : ''}</TableCell>
                         </TableRow>
 
                         {/* weeklySchedule */}
                         <TableRow>
-                            <TableCell><strong>Weekly Schedule</strong></TableCell>
-                            <TableCell>{contract.weeklySchedule || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.weeklySchedule')}</strong></TableCell>
+                            <TableCell>{contract.weeklySchedule || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* workingHours */}
                         <TableRow>
-                            <TableCell><strong>Working Hours</strong></TableCell>
-                            <TableCell>{contract.workingHours || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.workingHours')}</strong></TableCell>
+                            <TableCell>{contract.workingHours || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* noticePeriod */}
                         <TableRow>
-                            <TableCell><strong>Notice Period</strong></TableCell>
-                            <TableCell>{contract.noticePeriod || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.noticePeriod')}</strong></TableCell>
+                            <TableCell>{contract.noticePeriod || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
-                        {/* compensationPerMonthExclBtw */}
+                        {/* payScale */}
                         <TableRow>
-                            <TableCell><strong>Compensation/Month (excl. BTW)</strong></TableCell>
-                            <TableCell>{contract.compensationPerMonthExclBtw ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.payScale')}</strong></TableCell>
+                            <TableCell>{contract.payScale || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
-                        {/* compensationPerMonthInclBtw */}
+                        {/* payScaleStep */}
                         <TableRow>
-                            <TableCell><strong>Compensation/Month (incl. BTW)</strong></TableCell>
-                            <TableCell>{contract.compensationPerMonthInclBtw ?? 'N/A'}</TableCell>
-                        </TableRow>
-
-                        {/* payScale / payScaleStep */}
-                        <TableRow>
-                            <TableCell><strong>Pay Scale</strong></TableCell>
-                            <TableCell>
-                                {contract.payScale || 'N/A'} - Step {contract.payScaleStep ?? 'N/A'}
-                            </TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.payScaleStep')}</strong></TableCell>
+                            <TableCell>{contract.payScaleStep ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* hourlyWage100Percent */}
                         <TableRow>
-                            <TableCell><strong>Hourly Wage (100%)</strong></TableCell>
-                            <TableCell>{contract.hourlyWage100Percent ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.hourlyWage100Percent')}</strong></TableCell>
+                            <TableCell>{contract.hourlyWage100Percent ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* deviatingWage */}
                         <TableRow>
-                            <TableCell><strong>Deviating Wage</strong></TableCell>
-                            <TableCell>{contract.deviatingWage ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.deviatingWage')}</strong></TableCell>
+                            <TableCell>{contract.deviatingWage ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* travelExpenses */}
                         <TableRow>
-                            <TableCell><strong>Travel Expenses</strong></TableCell>
-                            <TableCell>{contract.travelExpenses ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.travelExpenses')}</strong></TableCell>
+                            <TableCell>{contract.travelExpenses ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* maxTravelExpenses */}
                         <TableRow>
-                            <TableCell><strong>Max Travel Expenses</strong></TableCell>
-                            <TableCell>{contract.maxTravelExpenses ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.maxTravelExpenses')}</strong></TableCell>
+                            <TableCell>{contract.maxTravelExpenses ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* vacationAge */}
                         <TableRow>
-                            <TableCell><strong>Vacation Age</strong></TableCell>
-                            <TableCell>{contract.vacationAge ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.vacationAge')}</strong></TableCell>
+                            <TableCell>{contract.vacationAge ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* vacationDays */}
                         <TableRow>
-                            <TableCell><strong>Vacation Days</strong></TableCell>
-                            <TableCell>{contract.vacationDays ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.vacationDays')}</strong></TableCell>
+                            <TableCell>{contract.vacationDays ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* atv */}
                         <TableRow>
-                            <TableCell><strong>ATV</strong></TableCell>
-                            <TableCell>{contract.atv ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.atv')}</strong></TableCell>
+                            <TableCell>{contract.atv ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* vacationAllowance */}
                         <TableRow>
-                            <TableCell><strong>Vacation Allowance (%)</strong></TableCell>
-                            <TableCell>{contract.vacationAllowance ?? 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.vacationAllowance')}</strong></TableCell>
+                            <TableCell>{contract.vacationAllowance ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
-                        {/* companyName / employerName */}
+                        {/* compensationPerMonthExclBtw */}
                         <TableRow>
-                            <TableCell><strong>Company Name</strong></TableCell>
-                            <TableCell>{contract.companyName || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.compensationPerMonthExclBtw')}</strong></TableCell>
+                            <TableCell>{contract.compensationPerMonthExclBtw ?? t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
+                        {/* compensationPerMonthInclBtw */}
                         <TableRow>
-                            <TableCell><strong>Employer Name</strong></TableCell>
-                            <TableCell>{contract.employerName || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.compensationPerMonthInclBtw')}</strong></TableCell>
+                            <TableCell>{contract.compensationPerMonthInclBtw ?? t('contracts.detail.notAvailable')}</TableCell>
+                        </TableRow>
+
+                        {/* companyName */}
+                        <TableRow>
+                            <TableCell><strong>{t('contracts.detail.fields.companyName')}</strong></TableCell>
+                            <TableCell>{contract.companyName || t('contracts.detail.notAvailable')}</TableCell>
+                        </TableRow>
+
+                        {/* employerName */}
+                        <TableRow>
+                            <TableCell><strong>{t('contracts.detail.fields.employerName')}</strong></TableCell>
+                            <TableCell>{contract.employerName || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* companyAddress */}
                         <TableRow>
-                            <TableCell><strong>Company Address</strong></TableCell>
-                            <TableCell>{contract.companyAddress || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.companyAddress')}</strong></TableCell>
+                            <TableCell>{contract.companyAddress || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* companyPostcode */}
                         <TableRow>
-                            <TableCell><strong>Company Postcode</strong></TableCell>
-                            <TableCell>{contract.companyPostcode || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.companyPostcode')}</strong></TableCell>
+                            <TableCell>{contract.companyPostcode || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* companyCity */}
                         <TableRow>
-                            <TableCell><strong>Company City</strong></TableCell>
-                            <TableCell>{contract.companyCity || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.companyCity')}</strong></TableCell>
+                            <TableCell>{contract.companyCity || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* companyPhoneNumber */}
                         <TableRow>
-                            <TableCell><strong>Company Phone</strong></TableCell>
-                            <TableCell>{contract.companyPhoneNumber || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.companyPhoneNumber')}</strong></TableCell>
+                            <TableCell>{contract.companyPhoneNumber || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
 
                         {/* companyBtw */}
                         <TableRow>
-                            <TableCell><strong>Company BTW</strong></TableCell>
-                            <TableCell>{contract.companyBtw || 'N/A'}</TableCell>
-                        </TableRow>
-
-                        {/* companyKvk */}
-                        <TableRow>
-                            <TableCell><strong>Company KVK</strong></TableCell>
-                            <TableCell>{contract.companyKvk || 'N/A'}</TableCell>
+                            <TableCell><strong>{t('contracts.detail.fields.companyBtw')}</strong></TableCell>
+                            <TableCell>{contract.companyBtw || t('contracts.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
 
-            {/* Delete confirmation dialog */}
             <ConfirmModal
                 open={deleteDialogOpen}
-                title="Delete Contract?"
-                message="Are you sure you want to delete this employee contract?"
+                title={t('contracts.detail.deleteModal.title')}
+                message={t('contracts.detail.deleteModal.message')}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleDeleteConfirm}
-                />
+            />
         </Box>
     );
 }

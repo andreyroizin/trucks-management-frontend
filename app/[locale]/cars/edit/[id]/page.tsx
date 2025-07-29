@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -24,22 +25,6 @@ import FileTile from '@/components/FileTile';
 import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
 import { ApplicationFile } from '@/types/file';
 
-const schema = yup.object().shape({
-    id: yup.string().required(),
-    companyId: yup.string().required('Company is required'),
-    licensePlate: yup.string().required('License plate is required'),
-    vehicleYear: yup.string().optional(),
-    registrationDate: yup.string().optional(),
-    remark: yup.string().optional(),
-    newUploads: yup.array().of(
-        yup.object({
-            fileId: yup.string().required(),
-            originalFileName: yup.string().required(),
-        })
-    ).optional(),
-    fileIdsToDelete: yup.array().optional(),
-});
-
 type FormInputs = {
     id: string;
     companyId: string;
@@ -55,6 +40,23 @@ type FormInputs = {
 };
 
 export default function EditVehiclePage() {
+    const t = useTranslations();
+    
+    const schema = yup.object().shape({
+        id: yup.string().required(),
+        companyId: yup.string().required(t('cars.create.fields.company.required')),
+        licensePlate: yup.string().required(t('cars.create.fields.licensePlate.required')),
+        vehicleYear: yup.string().optional(),
+        registrationDate: yup.string().optional(),
+        remark: yup.string().optional(),
+        newUploads: yup.array().of(
+            yup.object({
+                fileId: yup.string().required(),
+                originalFileName: yup.string().required(),
+            })
+        ).optional(),
+        fileIdsToDelete: yup.array().optional(),
+    });
     const { id } = useParams();
     const router = useRouter();
     const carId = id as string;
@@ -166,7 +168,7 @@ export default function EditVehiclePage() {
     if (isCarError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{carError?.message || 'Failed to load vehicle.'}</Alert>
+                <Alert severity="error">{carError?.message || t('cars.edit.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -176,10 +178,10 @@ export default function EditVehiclePage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    Edit Vehicle Information
+                    {t('cars.edit.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Update the vehicle information below. Please ensure all fields are filled out accurately.
+                    {t('cars.edit.subtitle')}
                 </Typography>
             </Box>
 
@@ -187,7 +189,7 @@ export default function EditVehiclePage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to edit vehicle.'}
+                        {error?.message || t('cars.edit.errors.updateFailed')}
                     </Alert>
                 )}
 
@@ -195,7 +197,7 @@ export default function EditVehiclePage() {
                 {/* General Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        General Information
+                        {t('cars.create.sections.general')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         {/* License Plate */}
@@ -206,7 +208,7 @@ export default function EditVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="License Plate"
+                                        label={t('cars.create.fields.licensePlate.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -230,7 +232,7 @@ export default function EditVehiclePage() {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                label="Company"
+                                                label={t('cars.create.fields.company.label')}
                                                 variant="outlined"
                                                 margin="normal"
                                                 fullWidth
@@ -256,8 +258,8 @@ export default function EditVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Vehicle Year"
-                                        placeholder="When the vehicle was purchased?"
+                                        label={t('cars.create.fields.vehicleYear.label')}
+                                        placeholder={t('cars.create.fields.vehicleYear.placeholder')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -275,9 +277,9 @@ export default function EditVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Registration Date"
+                                        label={t('cars.create.fields.registrationDate.label')}
                                         type="date"
-                                        placeholder="When the vehicle was registered?"
+                                        placeholder={t('cars.create.fields.registrationDate.placeholder')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -296,7 +298,7 @@ export default function EditVehiclePage() {
                 {/* Remark Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Remark
+                        {t('cars.create.sections.remark')}
                     </Typography>
                     <Controller
                         name="remark"
@@ -304,13 +306,13 @@ export default function EditVehiclePage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Remark"
+                                label={t('cars.create.fields.remark.label')}
                                 fullWidth
                                 margin="normal"
                                 variant="outlined"
                                 multiline
                                 rows={4}
-                                placeholder="Enter any additional remarks or comments about the vehicle..."
+                                placeholder={t('cars.create.fields.remark.placeholder')}
                                 error={!!errors.remark}
                                 helperText={errors.remark?.message}
                             />
@@ -321,14 +323,14 @@ export default function EditVehiclePage() {
                 {/* Vehicle Documents Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Vehicle Documents
+                        {t('cars.create.sections.documents')}
                     </Typography>
                     
                     {/* Existing Files */}
                     {carData?.files && carData?.files?.length > 0 && (
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                Current Documents ({carData?.files?.length})
+                                {t('cars.edit.documents.current', { count: carData?.files?.length || 0 })}
                             </Typography>
                             {carData?.files?.map((file) => (
                                 <Box key={file.id} mb={1.5}>
@@ -345,7 +347,7 @@ export default function EditVehiclePage() {
                     {/* Upload New Files */}
                     <Box>
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            Upload Additional Documents
+                            {t('cars.edit.documents.uploadNew')}
                         </Typography>
                         <FileUploadBox 
                             uploadUrl="/temporary-uploads" 
@@ -363,7 +365,7 @@ export default function EditVehiclePage() {
                         disabled={isPending}
                         startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Updating...' : 'Update Vehicle'}
+                        {isPending ? t('cars.edit.buttons.submitting') : t('cars.edit.buttons.submit')}
                     </Button>
                 </Box>
             </form>

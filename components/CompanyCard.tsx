@@ -3,6 +3,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Card,
@@ -31,6 +32,7 @@ type CompanyCardProps = {
 
 export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: CompanyCardProps) {
     const router = useRouter();
+    const t = useTranslations();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -108,7 +110,7 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                                         width: '40%'
                                     }}
                                 >
-                                    Drivers
+                                    {t('companies.card.drivers')}
                                 </TableCell>
                                 <TableCell 
                                     sx={{ 
@@ -138,8 +140,8 @@ export default function CompanyCard({ id, name, drivers, onDelete, onEdit }: Com
                             horizontal: 'right',
                         }}
                     >
-                        {onEdit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
-                        {onDelete && <MenuItem onClick={handleDelete}>Delete</MenuItem>}
+                        {onEdit && <MenuItem onClick={handleEdit}>{t('companies.card.menu.edit')}</MenuItem>}
+                        {onDelete && <MenuItem onClick={handleDelete}>{t('companies.card.menu.delete')}</MenuItem>}
                     </Menu>
                 )}
             </CardContent>

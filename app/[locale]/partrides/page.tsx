@@ -46,11 +46,13 @@ import {useApprovePartRide} from "@/hooks/useApprovePartRide";
 import {useRejectPartRide} from "@/hooks/useRejectPartRide";
 import {WEEKEND_HOLIDAY_BG} from "@/utils/constants/styles";
 import {isHolidayDayjs} from "@/utils/constants/dutchHolidays";
+import {useTranslations} from 'next-intl';
 
 export default function TripsManagementPage() {
     const router = useRouter();
     const {isAuthenticated, loading: authLoading} = useAuth();
     const showSnack = useSnack();
+    const t = useTranslations('partrides.page');
 
     const queryClient = useQueryClient();
 
@@ -98,110 +100,88 @@ export default function TripsManagementPage() {
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     const {data: rides, isLoading, isRefetching, error} = usePartRides({
-        // companyId,
         clientIds,
         driverIds,
         carIds,
         statusIds,
+        startDate: startDate?.format('YYYY-MM-DD'),
+        endDate: endDate?.format('YYYY-MM-DD'),
         weekNumbers,
         weekDays,
         pageNumber,
         pageSize: rowsPerPage,
-        startDate: startDate?.isValid() ? startDate.format('YYYY-MM-DD') : undefined,
-        endDate: endDate?.isValid() ? endDate.format('YYYY-MM-DD') : undefined,
     });
 
-    // useEffect(() => {
-    //     const params = new URLSearchParams();
-    //     // if (companyId) params.set('companyId', companyId);
-    //     if (clientId) params.set('clientId', clientId);
-    //     if (driverId) params.set('driverId', driverId);
-    //     if (carId) params.set('carId', carId);
-    //     if (startDate) params.set('startDate', startDate.toISOString());
-    //     if (endDate) params.set('endDate', endDate.toISOString());
-    //     router.replace(`/partrides?${params.toString()}`);
-    //   }, [clientId, driverId, carId, startDate, endDate, router]);
-
-    /** ────────────────────────────────────────────────────────────────
-     * Bulk delete handler
-     * ───────────────────────────────────────────────────────────── */
-    const handleConfirmBulkDelete = async () => {
-        try {
-            for (const id of selectedIds) {
-                await new Promise<void>((resolve, reject) => {
-                    deletePartRide(id, {
-                        onSuccess: resolve,
-                        onError: (err: any) => {
-                            console.error('Deletion failed:', err);
-                            showSnack({
-                                text: err?.response?.data?.errors?.[0] ?? 'Failed to delete one or more workdays',
-                                severity: 'error'
-                            });
-                            reject(err);
-                        },
-                    });
-                });
-            }
-
-            showSnack({text: 'Deleted workdays', severity: 'success'});
-
-            setSelectedIds([]);
-            setConfirmBulkDeleteOpen(false);
-        } catch (err) {
-            console.error('One or more deletions failed', err);
-        } finally {
-            setIsBulkDeleting(false);
-        }
-    };
-
-    /** ────────────────────────────────────────────────────────────────
-     * Row selection handling
-     * ───────────────────────────────────────────────────────────── */
+    // Selection
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
     const toggleRow = (id: string) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
         );
     };
+
     const toggleAll = () => {
-        if (!rides?.data) return;
+        if (!rides?.data.length) return;
         if (selectedIds.length === rides.data.length) {
             setSelectedIds([]);
         } else {
-            setSelectedIds(rides.data.map((r) => r.id));
+            setSelectedIds(rides.data.map(r => r.id));
         }
     };
 
-    const handleApproveSelected = async () => {
-        if (!selectedIds.length) return;
-        try {
-            for (const id of selectedIds) {
-                await approveRide(id);               // <-- mutation hook (await!)
+    /** ────────────────────────────────────────────────────────────────
+     * Bulk actions
+     * ───────────────────────────────────────────────────────────── */
+    const handleConfirmBulkDelete = async () => {
+        setIsBulkDeleting(true);
+        setConfirmBulkDeleteOpen(false);
+
+        // Delete one by one
+        for (const id of selectedIds) {
+            try {
+                await new Promise<void>((resolve, reject) => {
+                    deletePartRide(id, {
+                        onSuccess: () => resolve(),
+                        onError: (err) => reject(err),
+                    });
+                });
+            } catch (e) {
+                console.error('Failed to delete part ride:', e);
+                // Continue with others
             }
-            showSnack({text: 'Approved selected workdays', severity: 'success'});
+        }
+
+        setIsBulkDeleting(false);
+        setSelectedIds([]);
+        await handleRefetch();
+    };
+
+    const handleApproveSelected = async () => {
+        try {
+            // Approve all selected
+            await Promise.all(selectedIds.map(id => approveRide(id)));
+            showSnack({text: t('messages.approvedSelected'), severity: 'success'});
             setSelectedIds([]);
         } catch (e: any) {
             showSnack({
-                text: e?.response?.data?.errors?.[0] ?? 'Failed to approve one or more workdays',
+                text: e?.response?.data?.errors?.[0] ?? t('messages.approveSelectedFailed'),
                 severity: 'error',
             });
         } finally {
-            await handleRefetch();                 // refresh list
+            await handleRefetch();
         }
     };
 
     const handleRejectSelected = async () => {
-        if (!selectedIds.length) return;
-
         try {
-            for (const id of selectedIds) {
-                await rejectRide(id);                // <-- mutation hook (await!)
-            }
-            showSnack({text: 'Rejected selected workdays', severity: 'success'});
+            // Reject all selected
+            await Promise.all(selectedIds.map(id => rejectRide(id)));
+            showSnack({text: t('messages.rejectedSelected'), severity: 'success'});
             setSelectedIds([]);
         } catch (e: any) {
             showSnack({
-                text: e?.response?.data?.errors?.[0] ?? 'Failed to reject one or more workdays',
+                text: e?.response?.data?.errors?.[0] ?? t('messages.rejectSelectedFailed'),
                 severity: 'error',
             });
         } finally {
@@ -221,10 +201,10 @@ export default function TripsManagementPage() {
     const handleApprove = async (row: PartRide) => {
         try {
             await approveRide(row.id);
-            showSnack({text: 'Workday approved', severity: 'success'});
+            showSnack({text: t('messages.approveSuccess'), severity: 'success'});
         } catch (e: any) {
             showSnack({
-                text: e?.response?.data?.errors?.[0] ?? 'Approve failed',
+                text: e?.response?.data?.errors?.[0] ?? t('messages.approveFailed'),
                 severity: 'error',
             });
         } finally {
@@ -233,17 +213,17 @@ export default function TripsManagementPage() {
     };
 
     const handleDispute = (row: PartRide) => {
-        setDisputePartRideId(row.id);     // remember which ride we’re disputing
+        setDisputePartRideId(row.id);     // remember which ride we're disputing
         setOpenCreateDispute(true);
     };
 
     const handleReject = async (row: PartRide) => {
         try {
             await rejectRide(row.id);
-            showSnack({text: 'Workday rejected', severity: 'success'});
+            showSnack({text: t('messages.rejectSuccess'), severity: 'success'});
         } catch (e: any) {
             showSnack({
-                text: e?.response?.data?.errors?.[0] ?? 'Reject failed',
+                text: e?.response?.data?.errors?.[0] ?? t('messages.rejectFailed'),
                 severity: 'error',
             });
         } finally {
@@ -262,7 +242,7 @@ export default function TripsManagementPage() {
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Workdays Management
+                    {t('title')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
@@ -277,19 +257,19 @@ export default function TripsManagementPage() {
                         value={weekNumbers.map((v) => ({ label: v, value: v }))}
                         onChange={(_, selected) => setWeekNumbers(selected.map((d) => d.value))}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Week(s)" />}
+                        renderInput={(p) => <TextField {...p} label={t('filters.weeks')} />}
                     />
                     <Autocomplete
                         multiple
                         size="small"
                         options={[
-                            { label: 'Monday',    value: '1' },
-                            { label: 'Tuesday',   value: '2' },
-                            { label: 'Wednesday', value: '3' },
-                            { label: 'Thursday',  value: '4' },
-                            { label: 'Friday',    value: '5' },
-                            { label: 'Saturday',  value: '6' },
-                            { label: 'Sunday',    value: '0' },
+                            { label: t('filters.weekdayOptions.monday'),    value: '1' },
+                            { label: t('filters.weekdayOptions.tuesday'),   value: '2' },
+                            { label: t('filters.weekdayOptions.wednesday'), value: '3' },
+                            { label: t('filters.weekdayOptions.thursday'),  value: '4' },
+                            { label: t('filters.weekdayOptions.friday'),    value: '5' },
+                            { label: t('filters.weekdayOptions.saturday'),  value: '6' },
+                            { label: t('filters.weekdayOptions.sunday'),    value: '0' },
                         ]}
                         value={weekDays.map((v) => ({
                             label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][Number(v)],
@@ -299,27 +279,27 @@ export default function TripsManagementPage() {
                         getOptionLabel={(o) => o.label}
                         isOptionEqualToValue={(a, b) => a.value === b.value}
                         sx={{ minWidth: 200, maxWidth: 200 }}
-                        renderInput={(params) => <TextField {...params} label="Weekday(s)" />}
+                        renderInput={(params) => <TextField {...params} label={t('filters.weekdays')} />}
                     />
                     <Autocomplete
                         multiple
                         size="small"
                         options={[
-                            {label: 'Pending Admin', value: '0'},
-                            {label: 'Dispute', value: '1'},
-                            {label: 'Accepted', value: '2'},
-                            {label: 'Rejected', value: '3'},
+                            {label: t('filters.statusOptions.pendingAdmin'), value: '0'},
+                            {label: t('filters.statusOptions.dispute'), value: '1'},
+                            {label: t('filters.statusOptions.accepted'), value: '2'},
+                            {label: t('filters.statusOptions.rejected'), value: '3'},
                         ]}
                         value={statusIds.map((id) => ({
                             label:
                                 id === '0'
-                                    ? 'Pending Admin'
+                                    ? t('filters.statusOptions.pendingAdmin')
                                     : id === '1'
-                                        ? 'Dispute'
+                                        ? t('filters.statusOptions.dispute')
                                         : id === '2'
-                                            ? 'Accepted'
+                                            ? t('filters.statusOptions.accepted')
                                             : id === '3'
-                                                ? 'Rejected'
+                                                ? t('filters.statusOptions.rejected')
                                                 : id,
                             value: id,
                         }))}
@@ -329,7 +309,7 @@ export default function TripsManagementPage() {
                         getOptionLabel={(option) => option.label}
                         isOptionEqualToValue={(option, value) => option.value === value.value}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(params) => <TextField {...params} label="Statuses"/>}
+                        renderInput={(params) => <TextField {...params} label={t('filters.statuses')}/>}
                         freeSolo={false}
                     />
 
@@ -344,7 +324,7 @@ export default function TripsManagementPage() {
                             setCarIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Vehicles"/>}
+                        renderInput={(p) => <TextField {...p} label={t('filters.vehicles')}/>}
                     />
 
                     <Autocomplete
@@ -359,7 +339,7 @@ export default function TripsManagementPage() {
                             setDriverIds(ids);
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Drivers"/>}
+                        renderInput={(p) => <TextField {...p} label={t('filters.drivers')}/>}
                     />
 
                     <Autocomplete
@@ -373,7 +353,7 @@ export default function TripsManagementPage() {
                             setClientIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Clients"/>}
+                        renderInput={(p) => <TextField {...p} label={t('filters.clients')}/>}
                     />
 
                     {/* Company */}
@@ -394,7 +374,7 @@ export default function TripsManagementPage() {
 
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <DateInputField
-                        label="Start date"
+                        label={t('filters.startDate')}
                         name="startDate"
                         value={startDate}
                         sx={{maxWidth: 200}}
@@ -402,7 +382,7 @@ export default function TripsManagementPage() {
                         slotProps={{textField: {size: 'small'}}}
                     />
                     <DateInputField
-                        label="End date"
+                        label={t('filters.endDate')}
                         name="endDate"
                         value={endDate}
                         sx={{maxWidth: 200}}
@@ -423,7 +403,7 @@ export default function TripsManagementPage() {
                         ))
                     ) : (
                         <Typography variant="body2" color="error">
-                            {(error as any)?.message || 'An error occurred while fetching data.'}
+                            {(error as any)?.message || t('messages.errorOccurred')}
                         </Typography>
                     )}
                 </Box>
@@ -440,7 +420,7 @@ export default function TripsManagementPage() {
                     mb: 3
                 }}>
                     <Typography variant="h4" fontWeight={500}>
-                        Overview List
+                        {t('table.title')}
                     </Typography>
                     {(isLoading || isRefetching) ? (
                         <CircularProgress size={20}/>
@@ -463,13 +443,13 @@ export default function TripsManagementPage() {
                                         onChange={toggleAll}
                                     />
                                 </TableCell>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Week</TableCell>
-                                <TableCell>Hours code</TableCell>
-                                <TableCell>Driver</TableCell>
-                                <TableCell align="right">Hours</TableCell>
-                                <TableCell>Statuses</TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell>{t('table.headers.date')}</TableCell>
+                                <TableCell>{t('table.headers.week')}</TableCell>
+                                <TableCell>{t('table.headers.hoursCode')}</TableCell>
+                                <TableCell>{t('table.headers.driver')}</TableCell>
+                                <TableCell align="right">{t('table.headers.hours')}</TableCell>
+                                <TableCell>{t('table.headers.statuses')}</TableCell>
+                                <TableCell>{t('table.headers.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -483,7 +463,7 @@ export default function TripsManagementPage() {
                                 <TableRow>
                                     <TableCell colSpan={9} align="center" sx={{py: 6}}>
                                         <Typography variant="body1">
-                                            No records found.
+                                            {t('table.noData')}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
@@ -515,20 +495,20 @@ export default function TripsManagementPage() {
                                             {dayjs(row.date).format('dd DD.MM.YY')}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            {row?.weekNumber ?? "N/A"}
+                                            {row?.weekNumber ?? t('table.notAvailable')}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            {row?.hoursCode?.name ?? "N/A"}
+                                            {row?.hoursCode?.name ?? t('table.notAvailable')}
                                         </TableCell>
                                         <TableCell sx={{py: 2.6}}>
-                                            {(row.driver?.firstName && row.driver?.lastName) ? row.driver?.firstName + ' ' + row.driver?.lastName : 'N/A'}
+                                            {(row.driver?.firstName && row.driver?.lastName) ? row.driver?.firstName + ' ' + row.driver?.lastName : t('table.notAvailable')}
                                         </TableCell>
                                         <TableCell align="right" sx={{py: 2.6}}>
                                             {row.decimalHours}
                                         </TableCell>
                                         <TableCell>
                                             <Box>
-                                                {PartRideStatusChip(row.status)}
+                                                <PartRideStatusChip status={row.status} />
                                             </Box>
                                         </TableCell>
                                         <TableCell>
@@ -586,7 +566,7 @@ export default function TripsManagementPage() {
                 >
                     <Box sx={{display: 'flex', alignItems: 'center', gap: .5, flexWrap: 'wrap'}}>
                         <Typography variant="body2" fontWeight={500} sx={{color: 'primary.main'}}>
-                            {selectedIds.length} selected
+                            {selectedIds.length} {t('bulkActions.selected')}
                         </Typography>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
@@ -594,7 +574,7 @@ export default function TripsManagementPage() {
                             onClick={() => handleApproveSelected()}
                         >
                             <TaskAltRoundedIcon fontSize="small"/>
-                            <Typography variant="body2">Approve</Typography>
+                            <Typography variant="body2">{t('bulkActions.approve')}</Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
@@ -602,7 +582,7 @@ export default function TripsManagementPage() {
                             onClick={() => handleRejectSelected()}
                         >
                             <CloseIcon fontSize="small"/>
-                            <Typography variant="body2">Reject</Typography>
+                            <Typography variant="body2">{t('bulkActions.reject')}</Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem sx={{mx: 2}}/>
                         <Box
@@ -614,15 +594,15 @@ export default function TripsManagementPage() {
                             ) : (
                                 <DeleteOutlineIcon fontSize="small"/>
                             )}
-                            <Typography variant="body2">Delete</Typography>
+                            <Typography variant="body2">{t('bulkActions.delete')}</Typography>
                         </Box>
                     </Box>
                 </Box>
             )}
             <ConfirmModal
                 open={!!confirmDeleteId}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this ride?"
+                title={t('confirmDelete.title')}
+                message={t('confirmDelete.message')}
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={() => {
                     if (!confirmDeleteId) return;
@@ -631,12 +611,12 @@ export default function TripsManagementPage() {
                             setConfirmDeleteId(null);
                         },
                         onSuccess: () => {
-                            showSnack({text: 'Deleted the workday', severity: 'success'});
+                            showSnack({text: t('messages.deletedWorkday'), severity: 'success'});
                             setSelectedIds([]);
                         },
                         onError: (error: any) => {
                             showSnack({
-                                text: error?.response?.data?.errors?.[0] ?? 'Failed to delete the workday',
+                                text: error?.response?.data?.errors?.[0] ?? t('messages.deleteFailed'),
                                 severity: 'error'
                             });
                         },
@@ -645,8 +625,8 @@ export default function TripsManagementPage() {
             />
             <ConfirmModal
                 open={confirmBulkDeleteOpen}
-                title="Confirm Bulk Deletion"
-                message={`Are you sure you want to delete ${bulkDeleteCount} workdays?`}
+                title={t('confirmBulkDelete.title')}
+                message={t('confirmBulkDelete.message', { count: bulkDeleteCount })}
                 onClose={() => setConfirmBulkDeleteOpen(false)}
                 onConfirm={handleConfirmBulkDelete}
             />

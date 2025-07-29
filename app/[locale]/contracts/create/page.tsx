@@ -31,14 +31,7 @@ import {useCreateEmployeeContract, CreateEmployeeContractInput} from '@/hooks/us
 import {useForm, Controller, SubmitHandler} from 'react-hook-form';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
-
-// --- VALIDATION SCHEMA ---
-const createContractSchema = yup.object().shape({
-    employeeFirstName: yup.string().required('Employee first name is required'),
-    employeeLastName: yup.string().required('Employee last name is required'),
-    companyName: yup.string().required('Company name is required'),
-    employerName: yup.string().required('Employer name is required'),
-});
+import {useTranslations} from 'next-intl';
 
 export default function CreateEmployeeContractPage() {
     dayjs.extend(utc);
@@ -47,6 +40,15 @@ export default function CreateEmployeeContractPage() {
 
     const router = useRouter();
     const {isAuthenticated, loading: authLoading} = useAuth();
+    const t = useTranslations();
+
+    // --- VALIDATION SCHEMA - moved inside component to access translations ---
+    const createContractSchema = yup.object().shape({
+        employeeFirstName: yup.string().required(t('contracts.create.validation.employeeFirstNameRequired')),
+        employeeLastName: yup.string().required(t('contracts.create.validation.employeeLastNameRequired')),
+        companyName: yup.string().required(t('contracts.create.validation.companyNameRequired')),
+        employerName: yup.string().required(t('contracts.create.validation.employerNameRequired')),
+    });
 
     // Restrict access
     useEffect(() => {
@@ -103,7 +105,7 @@ export default function CreateEmployeeContractPage() {
             await createContract(data);
             router.push('/contracts');
         } catch (err: any) {
-            setApiError(err.message || 'Failed to create contract');
+            setApiError(err.message || t('contracts.create.errors.createFailed'));
         }
     };
 
@@ -150,7 +152,7 @@ export default function CreateEmployeeContractPage() {
                 }}
             >
                 <Typography variant="h5" mb={2}>
-                    Create Employee Contract
+                    {t('contracts.create.title')}
                 </Typography>
 
                 {apiError && (
@@ -189,8 +191,8 @@ export default function CreateEmployeeContractPage() {
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
-                                            label="Driver (optional)"
-                                            helperText="If selected, we prefill the name"
+                                            label={t('contracts.create.fields.driver')}
+                                            helperText={t('contracts.create.fields.driverHelp')}
                                         />
                                     )}
                                 />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
     Box,
@@ -23,28 +23,30 @@ import {
     useUpdateDriverCompensations,
     CompensationSettings,
 } from '@/hooks/useDriverCompensations';
-
-// --- VALIDATION SCHEMA ---
-const driverCompSchema = yup.object({
-    percentageOfWork: yup.number().required(),
-    nightHoursAllowed: yup.boolean().required(),
-    nightHours19Percent: yup.boolean().required(),
-    driverRatePerHour: yup.number().required(),
-    nightAllowanceRate: yup.number().required(),
-    kilometerAllowanceEnabled: yup.boolean().required(),
-    kilometersOneWayValue: yup.number().required(),
-    kilometersMin: yup.number().required(),
-    kilometersMax: yup.number().required(),
-    kilometerAllowance: yup.number().required(),
-    salary4Weeks: yup.number().required(),
-    weeklySalary: yup.number().required(),
-    dateOfEmployment: yup.string().required(), // e.g. '2024-12-23'
-});
+import { useTranslations } from 'next-intl';
 
 export default function DriverCompensationsPage() {
     const router = useRouter();
     const { id } = useParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('users.compensations');
+
+    // --- VALIDATION SCHEMA ---
+    const driverCompSchema = useMemo(() => yup.object({
+        percentageOfWork: yup.number().required(),
+        nightHoursAllowed: yup.boolean().required(),
+        nightHours19Percent: yup.boolean().required(),
+        driverRatePerHour: yup.number().required(),
+        nightAllowanceRate: yup.number().required(),
+        kilometerAllowanceEnabled: yup.boolean().required(),
+        kilometersOneWayValue: yup.number().required(),
+        kilometersMin: yup.number().required(),
+        kilometersMax: yup.number().required(),
+        kilometerAllowance: yup.number().required(),
+        salary4Weeks: yup.number().required(),
+        weeklySalary: yup.number().required(),
+        dateOfEmployment: yup.string().required(), // e.g. '2024-12-23'
+    }), []);
 
     // Restrict access
     useEffect(() => {
@@ -109,10 +111,10 @@ export default function DriverCompensationsPage() {
         setSuccessMessage(null);
         try {
             await updateComp({ userId, data: values });
-            setSuccessMessage('Driver compensations updated successfully!');
+            setSuccessMessage(t('successMessage'));
         } catch (err: any) {
             setSuccessMessage(null);
-            alert(err.message || 'Failed to update driver compensations');
+            alert(err.message || t('updateError'));
         }
     };
 
@@ -126,7 +128,7 @@ export default function DriverCompensationsPage() {
     if (isError || !data) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <Alert severity="error">{error?.message || 'Failed to load data.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -134,7 +136,7 @@ export default function DriverCompensationsPage() {
     return (
         <Box maxWidth="600px" mx="auto" mt={4}>
             <Typography variant="h5" mb={2}>
-                Driver Rates & Allowances
+                {t('title')}
             </Typography>
 
             {successMessage && (
@@ -151,7 +153,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Percentage of Work"
+                            label={t('fields.percentageOfWork.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -166,7 +168,7 @@ export default function DriverCompensationsPage() {
                     control={control}
                     render={({ field }) => (
                         <FormControlLabel
-                            label="Night Hours Allowed"
+                            label={t('fields.nightHoursAllowed.label')}
                             control={
                                 <Checkbox
                                     checked={field.value}
@@ -183,7 +185,7 @@ export default function DriverCompensationsPage() {
                     control={control}
                     render={({ field }) => (
                         <FormControlLabel
-                            label="Night Hours 19%"
+                            label={t('fields.nightHours19Percent.label')}
                             control={
                                 <Checkbox
                                     checked={field.value}
@@ -201,7 +203,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Driver Rate Per Hour"
+                            label={t('fields.driverRatePerHour.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -223,7 +225,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Night Allowance Rate"
+                            label={t('fields.nightAllowanceRate.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -244,7 +246,7 @@ export default function DriverCompensationsPage() {
                     control={control}
                     render={({ field }) => (
                         <FormControlLabel
-                            label="Kilometer Allowance Enabled"
+                            label={t('fields.kilometerAllowanceEnabled.label')}
                             control={
                                 <Checkbox
                                     checked={field.value}
@@ -262,7 +264,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Kilometers One Way Value"
+                            label={t('fields.kilometersOneWayValue.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -279,7 +281,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Kilometers Min"
+                            label={t('fields.kilometersMin.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -296,7 +298,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Kilometers Max"
+                            label={t('fields.kilometersMax.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -313,7 +315,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Kilometer Allowance"
+                            label={t('fields.kilometerAllowance.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -335,7 +337,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Salary (4 Weeks)"
+                            label={t('fields.salary4Weeks.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -357,7 +359,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Weekly Salary"
+                            label={t('fields.weeklySalary.label')}
                             type="number"
                             fullWidth
                             margin="normal"
@@ -379,7 +381,7 @@ export default function DriverCompensationsPage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Date of Employment (YYYY-MM-DD)"
+                            label={t('fields.dateOfEmployment.label')}
                             fullWidth
                             margin="normal"
                             error={!!errors.dateOfEmployment}
@@ -394,7 +396,7 @@ export default function DriverCompensationsPage() {
                     sx={{ mt: 2 }}
                     disabled={isPending}
                 >
-                    {isPending ? <CircularProgress size={20} color="inherit" /> : 'Save'}
+                    {isPending ? <CircularProgress size={20} color="inherit" /> : t('button')}
                 </Button>
             </Box>
         </Box>

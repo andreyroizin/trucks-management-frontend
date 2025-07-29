@@ -19,6 +19,7 @@ import { useRates } from '@/hooks/useRates';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function RatesPage() {
     const { clientId } = useParams();
@@ -26,6 +27,7 @@ export default function RatesPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('rates.overview');
 
     // Pagination State
     const [page, setPage] = useState(0); // MUI TablePagination starts at 0
@@ -64,7 +66,7 @@ export default function RatesPage() {
     if (isError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error.message || 'Failed to load rates.'}</Alert>
+                <Alert severity="error">{error.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -72,12 +74,12 @@ export default function RatesPage() {
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Rates for Client
+                {t('title')}
             </Typography>
 
             {(isCustomerAdmin || isGlobalAdmin) && <Link href={`/rates/create?clientId=${clientId}`} passHref>
                 <Button variant="contained" color="primary">
-                    Create new rate
+                    {t('createButton')}
                 </Button>
             </Link>}
 
@@ -85,9 +87,9 @@ export default function RatesPage() {
                 <Table aria-label="rates table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Company</TableCell>
+                            <TableCell>{t('table.headers.name')}</TableCell>
+                            <TableCell>{t('table.headers.value')}</TableCell>
+                            <TableCell>{t('table.headers.company')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -114,7 +116,7 @@ export default function RatesPage() {
                     rowsPerPage={pageSize}
                     onRowsPerPageChange={handleChangePageSize}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>

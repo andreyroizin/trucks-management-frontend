@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Box, Button, CircularProgress, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -10,24 +10,26 @@ import * as yup from 'yup';
 import {useCompanies} from '@/hooks/useCompanies';
 import {Company, SurchargeInput, useCreateSurcharge} from '@/hooks/useCreateSurcharge';
 import {useAuth} from "@/hooks/useAuth";
-
-// --- VALIDATION SCHEMA ---
-const surchargeSchema = yup.object().shape({
-    value: yup.number().positive('Value must be > 0').required('Value is required'),
-    company: yup
-        .object({
-            id: yup.string().required(),
-            name: yup.string().required(),
-        })
-        .nullable()
-        .required('Company is required'),
-});
+import { useTranslations } from 'next-intl';
 
 export default function CreateSurchargeComponent() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const clientId = searchParams.get('clientId') ?? '';
+    const t = useTranslations('surcharges.create');
+
+    // --- VALIDATION SCHEMA ---
+    const surchargeSchema = useMemo(() => yup.object().shape({
+        value: yup.number().positive(t('fields.value.positive')).required(t('fields.value.required')),
+        company: yup
+            .object({
+                id: yup.string().required(),
+                name: yup.string().required(),
+            })
+            .nullable()
+            .required(t('fields.company.required')),
+    }), [t]);
 
     // Fetch companies
     const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies(1, 1000);
@@ -77,7 +79,7 @@ export default function CreateSurchargeComponent() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Create Surcharge
+                {t('title')}
             </Typography>
 
             {/* Display Mutation Error */}
@@ -95,7 +97,7 @@ export default function CreateSurchargeComponent() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Surcharge Value"
+                            label={t('fields.value.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -122,7 +124,7 @@ export default function CreateSurchargeComponent() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select Company"
+                                    label={t('fields.company.label')}
                                     variant="outlined"
                                     fullWidth
                                     margin="normal"
@@ -138,7 +140,7 @@ export default function CreateSurchargeComponent() {
                 {/* Submit Button */}
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Create Surcharge'}
+                        {isPending ? <CircularProgress size={20} /> : t('button')}
                     </Button>
                 </Box>
             </form>

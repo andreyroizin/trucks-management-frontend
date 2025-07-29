@@ -1,27 +1,34 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
-import { ApiResponse } from '@/types/api';
 
-// --- TYPES ---
-export type DeleteDriverResponse = {
+// Delete Driver Response Type
+export interface DeleteDriverResponse {
+    success: boolean;
+    data: {
+        driverId: string;
+        message: string;
+        terminationDate: string;
+    };
     message: string;
+}
+
+// --- DELETE DRIVER FUNCTION ---
+const deleteDriverWithContract = async (driverId: string): Promise<DeleteDriverResponse> => {
+    const response = await api.delete<DeleteDriverResponse>(`/drivers/${driverId}/with-contract`);
+    return response.data;
 };
 
-// --- API CALL ---
-const deleteDriver = async (id: string): Promise<ApiResponse<DeleteDriverResponse>> => {
-    const response = await api.delete<ApiResponse<DeleteDriverResponse>>(`/drivers/${id}`);
-
-    if (response.data.isSuccess) return response.data;
-    throw new Error(response.data.errors?.[0] || 'Failed to delete driver');
-};
-
-// --- MUTATION HOOK ---
+// --- HOOK TO DELETE A DRIVER ---
 export const useDeleteDriver = () => {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id: string) => deleteDriver(id),
+    return useMutation<DeleteDriverResponse, Error, string>({
+        mutationFn: (driverId: string) => deleteDriverWithContract(driverId),
         onSuccess: () => {
+            // Invalidate related queries
             queryClient.invalidateQueries({ queryKey: ['drivers'] });
+            queryClient.invalidateQueries({ queryKey: ['driverWithContract'] });
+            queryClient.invalidateQueries({ queryKey: ['cars'] });
+            queryClient.invalidateQueries({ queryKey: ['companies'] });
         },
     });
 };

@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useEffect, useState} from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -22,6 +24,7 @@ import dayjs from 'dayjs';
 import {usePartRideDetail} from '@/hooks/usePartRideDetail';
 import {useCreatePartRideDispute} from '@/hooks/useCreatePartRideDispute';
 import SuccessDisputeDialog from '@/components/SuccessDisputeDialog';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     open: boolean;
@@ -39,6 +42,7 @@ const schema = yup.object({
 });
 
 export default function DisputeCreateDialog({ open, onClose, partRideId }: Props) {
+    const t = useTranslations('partrides.components.disputeDialog');
     const [submitError, setSubmitError] = React.useState<string | null>(null);
     const [successInfo, setSuccessInfo] = useState<
       | { id: string; dateLabel: string }
@@ -84,7 +88,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
             onClose();
         } catch (e: any) {
             console.error(e);
-            setSubmitError(e?.response?.data?.errors?.[0] ?? 'Failed to create dispute. Please try again.');
+            setSubmitError(e?.response?.data?.errors?.[0] ?? t('messages.submitError'));
             setTimeout(() => {
                 errorRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
@@ -106,10 +110,10 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
         >
             <DialogContent  sx={{ pt: 4 }}>
                 <Typography variant="h4" fontWeight={500} gutterBottom>
-                    {partRide ? `${new Date(partRide.date).toLocaleDateString('nl-NL')} Dispute` : 'Dispute'}
+                    {partRide ? `${new Date(partRide.date).toLocaleDateString('nl-NL')} ${t('title')}` : t('title')}
                 </Typography>
                 <Typography variant="body1">
-                    Use this form to adjust the workday details and explain the correction to the driver. All fields must be completed accurately.
+                    {t('description')}
                 </Typography>
                 <Divider sx={{ my: 3 }} />
 
@@ -122,12 +126,12 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                     partRide && (
                         <>
                             <Typography variant="h5" fontWeight={500} gutterBottom>
-                                Driver & Vehicle Info
+                                {t('sections.driverVehicleInfo')}
                             </Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Assigned Driver:
+                                        {t('fields.assignedDriver')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -146,7 +150,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Auto:
+                                        {t('fields.auto')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -160,7 +164,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                                                 {partRide.car.licensePlate}
                                             </Link>
                                         ) : (
-                                            'N/A'
+                                            t('messages.notAvailable')
                                         )}
                                     </Typography>
                                 </Box>
@@ -169,12 +173,12 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Divider sx={{ my: 3 }} />
 
                             <Typography variant="h5" fontWeight={500} gutterBottom>
-                                Logged Time
+                                {t('sections.loggedTime')}
                             </Typography>
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Total Hours
+                                        {t('fields.totalHours')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -187,7 +191,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Date
+                                        {t('fields.date')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -199,7 +203,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Start
+                                        {t('fields.start')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -211,7 +215,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        End
+                                        {t('fields.end')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -223,7 +227,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                             <Box sx={{ display: 'flex' }}>
                                 <Box sx={{ width: '170px' }}>
                                     <Typography variant="body1" gutterBottom>
-                                        Rest Time
+                                        {t('fields.restTime')}
                                     </Typography>
                                 </Box>
                                 <Box>
@@ -240,7 +244,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                 {/* ------------------ FORM FIELDS ------------------ */}
                 <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
                     <Typography variant="h5" fontWeight={500} gutterBottom>
-                        What do you want to dispute?
+                        {t('sections.disputeQuestion')}
                     </Typography>
                     {/* Hours Correction - allow decimal input */}
                     <Controller
@@ -252,12 +256,12 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                                 fullWidth
                                 type="number"
                                 inputProps={{ step: 0.05 }}
-                                label="Hours Correction"
+                                label={t('fields.hoursCorrection')}
                                 margin="normal"
                                 error={!!errors.correctionHours}
                                 helperText={
                                     errors.correctionHours?.message ||
-                                    'Correct the final work hours using decimal + or – values. Start and end times remain unchanged.'
+                                    t('fields.hoursCorrectionHelper')
                                 }
                             />
                         )}
@@ -265,10 +269,10 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                     <Divider sx={{ my: 3 }} />
 
                     <Typography variant="h5" fontWeight={500} gutterBottom>
-                        Your commentary?
+                        {t('sections.commentary')}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                        Provide a clear reason for this adjustment to help the driver understand the change.
+                        {t('fields.commentaryDescription')}
                     </Typography>
 
                     {/* Comment */}
@@ -278,7 +282,7 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Explain the issue"
+                                label={t('fields.explainIssue')}
                                 multiline
                                 rows={4}
                                 fullWidth
@@ -311,14 +315,14 @@ export default function DisputeCreateDialog({ open, onClose, partRideId }: Props
                     disabled={isPending}
                     sx={{ flex: 1 }}
                 >
-                    {isPending ? <CircularProgress size={20} /> : 'Submit'}
+                    {isPending ? <CircularProgress size={20} /> : t('buttons.submit')}
                 </Button>
                 <Button
                     variant="text"
                     onClick={onClose}
                     sx={{ flex: 1 }}
                 >
-                    Cancel
+                    {t('buttons.cancel')}
                 </Button>
             </DialogActions>
         </Dialog>

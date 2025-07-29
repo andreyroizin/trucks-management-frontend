@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Box,
     Typography,
@@ -20,14 +21,6 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateCar } from '@/hooks/useCreateCar';
 import FileUploadBox from '@/components/FileUploadBox';
 
-const schema = yup.object().shape({
-    companyId: yup.string().required('Company is required'),
-    licensePlate: yup.string().required('License plate is required'),
-    vehicleYear: yup.string().optional(),
-    registrationDate: yup.string().optional(),
-    remark: yup.string().optional(),
-});
-
 type FormInputs = {
     companyId: string;          // Required
     licensePlate: string;       // Required
@@ -41,6 +34,15 @@ type FormInputs = {
 };
 
 export default function CreateVehiclePage() {
+    const t = useTranslations();
+    
+    const schema = yup.object().shape({
+        companyId: yup.string().required(t('cars.create.fields.company.required')),
+        licensePlate: yup.string().required(t('cars.create.fields.licensePlate.required')),
+        vehicleYear: yup.string().optional(),
+        registrationDate: yup.string().optional(),
+        remark: yup.string().optional(),
+    });
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -121,7 +123,7 @@ export default function CreateVehiclePage() {
     if (!isAuthenticated || !hasAccess) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">You don't have permission to access this page.</Alert>
+                <Alert severity="error">{t('cars.create.errors.noPermission')}</Alert>
             </Box>
         );
     }
@@ -131,10 +133,10 @@ export default function CreateVehiclePage() {
             {/* Header Block */}
             <Box mb={4}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-                    New Vehicle Creation Form
+                    {t('cars.create.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                    Use this form to create a new vehicle in vehicle list. Please ensure all fields are filled out accurately.
+                    {t('cars.create.subtitle')}
                 </Typography>
             </Box>
 
@@ -142,7 +144,7 @@ export default function CreateVehiclePage() {
             <Box>
                 {isError && (
                     <Alert severity="error" sx={{ mb: 2 }}>
-                        {error?.message || 'Failed to create vehicle.'}
+                        {error?.message || t('cars.create.errors.createFailed')}
                     </Alert>
                 )}
 
@@ -150,7 +152,7 @@ export default function CreateVehiclePage() {
                 {/* General Information Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        General Information
+                        {t('cars.create.sections.general')}
                     </Typography>
                     <Grid container columnSpacing={2} rowSpacing={0}>
                         {/* License Plate */}
@@ -161,7 +163,7 @@ export default function CreateVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="License Plate"
+                                        label={t('cars.create.fields.licensePlate.label')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -185,7 +187,7 @@ export default function CreateVehiclePage() {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                label="Company"
+                                                label={t('cars.create.fields.company.label')}
                                                 variant="outlined"
                                                 margin="normal"
                                                 fullWidth
@@ -211,8 +213,8 @@ export default function CreateVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Vehicle Year"
-                                        placeholder="When the vehicle was purchased?"
+                                        label={t('cars.create.fields.vehicleYear.label')}
+                                        placeholder={t('cars.create.fields.vehicleYear.placeholder')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -230,9 +232,9 @@ export default function CreateVehiclePage() {
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Registration Date"
+                                        label={t('cars.create.fields.registrationDate.label')}
                                         type="date"
-                                        placeholder="When the vehicle was registered?"
+                                        placeholder={t('cars.create.fields.registrationDate.placeholder')}
                                         fullWidth
                                         margin="normal"
                                         variant="outlined"
@@ -251,7 +253,7 @@ export default function CreateVehiclePage() {
                 {/* Remark Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Remark
+                        {t('cars.create.sections.remark')}
                     </Typography>
                     <Controller
                         name="remark"
@@ -259,13 +261,13 @@ export default function CreateVehiclePage() {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                label="Remark"
+                                label={t('cars.create.fields.remark.label')}
                                 fullWidth
                                 margin="normal"
                                 variant="outlined"
                                 multiline
                                 rows={4}
-                                placeholder="Enter any additional remarks or comments about the vehicle..."
+                                placeholder={t('cars.create.fields.remark.placeholder')}
                                 error={!!errors.remark}
                                 helperText={errors.remark?.message}
                             />
@@ -276,11 +278,10 @@ export default function CreateVehiclePage() {
                 {/* Vehicle Documents Block */}
                 <Box mb={4}>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        Vehicle Documents
+                        {t('cars.create.sections.documents')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Upload vehicle-related documents such as registration, insurance, inspection certificates, etc. 
-                        Supported formats: PDF, JPG, PNG (max 10MB per file).
+                        {t('cars.create.documents.description')}
                     </Typography>
                     <FileUploadBox 
                         uploadUrl="/temporary-uploads" 
@@ -299,7 +300,7 @@ export default function CreateVehiclePage() {
                         disabled={isPending}
                         startIcon={isPending ? <CircularProgress size={20} /> : null}
                     >
-                        {isPending ? 'Creating...' : 'Create Vehicle'}
+                        {isPending ? t('cars.create.buttons.submitting') : t('cars.create.buttons.submit')}
                     </Button>
                 </Box>
             </form>

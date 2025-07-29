@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography} from '@mui/material';
 
 type ConfirmModalProps = {
@@ -18,6 +19,7 @@ export default function ConfirmModal({
                                          onClose,
                                          onConfirm,
                                      }: ConfirmModalProps) {
+    const t = useTranslations();
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogContent sx={{pt: 3, pl: 3, pr: 3}}>
@@ -26,10 +28,10 @@ export default function ConfirmModal({
             </DialogContent>
             <DialogActions sx={{pb: 3, pl: 3, pr: 3}}>
                 <Button fullWidth onClick={onConfirm} color="error" variant="contained">
-                    Delete
+                    {t('common.buttons.delete')}
                 </Button>
                 <Button fullWidth onClick={onClose} color="inherit">
-                    Cancel
+                    {t('common.buttons.cancel')}
                 </Button>
             </DialogActions>
         </Dialog>

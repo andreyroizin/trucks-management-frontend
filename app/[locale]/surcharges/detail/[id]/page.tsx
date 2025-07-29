@@ -16,12 +16,14 @@ import { useSurchargeDetails } from '@/hooks/useSurchargeDetails';
 import { useAuth } from '@/hooks/useAuth';
 import { useDeleteSurcharge } from '@/hooks/useDeleteSurcharge';
 import ConfirmModal from '@/components/ConfirmModal';
+import { useTranslations } from 'next-intl';
 
 export default function SurchargeDetailPage() {
     const { id } = useParams();
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: surcharge, isLoading, isError, error } = useSurchargeDetails(id as string);
+    const t = useTranslations('surcharges.detail');
 
     // Delete Mutation
     const { mutateAsync: deleteSurcharge } = useDeleteSurcharge();
@@ -48,7 +50,7 @@ export default function SurchargeDetailPage() {
             setOpenModal(false);
             router.push('/clients'); // Redirect after deletion
         } catch (err: any) {
-            setDeleteErrorMsg(err.message || 'Failed to delete surcharge.');
+            setDeleteErrorMsg(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -64,7 +66,7 @@ export default function SurchargeDetailPage() {
     if (isError || !surcharge) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load surcharge details.'}</Alert>
+                <Alert severity="error">{error?.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -74,27 +76,27 @@ export default function SurchargeDetailPage() {
             <Card>
                 <CardContent>
                     <Typography variant="h5" gutterBottom>
-                        Surcharge Details
+                        {t('title')}
                     </Typography>
 
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box display="flex" justifyContent="flex-end" mb={2} gap={2}>
                             <Link href={`/surcharges/edit/${surcharge.id}`} passHref>
-                                <Button variant="contained" color="primary">Edit</Button>
+                                <Button variant="contained" color="primary">{t('actions.edit')}</Button>
                             </Link>
                             <Button variant="contained" color="error" onClick={() => setOpenModal(true)}>
-                                Delete
+                                {t('actions.delete')}
                             </Button>
                         </Box>
                     )}
 
                     <Typography variant="body1">
-                        <strong>Value:</strong> {surcharge.value.toFixed(2)}
+                        <strong>{t('fields.value')}:</strong> {surcharge.value.toFixed(2)}
                     </Typography>
 
                     {/* Client Information */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
-                        <strong>Client:</strong>{' '}
+                        <strong>{t('fields.client')}:</strong>{' '}
                         <Link href={`/clients/${surcharge.client.id}`} passHref>
                             <Button variant="text" size="small">
                                 {surcharge.client.name}
@@ -104,7 +106,7 @@ export default function SurchargeDetailPage() {
 
                     {/* Company Information */}
                     <Typography variant="body1" sx={{ mt: 1 }}>
-                        <strong>Company:</strong>{' '}
+                        <strong>{t('fields.company')}:</strong>{' '}
                         <Link href={`/companies/${surcharge.company.id}`} passHref>
                             <Button variant="text" size="small">
                                 {surcharge.company.name}
@@ -117,8 +119,8 @@ export default function SurchargeDetailPage() {
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Surcharge?"
-                message="Are you sure you want to delete this surcharge?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />

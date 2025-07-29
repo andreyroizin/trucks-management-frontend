@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import RegisterForm from '@/components/forms/RegisterForm';
+import {useTranslations} from 'next-intl';
 
 export default function RegisterPage() {
     const { user, isAuthenticated, loading } = useAuth();
     const router = useRouter();
+    const t = useTranslations();
 
     useEffect(() => {
         if (!loading && (!isAuthenticated || !user?.roles.includes('globalAdmin'))) {
@@ -19,7 +21,7 @@ export default function RegisterPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <p>Loading...</p>
+                <p>{t('auth.common.loading')}</p>
             </div>
         );
     }

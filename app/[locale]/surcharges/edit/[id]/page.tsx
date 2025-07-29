@@ -5,15 +5,11 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Box, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSurchargeDetails } from '@/hooks/useSurchargeDetails';
 import { useEditSurcharge } from '@/hooks/useEditSurcharge';
 import { useAuth } from '@/hooks/useAuth';
-
-// --- VALIDATION SCHEMA ---
-const editSurchargeSchema = yup.object().shape({
-    value: yup.number().positive('Value must be greater than zero').required('Value is required'),
-});
+import { useTranslations } from 'next-intl';
 
 // --- FORM INPUT TYPE ---
 type EditSurchargeFormInputs = {
@@ -26,6 +22,12 @@ export default function EditSurchargePage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: surcharge, isLoading, isError } = useSurchargeDetails(id as string);
     const { mutateAsync: mutateEditSurcharge, isPending } = useEditSurcharge();
+    const t = useTranslations('surcharges.edit');
+
+    // --- VALIDATION SCHEMA ---
+    const editSurchargeSchema = useMemo(() => yup.object().shape({
+        value: yup.number().positive(t('fields.value.positive')).required(t('fields.value.required')),
+    }), [t]);
 
     // Roles logic
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
@@ -61,10 +63,10 @@ export default function EditSurchargePage() {
 
         try {
             await mutateEditSurcharge({ id: id as string, value: data.value });
-            setSuccessMessage('Surcharge updated successfully!');
+            setSuccessMessage(t('successMessage'));
             router.push(`/surcharges/detail/${id}`);
         } catch (error: any) {
-            setApiError(error.message || 'An unexpected error occurred.');
+            setApiError(error.message || t('updateError'));
         }
     };
 
@@ -79,7 +81,7 @@ export default function EditSurchargePage() {
     if (isError || !surcharge) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">Failed to load surcharge details. Please try again later.</Alert>
+                <Alert severity="error">{t('loadError')}</Alert>
             </Box>
         );
     }
@@ -87,7 +89,7 @@ export default function EditSurchargePage() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Edit Surcharge
+                {t('title')}
             </Typography>
 
             {apiError && <Alert severity="error" sx={{ mb: 2 }}>{apiError}</Alert>}
@@ -100,7 +102,7 @@ export default function EditSurchargePage() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Surcharge Value"
+                            label={t('fields.value.label')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -114,7 +116,7 @@ export default function EditSurchargePage() {
 
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Save Changes'}
+                        {isPending ? <CircularProgress size={20} /> : t('button')}
                     </Button>
                 </Box>
             </form>

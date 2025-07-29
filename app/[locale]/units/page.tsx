@@ -19,10 +19,12 @@ import {
 import { useUnits } from '@/hooks/useUnits';
 import {useAuth} from "@/hooks/useAuth";
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
 export default function UnitsPage() {
     const { user } = useAuth();
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('units.overview');
     // Pagination state
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -52,7 +54,7 @@ export default function UnitsPage() {
     if (isError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error.message || 'Failed to load units.'}</Alert>
+                <Alert severity="error">{error.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -60,19 +62,19 @@ export default function UnitsPage() {
     return (
         <Box maxWidth="lg" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Units
+                {t('title')}
             </Typography>
             {isGlobalAdmin && <Link href={`/units/create`} passHref>
                 <Button variant="contained" color="primary">
-                    Create new unit
+                    {t('createButton')}
                 </Button>
             </Link>}
             <TableContainer component={Paper}>
                 <Table aria-label="units table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Value</TableCell>
+                            <TableCell>{t('table.headers.id')}</TableCell>
+                            <TableCell>{t('table.headers.value')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -98,7 +100,7 @@ export default function UnitsPage() {
                     rowsPerPage={pageSize}
                     onRowsPerPageChange={handleChangePageSize}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>

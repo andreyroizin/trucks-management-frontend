@@ -7,17 +7,20 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { forgotPassword } from '@/utils/api';
 import Link from 'next/link';
-
-// Validation schema
-const forgotPasswordSchema = yup.object().shape({
-    email: yup.string().email('Invalid email').required('Email is required'),
-});
+import {useTranslations} from 'next-intl';
 
 type ForgotPasswordFormInputs = {
     email: string;
 };
 
 export default function ForgotPasswordPage() {
+    const t = useTranslations();
+    
+    // Validation schema - moved inside component to access translations
+    const forgotPasswordSchema = yup.object().shape({
+        email: yup.string().email(t('auth.forgotPassword.validation.emailInvalid')).required(t('auth.forgotPassword.validation.emailRequired')),
+    });
+    
     const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormInputs>({
         resolver: yupResolver(forgotPasswordSchema),
     });
@@ -35,12 +38,12 @@ export default function ForgotPasswordPage() {
             const response = await forgotPassword(data.email);
 
             if (response.isSuccess) {
-                setSuccessMessage('Password reset instructions sent to your email.');
+                setSuccessMessage(t('auth.forgotPassword.success'));
             } else {
-                setApiError(response.errors?.[0] || 'An unexpected error occurred.');
+                setApiError(response.errors?.[0] || t('auth.forgotPassword.errors.unexpectedError'));
             }
         } catch (error: any) {
-            setApiError(error?.response?.data?.errors?.[0] || 'An unexpected error occurred. Please try again later.');
+            setApiError(error?.response?.data?.errors?.[0] || t('auth.forgotPassword.errors.tryAgainLater'));
         } finally {
             setLoading(false);
         }
@@ -60,7 +63,7 @@ export default function ForgotPasswordPage() {
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2 }}>
-                    Forgot Password
+                    {t('auth.forgotPassword.title')}
                 </Typography>
 
                 {/* Display API Error */}
@@ -88,7 +91,7 @@ export default function ForgotPasswordPage() {
                                 textDecoration: 'underline',
                             }}
                         >
-                            Go to Login
+                            {t('auth.forgotPassword.goToLogin')}
                         </MuiLink>
                     </>
                 )}
@@ -97,7 +100,7 @@ export default function ForgotPasswordPage() {
                 {!successMessage && (
                     <>
                         <TextField
-                            label="Email"
+                            label={t('auth.forgotPassword.fields.email')}
                             fullWidth
                             variant="outlined"
                             {...register('email')}
@@ -115,7 +118,7 @@ export default function ForgotPasswordPage() {
                             sx={{ mt: 2 }}
                             disabled={loading} // Disable button during loading
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
+                            {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.forgotPassword.button')}
                         </Button>
                     </>
                 )}

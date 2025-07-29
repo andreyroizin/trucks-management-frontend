@@ -2,6 +2,7 @@
 
 import React, {useState} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
+import {useTranslations} from 'next-intl';
 import {Alert, Box, Button, CircularProgress, Grid, IconButton, TablePagination, Typography} from '@mui/material';
 import {useRouter} from 'next/navigation';
 import CompanyCard from '@/components/CompanyCard';
@@ -15,6 +16,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 
 export default function CompaniesOverviewPage() {
     const router = useRouter();
+    const t = useTranslations();
     const {user} = useAuth();
     
     // Role checks for UI visibility
@@ -82,20 +84,20 @@ export default function CompaniesOverviewPage() {
 
     // Loading & error states
     if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
-    if (isError)   return <Alert severity="error" sx={{mt:4}}>Failed to load companies</Alert>;
+    if (isError)   return <Alert severity="error" sx={{mt:4}}>{t('companies.overview.errors.loadFailed')}</Alert>;
 
     return (
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Companies management
+                    {t('companies.title')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
 
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h4" fontWeight={500}>
-                    Companies overview
+                    {t('companies.overview.title')}
                 </Typography>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                     {isGlobalAdmin && (
@@ -103,7 +105,7 @@ export default function CompaniesOverviewPage() {
                             variant="contained" 
                             onClick={() => router.push('/companies/create')}
                         >
-                            Create Company
+                            {t('companies.overview.buttons.create')}
                         </Button>
                     )}
                     <IconButton onClick={handleRefetch}>
@@ -112,7 +114,13 @@ export default function CompaniesOverviewPage() {
                 </Box>
             </Box>
 
-            <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={"Company Name"} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
+            <DebouncedSearchInput 
+                value={debouncedSearch} 
+                onDebouncedChange={setDebouncedSearch} 
+                placeholder={t('companies.overview.search.placeholder')} 
+                size={"small"} 
+                sx={{ mb: 4, maxWidth: 260 }} 
+            />
 
             <Grid container spacing={2}>
                 {(companiesData?.data || []).map((c) => (
@@ -140,13 +148,14 @@ export default function CompaniesOverviewPage() {
                   setPageSize(parseInt(event.target.value, 10));
                 }}
                 rowsPerPageOptions={[6, 9, 12, 15]}
+                labelRowsPerPage={t('companies.overview.pagination.rowsPerPage')}
             />
             
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 open={openDeleteModal}
-                title="Delete Company?"
-                message="Are you sure you want to delete this company? This action cannot be undone."
+                title={t('companies.detail.deleteConfirm.title')}
+                message={t('companies.detail.deleteConfirm.message')}
                 onClose={() => {
                     setOpenDeleteModal(false);
                     setCompanyToDelete(null);

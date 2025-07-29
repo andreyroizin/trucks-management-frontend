@@ -19,10 +19,12 @@ import {useRouter} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
 import Link from 'next/link';
 import {useRides} from '@/hooks/useRides';
+import { useTranslations } from 'next-intl';
 
 export default function RidesPage() {
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
+    const t = useTranslations('rides.overview');
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'customer', 'customerAccountant', 'employer'];
@@ -60,7 +62,7 @@ export default function RidesPage() {
     if (isError) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error.message || 'Failed to load rides.'}</Alert>
+                <Alert severity="error">{error.message || t('loadError')}</Alert>
             </Box>
         );
     }
@@ -69,11 +71,11 @@ export default function RidesPage() {
         <Box maxWidth="lg" mx="auto" p={4}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h4" gutterBottom>
-                    Rides
+                    {t('title')}
                 </Typography>
                 <Link href="/rides/create" passHref>
                     <Button variant="contained" color="primary">
-                        Create Ride
+                        {t('createButton')}
                     </Button>
                 </Link>
             </Box>
@@ -82,9 +84,9 @@ export default function RidesPage() {
                 <Table aria-label="rides table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Remark</TableCell>
-                            <TableCell>Company</TableCell>
+                            <TableCell>{t('table.headers.name')}</TableCell>
+                            <TableCell>{t('table.headers.remark')}</TableCell>
+                            <TableCell>{t('table.headers.company')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -97,7 +99,7 @@ export default function RidesPage() {
                                 sx={{textDecoration: 'none', cursor: 'pointer'}}
                             >
                                 <TableCell>{ride.name}</TableCell>
-                                <TableCell>{ride.remark || 'N/A'}</TableCell>
+                                <TableCell>{ride.remark || t('table.notAvailable')}</TableCell>
                                 <TableCell>{ride.companyName}</TableCell>
                             </TableRow>
                         ))}
@@ -111,7 +113,7 @@ export default function RidesPage() {
                     rowsPerPage={pageSize}
                     onRowsPerPageChange={handleChangePageSize}
                     rowsPerPageOptions={[5, 10, 25]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>

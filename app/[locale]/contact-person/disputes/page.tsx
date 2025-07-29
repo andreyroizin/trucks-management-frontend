@@ -37,11 +37,13 @@ import StatusChip from "@/components/StatusChip";
 import DisputesActionsMenu from "@/components/DisputesActionsMenu";
 import {useSnack} from "@/providers/SnackProvider";
 import DisputeEditDialog from "@/components/DisputeEditDialog";
+import {useTranslations} from 'next-intl';
 
 export default function TripsManagementPage() {
     const router = useRouter();
     const snack = useSnack();
     const {isAuthenticated, loading: authLoading, user} = useAuth();
+    const t = useTranslations();
 
     // For editing disputes dialog
     const [editDisputeDialogId, setEditDisputeDialogId] = useState<string | null>(null);
@@ -110,11 +112,11 @@ export default function TripsManagementPage() {
         if (!confirmDeleteId) return;
         try {
             await deleteDispute(confirmDeleteId);
-            snack({ text: 'Dispute deleted successfully!', severity: 'success' });
+            snack({ text: t('contactPerson.disputes.actions.disputeDeleted'), severity: 'success' });
             await queryClient.invalidateQueries({ queryKey: ['disputes'] });
         } catch (error: any) {
             console.error(error);
-            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to delete dispute.', severity: 'error' });
+            snack({ text: error?.response?.data?.errors?.[0] ?? t('contactPerson.disputes.actions.deleteFailed'), severity: 'error' });
         } finally {
             setConfirmDeleteId(null);
         }
@@ -125,11 +127,11 @@ export default function TripsManagementPage() {
      * ───────────────────────────────────────────────────────────── */
     const statusChip = (d: Dispute) => {
         const map: Record<number, {label: string; color: 'info'|'success'|'warning' | 'default'}> = {
-            0: { label: 'Pending Driver', color: 'warning' },
-            1: { label: 'Pending Admin',  color: 'info'    },
-            2: { label: 'Accepted',       color: 'success' },
-            3: { label: 'Accepted',       color: 'success' },
-            4: { label: 'Closed',         color: 'default' },
+            0: { label: t('contactPerson.disputes.table.statusLabels.pendingDriver'), color: 'warning' },
+            1: { label: t('contactPerson.disputes.table.statusLabels.pendingAdmin'),  color: 'info'    },
+            2: { label: t('contactPerson.disputes.table.statusLabels.acceptedByDriver'),       color: 'success' },
+            3: { label: t('contactPerson.disputes.table.statusLabels.acceptedByAdmin'),       color: 'success' },
+            4: { label: t('contactPerson.disputes.table.statusLabels.closed'),         color: 'default' },
         };
         const conf = map[d.status] ?? map[1];
         return <StatusChip label={conf.label} variant={conf.color} />;
@@ -142,11 +144,11 @@ export default function TripsManagementPage() {
     const handleCloseDispute = async (disputeId: string) => {
         try {
             await closeDispute(disputeId);
-            snack({ text: 'Dispute closed successfully!', severity: 'success' });
+            snack({ text: t('contactPerson.disputes.actions.disputeClosed'), severity: 'success' });
             await queryClient.invalidateQueries({ queryKey: ['disputes'] });
         } catch (error: any) {
             console.error(error);
-            snack({ text: error?.response?.data?.errors?.[0] ?? 'Failed to close dispute.', severity: 'error' });
+            snack({ text: error?.response?.data?.errors?.[0] ?? t('contactPerson.disputes.actions.closeFailed'), severity: 'error' });
         }
     };
 
@@ -157,7 +159,7 @@ export default function TripsManagementPage() {
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Workdays Management
+                    {t('contactPerson.workdaysManagement')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
@@ -168,7 +170,13 @@ export default function TripsManagementPage() {
                     <Autocomplete
                         multiple
                         size="small"
-                        options={['Pending Driver', 'Pending Admin', 'Accepted By Driver', 'Accepted By Admin', 'Closed']}
+                        options={[
+                            t('contactPerson.disputes.table.statusLabels.pendingDriver'),
+                            t('contactPerson.disputes.table.statusLabels.pendingAdmin'),
+                            t('contactPerson.disputes.table.statusLabels.acceptedByDriver'),
+                            t('contactPerson.disputes.table.statusLabels.acceptedByAdmin'),
+                            t('contactPerson.disputes.table.statusLabels.closed')
+                        ]}
                         value={statusIds.map(
                             s => s[0].toUpperCase() + s.slice(1)
                         )}
@@ -180,7 +188,7 @@ export default function TripsManagementPage() {
                             )
                         }
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(params) => <TextField {...params} label="Statuses"/>}
+                        renderInput={(params) => <TextField {...params} label={t('contactPerson.disputes.filters.statuses')}/>}
                         freeSolo={false}
                     />
 
@@ -195,7 +203,7 @@ export default function TripsManagementPage() {
                             setCarIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Vehicles"/>}
+                        renderInput={(p) => <TextField {...p} label={t('contactPerson.disputes.filters.vehicles')}/>}
                     />
 
                     <Autocomplete
@@ -210,7 +218,7 @@ export default function TripsManagementPage() {
                             setDriverIds(ids);
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Drivers"/>}
+                        renderInput={(p) => <TextField {...p} label={t('contactPerson.disputes.filters.drivers')}/>}
                     />
 
                     <Autocomplete
@@ -224,13 +232,13 @@ export default function TripsManagementPage() {
                             setClientIds(selected.map((c) => c.id));
                         }}
                         sx={{minWidth: 200, maxWidth: 200}}
-                        renderInput={(p) => <TextField {...p} label="Clients"/>}
+                        renderInput={(p) => <TextField {...p} label={t('contactPerson.disputes.filters.clients')}/>}
                     />
                 </Box>
 
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                     <DateInputField
-                        label="Start date"
+                        label={t('contactPerson.disputes.filters.startDate')}
                         name="startDate"
                         value={startDate}
                         sx={{maxWidth: 200}}
@@ -239,7 +247,7 @@ export default function TripsManagementPage() {
                     />
                     -
                     <DateInputField
-                        label="End date"
+                        label={t('contactPerson.disputes.filters.endDate')}
                         name="endDate"
                         value={endDate}
                         sx={{maxWidth: 200}}
@@ -260,7 +268,7 @@ export default function TripsManagementPage() {
                         ))
                     ) : (
                         <Typography variant="body2" color="error">
-                            {(error as any)?.message || 'An error occurred while fetching data.'}
+                            {(error as any)?.message || t('contactPerson.disputes.errors.loadFailed')}
                         </Typography>
                     )}
                 </Box>
@@ -277,7 +285,7 @@ export default function TripsManagementPage() {
                     mb: 3
                 }}>
                     <Typography variant="h4" fontWeight={500}>
-                        Disputes List
+                        {t('contactPerson.disputes.title')}
                     </Typography>
                     {(isLoading || isRefetching) ? (
                         <CircularProgress size={20}/>
@@ -292,14 +300,14 @@ export default function TripsManagementPage() {
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Driver</TableCell>
-                                <TableCell>Vehicle</TableCell>
-                                <TableCell>Client</TableCell>
-                                <TableCell>Total Hours</TableCell>
-                                <TableCell>Hours Correction</TableCell>
-                                <TableCell>Statuses</TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.date')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.driver')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.vehicle')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.client')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.totalHours')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.hoursCorrection')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.statuses')}</TableCell>
+                                <TableCell>{t('contactPerson.disputes.table.headers.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -313,7 +321,7 @@ export default function TripsManagementPage() {
                                 <TableRow>
                                     <TableCell colSpan={8} align="center" sx={{py: 6}}>
                                         <Typography variant="body1">
-                                            No records found.
+                                            {t('contactPerson.disputes.table.noRecords')}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
@@ -384,8 +392,8 @@ export default function TripsManagementPage() {
             {/* Selection action bar */}
             <ConfirmModal
                 open={!!confirmDeleteId}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this dispute?"
+                title={t('contactPerson.disputes.deleteModal.title')}
+                message={t('contactPerson.disputes.deleteModal.message')}
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={handleConfirmDelete}
             />

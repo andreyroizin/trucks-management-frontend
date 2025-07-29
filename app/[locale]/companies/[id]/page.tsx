@@ -2,6 +2,7 @@
 
 import React, {useState, useEffect} from 'react';
 import {useParams, useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 import {
     Box,
     Typography,
@@ -27,6 +28,7 @@ import {useApproveCompany} from "@/hooks/useApproveCompany";
 
 export default function CompanyDetailPage() {
     const {id} = useParams();
+    const t = useTranslations();
     const router = useRouter();
     const {user, isAuthenticated, loading: authLoading} = useAuth();
     const {data: company, isLoading, isError, error} = useCompanyDetails(id as string);
@@ -87,7 +89,7 @@ export default function CompanyDetailPage() {
     if (isError || !company) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Alert severity="error">{error?.message || 'Failed to load company details.'}</Alert>
+                <Alert severity="error">{error?.message || t('companies.detail.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -97,7 +99,7 @@ export default function CompanyDetailPage() {
             {/* Header Section */}
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Company Management
+                    {t('companies.detail.title')}
                 </Typography>
             </Box>
 
@@ -134,7 +136,7 @@ export default function CompanyDetailPage() {
                                     onClick={handleApprove}
                                     sx={{ textTransform: 'none', fontWeight: 600, px: 3, py: 1 }}
                                 >
-                                    {isApproving ? 'Approving...' : 'Approve'}
+                                    {isApproving ? t('companies.detail.buttons.approving') : t('companies.detail.buttons.approve')}
                                 </Button>
                             )}
                             
@@ -173,13 +175,13 @@ export default function CompanyDetailPage() {
 
                 {/* General Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    General Information
+                    {t('companies.detail.sections.general')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                 Company Drivers
+                                 {t('companies.detail.fields.drivers')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{company.drivers?.length || 0}</TableCell>
                         </TableRow>
@@ -190,27 +192,27 @@ export default function CompanyDetailPage() {
 
                 {/* Company Address */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Company Address
+                    {t('companies.detail.sections.address')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Street Address
+                                {t('companies.detail.fields.address')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{company.address || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Postcode</TableCell>
-                            <TableCell sx={{border: 'none'}}>{company.postcode || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('companies.detail.fields.postcode')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.postcode || t('companies.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>City</TableCell>
-                            <TableCell sx={{border: 'none'}}>{company.city || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('companies.detail.fields.city')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.city || t('companies.detail.notAvailable')}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Country</TableCell>
-                            <TableCell sx={{border: 'none'}}>{company.country || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('companies.detail.fields.country')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.country || t('companies.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -219,19 +221,19 @@ export default function CompanyDetailPage() {
 
                 {/* Contact Information */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Contact Information
+                    {t('companies.detail.sections.contact')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Phone Number
+                                {t('companies.detail.fields.phone')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{company.phoneNumber || 'N/A'}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Email</TableCell>
-                            <TableCell sx={{border: 'none'}}>{company.email || 'N/A'}</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('companies.detail.fields.email')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.email || t('companies.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -240,16 +242,16 @@ export default function CompanyDetailPage() {
 
                 {/* Company's Drivers */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    Company's Drivers
+                    {t('companies.detail.sections.drivers')}
                 </Typography>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{pl: 0, fontWeight: 600}}>Name</TableCell>
-                            <TableCell sx={{fontWeight: 600}}>Phone</TableCell>
-                            <TableCell sx={{fontWeight: 600}}>Email</TableCell>
-                            <TableCell sx={{fontWeight: 600}}>Weekly Schedule</TableCell>
-                            <TableCell sx={{fontWeight: 600}}>Working Hours</TableCell>
+                            <TableCell sx={{pl: 0, fontWeight: 600}}>{t('companies.detail.driversTable.columns.name')}</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>{t('companies.detail.driversTable.columns.phone')}</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>{t('companies.detail.driversTable.columns.email')}</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>{t('companies.detail.driversTable.columns.schedule')}</TableCell>
+                            <TableCell sx={{fontWeight: 600}}>{t('companies.detail.driversTable.columns.hours')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -276,7 +278,7 @@ export default function CompanyDetailPage() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={5} sx={{pl: 0, border: 'none', textAlign: 'center', fontStyle: 'italic', color: 'text.secondary'}}>
-                                    No drivers assigned to this company
+                                    {t('companies.detail.driversTable.noDrivers')}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -287,10 +289,10 @@ export default function CompanyDetailPage() {
 
                 {/* Remark */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 1}}>
-                    Remark
+                    {t('companies.detail.sections.remark')}
                 </Typography>
                 <Typography variant="body1">
-                    {company.remark || 'No remark provided'}
+                    {company.remark || t('companies.detail.noRemark')}
                 </Typography>
 
             </Paper>
@@ -298,8 +300,8 @@ export default function CompanyDetailPage() {
             {/* Confirm Deletion Modal */}
             <ConfirmModal
                 open={openModal}
-                title="Delete Company?"
-                message="Are you sure you want to delete this company?"
+                title={t('companies.detail.deleteConfirm.title')}
+                message={t('companies.detail.deleteConfirm.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
@@ -307,7 +309,7 @@ export default function CompanyDetailPage() {
             {/* Display error for deletion if needed */}
             {isDeleteError && (
                 <Alert severity="error" sx={{mt: 2}}>
-                    {deleteError?.message || 'Failed to delete company.'}
+                    {deleteError?.message || t('companies.detail.errors.deleteFailed')}
                 </Alert>
             )}
         </Box>

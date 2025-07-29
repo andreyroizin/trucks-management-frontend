@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import {Box, Button, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, styled, Menu, MenuItem, IconButton} from '@mui/material';
 import {usePathname, useRouter} from 'next/navigation';
+import {useTranslations} from 'next-intl';
 
 // ── MUI Icons ────────────────────────────────
 import DashboardIcon from '@mui/icons-material/GridViewRounded';
@@ -55,6 +56,7 @@ const NavItem = styled(ListItemButton, {
 export default function SideNavigation() {
     const router = useRouter();
     const pathname = usePathname();
+    const t = useTranslations();
     // Helper to remove the leading locale segment (e.g. "/en/...")
     const stripLocale = (path: string) => {
         const parts = path.split('/');
@@ -74,10 +76,10 @@ export default function SideNavigation() {
     const initials = user
         ? `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
         : '??';
-    const fullName = user ? `${user.firstName} ${user.lastName}` : 'My Profile';
+    const fullName = user ? `${user.firstName} ${user.lastName}` : t('navigation.profile.title');
     /* expansion states */
     const [workdaysOpen, setWorkdaysOpen] = React.useState<boolean>(true);
-    const [reportsOpen, setReportsOpen] = React.useState<boolean>(false);
+
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -129,7 +131,7 @@ export default function SideNavigation() {
                 {/* Dashboard */}
                 <NavItem active={isActive('/')} main onClick={() => go('/')}>
                     <ListItemIcon><DashboardIcon/></ListItemIcon>
-                    <ListItemText primary="Dashboard"/>
+                    <ListItemText primary={t('navigation.dashboard')}/>
                 </NavItem>
 
                 {/* Workdays parent */}
@@ -139,7 +141,7 @@ export default function SideNavigation() {
                              || pathNoLocale.startsWith('/weeks-to-submit')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
-                    <ListItemText primary="Workdays"/>
+                    <ListItemText primary={t('navigation.workdays.title')}/>
                     <KeyboardArrowDown
                         sx={{transform: workdaysOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
                     />
@@ -149,13 +151,13 @@ export default function SideNavigation() {
                 <Collapse in={workdaysOpen} timeout="auto" unmountOnExit>
                     <List disablePadding>
                         <NavItem active={isActive('/partrides')} onClick={() => go('/partrides')} sx={{pl: 6}}>
-                            <ListItemText primary="Overview List"/>
+                            <ListItemText primary={t('navigation.workdays.overviewList')}/>
                         </NavItem>
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
-                            <ListItemText primary="Disputes List"/>
+                            <ListItemText primary={t('navigation.workdays.disputesList')}/>
                         </NavItem>
                         <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/weeks-to-submit')} sx={{pl: 6}}>
-                            <ListItemText primary="Weeks to Submit"/>
+                            <ListItemText primary={t('navigation.workdays.weeksToSubmit')}/>
                         </NavItem>
                     </List>
                 </Collapse>
@@ -163,54 +165,39 @@ export default function SideNavigation() {
                 {/* Drivers */}
                 <NavItem active={isActive('/drivers')} main onClick={() => go('/drivers')}>
                     <ListItemIcon><PersonIcon/></ListItemIcon>
-                    <ListItemText primary="Drivers"/>
+                    <ListItemText primary={t('navigation.drivers')}/>
                 </NavItem>
 
                 {/* Vehicles */}
                 <NavItem active={isActive('/cars')} main onClick={() => go('/cars')}>
                     <ListItemIcon><LocalShippingIcon/></ListItemIcon>
-                    <ListItemText primary="Vehicles"/>
+                    <ListItemText primary={t('navigation.vehicles')}/>
                 </NavItem>
 
                 {/* Clients */}
                 <NavItem active={isActive('/clients')} main onClick={() => go('/clients')}>
                     <ListItemIcon><TargetIcon/></ListItemIcon>
-                    <ListItemText primary="Clients"/>
+                    <ListItemText primary={t('navigation.clients')}/>
                 </NavItem>
 
                 {/* Companies */}
                 <NavItem active={isActive('/companies')} main onClick={() => go('/companies')}>
                     <ListItemIcon><BusinessIcon/></ListItemIcon>
-                    <ListItemText primary="Companies"/>
+                    <ListItemText primary={t('navigation.companies')}/>
                 </NavItem>
 
-                {/* Reports parent */}
-                <NavItem onClick={() => setReportsOpen((p) => !p)} active={pathNoLocale.startsWith('/reports')} main>
+                {/* Reports */}
+                <NavItem active={isActive('/reports')} main onClick={() => go('/reports')}>
                     <ListItemIcon><AssessmentIcon/></ListItemIcon>
-                    <ListItemText primary="Reports"/>
-                    <KeyboardArrowDown
-                        sx={{transform: reportsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
-                    />
+                    <ListItemText primary={t('navigation.reports')}/>
                 </NavItem>
-
-                {/* Reports children */}
-                <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
-                    <List disablePadding>
-                        <NavItem active={isActive('/reports/earnings')} onClick={() => go('/')} sx={{pl: 6}}>
-                            <ListItemText primary="Earnings"/>
-                        </NavItem>
-                        <NavItem active={isActive('/reports/time')} onClick={() => go('/')} sx={{pl: 6}}>
-                            <ListItemText primary="Time Reports"/>
-                        </NavItem>
-                    </List>
-                </Collapse>
 
                 <Divider sx={{my: 3}}/>
 
                 {/* Settings */}
                 <NavItem active={isActive('/settings')} main onClick={() => go('/')}>
                     <ListItemIcon><SettingsIcon/></ListItemIcon>
-                    <ListItemText primary="Settings"/>
+                    <ListItemText primary={t('navigation.settings')}/>
                 </NavItem>
             </List>
 
@@ -225,7 +212,7 @@ export default function SideNavigation() {
                     onClick={() => router.push('/partrides/create')}
                     sx={{px: 1, py: 1}}
                 >
-                    Create New Workday
+                    {t('navigation.createNewWorkday')}
                 </Button>
 
                 <Divider sx={{my: 3}}/>
@@ -240,12 +227,12 @@ export default function SideNavigation() {
                         onClick={() => router.push('/profile')}
                         sx={{ flexGrow: 1, cursor: 'pointer' }}
                     >
-                        <ListItemText
-                            primary={fullName}
-                            secondary={user?.roles?.[0] ?? 'Profile'}
-                            primaryTypographyProps={{ sx: { fontSize: 12, fontWeight: 600 } }}
-                            secondaryTypographyProps={{ fontSize: 10 }}
-                        />
+                                            <ListItemText
+                        primary={fullName}
+                        secondary={user?.roles?.[0] ?? t('navigation.profile.title')}
+                        primaryTypographyProps={{ sx: { fontSize: 12, fontWeight: 600 } }}
+                        secondaryTypographyProps={{ fontSize: 10 }}
+                    />
                     </Box>
 
                     <IconButton onClick={handleMenuClick} size="small">
@@ -264,8 +251,8 @@ export default function SideNavigation() {
                             horizontal: 'left',
                         }}
                     >
-                        <MenuItem onClick={handleGoToProfile}>Profile</MenuItem>
-                        <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                        <MenuItem onClick={handleGoToProfile}>{t('navigation.profile.menu.profile')}</MenuItem>
+                        <MenuItem onClick={handleLogout}>{t('navigation.profile.menu.logout')}</MenuItem>
                     </Menu>
                 </NavItem>
             </Box>

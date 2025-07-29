@@ -143,7 +143,7 @@ const WorkdayDetailPage = () => {
                         <Typography variant="body1">{t('currentStatus')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>
-                        {PartRideStatusChip(data?.status)}
+                        {data?.status && <PartRideStatusChip status={data.status} />}
                     </Box>
                 </Box>
             </Box>

@@ -48,7 +48,7 @@ export default function DriverPeriodDetailPage() {
         return (
             <Box minHeight="50vh" display="flex" justifyContent="center" alignItems="center">
                 <Alert severity="error">
-                    {error instanceof Error ? error.message : 'Failed to load period.'}
+                    {error instanceof Error ? error.message : t('loadError')}
                 </Alert>
             </Box>
         );

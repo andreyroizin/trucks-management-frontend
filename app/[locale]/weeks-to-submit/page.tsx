@@ -1,7 +1,7 @@
 /* app/(dashboard)/weeks-to-submit/page.tsx */
 'use client';
 
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {
     Autocomplete,
     Box,
@@ -32,24 +32,7 @@ import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 import {useSnack} from "@/providers/SnackProvider";
 import Link from "next/link";
 import WeekApprovalOverviewModal from "@/components/WeekApprovalOverviewModal";
-
-/* ------------------------------------------------------------------ */
-/* Constants                                                           */
-/* ------------------------------------------------------------------ */
-
-// status filter options
-const STATUS_OPTIONS = [
-    { label: 'Has Disputes', value: 'hasDisputes' },
-    { label: 'All Approved', value: 'allApprovedOrRejected' },
-    { label: 'Has Pending', value: 'hasPending' },
-    { label: 'Has Rejected', value: 'hasRejected' },
-];
-
-// Dutch ISO weeks 1-53
-const WEEK_OPTIONS = Array.from({ length: 53 }, (_, i) => ({
-    label: `${i + 1}`,
-    value: i + 1,
-}));
+import { useTranslations } from 'next-intl';
 
 /* ------------------------------------------------------------------ */
 /* Component                                                           */
@@ -58,6 +41,21 @@ const WEEK_OPTIONS = Array.from({ length: 53 }, (_, i) => ({
 export default function WeeksToSubmitPage() {
     const qc = useQueryClient();
     const showSnack = useSnack();
+    const t = useTranslations('weeksToSubmit');
+
+    // status filter options
+    const STATUS_OPTIONS = useMemo(() => [
+        { label: t('statusOptions.hasDisputes'), value: 'hasDisputes' },
+        { label: t('statusOptions.allApproved'), value: 'allApprovedOrRejected' },
+        { label: t('statusOptions.hasPending'), value: 'hasPending' },
+        { label: t('statusOptions.hasRejected'), value: 'hasRejected' },
+    ], [t]);
+
+    // Dutch ISO weeks 1-53
+    const WEEK_OPTIONS = Array.from({ length: 53 }, (_, i) => ({
+        label: `${i + 1}`,
+        value: i + 1,
+    }));
 
     /* ------------------------------ Filters ------------------------- */
     const [driverId, setDriverId] = useState<string | undefined>();
@@ -112,7 +110,7 @@ export default function WeeksToSubmitPage() {
             setSuccessOpen(true);
         } catch (e: any) {
             showSnack({
-                text: e?.response?.data?.errors?.[0] ?? 'Failed to submit weeks',
+                text: e?.response?.data?.errors?.[0] ?? t('error.submitFailed'),
                 severity: 'error',
             });
         } finally {
@@ -127,7 +125,7 @@ export default function WeeksToSubmitPage() {
         <Box py={4}>
             <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="h3" fontWeight={500}>
-                    Weeks to Submit
+                    {t('title')}
                 </Typography>
                 <LanguageSelectDesktop />
             </Box>
@@ -144,7 +142,7 @@ export default function WeeksToSubmitPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        Sign-Off weeks
+                        {t('subtitle')}
                     </Typography>
 
                     {(isLoading || isRefetching) ? (
@@ -156,7 +154,7 @@ export default function WeeksToSubmitPage() {
                     )}
                 </Box>
                 <Typography variant="body1" sx={{mb:3}}>
-                    Submit approved weekly periods for signature
+                    {t('description')}
                 </Typography>
 
                 {/* Filters + bulk send */}
@@ -180,7 +178,7 @@ export default function WeeksToSubmitPage() {
                             }
                             sx={{ minWidth: 180 }}
                             onChange={(_, v) => setDriverId(v?.id)}
-                            renderInput={(p) => <TextField {...p} label="Driver" />}
+                            renderInput={(p) => <TextField {...p} label={t('filters.driver')} />}
                         />
 
                         <Autocomplete
@@ -188,7 +186,7 @@ export default function WeeksToSubmitPage() {
                             options={WEEK_OPTIONS}
                             sx={{ minWidth: 150 }}
                             onChange={(_, v) => setWeekNr(v?.value)}
-                            renderInput={(p) => <TextField {...p} label="Week" />}
+                            renderInput={(p) => <TextField {...p} label={t('filters.week')} />}
                         />
 
                         <Autocomplete
@@ -198,7 +196,7 @@ export default function WeeksToSubmitPage() {
                             onChange={(_, v) =>
                                 setStatus(v?.value as typeof status | undefined)
                             }
-                            renderInput={(p) => <TextField {...p} label="Status" />}
+                            renderInput={(p) => <TextField {...p} label={t('filters.status')} />}
                         />
                     </Box>
 
@@ -209,7 +207,7 @@ export default function WeeksToSubmitPage() {
                         onClick={() => setConfirmOpen(true)}
                         sx={{ whiteSpace: 'nowrap' }}
                     >
-                        {isPending ? 'Sending…' : 'Send All Selected'}
+                        {isPending ? t('actions.sending') : t('actions.sendAllSelected')}
                     </Button>
                 </Box>
 
@@ -232,12 +230,12 @@ export default function WeeksToSubmitPage() {
                                         onChange={() => toggleAll(data?.data)}
                                     />
                                 </TableCell>
-                                <TableCell>Driver</TableCell>
-                                <TableCell>Week</TableCell>
-                                <TableCell align="right">Total Hours</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Forecasted (€)</TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell>{t('table.headers.driver')}</TableCell>
+                                <TableCell>{t('table.headers.week')}</TableCell>
+                                <TableCell align="right">{t('table.headers.totalHours')}</TableCell>
+                                <TableCell>{t('table.headers.status')}</TableCell>
+                                <TableCell align="right">{t('table.headers.forecasted')}</TableCell>
+                                <TableCell>{t('table.headers.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -272,9 +270,9 @@ export default function WeeksToSubmitPage() {
                                             <TableCell sx={{ py: 2.6 }}>
                                                 {w.driver.firstName} {w.driver.lastName}
                                             </TableCell>
-                                            <TableCell sx={{ py: 2.6 }}>{`Week ${w.weekNr}`}</TableCell>
+                                            <TableCell sx={{ py: 2.6 }}>{t('table.weekNumber', { number: w.weekNr })}</TableCell>
                                             <TableCell align="right" sx={{ py: 2.6 }}>
-                                                {w.totalHours.toFixed(1)} h.
+                                                {t('table.hours', { hours: w.totalHours.toFixed(1) })}
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
                                                {w.rejectedCount > 0 ? (
@@ -283,7 +281,7 @@ export default function WeeksToSubmitPage() {
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        {w.rejectedCount} {w.rejectedCount === 1 ? 'Rejected' : 'Rejects'}
+                                                        {w.rejectedCount} {w.rejectedCount === 1 ? t('table.rejected') : t('table.rejects')}
                                                     </Link>
                                                 ) : w.disputeCount > 0 ? (
                                                     <Link
@@ -291,7 +289,7 @@ export default function WeeksToSubmitPage() {
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        {w.disputeCount} {w.disputeCount === 1 ? 'Dispute' : 'Disputes'}
+                                                        {w.disputeCount} {w.disputeCount === 1 ? t('table.dispute') : t('table.disputes')}
                                                     </Link>
                                                 ) : w.pendingAdminCount > 0 ? (
                                                     <Link
@@ -299,7 +297,7 @@ export default function WeeksToSubmitPage() {
                                                         style={{ textDecoration: 'underline' }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        {w.pendingAdminCount} Pending
+                                                        {w.pendingAdminCount} {t('table.pending')}
                                                     </Link>
                                                 ) : (
                                                     w.summaryStatus
@@ -318,7 +316,7 @@ export default function WeeksToSubmitPage() {
                                                         setWeekApprovalOverviewOpen(true)
                                                     }}
                                                 >
-                                                    See Overview
+                                                    {t('actions.seeOverview')}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -352,10 +350,10 @@ export default function WeeksToSubmitPage() {
             <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs">
               <DialogContent sx={{ pt: 3, pl: 3, pr: 3 }}>
                 <Typography variant="h5" gutterBottom>
-                  Are you sure you want to submit these weeks to drivers for signing?
+                  {t('confirmDialog.title')}
                 </Typography>
                 <Typography variant="subtitle1">
-                  This action can’t be undone.
+                  {t('confirmDialog.subtitle')}
                 </Typography>
               </DialogContent>
               <DialogActions sx={{ pb: 3, pl: 3, pr: 3 }}>
@@ -368,10 +366,10 @@ export default function WeeksToSubmitPage() {
                     await handleSendSelected();
                   }}
                 >
-                  Submit
+                  {t('confirmDialog.submit')}
                 </Button>
                 <Button fullWidth onClick={() => setConfirmOpen(false)} >
-                  Cancel
+                  {t('confirmDialog.cancel')}
                 </Button>
               </DialogActions>
             </Dialog>
@@ -394,10 +392,10 @@ export default function WeeksToSubmitPage() {
                   </Box>
                 </Box>
                 <Typography variant="h5" gutterBottom>
-                  Weeks submitted
+                  {t('successDialog.title')}
                 </Typography>
                 <Typography variant="subtitle1" mb={3}>
-                  You’ve submitted these weeks to drivers for signing
+                  {t('successDialog.subtitle')}
                 </Typography>
                 <Button
                   fullWidth
@@ -405,7 +403,7 @@ export default function WeeksToSubmitPage() {
                   href="/partrides"
                   sx={{ backgroundColor: '#0070f3' }}
                 >
-                  Go To Workday Overview
+                  {t('successDialog.goToOverview')}
                 </Button>
               </DialogContent>
             </Dialog>

@@ -21,6 +21,7 @@ import {useEffect, useState} from 'react';
 import {useAuth} from '@/hooks/useAuth';
 import {countries} from '@/data/countries';
 import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
 type EditUserFormInputs = {
     email: string;
@@ -46,6 +47,7 @@ export default function EditUserPage() {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [apiError, setApiError] = useState<string | null>(null);
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('users.edit');
 
     const {
         register,
@@ -113,10 +115,10 @@ export default function EditUserPage() {
             {id: userId, updatedFields},
             {
                 onSuccess: () => {
-                    setSuccessMessage('User updated successfully');
+                    setSuccessMessage(t('successMessage'));
                 },
                 onError: (error: any) => {
-                    setApiError(error?.response?.data?.errors?.[0] || error.message || 'An unexpected error occurred');
+                    setApiError(error?.response?.data?.errors?.[0] || error.message || t('updateError'));
                 },
             }
         );
@@ -133,7 +135,7 @@ export default function EditUserPage() {
     if (isError || !userDetails) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <Alert severity="error">Failed to load user details. Please try again later.</Alert>
+                <Alert severity="error">{t('loadError')}</Alert>
             </div>
         );
     }
@@ -141,7 +143,7 @@ export default function EditUserPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
             <Typography variant="h4" gutterBottom>
-                Edit User
+                {t('title')}
             </Typography>
 
             {apiError && (
@@ -166,7 +168,7 @@ export default function EditUserPage() {
                         component="a"
                         sx={{ mb: 2 }}
                     >
-                        Edit driver-specific data
+                        {t('navigation.editDriverData')}
                     </Button>
                 </Link>
             )}
@@ -179,7 +181,7 @@ export default function EditUserPage() {
                         component="a"
                         sx={{ mb: 2 }}
                     >
-                        Edit contact person-specific data
+                        {t('navigation.editContactPersonData')}
                     </Button>
                 </Link>
             )}
@@ -195,20 +197,20 @@ export default function EditUserPage() {
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                 }}
             >
-                <TextField label="Email" fullWidth {...register('email', {required: 'Email is required'})}
+                <TextField label={t('fields.email.label')} fullWidth {...register('email', {required: t('fields.email.required')})}
                            error={!!errors.email} helperText={errors.email?.message} sx={{mb: 2}}/>
-                <TextField label="First Name" fullWidth {...register('firstName', {required: 'First Name is required'})}
+                <TextField label={t('fields.firstName.label')} fullWidth {...register('firstName', {required: t('fields.firstName.required')})}
                            error={!!errors.firstName} helperText={errors.firstName?.message} sx={{mb: 2}}/>
-                <TextField label="Last Name" fullWidth {...register('lastName', {required: 'Last Name is required'})}
+                <TextField label={t('fields.lastName.label')} fullWidth {...register('lastName', {required: t('fields.lastName.required')})}
                            error={!!errors.lastName} helperText={errors.lastName?.message} sx={{mb: 2}}/>
-                <TextField label="Address" fullWidth {...register('address')} sx={{mb: 2}}/>
-                <TextField label="Postcode" fullWidth {...register('postcode')} sx={{mb: 2}}/>
-                <TextField label="City" fullWidth {...register('city')} sx={{mb: 2}}/>
+                <TextField label={t('fields.address.label')} fullWidth {...register('address')} sx={{mb: 2}}/>
+                <TextField label={t('fields.postcode.label')} fullWidth {...register('postcode')} sx={{mb: 2}}/>
+                <TextField label={t('fields.city.label')} fullWidth {...register('city')} sx={{mb: 2}}/>
                 <FormControl fullWidth sx={{mb: 2}}>
-                    <InputLabel>Country</InputLabel>
+                    <InputLabel>{t('fields.country.label')}</InputLabel>
                     <Select {...register('country')} value={watch('country') || ''}
                             onChange={(e) => setValue('country', e.target.value)}>
-                        <MenuItem value="" disabled>Select a country</MenuItem>
+                        <MenuItem value="" disabled>{t('fields.country.placeholder')}</MenuItem>
                         {countries.map((country) => (
                             <MenuItem key={country.code} value={country.name}>
                                 {country.name}
@@ -216,9 +218,9 @@ export default function EditUserPage() {
                         ))}
                     </Select>
                 </FormControl>
-                <TextField label="Phone Number" fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
-                <TextField label="Remark" fullWidth multiline rows={4} {...register('remark')} sx={{mb: 2}}/>
-                {isGlobalAdmin && (<Typography variant="subtitle1" sx={{mb: 1}}>Roles</Typography>)}
+                <TextField label={t('fields.phoneNumber.label')} fullWidth {...register('phoneNumber')} sx={{mb: 2}}/>
+                <TextField label={t('fields.remark.label')} fullWidth multiline rows={4} {...register('remark')} sx={{mb: 2}}/>
+                {isGlobalAdmin && (<Typography variant="subtitle1" sx={{mb: 1}}>{t('fields.roles.label')}</Typography>)}
                 {isGlobalAdmin && roles?.map((role) => (
                     <FormControlLabel
                         key={role.id}
@@ -249,7 +251,7 @@ export default function EditUserPage() {
                     </Alert>
                 )}
                 <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending} sx={{mt: 2}}>
-                    {isPending ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
+                    {isPending ? <CircularProgress size={24} color="inherit"/> : t('button')}
                 </Button>
             </form>
         </div>

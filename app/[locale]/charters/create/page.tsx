@@ -17,17 +17,19 @@ import { useRouter } from 'next/navigation';
 import { useCreateCharter, CreateCharterInput } from '@/hooks/useCreateCharter';
 import { useClients } from '@/hooks/useClients';
 import { useAuth } from '@/hooks/useAuth';
-
-// *** Validation Schema ***
-const charterSchema = yup.object().shape({
-    name: yup.string().required('Charter name is required'),
-    clientId: yup.string().required('Client is required'),
-    remark: yup.string().optional(),
-});
+import {useTranslations} from 'next-intl';
 
 function CreateCharterForm() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations();
+    
+    // *** Validation Schema - moved inside component to access translations ***
+    const charterSchema = yup.object().shape({
+        name: yup.string().required(t('charters.create.validation.nameRequired')),
+        clientId: yup.string().required(t('charters.create.validation.clientRequired')),
+        remark: yup.string().optional(),
+    });
 
     // Check roles (example: only globalAdmin or customerAdmin)
     useEffect(() => {
@@ -84,7 +86,7 @@ function CreateCharterForm() {
     return (
         <Box maxWidth="600px" mx="auto" p={4}>
             <Typography variant="h4" gutterBottom>
-                Create Charter
+                {t('charters.create.title')}
             </Typography>
 
             {apiError && (
@@ -101,7 +103,7 @@ function CreateCharterForm() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Charter Name"
+                            label={t('charters.create.fields.charterName')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -126,7 +128,7 @@ function CreateCharterForm() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select Client"
+                                    label={t('charters.create.fields.selectClient')}
                                     variant="outlined"
                                     fullWidth
                                     margin="normal"
@@ -146,7 +148,7 @@ function CreateCharterForm() {
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            label="Remark"
+                            label={t('charters.create.fields.remark')}
                             variant="outlined"
                             fullWidth
                             margin="normal"
@@ -158,7 +160,7 @@ function CreateCharterForm() {
 
                 <Box mt={3}>
                     <Button type="submit" variant="contained" color="primary" fullWidth disabled={isPending}>
-                        {isPending ? <CircularProgress size={20} /> : 'Create Charter'}
+                        {isPending ? <CircularProgress size={20} /> : t('charters.create.button')}
                     </Button>
                 </Box>
             </form>

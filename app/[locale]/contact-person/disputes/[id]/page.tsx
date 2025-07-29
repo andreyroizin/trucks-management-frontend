@@ -32,11 +32,13 @@ import SingleDisputeCommentBlock from '@/components/SingleDisputeCommentBlock';
 import StatusChip from '@/components/StatusChip';
 import DisputeDetailActionBar from "@/components/DisputeDetailActionBar";
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
+import {useTranslations} from 'next-intl';
 
 export default function DisputeDetailPage() {
     const {id} = useParams<{ id: string }>();
     const router = useRouter();
     const snack = useSnack();
+    const t = useTranslations();
 
     /* ── data ─────────────────────────────────────────── */
     const {
@@ -67,20 +69,20 @@ export default function DisputeDetailPage() {
     const handleAccept = async () => {
         try {
             await acceptDispute();
-            snack({text: 'Dispute approved', severity: 'success'});
+            snack({text: t('contactPerson.disputeDetail.actions.disputeApproved'), severity: 'success'});
         } catch (e: any) {
-            setApiError(e?.response?.data?.errors?.[0] ?? 'Failed to approve.');
-            snack({text: 'Failed to approve', severity: 'error'});
+            setApiError(e?.response?.data?.errors?.[0] ?? t('contactPerson.disputeDetail.actions.approveFailed'));
+            snack({text: t('contactPerson.disputeDetail.actions.approveFailed'), severity: 'error'});
         }
     };
 
     const handleSubmitComment = async (comment: string) => {
         try {
             await addComment(comment);
-            snack({text: 'Comment sent', severity: 'success'});
+            snack({text: t('contactPerson.disputeDetail.actions.commentSent'), severity: 'success'});
         } catch (e: any) {
-            setApiError(e?.response?.data?.errors?.[0] ?? 'Failed to send comment.');
-            snack({text: e?.response?.data?.errors?.[0] ?? 'Failed to send comment.', severity: 'error'});
+            setApiError(e?.response?.data?.errors?.[0] ?? t('contactPerson.disputeDetail.actions.commentFailed'));
+            snack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.disputeDetail.actions.commentFailed'), severity: 'error'});
         }
     };
 
@@ -88,9 +90,9 @@ export default function DisputeDetailPage() {
     const handleCloseDispute = async () => {
         try {
             await closeDispute(id);
-            snack({text: 'Dispute closed', severity: 'success'});
+            snack({text: t('contactPerson.disputeDetail.actions.disputeClosed'), severity: 'success'});
         } catch (e: any) {
-            snack({text: e?.response?.data?.errors?.[0] ?? 'Close failed', severity: 'error'});
+            snack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.disputeDetail.actions.closeFailed'), severity: 'error'});
         }
     };
 
@@ -100,10 +102,10 @@ export default function DisputeDetailPage() {
 
         try {
             await deleteDispute(confirmDeleteId);
-            snack({text: 'Dispute deleted', severity: 'success'});
+            snack({text: t('contactPerson.disputeDetail.actions.disputeDeleted'), severity: 'success'});
             router.push('/disputes');
         } catch (e: any) {
-            snack({text: e?.response?.data?.errors?.[0] ?? 'Delete failed', severity: 'error'});
+            snack({text: e?.response?.data?.errors?.[0] ?? t('contactPerson.disputeDetail.actions.deleteFailed'), severity: 'error'});
         }
     };
 
@@ -118,7 +120,7 @@ export default function DisputeDetailPage() {
     if (!dispute || error)
         return (
             <Typography mt={6} textAlign="center" color="error">
-                {(error as any)?.message || 'Failed to load dispute'}
+                {(error as any)?.message || t('contactPerson.disputeDetail.errors.loadFailed')}
             </Typography>
         );
 
@@ -129,7 +131,7 @@ export default function DisputeDetailPage() {
         <Box sx={{ py: 4 }}>
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h3" fontWeight={500}>
-                    Workdays Management
+                    {t('contactPerson.workdaysManagement')}
                 </Typography>
                 <LanguageSelectDesktop/>
             </Box>
@@ -148,7 +150,7 @@ export default function DisputeDetailPage() {
                     }}
                 >
                     <Typography variant="h4" fontWeight={500}>
-                        {dayjs(pr?.date).format('DD.MM.YYYY')} Dispute
+                        {dayjs(pr?.date).format('DD.MM.YYYY')} {t('contactPerson.disputeDetail.title')}
                     </Typography>
                     <DisputeDetailActionBar
                         onCloseDispute={handleCloseDispute}
@@ -168,14 +170,14 @@ export default function DisputeDetailPage() {
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Workday ID
+                                {t('contactPerson.disputeDetail.fields.workdayId')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.id}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Client</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.client')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.client ? (
                                     <Link href={`/clients/${pr?.client?.id}`}
@@ -188,16 +190,16 @@ export default function DisputeDetailPage() {
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Status</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.status')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 <StatusChip
                                     label={
                                         {
-                                            0: 'Pending Driver',
-                                            1: 'Pending Admin',
-                                            2: 'Accepted Driver',
-                                            3: 'Accepted Admin',
-                                            4: 'Closed',
+                                            0: t('contactPerson.disputes.table.statusLabels.pendingDriver'),
+                                            1: t('contactPerson.disputes.table.statusLabels.pendingAdmin'),
+                                            2: t('contactPerson.disputes.table.statusLabels.acceptedByDriver'),
+                                            3: t('contactPerson.disputes.table.statusLabels.acceptedByAdmin'),
+                                            4: t('contactPerson.disputes.table.statusLabels.closed'),
                                         }[dispute.status]
                                     }
                                     variant={
@@ -222,20 +224,20 @@ export default function DisputeDetailPage() {
                     sx={{mt: 3, width: '100%', maxWidth: 500}}
                     onClick={() => router.push(`/partrides/${pr?.id}`)}
                 >
-                    Go To Workday
+                    {t('contactPerson.disputeDetail.actions.goToWorkday')}
                 </Button>
 
                 <Divider sx={{my: 3}}/>
 
                 {/* Driver & vehicle */}
                 <Typography variant="h6" sx={{mt: 4, mb: 1}}>
-                    Driver &amp; Vehicle Info
+                    {t('contactPerson.disputeDetail.sections.driverVehicleInfo')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Assigned Driver
+                                {t('contactPerson.disputeDetail.fields.assignedDriver')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 <Link
@@ -247,7 +249,7 @@ export default function DisputeDetailPage() {
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Auto</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.auto')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.car ? (
                                     <Link href={`/cars/${pr?.car?.id}`} underline="hover"
@@ -266,36 +268,36 @@ export default function DisputeDetailPage() {
 
                 {/* Logged time */}
                 <Typography variant="h6" sx={{mb: 2}}>
-                    Logged Time &amp; Distance
+                    {t('contactPerson.disputeDetail.sections.loggedTimeDistance')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Total Hours
+                                {t('contactPerson.disputeDetail.fields.totalHours')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.decimalHours} h</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Date</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.date')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {dayjs(pr?.date).format('DD.MM.YYYY')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Start</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.start')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.start}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>End</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.end')}</TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {pr?.end}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>Rest Time</TableCell>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('contactPerson.disputeDetail.fields.restTime')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{pr?.rest}</TableCell>
                         </TableRow>
                     </TableBody>
@@ -305,13 +307,13 @@ export default function DisputeDetailPage() {
 
                 {/* Suggested adjustments */}
                 <Typography variant="h6" sx={{mb: 2}}>
-                    Suggested Adjustments
+                    {t('contactPerson.disputeDetail.sections.suggestedAdjustments')}
                 </Typography>
                 <Table size="small">
                     <TableBody>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none', width: 160}}>
-                                Hours Correction
+                                {t('contactPerson.disputeDetail.fields.hoursCorrection')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>
                                 {dispute?.correctionHours > 0 ? '+' : ''}
@@ -323,7 +325,7 @@ export default function DisputeDetailPage() {
                             dispute.status !== 3 && (
                                 <TableRow>
                                     <TableCell sx={{pl: 0, border: 'none'}}>
-                                        New Total Hours
+                                        {t('contactPerson.disputeDetail.fields.newTotalHours')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
                                         {pr?.newDecimalHours} h
@@ -337,12 +339,12 @@ export default function DisputeDetailPage() {
 
                 {/* Comments section */}
                 <Typography variant="h6" sx={{mb: 2}}>
-                    Comments
+                    {t('contactPerson.disputeDetail.sections.comments')}
                 </Typography>
 
                 {dispute?.comments?.length === 0 && (
                     <Typography variant="body2" color="text.secondary">
-                        No comments yet.
+                        {t('contactPerson.disputeDetail.comments.noComments')}
                     </Typography>
                 )}
 
@@ -382,8 +384,8 @@ export default function DisputeDetailPage() {
 
                 <ConfirmModal
                     open={!!confirmDeleteId}
-                    title="Delete Dispute"
-                    message="Are you sure you want to delete this dispute? This action cannot be undone."
+                    title={t('contactPerson.disputeDetail.deleteModal.title')}
+                    message={t('contactPerson.disputeDetail.deleteModal.message')}
                     onClose={() => setConfirmDeleteId(null)}
                     onConfirm={handleDeleteDispute}
                 />

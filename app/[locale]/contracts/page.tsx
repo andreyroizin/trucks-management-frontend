@@ -24,10 +24,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEmployeeContracts } from '@/hooks/useEmployeeContracts';
 import { useDrivers } from '@/hooks/useDrivers';
 import { useCompanies } from '@/hooks/useCompanies';
+import {useTranslations} from 'next-intl';
 
 export default function ContractsPage() {
     const router = useRouter();
     const { isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations();
 
     // Restrict access
     useEffect(() => {
@@ -64,7 +66,7 @@ export default function ContractsPage() {
     if (isError || !data) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-                <Alert severity="error">{error?.message || 'Failed to load contracts.'}</Alert>
+                <Alert severity="error">{error?.message || t('contracts.overview.errors.loadFailed')}</Alert>
             </Box>
         );
     }
@@ -77,9 +79,9 @@ export default function ContractsPage() {
         <Box p={2}>
             {/* HEADER */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">Employee Contracts</Typography>
+                <Typography variant="h5">{t('contracts.title')}</Typography>
                 <Button variant="contained" onClick={() => router.push('/contracts/create')}>
-                    Create Contract
+                    {t('contracts.overview.createContract')}
                 </Button>
             </Box>
 
@@ -97,7 +99,7 @@ export default function ContractsPage() {
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     renderInput={(params) => (
-                        <TextField {...params} label="Driver" variant="outlined" size="small" />
+                        <TextField {...params} label={t('contracts.overview.filters.driver')} variant="outlined" size="small" />
                     )}
                 />
 
@@ -113,7 +115,7 @@ export default function ContractsPage() {
                     }}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     renderInput={(params) => (
-                        <TextField {...params} label="Company" variant="outlined" size="small" />
+                        <TextField {...params} label={t('contracts.overview.filters.company')} variant="outlined" size="small" />
                     )}
                 />
             </Box>
@@ -123,10 +125,10 @@ export default function ContractsPage() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Contract ID</TableCell>
-                            <TableCell>Contract Employee</TableCell>
-                            <TableCell>Driver Name</TableCell>
-                            <TableCell>Company Name</TableCell>
+                            <TableCell>{t('contracts.overview.table.headers.contractId')}</TableCell>
+                            <TableCell>{t('contracts.overview.table.headers.contractEmployee')}</TableCell>
+                            <TableCell>{t('contracts.overview.table.headers.driverName')}</TableCell>
+                            <TableCell>{t('contracts.overview.table.headers.companyName')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -156,7 +158,7 @@ export default function ContractsPage() {
                         setPageNumber(0);
                     }}
                     rowsPerPageOptions={[5, 10, 25, 50]}
-                    labelRowsPerPage="Rows per page:"
+                    labelRowsPerPage={t('contracts.overview.table.rowsPerPage')}
                 />
             </TableContainer>
         </Box>
