@@ -19,12 +19,14 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { useRouter } from 'next/navigation';
 import {useAuth} from "@/hooks/useAuth";
+import { useTranslations } from 'next-intl';
 
 export default function UsersPage() {
   const { user, isAuthenticated, loading } = useAuth();
   const [page, setPage] = useState(0); // Zero-based index for the page
   const [rowsPerPage, setRowsPerPage] = useState(10); // Results per page
   const router = useRouter();
+  const t = useTranslations('users.overview');
 
   const { data, isLoading, isError } = useUsers(page + 1, rowsPerPage); // Adjust API's 1-based page number
 
@@ -57,7 +59,7 @@ export default function UsersPage() {
   if (isError) {
     return (
         <div className="flex justify-center items-center min-h-screen">
-          <Alert severity="error">Failed to load users. Please try again later.</Alert>
+          <Alert severity="error">{t('loadError')}</Alert>
         </div>
     );
   }
@@ -65,20 +67,20 @@ export default function UsersPage() {
   return (
       <div className="p-6">
         <Typography variant="h4" gutterBottom>
-          Users List
+          {t('title')}
         </Typography>
         <Paper>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>Company Name</TableCell>
-                  <TableCell>Roles</TableCell>
-                  <TableCell>Edit</TableCell>
+                  <TableCell>{t('table.headers.id')}</TableCell>
+                  <TableCell>{t('table.headers.email')}</TableCell>
+                  <TableCell>{t('table.headers.firstName')}</TableCell>
+                  <TableCell>{t('table.headers.lastName')}</TableCell>
+                  <TableCell>{t('table.headers.companyName')}</TableCell>
+                  <TableCell>{t('table.headers.roles')}</TableCell>
+                  <TableCell>{t('table.headers.edit')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

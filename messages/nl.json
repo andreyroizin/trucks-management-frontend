@@ -5013,5 +5013,165 @@
       "successMessage": "Eenheid succesvol bijgewerkt!",
       "updateError": "Er is een onverwachte fout opgetreden"
     }
+  },
+  "users": {
+    "overview": {
+      "title": "Gebruikerslijst",
+      "loadError": "Kon gebruikers niet laden. Probeer het later opnieuw.",
+      "table": {
+        "headers": {
+          "id": "ID",
+          "email": "E-mail",
+          "firstName": "Voornaam",
+          "lastName": "Achternaam",
+          "companyName": "Bedrijfsnaam",
+          "roles": "Rollen",
+          "edit": "Bewerken"
+        }
+      }
+    },
+    "edit": {
+      "loading": "Laden...",
+      "title": "Gebruiker Bewerken",
+      "loadError": "Kon gebruikersdetails niet laden. Probeer het later opnieuw.",
+      "successMessage": "Gebruiker succesvol bijgewerkt",
+      "updateError": "Er is een onverwachte fout opgetreden",
+      "navigation": {
+        "editDriverData": "Chauffeur-specifieke gegevens bewerken",
+        "editContactPersonData": "Contactpersoon-specifieke gegevens bewerken"
+      },
+      "fields": {
+        "email": {
+          "label": "E-mail",
+          "required": "E-mail is verplicht"
+        },
+        "firstName": {
+          "label": "Voornaam",
+          "required": "Voornaam is verplicht"
+        },
+        "lastName": {
+          "label": "Achternaam",
+          "required": "Achternaam is verplicht"
+        },
+        "address": {
+          "label": "Adres"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land",
+          "placeholder": "Selecteer een land"
+        },
+        "phoneNumber": {
+          "label": "Telefoonnummer"
+        },
+        "remark": {
+          "label": "Opmerking"
+        },
+        "roles": {
+          "label": "Rollen"
+        }
+      },
+      "button": "Wijzigingen Opslaan"
+    },
+    "driver": {
+      "title": "Chauffeurgegevens Bewerken",
+      "loadError": "Kon gegevens niet laden. Probeer het later opnieuw.",
+      "successMessage": "Chauffeurgegevens succesvol bijgewerkt!",
+      "updateError": "Er is een onverwachte fout opgetreden",
+      "fields": {
+        "company": {
+          "label": "Bedrijf",
+          "required": "Bedrijf is verplicht"
+        }
+      },
+      "actions": {
+        "saveChanges": "Wijzigingen Opslaan",
+        "driverRatesAllowances": "Chauffeurtarieven & Vergoedingen",
+        "delete": "Chauffeur Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Chauffeur Verwijderen?",
+        "message": "Weet je zeker dat je deze chauffeur wilt verwijderen?"
+      },
+      "deleteError": "Kon chauffeur niet verwijderen."
+    },
+    "contactPerson": {
+      "title": "Contactpersoongegevens Bewerken",
+      "loadError": "Kon gegevens niet laden. Probeer het later opnieuw.",
+      "successMessage": "Contactpersoongegevens succesvol bijgewerkt!",
+      "updateError": "Er is een onverwachte fout opgetreden",
+      "fields": {
+        "clients": {
+          "label": "Klanten"
+        },
+        "companies": {
+          "label": "Bedrijven"
+        }
+      },
+      "actions": {
+        "saveChanges": "Wijzigingen Opslaan",
+        "delete": "Verwijderen",
+        "deleting": "Verwijderen..."
+      },
+      "deleteModal": {
+        "title": "Contactpersoon Verwijderen?",
+        "message": "Weet je zeker dat je deze contactpersoon wilt verwijderen?"
+      },
+      "deleteError": "Kon contactpersoon niet verwijderen."
+    },
+    "compensations": {
+      "title": "Chauffeurtarieven & Vergoedingen",
+      "loadError": "Kon gegevens niet laden.",
+      "successMessage": "Chauffeurvergoedingen succesvol bijgewerkt!",
+      "updateError": "Kon chauffeurvergoedingen niet bijwerken",
+      "fields": {
+        "percentageOfWork": {
+          "label": "Werkpercentage"
+        },
+        "nightHoursAllowed": {
+          "label": "Nachturen Toegestaan"
+        },
+        "nightHours19Percent": {
+          "label": "Nachturen 19%"
+        },
+        "driverRatePerHour": {
+          "label": "Chauffeurtarief Per Uur"
+        },
+        "nightAllowanceRate": {
+          "label": "Nachttoeslagtarief"
+        },
+        "kilometerAllowanceEnabled": {
+          "label": "Kilometervergoeding Ingeschakeld"
+        },
+        "kilometersOneWayValue": {
+          "label": "Kilometers Enkele Reis Waarde"
+        },
+        "kilometersMin": {
+          "label": "Kilometers Min"
+        },
+        "kilometersMax": {
+          "label": "Kilometers Max"
+        },
+        "kilometerAllowance": {
+          "label": "Kilometervergoeding"
+        },
+        "salary4Weeks": {
+          "label": "Salaris (4 Weken)"
+        },
+        "weeklySalary": {
+          "label": "Weeksalaris"
+        },
+        "dateOfEmployment": {
+          "label": "Datum van Tewerkstelling (JJJJ-MM-DD)"
+        }
+      },
+      "button": "Opslaan"
+    }
   }
 }

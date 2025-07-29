@@ -2354,5 +2354,165 @@
       "successMessage": "Unit updated successfully!",
       "updateError": "An unexpected error occurred"
     }
+  },
+  "users": {
+    "overview": {
+      "title": "Users List",
+      "loadError": "Failed to load users. Please try again later.",
+      "table": {
+        "headers": {
+          "id": "ID",
+          "email": "Email",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "companyName": "Company Name",
+          "roles": "Roles",
+          "edit": "Edit"
+        }
+      }
+    },
+    "edit": {
+      "loading": "Loading...",
+      "title": "Edit User",
+      "loadError": "Failed to load user details. Please try again later.",
+      "successMessage": "User updated successfully",
+      "updateError": "An unexpected error occurred",
+      "navigation": {
+        "editDriverData": "Edit driver-specific data",
+        "editContactPersonData": "Edit contact person-specific data"
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "required": "Email is required"
+        },
+        "firstName": {
+          "label": "First Name",
+          "required": "First Name is required"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "required": "Last Name is required"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country",
+          "placeholder": "Select a country"
+        },
+        "phoneNumber": {
+          "label": "Phone Number"
+        },
+        "remark": {
+          "label": "Remark"
+        },
+        "roles": {
+          "label": "Roles"
+        }
+      },
+      "button": "Save Changes"
+    },
+    "driver": {
+      "title": "Edit Driver Data",
+      "loadError": "Failed to load data. Please try again later.",
+      "successMessage": "Driver data updated successfully!",
+      "updateError": "An unexpected error occurred",
+      "fields": {
+        "company": {
+          "label": "Company",
+          "required": "Company is required"
+        }
+      },
+      "actions": {
+        "saveChanges": "Save Changes",
+        "driverRatesAllowances": "Driver Rates & Allowances",
+        "delete": "Delete Driver",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Driver?",
+        "message": "Are you sure you want to delete this driver?"
+      },
+      "deleteError": "Failed to delete driver."
+    },
+    "contactPerson": {
+      "title": "Edit Contact Person Data",
+      "loadError": "Failed to load data. Please try again later.",
+      "successMessage": "Contact person data updated successfully!",
+      "updateError": "An unexpected error occurred",
+      "fields": {
+        "clients": {
+          "label": "Clients"
+        },
+        "companies": {
+          "label": "Companies"
+        }
+      },
+      "actions": {
+        "saveChanges": "Save Changes",
+        "delete": "Delete",
+        "deleting": "Deleting..."
+      },
+      "deleteModal": {
+        "title": "Delete Contact Person?",
+        "message": "Are you sure you want to delete this contact person?"
+      },
+      "deleteError": "Failed to delete contact person."
+    },
+    "compensations": {
+      "title": "Driver Rates & Allowances",
+      "loadError": "Failed to load data.",
+      "successMessage": "Driver compensations updated successfully!",
+      "updateError": "Failed to update driver compensations",
+      "fields": {
+        "percentageOfWork": {
+          "label": "Percentage of Work"
+        },
+        "nightHoursAllowed": {
+          "label": "Night Hours Allowed"
+        },
+        "nightHours19Percent": {
+          "label": "Night Hours 19%"
+        },
+        "driverRatePerHour": {
+          "label": "Driver Rate Per Hour"
+        },
+        "nightAllowanceRate": {
+          "label": "Night Allowance Rate"
+        },
+        "kilometerAllowanceEnabled": {
+          "label": "Kilometer Allowance Enabled"
+        },
+        "kilometersOneWayValue": {
+          "label": "Kilometers One Way Value"
+        },
+        "kilometersMin": {
+          "label": "Kilometers Min"
+        },
+        "kilometersMax": {
+          "label": "Kilometers Max"
+        },
+        "kilometerAllowance": {
+          "label": "Kilometer Allowance"
+        },
+        "salary4Weeks": {
+          "label": "Salary (4 Weeks)"
+        },
+        "weeklySalary": {
+          "label": "Weekly Salary"
+        },
+        "dateOfEmployment": {
+          "label": "Date of Employment (YYYY-MM-DD)"
+        }
+      },
+      "button": "Save"
+    }
   }
 }

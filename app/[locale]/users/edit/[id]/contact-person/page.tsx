@@ -13,6 +13,7 @@ import * as yup from 'yup';
 import {useDeleteContactPerson} from "@/hooks/useDeleteContactPerson";
 import ConfirmModal from "@/components/ConfirmModal";
 import {useAuth} from "@/hooks/useAuth";
+import { useTranslations } from 'next-intl';
 
 // *** Validation Schema ***
 const editContactPersonSchema = yup.object().shape({});
@@ -31,6 +32,7 @@ export default function EditContactPersonPage() {
     const [openModal, setOpenModal] = useState(false);
     const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const t = useTranslations('users.contactPerson');
     // Fetch user details
     const {data: userDetails, isLoading: isLoadingUser, isError: isErrorUser} = useUserDetails(userId);
     const contactPersonIsGlobalAdmin = useMemo(
@@ -123,7 +125,7 @@ export default function EditContactPersonPage() {
             setOpenModal(false);
             router.push('/users'); // or wherever you list contact persons
         } catch (err: any) {
-            setDeleteErrorMsg(err.message || 'Failed to delete contact person.');
+            setDeleteErrorMsg(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -138,9 +140,9 @@ export default function EditContactPersonPage() {
                 id: userId,
                 ...data
             });
-            setSuccessMessage('Contact person data updated successfully!');
+            setSuccessMessage(t('successMessage'));
         } catch (error: any) {
-            setApiError(error.message || 'An unexpected error occurred');
+            setApiError(error.message || t('updateError'));
         }
     };
 
@@ -156,7 +158,7 @@ export default function EditContactPersonPage() {
     if (isErrorUser || isErrorCompanies || isErrorClients) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <Alert severity="error">Failed to load data. Please try again later.</Alert>
+                <Alert severity="error">{t('loadError')}</Alert>
             </div>
         );
     }
@@ -168,7 +170,7 @@ export default function EditContactPersonPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
             <Typography variant="h4" gutterBottom>
-                Edit Contact Person Data
+                {t('title')}
             </Typography>
 
             {apiError && (
@@ -214,7 +216,7 @@ export default function EditContactPersonPage() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Clients"
+                                        label={t('fields.clients.label')}
                                         variant="outlined"
                                         error={!!errors.clientIds}
                                         helperText={errors.clientIds?.message}
@@ -247,7 +249,7 @@ export default function EditContactPersonPage() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Companies"
+                                        label={t('fields.companies.label')}
                                         variant="outlined"
                                         error={!!errors.companyIds}
                                         helperText={errors.companyIds?.message}
@@ -268,7 +270,7 @@ export default function EditContactPersonPage() {
                     disabled={isUpdatingContactPerson}
                     sx={{mt: 2}}
                 >
-                    {isUpdatingContactPerson ? <CircularProgress size={24} color="inherit"/> : 'Save Changes'}
+                    {isUpdatingContactPerson ? <CircularProgress size={24} color="inherit"/> : t('actions.saveChanges')}
                 </Button>
                 {(!contactPersonIsGlobalAdmin || isGlobalAdmin) && (
                     <Button
@@ -279,14 +281,14 @@ export default function EditContactPersonPage() {
                         disabled={isDeleting}
                         onClick={() => setOpenModal(true)}
                     >
-                        {isDeleting ? 'Deleting...' : 'Delete'}
+                        {isDeleting ? t('actions.deleting') : t('actions.delete')}
                     </Button>
                 )}
             </form>
             <ConfirmModal
                 open={openModal}
-                title="Delete Contact Person?"
-                message="Are you sure you want to delete this contact person?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />

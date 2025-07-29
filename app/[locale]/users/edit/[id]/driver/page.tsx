@@ -5,7 +5,7 @@ import {Controller, SubmitHandler, useForm} from 'react-hook-form';
 import {Alert, Button, CircularProgress, FormControl, TextField, Typography,} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useMemo} from 'react';
 import {useCompanies} from '@/hooks/useCompanies';
 import {useUpdateUserDriver, useUserDetails} from '@/hooks/useUser'; // Import the new hook
 import * as yup from 'yup';
@@ -13,11 +13,7 @@ import {useAuth} from "@/hooks/useAuth";
 import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import ConfirmModal from "@/components/ConfirmModal";
 import Link from "next/link";
-
-// *** Validation Schema ***
-const editDriverSchema = yup.object().shape({
-    companyId: yup.string().required('Company is required'),
-});
+import { useTranslations } from 'next-intl';
 
 // *** Type for Form Inputs ***
 type EditDriverFormInputs = {
@@ -33,6 +29,12 @@ export default function EditDriverPage() {
     const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
+    const t = useTranslations('users.driver');
+
+    // *** Validation Schema ***
+    const editDriverSchema = useMemo(() => yup.object().shape({
+        companyId: yup.string().required(t('fields.company.required')),
+    }), [t]);
 
     const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     // Fetch user details
@@ -86,7 +88,7 @@ export default function EditDriverPage() {
             setOpenModal(false);
             router.push('/drivers'); // Redirect after deletion
         } catch (err: any) {
-            setDeleteErrorMsg(err.message || 'Failed to delete driver.');
+            setDeleteErrorMsg(err.message || t('deleteError'));
             setOpenModal(false);
         }
     };
@@ -98,9 +100,9 @@ export default function EditDriverPage() {
 
         try {
             await mutateUpdateDriver({ id: userId, ...data });
-            setSuccessMessage('Driver data updated successfully!');
+            setSuccessMessage(t('successMessage'));
         } catch (error: any) {
-            setApiError(error.message || 'An unexpected error occurred');
+            setApiError(error.message || t('updateError'));
         }
     };
 
@@ -116,7 +118,7 @@ export default function EditDriverPage() {
     if (isErrorUser || isErrorCompanies) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <Alert severity="error">Failed to load data. Please try again later.</Alert>
+                <Alert severity="error">{t('loadError')}</Alert>
             </div>
         );
     }
@@ -124,7 +126,7 @@ export default function EditDriverPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
             <Typography variant="h4" gutterBottom>
-                Edit Driver Data
+                {t('title')}
             </Typography>
 
             {apiError && (
@@ -166,7 +168,7 @@ export default function EditDriverPage() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Company"
+                                        label={t('fields.company.label')}
                                         variant="outlined"
                                         error={!!errors.companyId}
                                         helperText={errors.companyId?.message}
@@ -189,7 +191,7 @@ export default function EditDriverPage() {
                     disabled={isUpdatingDriver}
                     sx={{ mt: 2 }}
                 >
-                    {isUpdatingDriver ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
+                    {isUpdatingDriver ? <CircularProgress size={24} color="inherit" /> : t('actions.saveChanges')}
                 </Button>
 
                 <Link href={`/users/edit/${userId}/driver/compensations`} passHref>
@@ -200,7 +202,7 @@ export default function EditDriverPage() {
                         component="a"
                         sx={{ mt: 2 }}
                     >
-                        Driver Rates & Allowances
+                        {t('actions.driverRatesAllowances')}
                     </Button>
                 </Link>
 
@@ -213,7 +215,7 @@ export default function EditDriverPage() {
                         disabled={isDeleting}
                         onClick={() => setOpenModal(true)}
                     >
-                        {isDeleting ? 'Deleting...' : 'Delete Driver'}
+                        {isDeleting ? t('actions.deleting') : t('actions.delete')}
                     </Button>
                 )}
                 {deleteErrorMsg && (
@@ -224,8 +226,8 @@ export default function EditDriverPage() {
             </form>
             <ConfirmModal
                 open={openModal}
-                title="Delete Driver?"
-                message="Are you sure you want to delete this driver?"
+                title={t('deleteModal.title')}
+                message={t('deleteModal.message')}
                 onClose={() => setOpenModal(false)}
                 onConfirm={handleDelete}
             />
