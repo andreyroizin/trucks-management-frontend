@@ -73,7 +73,8 @@
         "table": {
           "date": "Datum",
           "hours": "Uren",
-          "status": "Status"
+          "status": "Status",
+          "hoursCode": "Urencode"
         },
         "signButton": "Week ondertekenen",
         "viewSignedButton": "Ondertekende week bekijken",
@@ -148,7 +149,8 @@
         "vacationLeft": "Resterende vakantie-uren",
         "date": "Datum",
         "hours": "Uren",
-        "total": "Totaal"
+        "total": "Totaal",
+        "hoursCode": "Urencode"
       },
       "signed": {
         "title": "Week {week}",
@@ -495,6 +497,7 @@
     "driver": {
       "detail": {
         "title": "Werkdagdetails",
+        "hoursCode": "Urencode",
         "detailsForDay": "Details voor je registratie op {date}",
         "recordDate": "Registratiedatum",
         "workHours": "Werkuren",

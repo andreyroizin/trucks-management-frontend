@@ -73,7 +73,8 @@
         "table": {
           "date": "Date",
           "hours": "Hours",
-          "status": "Status"
+          "status": "Status",
+          "hoursCode": "Hours code"
         },
         "signButton": "Sign Work Week",
         "viewSignedButton": "View Signed Week",
@@ -148,7 +149,8 @@
         "vacationLeft": "Vacation Hours Left",
         "date": "Date",
         "hours": "Hours",
-        "total": "Total"
+        "total": "Total",
+        "hoursCode": "Hours code"
       },
       "signed": {
         "title": "Week {week}",
@@ -497,6 +499,7 @@
         "title": "Workday Details",
         "detailsForDay": "Details for your record on {date}",
         "recordDate": "Record Date",
+        "hoursCode": "Hours code",
         "workHours": "Work Hours",
         "restTime": "Rest Time",
         "notAvailable": "N/A",

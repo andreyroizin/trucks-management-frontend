@@ -7,6 +7,7 @@ type Ride = {
     id: string;
     date: string;
     decimalHours: number;
+    hoursCode?: { id: string; name: string } | null;
 };
 
 type WeekSummaryProps = {
@@ -67,6 +68,7 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
                     <TableRow>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('date')}</TableCell>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('hours')}</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('hoursCode')}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -74,11 +76,13 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
                         <TableRow key={r.id}>
                             <TableCell sx={{ py: 2 }}>{dayjs(r.date).format('DD.MM.YYYY')}</TableCell>
                             <TableCell sx={{ py: 2 }}>{r.decimalHours.toString().replace('.', ',')} h.</TableCell>
+                            <TableCell sx={{ py: 2 }}>{r.hoursCode?.name ?? '-'}.</TableCell>
                         </TableRow>
                     ))}
                     <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>{t('total')}</TableCell>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>{totalHoursWorked}</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}></TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

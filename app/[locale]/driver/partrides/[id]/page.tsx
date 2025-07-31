@@ -95,6 +95,17 @@ const WorkdayDetailPage = () => {
 
                 <Box sx={{display: 'flex'}}>
                     <Box sx={{width: '50%'}}>
+                        <Typography variant="body1">{t('hoursCode')}</Typography>
+                    </Box>
+                    <Box sx={{width: '50%'}}>
+                        <Typography variant="body1">
+                            {data.hoursCode?.name ?? '-'}
+                        </Typography>
+                    </Box>
+                </Box>
+
+                <Box sx={{display: 'flex'}}>
+                    <Box sx={{width: '50%'}}>
                         <Typography variant="body1">{t('workHours')}</Typography>
                     </Box>
                     <Box sx={{width: '50%'}}>

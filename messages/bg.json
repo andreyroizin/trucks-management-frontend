@@ -73,7 +73,8 @@
         "table": {
           "date": "Дата",
           "hours": "Часове",
-          "status": "Статус"
+          "status": "Статус",
+          "hoursCode": "Код на часовете"
         },
         "signButton": "Подпиши работната седмица",
         "viewSignedButton": "Виж подписаната седмица",
@@ -148,7 +149,8 @@
         "vacationLeft": "Оставащи часове отпуск",
         "date": "Дата",
         "hours": "Часове",
-        "total": "Общо"
+        "total": "Общо",
+        "hoursCode": "Код на часовете"
       },
       "signed": {
         "title": "Седмица {week}",
@@ -495,6 +497,7 @@
     "driver": {
       "detail": {
         "title": "Детайли за работния ден",
+        "hoursCode": "Код на часовете",
         "detailsForDay": "Детайли за записа ти на {date}",
         "recordDate": "Дата на записа",
         "workHours": "Работни часове",

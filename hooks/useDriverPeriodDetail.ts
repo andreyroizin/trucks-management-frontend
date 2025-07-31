@@ -12,6 +12,10 @@ export type PartRide = {
     end: string;           // HH:mm:ss
     kilometers: number;
     decimalHours: number;
+    hoursCode?: {
+        id: string;
+        name: string;
+    };
     remark: string;
     status: number;
 };

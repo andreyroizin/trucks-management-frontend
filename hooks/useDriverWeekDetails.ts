@@ -12,6 +12,7 @@ export type WeekRide = {
     company?: { id: string; name: string } | null;
     client?: { id: string; name: string } | null;
     car?: { id: string; licensePlate: string } | null;
+    hoursCode?: { id: string; name: string } | null;
 };
 
 export type DriverWeekDetails = {

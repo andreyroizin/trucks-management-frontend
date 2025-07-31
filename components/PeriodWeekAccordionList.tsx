@@ -72,6 +72,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                             <TableRow>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.date')}</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.hours')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.hoursCode')}</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.status')}</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -90,6 +91,9 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                             {pr.decimalHours.toString().replace('.', ',')} h.
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            {pr.hoursCode?.name ?? '-'}
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                             <PartRideStatusChip status={pr.status} />
