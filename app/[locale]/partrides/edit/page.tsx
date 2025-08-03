@@ -77,8 +77,6 @@ function EditPartRidePageWrapper() {
             hoursOptionId: yup.string().optional(),
             hoursCorrection: yup.number().optional(),
             variousCompensation: yup.number().optional(),
-            charterId: yup.string().optional(),
-            rideId: yup.string().optional(),
             weekNumber: yup
                 .number()
                 .transform((value, originalValue) => (originalValue === '' ? null : value))
@@ -111,7 +109,6 @@ function EditPartRidePageWrapper() {
     const {mutateAsync: editPartRide, isPending} = useEditPartRide();
 
     const [companyId, setCompanyId] = useState(partRide?.company?.id || '');
-    const [clientId, setClientId] = useState(partRide?.client?.id || '');
     const [newUploads, setNewUploads] = useState<{ fileId: string; originalFileName: string }[]>([]);
     // Additional data for Autocomplete
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
@@ -120,14 +117,12 @@ function EditPartRidePageWrapper() {
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(companyId ? [companyId] : [], 1, 1000);
-    const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
-    const {data: chartersData, isLoading: isLoadingCharters} = useCharters(companyId, clientId, 1, 1000);
     const downloadFile = useDownloadPartRideFile();
 
     const someDataIsLoading = useMemo(() => {
         return isLoading || isLoadingCompanies || isLoadingClients || isLoadingDrivers
-            || isLoadingCars || isLoadingRides || isLoadingCharters;
-    }, [isLoading, isLoadingCars, isLoadingCharters, isLoadingClients, isLoadingCompanies, isLoadingDrivers, isLoadingRides]);
+            || isLoadingCars;
+    }, [isLoading, isLoadingCars, isLoadingClients, isLoadingCompanies, isLoadingDrivers]);
     const [showSpecialHoursAccordion, setShowSpecialHoursAccordion] = useState(false);
     const [showAdditionalFieldsAccordion, setShowAdditionalFieldsAccordion] = useState(false);
     const [fileIdsToDelete, setFileIdsToDelete] = useState<string[]>([]);
@@ -195,7 +190,6 @@ function EditPartRidePageWrapper() {
             setValue('carId', partRide.car?.id || '');
             setValue('charterId', partRide.charter?.id || '');
             setCompanyId(partRide.company?.id || '');
-            setClientId(partRide.client?.id || '');
         }
     }, [partRide, partRideId, setValue]);
 
@@ -593,7 +587,6 @@ function EditPartRidePageWrapper() {
                                                 loading={isLoadingClients}
                                                 isOptionEqualToValue={(option, value) => option.id === value.id}
                                                 onChange={(_, newValue) => {
-                                                    setClientId(newValue?.id || '');
                                                     field.onChange(newValue?.id || '');
                                                 }}
                                                 value={clientsData?.data.find((cl) => cl.id === field.value) || null}
@@ -628,54 +621,6 @@ function EditPartRidePageWrapper() {
                                                                                         placeholder={t('car.placeholder')}
                                                                                     error={!!errors.carId}
                                                                                         helperText={errors.carId?.message || t('car.helperText')}
-                                                />}
-                                            />
-                                        )}
-                                    />
-
-                                    {/* Ride */}
-                                    <Controller
-                                        name="rideId"
-                                        control={control}
-                                        render={({field}) => (
-                                            <Autocomplete
-                                                options={ridesData?.data || []}
-                                                getOptionLabel={(option) => option.name}
-                                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                loading={isLoadingRides}
-                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                                value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                                renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"
-                                                                                    sx={{mt: 2}}
-                                                                                        label={t('ride.label')}
-                                                                                        placeholder={t('ride.placeholder')}
-                                                                                    error={!!errors.rideId}
-                                                                                        helperText={errors.rideId?.message || t('ride.helperText')}
-                                                />}
-                                            />
-                                        )}
-                                    />
-
-                                    {/* Charter */}
-                                    <Controller
-                                        name="charterId"
-                                        control={control}
-                                        render={({field}) => (
-                                            <Autocomplete
-                                                options={chartersData?.data || []}
-                                                getOptionLabel={(option) => option.name}
-                                                loading={isLoadingCharters}
-                                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                                value={chartersData?.data.find((ch) => ch.id === field.value) || null}
-                                                renderInput={(params) => <TextField {...params} variant="outlined"
-                                                                                    margin="normal"
-                                                                                    sx={{mt: 2}}
-                                                                                        label={t('charter.label')}
-                                                                                        placeholder={t('charter.placeholder')}
-                                                                                    error={!!errors.charterId}
-                                                                                        helperText={errors.charterId?.message || t('charter.helperText')}
                                                 />}
                                             />
                                         )}

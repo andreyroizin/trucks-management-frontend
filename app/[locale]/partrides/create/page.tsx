@@ -19,8 +19,6 @@ import {useCompanies} from '@/hooks/useCompanies';
 import {useClients} from '@/hooks/useClients';
 import {useDrivers} from '@/hooks/useDrivers';
 import {useCars} from '@/hooks/useCars';
-import {useRides} from '@/hooks/useRides';
-import {useCharters} from '@/hooks/useCharters';
 import {useHoursCodes} from "@/hooks/useHoursCodes";
 import {useHoursOptions} from "@/hooks/useHoursOptions";
 import FileUploadBox from '@/components/FileUploadBox';
@@ -43,7 +41,6 @@ export default function CreatePartRidePage() {
             rest: yup.string().required(tValidation('formValidation.rest')),
             end: yup.string().required(tValidation('formValidation.end')),
             // If driver => hide or not required
-            rideId: yup.string().optional(),
             totalKilometers: yup.number().optional(),
             extraKilometers: yup.number().optional(),
             carId: yup.string().optional(),
@@ -75,7 +72,6 @@ export default function CreatePartRidePage() {
             turnover: yup.number().optional(),
             remark: yup.string().optional(),
             companyId: yup.string().optional(),
-            charterId: yup.string().optional(),
             newUploads: yup.array().optional(),
         });
     }, [isDriverRole, tValidation]);
@@ -88,7 +84,6 @@ export default function CreatePartRidePage() {
     }, [authLoading, isAuthenticated, router]);
 
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
-    const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
     const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
     // Data hooks for Autocomplete:
     const {data: hoursOptionsData, isLoading: isLoadingHoursOptions} = useHoursOptions();
@@ -96,11 +91,6 @@ export default function CreatePartRidePage() {
     const {data: clientsData, isLoading: isLoadingClients} = useClients(1, 1000);
     const {data: driversData, isLoading: isLoadingDrivers} = useDrivers();
     const {data: carsData, isLoading: isLoadingCars} = useCars(selectedCompanyId ? [selectedCompanyId] : [], 1, 1000);
-    const {data: ridesData, isLoading: isLoadingRides} = useRides(1, 1000);
-    const {
-        data: chartersData,
-        isLoading: isLoadingCharters
-    } = useCharters(selectedCompanyId || '', selectedClientId || '', 1, 1000);
     const {data: hoursCodesData, isLoading: isLoadingHoursCodes} = useHoursCodes();
 
     // Create Hook
@@ -515,7 +505,6 @@ export default function CreatePartRidePage() {
                                             onChange={(_, newValue) => {
                                                 const newClientId = newValue?.id || '';
                                                 field.onChange(newClientId);
-                                                setSelectedClientId(newClientId);
                                             }}
                                             value={clientsData?.data.find((cl) => cl.id === field.value) || null}
                                             renderInput={(params) => (
@@ -562,61 +551,6 @@ export default function CreatePartRidePage() {
                                     )}
                                 />
 
-                                {/* rideId as MUI Autocomplete */}
-                                <Controller
-                                    name="rideId"
-                                    control={control}
-                                    render={({field}) => (
-                                        <Autocomplete
-                                            options={ridesData?.data || []}
-                                            loading={isLoadingRides}
-                                            getOptionLabel={(option) => option.name}
-                                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                            value={ridesData?.data.find((ri) => ri.id === field.value) || null}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    variant="outlined"
-                                                    margin="normal"
-                                                    sx={{mt: 2}}
-                                                    label={t('form.ride.label')}
-                                                    placeholder={t('form.ride.placeholder')}
-                                                    error={!!errors.rideId}
-                                                    helperText={errors.rideId?.message || t('form.ride.helperText')}
-                                                />
-                                            )}
-                                        />
-                                    )}
-                                />
-
-                                {/* charterId as MUI Autocomplete */}
-                                <Controller
-                                    name="charterId"
-                                    control={control}
-                                    render={({field}) => (
-                                        <Autocomplete
-                                            options={chartersData?.data || []}
-                                            loading={isLoadingCharters}
-                                            getOptionLabel={(option) => option.name}
-                                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                                            onChange={(_, newValue) => field.onChange(newValue?.id || '')}
-                                            value={chartersData?.data.find((ch) => ch.id === field.value) || null}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    variant="outlined"
-                                                    margin="normal"
-                                                    sx={{mt: 2}}
-                                                    label={t('form.charter.label')}
-                                                    placeholder={t('form.charter.placeholder')}
-                                                    error={!!errors.charterId}
-                                                    helperText={errors.charterId?.message || t('form.charter.helperText')}
-                                                />
-                                            )}
-                                        />
-                                    )}
-                                />
                                 <Controller
                                     name="variousCompensation"
                                     control={control}
