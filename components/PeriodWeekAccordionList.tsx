@@ -23,6 +23,8 @@ import StatusChip from "@/components/StatusChip";
 import {WeekInPeriod} from "@/hooks/useDriverPeriodDetail";
 import {PartRideStatusChip} from "@/components/PartRideStatusChip";
 import { useTranslations } from 'next-intl';
+import { isHolidayDayjs } from '@/utils/constants/dutchHolidays';
+import { WEEKEND_HOLIDAY_BG } from '@/utils/constants/styles';
 
 
 export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekInPeriod[], year: number }) {
@@ -78,16 +80,21 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                         </TableHead>
                                         <TableBody>
                                             {week.partRides.map((pr, prIndex) => {
+                                                const d = dayjs(pr.date);
+                                                const isWeekendOrHoliday = d.day() === 0 || d.day() === 6 || isHolidayDayjs(d);
                                                 const isLast = prIndex === week.partRides.length - 1;
                                                 return (
                                                     <TableRow
                                                         key={pr.id}
                                                         hover
-                                                        sx={{ cursor: 'pointer' }}
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            backgroundColor: isWeekendOrHoliday ? WEEKEND_HOLIDAY_BG : 'inherit'
+                                                        }}
                                                         onClick={() => router.push(`/partrides/${pr.id}`)}
                                                     >
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {dayjs(pr.date).format('DD.MM.YY')}
+                                                            {dayjs(pr.date).format('dd DD.MM.YY')}
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
                                                             {pr.decimalHours.toString().replace('.', ',')} h.
