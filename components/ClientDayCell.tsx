@@ -9,21 +9,25 @@ import {
     IconButton,
     Tooltip
 } from '@mui/material';
-import { Edit, Check, Close, Info } from '@mui/icons-material';
+import { Edit, Check, Close, Info, Delete } from '@mui/icons-material';
 import { WeeklyPreviewClient } from '@/hooks/useWeeklyPreview';
 
 type Props = {
     client: WeeklyPreviewClient;
     dayName: string;
     onTruckCountChange: (clientId: string, newCount: number) => void;
+    onDelete?: (clientId: string) => void;
     isEditable?: boolean;
+    isDeletable?: boolean;
 };
 
 export default function ClientDayCell({ 
     client, 
     dayName, 
-    onTruckCountChange, 
-    isEditable = true 
+    onTruckCountChange,
+    onDelete,
+    isEditable = true,
+    isDeletable = false
 }: Props) {
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(client.trucksNeeded.toString());
@@ -62,6 +66,12 @@ export default function ClientDayCell({
         }
     };
 
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(client.clientId);
+        }
+    };
+
     const isModified = currentCount !== client.trucksNeeded;
 
     if (currentCount === 0) {
@@ -83,10 +93,28 @@ export default function ClientDayCell({
                 justifyContent: 'space-between'
             }}
         >
-            {/* Client Name */}
-            <Typography variant="body2" fontWeight="medium" noWrap>
-                {client.clientName}
-            </Typography>
+            {/* Header with Client Name and Delete Button */}
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <Typography variant="body2" fontWeight="medium" noWrap sx={{ flexGrow: 1 }}>
+                    {client.clientName}
+                </Typography>
+                {isDeletable && (
+                    <IconButton 
+                        size="small" 
+                        onClick={handleDelete}
+                        sx={{ 
+                            ml: 0.5, 
+                            p: 0.25,
+                            color: 'error.main',
+                            '&:hover': {
+                                backgroundColor: 'error.light'
+                            }
+                        }}
+                    >
+                        <Delete fontSize="small" />
+                    </IconButton>
+                )}
+            </Box>
 
             {/* Truck Count */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
