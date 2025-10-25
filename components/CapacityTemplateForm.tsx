@@ -125,7 +125,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
 
     // Watch all truck values to show total
     const truckValues = watch(['mondayTrucks', 'tuesdayTrucks', 'wednesdayTrucks', 'thursdayTrucks', 'fridayTrucks', 'saturdayTrucks', 'sundayTrucks']);
-    const totalTrucks = truckValues.reduce((sum, value) => sum + (value || 0), 0);
+    const totalTrucks = truckValues.reduce((sum, value) => sum + (Number(value) || 0), 0);
 
     // Reset form when template changes
     useEffect(() => {
