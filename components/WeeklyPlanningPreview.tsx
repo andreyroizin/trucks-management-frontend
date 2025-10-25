@@ -145,9 +145,21 @@ export default function WeeklyPlanningPreview() {
             {/* Summary */}
             <Card sx={{ mb: 3 }}>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                        Week Summary
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Typography variant="h6">
+                            Week Summary
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            startIcon={<PlayArrow />}
+                            onClick={handleGenerateRides}
+                            disabled={getTotalTrucksForWeek() === 0}
+                            sx={{ px: 3, py: 1 }}
+                        >
+                            Plan Rides for This Week
+                        </Button>
+                    </Box>
                     <Box sx={{ display: 'flex', gap: 4 }}>
                         <Typography>
                             <strong>Total Trucks:</strong> {getTotalTrucksForWeek()}
@@ -238,19 +250,6 @@ export default function WeeklyPlanningPreview() {
                 ))}
             </Grid>
 
-            {/* Generate Rides Button */}
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-                <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<PlayArrow />}
-                    onClick={handleGenerateRides}
-                    disabled={getTotalTrucksForWeek() === 0}
-                    sx={{ px: 4, py: 1.5 }}
-                >
-                    Generate Rides for This Week
-                </Button>
-            </Box>
 
             {getTotalTrucksForWeek() === 0 && (
                 <Alert severity="info" sx={{ mt: 2 }}>
