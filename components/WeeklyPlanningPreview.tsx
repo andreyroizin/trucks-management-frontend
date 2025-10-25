@@ -24,6 +24,7 @@ import { CalendarToday, PlayArrow, Add } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import { useWeeklyPreview, WeeklyPreviewClient, WeeklyPreviewDay } from '@/hooks/useWeeklyPreview';
 import { useClients } from '@/hooks/useClients';
+import { useGenerateRides, GenerateRidesInput } from '@/hooks/useGenerateRides';
 import WeekSelector from './WeekSelector';
 import ClientDayCell from './ClientDayCell';
 
@@ -50,6 +51,17 @@ export default function WeeklyPlanningPreview() {
     });
     const [selectedClient, setSelectedClient] = useState<any>(null);
     const [truckCount, setTruckCount] = useState<number>(1);
+    
+    // Generation confirmation dialog state
+    const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean;
+        totalRides: number;
+        summary: string;
+    }>({
+        open: false,
+        totalRides: 0,
+        summary: ''
+    });
 
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
@@ -80,6 +92,9 @@ export default function WeeklyPlanningPreview() {
 
     // Fetch clients for the add ride dialog
     const { data: clientsData } = useClients(1, 1000);
+    
+    // Generate rides mutation
+    const { mutateAsync: generateRides, isPending: isGenerating } = useGenerateRides();
 
     // Reset modifications when week changes
     useEffect(() => {
@@ -175,9 +190,41 @@ export default function WeeklyPlanningPreview() {
     };
 
     const handleGenerateRides = () => {
-        // TODO: Implement ride generation in next step
-        console.log('Generate rides with modifications:', modifiedCounts);
-        alert('Ride generation will be implemented in the next step!');
+        if (!previewData) return;
+        
+        // Calculate total rides and create summary
+        let totalRides = 0;
+        const clientSummary: { [clientName: string]: number } = {};
+        
+        previewData.days.forEach(day => {
+            // Template-based clients
+            day.clients.forEach(client => {
+                const effectiveCount = getEffectiveTruckCount(client, day.date);
+                if (effectiveCount > 0) {
+                    totalRides += effectiveCount;
+                    clientSummary[client.clientName] = (clientSummary[client.clientName] || 0) + effectiveCount;
+                }
+            });
+            
+            // Manually added clients
+            getManuallyAddedClients(day).forEach(client => {
+                totalRides += client.trucksNeeded;
+                clientSummary[client.clientName] = (clientSummary[client.clientName] || 0) + client.trucksNeeded;
+            });
+        });
+        
+        // Create summary text
+        const summaryLines = Object.entries(clientSummary).map(([clientName, count]) => 
+            `${clientName}: ${count} ride${count !== 1 ? 's' : ''}`
+        );
+        const summary = summaryLines.join('\n');
+        
+        // Show confirmation dialog
+        setConfirmDialog({
+            open: true,
+            totalRides,
+            summary
+        });
     };
 
     const handleAddRideClick = (date: string, dayName: string) => {
@@ -211,6 +258,70 @@ export default function WeeklyPlanningPreview() {
     const handleDeleteClient = (clientId: string, date: string) => {
         // Set the truck count to 0 to effectively delete the client for this date
         handleTruckCountChange(clientId, date, 0);
+    };
+
+    const handleConfirmGeneration = async () => {
+        if (!previewData) return;
+        
+        try {
+            // Transform preview data to generation API format
+            const generationInput: GenerateRidesInput = {
+                weekStartDate: weekStartDate,
+                companyId: companyId,
+                days: previewData.days
+                    .map(day => {
+                        const clients: { clientId: string; trucksToGenerate: number }[] = [];
+                        
+                        // Add template-based clients
+                        day.clients.forEach(client => {
+                            const effectiveCount = getEffectiveTruckCount(client, day.date);
+                            if (effectiveCount > 0) {
+                                clients.push({
+                                    clientId: client.clientId,
+                                    trucksToGenerate: effectiveCount
+                                });
+                            }
+                        });
+                        
+                        // Add manually added clients
+                        getManuallyAddedClients(day).forEach(client => {
+                            if (client.trucksNeeded > 0) {
+                                clients.push({
+                                    clientId: client.clientId,
+                                    trucksToGenerate: client.trucksNeeded
+                                });
+                            }
+                        });
+                        
+                        return {
+                            date: day.date.split('T')[0], // Convert to YYYY-MM-DD
+                            clients
+                        };
+                    })
+                    .filter(day => day.clients.length > 0) // Only include days with clients
+            };
+            
+            console.log('Generating rides with input:', generationInput);
+            
+            const result = await generateRides(generationInput);
+            
+            // Close confirmation dialog
+            setConfirmDialog({ open: false, totalRides: 0, summary: '' });
+            
+            // Reset modifications since rides are now generated
+            setModifiedCounts({});
+            
+            // Show success message
+            alert(`Success! ${result.totalRidesCreated} rides created for the week of ${new Date(weekStartDate).toLocaleDateString()}`);
+            
+        } catch (error: any) {
+            console.error('Failed to generate rides:', error);
+            alert(`Failed to generate rides: ${error.message}`);
+        }
+    };
+
+    const handleCancelGeneration = () => {
+        setConfirmDialog({ open: false, totalRides: 0, summary: '' });
     };
 
     if (isLoading) {
@@ -263,16 +374,16 @@ export default function WeeklyPlanningPreview() {
                         <Typography variant="h6">
                             Week Summary
                         </Typography>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            startIcon={<PlayArrow />}
-                            onClick={handleGenerateRides}
-                            disabled={getTotalTrucksForWeek() === 0}
-                            sx={{ px: 3, py: 1 }}
-                        >
-                            Plan Rides for This Week
-                        </Button>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                startIcon={isGenerating ? <CircularProgress size={20} color="inherit" /> : <PlayArrow />}
+                                onClick={handleGenerateRides}
+                                disabled={getTotalTrucksForWeek() === 0 || isGenerating}
+                                sx={{ px: 3, py: 1 }}
+                            >
+                                {isGenerating ? 'Planning Rides...' : 'Plan Rides for This Week'}
+                            </Button>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 4 }}>
                         <Typography>
@@ -489,8 +600,54 @@ export default function WeeklyPlanningPreview() {
                     >
                         Add Rides
                     </Button>
-                </DialogActions>
-            </Dialog>
-        </Box>
-    );
-}
+                    </DialogActions>
+                </Dialog>
+
+                {/* Confirmation Dialog for Ride Generation */}
+                <Dialog open={confirmDialog.open} onClose={handleCancelGeneration} maxWidth="sm" fullWidth>
+                    <DialogTitle>
+                        Confirm Ride Generation
+                    </DialogTitle>
+                    <DialogContent sx={{ pt: 2 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <Typography variant="body1">
+                                This will create <strong>{confirmDialog.totalRides} rides</strong> for the week of{' '}
+                                <strong>{new Date(weekStartDate).toLocaleDateString()}</strong>.
+                            </Typography>
+                            
+                            {confirmDialog.summary && (
+                                <Box>
+                                    <Typography variant="subtitle2" gutterBottom>
+                                        Breakdown by client:
+                                    </Typography>
+                                    <Box sx={{ 
+                                        bgcolor: 'grey.50', 
+                                        p: 2, 
+                                        borderRadius: 1,
+                                        fontFamily: 'monospace',
+                                        whiteSpace: 'pre-line'
+                                    }}>
+                                        {confirmDialog.summary}
+                                    </Box>
+                                </Box>
+                            )}
+                            
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCancelGeneration} color="secondary">
+                            Cancel
+                        </Button>
+                        <Button 
+                            onClick={handleConfirmGeneration} 
+                            variant="contained" 
+                            disabled={isGenerating}
+                            startIcon={isGenerating ? <CircularProgress size={20} color="inherit" /> : undefined}
+                        >
+                            {isGenerating ? 'Creating Rides...' : `Create ${confirmDialog.totalRides} Rides`}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Box>
+        );
+    }
