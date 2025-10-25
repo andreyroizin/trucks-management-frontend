@@ -18,6 +18,7 @@ import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AddIcon from '@mui/icons-material/AddRounded';
+import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
 import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
@@ -79,6 +80,7 @@ export default function SideNavigation() {
     const fullName = user ? `${user.firstName} ${user.lastName}` : t('navigation.profile.title');
     /* expansion states */
     const [workdaysOpen, setWorkdaysOpen] = React.useState<boolean>(true);
+    const [planningOpen, setPlanningOpen] = React.useState<boolean>(false);
 
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -133,6 +135,32 @@ export default function SideNavigation() {
                     <ListItemIcon><DashboardIcon/></ListItemIcon>
                     <ListItemText primary={t('navigation.dashboard')}/>
                 </NavItem>
+
+                {/* Planning parent */}
+                <NavItem onClick={() => setPlanningOpen((p) => !p)}
+                         active={pathNoLocale.startsWith('/planning')}
+                         main>
+                    <ListItemIcon><CalendarTodayIcon/></ListItemIcon>
+                    <ListItemText primary="Planning"/>
+                    <KeyboardArrowDown
+                        sx={{transform: planningOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
+                    />
+                </NavItem>
+
+                {/* Planning children */}
+                <Collapse in={planningOpen} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                        <NavItem active={isActive('/planning/long-term')} onClick={() => go('/planning/long-term')} sx={{pl: 6}}>
+                            <ListItemText primary="Long-Term"/>
+                        </NavItem>
+                        <NavItem active={isActive('/planning/weekly')} onClick={() => go('/planning/weekly')} sx={{pl: 6}}>
+                            <ListItemText primary="Weekly"/>
+                        </NavItem>
+                        <NavItem active={isActive('/planning/daily')} onClick={() => go('/planning/daily')} sx={{pl: 6}}>
+                            <ListItemText primary="Daily"/>
+                        </NavItem>
+                    </List>
+                </Collapse>
 
                 {/* Workdays parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
