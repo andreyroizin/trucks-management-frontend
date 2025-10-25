@@ -23,10 +23,12 @@ import {
 import { CalendarToday, PlayArrow, Add } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import { useWeeklyPreview, WeeklyPreviewClient, WeeklyPreviewDay } from '@/hooks/useWeeklyPreview';
+import { useWeeklyRides } from '@/hooks/useWeeklyRides';
 import { useClients } from '@/hooks/useClients';
 import { useGenerateRides, GenerateRidesInput } from '@/hooks/useGenerateRides';
 import WeekSelector from './WeekSelector';
 import ClientDayCell from './ClientDayCell';
+import WeeklyAssignmentGrid from './WeeklyAssignmentGrid';
 
 type ModifiedCounts = {
     [clientId: string]: {
@@ -89,6 +91,13 @@ export default function WeeklyPlanningPreview() {
         isError, 
         error 
     } = useWeeklyPreview(weekStartDate, companyId);
+
+    // Check if rides exist for this week (to decide between planning vs assignment view)
+    const { 
+        data: ridesData, 
+        isLoading: isLoadingRides,
+        isError: isRidesError 
+    } = useWeeklyRides(weekStartDate, companyId);
 
     // Fetch clients for the add ride dialog
     const { data: clientsData } = useClients(1, 1000);
@@ -312,7 +321,10 @@ export default function WeeklyPlanningPreview() {
             setModifiedCounts({});
             
             // Show success message
-            alert(`Success! ${result.totalRidesCreated} rides created for the week of ${new Date(weekStartDate).toLocaleDateString()}`);
+            alert(`Success! ${result.totalRidesCreated} rides created for the week of ${new Date(weekStartDate).toLocaleDateString()}. Switching to assignment view...`);
+            
+            // The component will automatically switch to assignment view on next render
+            // because hasRidesForWeek() will now return true
             
         } catch (error: any) {
             console.error('Failed to generate rides:', error);
@@ -323,6 +335,24 @@ export default function WeeklyPlanningPreview() {
     const handleCancelGeneration = () => {
         setConfirmDialog({ open: false, totalRides: 0, summary: '' });
     };
+
+    // Determine if rides exist for this week
+    const hasRidesForWeek = () => {
+        if (!ridesData || isLoadingRides) return false;
+        return ridesData.days.some(day => 
+            day.clients.some(client => client.rides.length > 0)
+        );
+    };
+
+    // If rides exist, show assignment grid; otherwise show planning grid
+    if (hasRidesForWeek()) {
+        return (
+            <WeeklyAssignmentGrid 
+                selectedDate={selectedDate} 
+                onDateChange={setSelectedDate} 
+            />
+        );
+    }
 
     if (isLoading) {
         return (
