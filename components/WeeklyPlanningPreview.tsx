@@ -246,7 +246,7 @@ export default function WeeklyPlanningPreview() {
                     Weekly Planning Preview
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                    Review and adjust truck allocation before generating rides
+                    Review and adjust truck allocation before planning rides
                 </Typography>
             </Box>
 
@@ -291,12 +291,12 @@ export default function WeeklyPlanningPreview() {
                             }
                         </Typography>
                     </Box>
-                    {hasModifications() && (
-                        <Alert severity="warning" sx={{ mt: 2 }}>
-                            You have made modifications to the template-based allocation. 
-                            Review your changes before generating rides.
-                        </Alert>
-                    )}
+                        {hasModifications() && (
+                            <Alert severity="warning" sx={{ mt: 2 }}>
+                                You have made modifications to the template-based allocation. 
+                                Review your changes before planning rides.
+                            </Alert>
+                        )}
                 </CardContent>
             </Card>
 
@@ -448,15 +448,34 @@ export default function WeeklyPlanningPreview() {
                             )}
                         />
                         
-                        <TextField
-                            label="Number of Trucks"
-                            type="number"
-                            value={truckCount}
-                            onChange={(e) => setTruckCount(Math.max(1, parseInt(e.target.value) || 1))}
-                            inputProps={{ min: 1, max: 50 }}
-                            required
-                            helperText="How many trucks are needed for this client"
-                        />
+                            <TextField
+                                label="Number of Trucks"
+                                value={truckCount === 0 ? '' : truckCount.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Allow empty string while typing
+                                    if (value === '') {
+                                        setTruckCount(0); // Use 0 internally to represent empty
+                                    } else {
+                                        const numValue = parseInt(value);
+                                        if (!isNaN(numValue) && numValue > 0) {
+                                            setTruckCount(numValue);
+                                        }
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    // Ensure minimum value of 1 when field loses focus
+                                    if (truckCount === 0) {
+                                        setTruckCount(1);
+                                    }
+                                }}
+                                required
+                                helperText="How many trucks are needed for this client"
+                                inputProps={{
+                                    inputMode: 'numeric',
+                                    pattern: '[0-9]*'
+                                }}
+                            />
                     </Box>
                 </DialogContent>
                 <DialogActions>
