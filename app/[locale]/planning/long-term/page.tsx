@@ -1,15 +1,21 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslations } from 'next-intl';
+import CapacityTemplatesList from '@/components/CapacityTemplatesList';
+import CapacityTemplateForm from '@/components/CapacityTemplateForm';
+import { CapacityTemplate } from '@/hooks/useCapacityTemplates';
 
 export default function LongTermPlanningPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const t = useTranslations('planning.longTerm');
+    
+    const [formOpen, setFormOpen] = useState(false);
+    const [editingTemplate, setEditingTemplate] = useState<CapacityTemplate | null>(null);
 
     // Access control - only Customer Admin and Employer roles
     useEffect(() => {
@@ -26,10 +32,25 @@ export default function LongTermPlanningPage() {
         }
     }, [authLoading, isAuthenticated, user, router]);
 
+    const handleCreateNew = () => {
+        setEditingTemplate(null);
+        setFormOpen(true);
+    };
+
+    const handleEdit = (template: CapacityTemplate) => {
+        setEditingTemplate(template);
+        setFormOpen(true);
+    };
+
+    const handleCloseForm = () => {
+        setFormOpen(false);
+        setEditingTemplate(null);
+    };
+
     if (authLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <Typography>Loading...</Typography>
+                <CircularProgress />
             </Box>
         );
     }
@@ -43,21 +64,18 @@ export default function LongTermPlanningPage() {
                 Define recurring delivery patterns and capacity templates for clients
             </Typography>
 
-            <Paper sx={{ p: 3, mt: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                    Client Capacity Templates
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Create standing schedules for clients with predictable delivery patterns.
-                    Define how many trucks are needed per weekday within specific date ranges.
-                </Typography>
-                
-                <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                        📋 Coming soon: Template management interface
-                    </Typography>
-                </Box>
-            </Paper>
+            <Box sx={{ mt: 3 }}>
+                <CapacityTemplatesList
+                    onCreateNew={handleCreateNew}
+                    onEdit={handleEdit}
+                />
+            </Box>
+
+            <CapacityTemplateForm
+                open={formOpen}
+                onClose={handleCloseForm}
+                template={editingTemplate}
+            />
         </Box>
     );
 }

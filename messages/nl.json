@@ -1448,6 +1448,20 @@
       }
     }
   },
+  "planning": {
+    "longTerm": {
+      "title": "Langetermijnplanning",
+      "subtitle": "Definieer terugkerende leveringspatronen en capaciteitssjablonen voor klanten"
+    },
+    "weekly": {
+      "title": "Weekplanning",
+      "subtitle": "Beheer en wijs chauffeurs/vrachtwagens toe aan ritten voor de week"
+    },
+    "daily": {
+      "title": "Dagplanning",
+      "subtitle": "Verfijn ritdetails en toewijzingen voor een specifieke dag"
+    }
+  },
   "auth": {
     "login": {
       "title": "Inloggen",

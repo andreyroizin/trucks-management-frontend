@@ -1448,6 +1448,20 @@
       }
     }
   },
+  "planning": {
+    "longTerm": {
+      "title": "Long-Term Planning",
+      "subtitle": "Define recurring delivery patterns and capacity templates for clients"
+    },
+    "weekly": {
+      "title": "Weekly Planning",
+      "subtitle": "Manage and assign drivers/trucks to rides for the week"
+    },
+    "daily": {
+      "title": "Daily Planning",
+      "subtitle": "Fine-tune ride details and assignments for a specific day"
+    }
+  },
   "auth": {
     "login": {
       "title": "Login",
