@@ -43,6 +43,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [activeFilter, setActiveFilter] = useState<'all' | 'assigned' | 'partial' | 'unassigned'>('all');
 
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
@@ -165,6 +166,38 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     const stats = getAssignmentStats();
 
+    // Filter rides based on active filter
+    const getFilteredRidesData = () => {
+        if (!ridesData || activeFilter === 'all') return ridesData;
+
+        return {
+            ...ridesData,
+            days: ridesData.days.map(day => ({
+                ...day,
+                clients: day.clients.map(client => ({
+                    ...client,
+                    rides: client.rides.filter(ride => {
+                        const hasDriver = !!ride.assignedDriver;
+                        const hasTruck = !!ride.assignedTruck;
+                        
+                        switch (activeFilter) {
+                            case 'assigned':
+                                return hasDriver && hasTruck;
+                            case 'partial':
+                                return (hasDriver && !hasTruck) || (!hasDriver && hasTruck);
+                            case 'unassigned':
+                                return !hasDriver && !hasTruck;
+                            default:
+                                return true;
+                        }
+                    })
+                })).filter(client => client.rides.length > 0) // Remove clients with no rides after filtering
+            }))
+        };
+    };
+
+    const filteredRidesData = getFilteredRidesData();
+
     // Horizontal scroll navigation
     const cardWidth = 320; // Minimum card width in pixels
     const scrollAmount = cardWidth + 16; // Card width + gap
@@ -198,7 +231,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     const handleScrollRight = () => {
         if (isMobile) {
-            const maxScroll = (ridesData?.days.length || 0) * scrollAmount - (window.innerWidth - 100);
+            const maxScroll = (filteredRidesData?.days.length || 0) * scrollAmount - (window.innerWidth - 100);
             setScrollPosition(prev => Math.min(maxScroll, prev + scrollAmount));
         } else if (scrollContainer) {
             scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
@@ -210,7 +243,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         : scrollContainer ? scrollContainer.scrollLeft > 0 : false;
     
     const canScrollRight = isMobile 
-        ? ridesData && scrollPosition < (ridesData.days.length * scrollAmount - (window.innerWidth - 100))
+        ? filteredRidesData && scrollPosition < (filteredRidesData.days.length * scrollAmount - (window.innerWidth - 100))
         : scrollContainer ? scrollContainer.scrollLeft < (scrollContainer.scrollWidth - scrollContainer.clientWidth) : false;
 
     if (isLoading) {
@@ -252,9 +285,20 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Assignment />
                     Weekly Assignment Grid
+                    {activeFilter !== 'all' && (
+                        <Chip 
+                            label={`Filtered: ${activeFilter === 'assigned' ? 'Fully Assigned' : 
+                                   activeFilter === 'partial' ? 'Partially Assigned' : 'Unassigned'}`}
+                            size="small"
+                            color={activeFilter === 'assigned' ? 'success' : 
+                                   activeFilter === 'partial' ? 'warning' : 'error'}
+                            sx={{ ml: 2 }}
+                        />
+                    )}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                     Assign drivers and trucks to generated rides
+                    {activeFilter !== 'all' && ' • Click "All Rides" to clear filter'}
                 </Typography>
             </Box>
 
@@ -280,23 +324,63 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             Refresh
                         </Button>
                     </Box>
-                    <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography><strong>Total Rides:</strong></Typography>
-                            <Chip label={getTotalRidesForWeek()} color="primary" size="small" />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography><strong>Fully Assigned:</strong></Typography>
-                            <Chip label={stats.assigned} color="success" size="small" />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography><strong>Partially Assigned:</strong></Typography>
-                            <Chip label={stats.partial} color="warning" size="small" />
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography><strong>Unassigned:</strong></Typography>
-                            <Chip label={stats.unassigned} color="error" size="small" />
-                        </Box>
+                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                        <Chip
+                            icon={<Assignment />}
+                            label={`All Rides: ${getTotalRidesForWeek()}`}
+                            color="primary"
+                            variant={activeFilter === 'all' ? 'filled' : 'outlined'}
+                            clickable
+                            onClick={() => setActiveFilter('all')}
+                            sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: activeFilter === 'all' ? 'primary.dark' : 'primary.light'
+                                }
+                            }}
+                        />
+                        <Chip
+                            icon={<Person />}
+                            label={`Fully Assigned: ${stats.assigned}`}
+                            color="success"
+                            variant={activeFilter === 'assigned' ? 'filled' : 'outlined'}
+                            clickable
+                            onClick={() => setActiveFilter('assigned')}
+                            sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: activeFilter === 'assigned' ? 'success.dark' : 'success.light'
+                                }
+                            }}
+                        />
+                        <Chip
+                            icon={<LocalShipping />}
+                            label={`Partially Assigned: ${stats.partial}`}
+                            color="warning"
+                            variant={activeFilter === 'partial' ? 'filled' : 'outlined'}
+                            clickable
+                            onClick={() => setActiveFilter('partial')}
+                            sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: activeFilter === 'partial' ? 'warning.dark' : 'warning.light'
+                                }
+                            }}
+                        />
+                        <Chip
+                            icon={<Assignment />}
+                            label={`Unassigned: ${stats.unassigned}`}
+                            color="error"
+                            variant={activeFilter === 'unassigned' ? 'filled' : 'outlined'}
+                            clickable
+                            onClick={() => setActiveFilter('unassigned')}
+                            sx={{ 
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    backgroundColor: activeFilter === 'unassigned' ? 'error.dark' : 'error.light'
+                                }
+                            }}
+                        />
                     </Box>
                 </CardContent>
             </Card>
@@ -427,7 +511,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         },
                     }}
                 >
-                    {ridesData.days.map((day) => (
+                    {filteredRidesData?.days.map((day) => (
                         <Paper 
                             key={day.date}
                             sx={{ 
