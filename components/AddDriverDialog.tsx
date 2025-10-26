@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -40,10 +40,18 @@ export default function AddDriverDialog({
     isLoading = false 
 }: Props) {
     const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
-    const [secondDriverHours, setSecondDriverHours] = useState<number>(4);
-    const [primaryDriverHours, setPrimaryDriverHours] = useState<number>(currentPrimaryDriverHours);
+    const [secondDriverHours, setSecondDriverHours] = useState<number>(totalRideHours);
+    const [primaryDriverHours, setPrimaryDriverHours] = useState<number>(totalRideHours);
     const [secondDriverHoursError, setSecondDriverHoursError] = useState<string>('');
     const [primaryDriverHoursError, setPrimaryDriverHoursError] = useState<string>('');
+
+    // Update default values when dialog opens with different totalRideHours
+    useEffect(() => {
+        if (open) {
+            setSecondDriverHours(totalRideHours);
+            setPrimaryDriverHours(totalRideHours);
+        }
+    }, [open, totalRideHours]);
 
     // Filter out already assigned drivers
     const availableDrivers = drivers.filter(driver => 
@@ -84,8 +92,8 @@ export default function AddDriverDialog({
 
     const handleClose = () => {
         setSelectedDriver(null);
-        setSecondDriverHours(4);
-        setPrimaryDriverHours(currentPrimaryDriverHours);
+        setSecondDriverHours(totalRideHours);
+        setPrimaryDriverHours(totalRideHours);
         setSecondDriverHoursError('');
         setPrimaryDriverHoursError('');
         onClose();

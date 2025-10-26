@@ -28,6 +28,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDailyRides, useAvailableDates } from '@/hooks/useDailyRides';
 import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
 import RideAssignmentCard from '@/components/RideAssignmentCard';
+import AddDriverDialog from '@/components/AddDriverDialog';
 import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemoveSecondDriver } from '@/hooks/useRideAssignment';
 
 export default function DailyPlanningPage() {
@@ -68,6 +69,9 @@ export default function DailyPlanningPage() {
     const removeSecondDriverMutation = useRemoveSecondDriver();
     
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
+    
+    // Second driver management
+    const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
 
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;
@@ -227,8 +231,55 @@ export default function DailyPlanningPage() {
     };
 
     const handleAddSecondDriver = (rideId: string) => {
-        // This would open the AddDriverDialog - for now just log
-        console.log('Add second driver for ride:', rideId);
+        setAddDriverDialog({ open: true, rideId });
+    };
+
+    const handleAddDriverConfirm = async (driverId: string, secondDriverHours: number, primaryDriverHours: number) => {
+        const rideId = addDriverDialog.rideId;
+        if (!rideId || !ridesData) return;
+
+        // Find the current ride to get its current state
+        const currentRide = ridesData.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+
+        setAssigningRides(prev => new Set(prev).add(rideId));
+        
+        try {
+            // Add the second driver
+            await addSecondDriverMutation.mutateAsync({
+                rideId,
+                data: {
+                    driverId,
+                    plannedHours: secondDriverHours
+                }
+            });
+
+            // Update primary driver hours if they changed
+            if (currentRide.assignedDriver && currentRide.assignedDriver.plannedHours !== primaryDriverHours) {
+                await updateHoursMutation.mutateAsync({
+                    rideId,
+                    data: {
+                        totalPlannedHours: currentRide.plannedHours,
+                        primaryDriverHours: primaryDriverHours,
+                        secondDriverHours: secondDriverHours
+                    }
+                });
+            }
+
+            // Close dialog
+            setAddDriverDialog({ open: false, rideId: null });
+        } catch (error) {
+            console.error('Failed to add second driver:', error);
+        } finally {
+            setAssigningRides(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(rideId);
+                return newSet;
+            });
+        }
     };
 
     const handleRemoveSecondDriver = async (rideId: string, driverId: string) => {
@@ -447,6 +498,51 @@ export default function DailyPlanningPage() {
                     </Typography>
                 </Paper>
             )}
+
+            {/* Add Driver Dialog */}
+            <AddDriverDialog
+                open={addDriverDialog.open}
+                onClose={() => setAddDriverDialog({ open: false, rideId: null })}
+                onAdd={handleAddDriverConfirm}
+                drivers={drivers || []}
+                excludeDriverIds={[
+                    // Exclude primary driver if assigned
+                    ...(addDriverDialog.rideId && ridesData ? 
+                        ridesData.clients
+                            .flatMap(client => client.rides)
+                            .filter(ride => ride.id === addDriverDialog.rideId && ride.assignedDriver)
+                            .map(ride => ride.assignedDriver!.id)
+                        : []
+                    ),
+                    // Exclude already assigned second driver
+                    ...(addDriverDialog.rideId && ridesData ? 
+                        ridesData.clients
+                            .flatMap(client => client.rides)
+                            .filter(ride => ride.id === addDriverDialog.rideId && ride.secondDriver)
+                            .map(ride => ride.secondDriver!.id)
+                        : []
+                    )
+                ]}
+                totalRideHours={addDriverDialog.rideId && ridesData ? 
+                    ridesData.clients
+                        .flatMap(client => client.rides)
+                        .find(ride => ride.id === addDriverDialog.rideId)?.plannedHours || 8
+                    : 8
+                }
+                primaryDriverName={addDriverDialog.rideId && ridesData ? 
+                    ridesData.clients
+                        .flatMap(client => client.rides)
+                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.fullName || "Primary driver"
+                    : "Primary driver"
+                }
+                currentPrimaryDriverHours={addDriverDialog.rideId && ridesData ? 
+                    ridesData.clients
+                        .flatMap(client => client.rides)
+                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.plannedHours || 8
+                    : 8
+                }
+                isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+            />
         </Box>
     );
 }
