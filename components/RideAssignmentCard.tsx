@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box,
     Card,
@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { WeeklyRide } from '@/hooks/useWeeklyRides';
 import { Driver, Truck } from '@/hooks/useDriversAndTrucks';
+import { useDebouncedCallback } from '@/hooks/useDebounce';
 
 type Props = {
     ride: WeeklyRide;
@@ -62,6 +63,11 @@ export default function RideAssignmentCard({
         ride.assignedTruck ? trucks.find(t => t.id === ride.assignedTruck!.id) || null : null
     );
     const [hoursValue, setHoursValue] = useState<number>(ride.plannedHours);
+    
+    // Local display values for input fields (to handle empty states during editing)
+    const [primaryDriverHoursDisplay, setPrimaryDriverHoursDisplay] = useState<string>('');
+    const [secondDriverHoursDisplay, setSecondDriverHoursDisplay] = useState<string>('');
+    const [plannedHoursDisplay, setPlannedHoursDisplay] = useState<string>('');
 
     // Sync local state with ride data (important for handling cancellations)
     useEffect(() => {
@@ -76,7 +82,22 @@ export default function RideAssignmentCard({
 
     useEffect(() => {
         setHoursValue(ride.plannedHours);
+        setPlannedHoursDisplay(ride.plannedHours.toString());
     }, [ride.plannedHours]);
+
+    useEffect(() => {
+        if (ride.assignedDriver) {
+            setPrimaryDriverHoursDisplay(ride.assignedDriver.plannedHours.toString());
+        }
+    }, [ride.assignedDriver?.plannedHours]);
+
+    useEffect(() => {
+        if (ride.secondDriver) {
+            setSecondDriverHoursDisplay(ride.secondDriver.plannedHours.toString());
+        } else {
+            setSecondDriverHoursDisplay('');
+        }
+    }, [ride.secondDriver?.plannedHours]);
 
     const isUnassigned = !ride.assignedDriver || !ride.assignedTruck;
     const isPartiallyAssigned = (ride.assignedDriver && !ride.assignedTruck) || (!ride.assignedDriver && ride.assignedTruck);
@@ -95,11 +116,27 @@ export default function RideAssignmentCard({
         }
     };
 
-    const handleHoursChange = (newHours: number) => {
-        setHoursValue(newHours);
+    // Debounced hours change handler (1 second delay)
+    const debouncedHoursChange = useDebouncedCallback((newHours: number) => {
         if (onHoursChange) {
             onHoursChange(ride.id, newHours);
         }
+    }, 1000);
+
+    // Debounced driver hours change handler (1 second delay)
+    const debouncedDriverHoursChange = useDebouncedCallback((rideId: string, driverId: string, hours: number) => {
+        if (onDriverHoursChange) {
+            onDriverHoursChange(rideId, driverId, hours);
+        }
+    }, 1000);
+
+    const handleHoursChange = (newHours: number) => {
+        setHoursValue(newHours);
+        debouncedHoursChange(newHours);
+    };
+
+    const handleDriverHoursChange = (driverId: string, hours: number) => {
+        debouncedDriverHoursChange(ride.id, driverId, hours);
     };
 
     const getStatusColor = () => {
@@ -173,11 +210,24 @@ export default function RideAssignmentCard({
                                 size="small"
                                 label="Primary Driver Hours"
                                 type="number"
-                                value={ride.assignedDriver.plannedHours}
+                                value={primaryDriverHoursDisplay}
                                 onChange={(e) => {
-                                    const value = parseFloat(e.target.value);
-                                    if (!isNaN(value) && value >= 0 && onDriverHoursChange) {
-                                        onDriverHoursChange(ride.id, ride.assignedDriver!.id, value);
+                                    const value = e.target.value;
+                                    setPrimaryDriverHoursDisplay(value);
+                                    
+                                    // Allow empty string for clearing - don't trigger API call
+                                    if (value === '') return;
+                                    
+                                    const numValue = parseFloat(value);
+                                    if (!isNaN(numValue) && numValue >= 0) {
+                                        handleDriverHoursChange(ride.assignedDriver!.id, numValue);
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    // If field is empty on blur, set to 0
+                                    if (e.target.value === '') {
+                                        setPrimaryDriverHoursDisplay('0');
+                                        handleDriverHoursChange(ride.assignedDriver!.id, 0);
                                     }
                                 }}
                                 disabled={isAssigning}
@@ -235,11 +285,24 @@ export default function RideAssignmentCard({
                                 size="small"
                                 label="Second Driver Hours"
                                 type="number"
-                                value={ride.secondDriver.plannedHours}
+                                value={secondDriverHoursDisplay}
                                 onChange={(e) => {
-                                    const value = parseFloat(e.target.value);
-                                    if (!isNaN(value) && value >= 0 && onDriverHoursChange) {
-                                        onDriverHoursChange(ride.id, ride.secondDriver!.id, value);
+                                    const value = e.target.value;
+                                    setSecondDriverHoursDisplay(value);
+                                    
+                                    // Allow empty string for clearing - don't trigger API call
+                                    if (value === '') return;
+                                    
+                                    const numValue = parseFloat(value);
+                                    if (!isNaN(numValue) && numValue >= 0) {
+                                        handleDriverHoursChange(ride.secondDriver!.id, numValue);
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    // If field is empty on blur, set to 0
+                                    if (e.target.value === '') {
+                                        setSecondDriverHoursDisplay('0');
+                                        handleDriverHoursChange(ride.secondDriver!.id, 0);
                                     }
                                 }}
                                 disabled={isAssigning}
@@ -285,11 +348,26 @@ export default function RideAssignmentCard({
                         size="small"
                         label="Planned Hours"
                         type="number"
-                        value={hoursValue}
+                        value={plannedHoursDisplay}
                         onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value >= 0) {
-                                handleHoursChange(value);
+                            const value = e.target.value;
+                            setPlannedHoursDisplay(value);
+                            
+                            // Allow empty string for clearing - don't trigger API call
+                            if (value === '') return;
+                            
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                                setHoursValue(numValue);
+                                handleHoursChange(numValue);
+                            }
+                        }}
+                        onBlur={(e) => {
+                            // If field is empty on blur, ensure it's set to 0 and trigger API call
+                            if (e.target.value === '') {
+                                setPlannedHoursDisplay('0');
+                                setHoursValue(0);
+                                debouncedHoursChange(0);
                             }
                         }}
                         disabled={isAssigning}
