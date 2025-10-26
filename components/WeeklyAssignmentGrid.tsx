@@ -15,7 +15,9 @@ import {
     Divider,
     IconButton,
     useTheme,
-    useMediaQuery
+    useMediaQuery,
+    Autocomplete,
+    TextField
 } from '@mui/material';
 import {
     CalendarToday,
@@ -48,6 +50,8 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
     const [scrollPosition, setScrollPosition] = useState(0);
     const [activeFilter, setActiveFilter] = useState<'all' | 'assigned' | 'partial' | 'unassigned'>('all');
+    const [selectedTruckFilter, setSelectedTruckFilter] = useState<string | null>(null);
+    const [selectedDriverFilter, setSelectedDriverFilter] = useState<string | null>(null);
     
     // Second driver management
     const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
@@ -622,7 +626,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     // Filter rides based on active filter
     const getFilteredRidesData = () => {
-        if (!ridesData || activeFilter === 'all') return ridesData;
+        if (!ridesData) return ridesData;
 
         return {
             ...ridesData,
@@ -634,16 +638,39 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         const hasDriver = !!ride.assignedDriver;
                         const hasTruck = !!ride.assignedTruck;
                         
-                        switch (activeFilter) {
-                            case 'assigned':
-                                return hasDriver && hasTruck;
-                            case 'partial':
-                                return (hasDriver && !hasTruck) || (!hasDriver && hasTruck);
-                            case 'unassigned':
-                                return !hasDriver && !hasTruck;
-                            default:
-                                return true;
+                        // Status filter
+                        let passesStatusFilter = true;
+                        if (activeFilter !== 'all') {
+                            switch (activeFilter) {
+                                case 'assigned':
+                                    passesStatusFilter = hasDriver && hasTruck;
+                                    break;
+                                case 'partial':
+                                    passesStatusFilter = (hasDriver && !hasTruck) || (!hasDriver && hasTruck);
+                                    break;
+                                case 'unassigned':
+                                    passesStatusFilter = !hasDriver && !hasTruck;
+                                    break;
+                                default:
+                                    passesStatusFilter = true;
+                            }
                         }
+
+                        // Truck filter
+                        let passesTruckFilter = true;
+                        if (selectedTruckFilter) {
+                            passesTruckFilter = ride.assignedTruck?.id === selectedTruckFilter;
+                        }
+
+                        // Driver filter (check both primary and second driver)
+                        let passesDriverFilter = true;
+                        if (selectedDriverFilter) {
+                            passesDriverFilter = 
+                                ride.assignedDriver?.id === selectedDriverFilter ||
+                                ride.secondDriver?.id === selectedDriverFilter;
+                        }
+
+                        return passesStatusFilter && passesTruckFilter && passesDriverFilter;
                     })
                 })).filter(client => client.rides.length > 0) // Remove clients with no rides after filtering
             }))
@@ -847,6 +874,80 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 }
                             }}
                         />
+                    </Box>
+
+                    {/* Resource Filters */}
+                    <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ minWidth: 'fit-content' }}>
+                            Filter by:
+                        </Typography>
+                        
+                        {/* Truck Filter */}
+                        <Autocomplete
+                            size="small"
+                            options={trucks || []}
+                            getOptionLabel={(truck) => truck.licensePlate}
+                            value={trucks?.find(t => t.id === selectedTruckFilter) || null}
+                            onChange={(_, newValue) => {
+                                setSelectedTruckFilter(newValue?.id || null);
+                            }}
+                            sx={{ minWidth: 200 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Truck"
+                                    placeholder="All trucks"
+                                    variant="outlined"
+                                />
+                            )}
+                            renderOption={(props, truck) => (
+                                <Box component="li" {...props}>
+                                    <LocalShipping fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                                    <Typography variant="body2">{truck.licensePlate}</Typography>
+                                </Box>
+                            )}
+                        />
+
+                        {/* Driver Filter */}
+                        <Autocomplete
+                            size="small"
+                            options={drivers || []}
+                            getOptionLabel={(driver) => driver.fullName}
+                            value={drivers?.find(d => d.id === selectedDriverFilter) || null}
+                            onChange={(_, newValue) => {
+                                setSelectedDriverFilter(newValue?.id || null);
+                            }}
+                            sx={{ minWidth: 200 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Driver"
+                                    placeholder="All drivers"
+                                    variant="outlined"
+                                />
+                            )}
+                            renderOption={(props, driver) => (
+                                <Box component="li" {...props}>
+                                    <Person fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                                    <Typography variant="body2">{driver.fullName}</Typography>
+                                </Box>
+                            )}
+                        />
+
+                        {/* Clear Filters Button */}
+                        {(selectedTruckFilter || selectedDriverFilter) && (
+                            <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => {
+                                    setSelectedTruckFilter(null);
+                                    setSelectedDriverFilter(null);
+                                }}
+                                sx={{ ml: 1 }}
+                            >
+                                Clear Filters
+                            </Button>
+                        )}
                     </Box>
                 </CardContent>
             </Card>
