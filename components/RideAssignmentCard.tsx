@@ -141,12 +141,7 @@ export default function RideAssignmentCard({
                         )}
                         renderOption={(props, driver) => (
                             <Box component="li" {...props}>
-                                <Box>
-                                    <Typography variant="body2">{driver.fullName}</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        {driver.email}
-                                    </Typography>
-                                </Box>
+                                <Typography variant="body2">{driver.fullName}</Typography>
                             </Box>
                         )}
                     />
@@ -193,37 +188,13 @@ export default function RideAssignmentCard({
                     </Box>
                 )}
 
-                {/* Add Second Driver Button */}
-                {ride.assignedDriver && onAddSecondDriver && (
-                    <Box sx={{ mb: 2 }}>
-                        <Button
-                            size="small"
-                            startIcon={<PersonAdd />}
-                            onClick={() => onAddSecondDriver(ride.id)}
-                            disabled={isAssigning}
-                            variant="outlined"
-                            sx={{ 
-                                borderStyle: 'dashed',
-                                color: 'text.secondary',
-                                borderColor: 'grey.400',
-                                '&:hover': {
-                                    borderColor: 'primary.main',
-                                    color: 'primary.main'
-                                }
-                            }}
-                        >
-                            Add Driver
-                        </Button>
-                    </Box>
-                )}
-
                 {/* Truck Assignment Dropdown */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <LocalShipping fontSize="small" color="primary" />
                     <Autocomplete
                         size="small"
                         options={trucks}
-                        getOptionLabel={(truck) => `${truck.licensePlate} (${truck.brand} ${truck.model})`}
+                        getOptionLabel={(truck) => truck.licensePlate}
                         value={truckValue}
                         onChange={(_, newValue) => handleTruckChange(newValue)}
                         disabled={isAssigning}
@@ -238,12 +209,7 @@ export default function RideAssignmentCard({
                         )}
                         renderOption={(props, truck) => (
                             <Box component="li" {...props}>
-                                <Box>
-                                    <Typography variant="body2">{truck.licensePlate}</Typography>
-                                    <Typography variant="caption" color="text.secondary">
-                                        {truck.brand} {truck.model} ({truck.year})
-                                    </Typography>
-                                </Box>
+                                <Typography variant="body2">{truck.licensePlate}</Typography>
                             </Box>
                         )}
                     />
@@ -285,6 +251,30 @@ export default function RideAssignmentCard({
                         <Typography variant="caption" color="text.secondary">
                             Notes: {ride.notes}
                         </Typography>
+                    </Box>
+                )}
+
+                {/* Add Second Driver Button */}
+                {ride.assignedDriver && onAddSecondDriver && (
+                    <Box sx={{ mt: 2 }}>
+                        <Button
+                            size="small"
+                            startIcon={<PersonAdd />}
+                            onClick={() => onAddSecondDriver(ride.id)}
+                            disabled={isAssigning}
+                            variant="outlined"
+                            sx={{ 
+                                borderStyle: 'dashed',
+                                color: 'text.secondary',
+                                borderColor: 'grey.400',
+                                '&:hover': {
+                                    borderColor: 'primary.main',
+                                    color: 'primary.main'
+                                }
+                            }}
+                        >
+                            Add Driver
+                        </Button>
                     </Box>
                 )}
             </CardContent>
