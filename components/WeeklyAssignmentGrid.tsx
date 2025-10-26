@@ -380,9 +380,50 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     const handleAddDriverConfirm = async (driverId: string, secondDriverHours: number, primaryDriverHours: number) => {
         const rideId = addDriverDialog.rideId;
-        if (!rideId) return;
+        if (!rideId || !ridesData) return;
 
         // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+
+        // Check for conflicts for both primary and second driver
+        const primaryDriverName = currentRide.assignedDriver?.fullName || 'Primary Driver';
+        const secondDriverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
+
+        // Check primary driver conflict (if hours are changing)
+        if (currentRide.assignedDriver && primaryDriverHours !== currentRide.assignedDriver.plannedHours) {
+            const primaryConflict = checkDriverHoursConflict(ridesData, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName);
+            if (primaryConflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict: primaryConflict,
+                    pendingAction: () => performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours)
+                });
+                return;
+            }
+        }
+
+        // Check second driver conflict
+        const secondConflict = checkDriverConflict(ridesData, rideId, driverId, secondDriverHours, secondDriverName);
+        if (secondConflict) {
+            setConflictWarning({
+                open: true,
+                conflict: secondConflict,
+                pendingAction: () => performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours)
+            });
+            return;
+        }
+
+        // No conflicts, proceed directly
+        performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours);
+        setAddDriverDialog({ open: false, rideId: null });
+    };
+
+    const performAddSecondDriver = async (rideId: string, driverId: string, secondDriverHours: number, primaryDriverHours: number) => {
         const currentRide = ridesData?.days
             .flatMap(day => day.clients)
             .flatMap(client => client.rides)
@@ -422,6 +463,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 newSet.delete(rideId);
                 return newSet;
             });
+            setAddDriverDialog({ open: false, rideId: null });
         }
     };
 
@@ -429,6 +471,36 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         console.log('Changing second driver for ride:', rideId, 'to driver:', driverId);
         
         // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide || !ridesData) return;
+
+        // If removing second driver, proceed without conflict check
+        if (!driverId) {
+            return performSecondDriverAssign(rideId, driverId);
+        }
+
+        // Check for second driver conflict (using default 4 hours)
+        const defaultHours = 4;
+        const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
+        const conflict = checkDriverConflict(ridesData, rideId, driverId, defaultHours, driverName);
+
+        if (conflict) {
+            setConflictWarning({
+                open: true,
+                conflict,
+                pendingAction: () => performSecondDriverAssign(rideId, driverId)
+            });
+        } else {
+            // No conflict, proceed directly
+            performSecondDriverAssign(rideId, driverId);
+        }
+    };
+
+    const performSecondDriverAssign = async (rideId: string, driverId: string | null) => {
         const currentRide = ridesData?.days
             .flatMap(day => day.clients)
             .flatMap(client => client.rides)
