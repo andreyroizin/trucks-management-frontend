@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Box,
     Typography,
@@ -12,14 +12,19 @@ import {
     CardContent,
     Chip,
     Button,
-    Divider
+    Divider,
+    IconButton,
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import {
     CalendarToday,
     Assignment,
     Person,
     LocalShipping,
-    Refresh
+    Refresh,
+    ChevronLeft,
+    ChevronRight
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import { useWeeklyRides } from '@/hooks/useWeeklyRides';
@@ -34,7 +39,10 @@ type Props = {
 
 export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Props) {
     const { user } = useAuth();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
@@ -157,6 +165,54 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     const stats = getAssignmentStats();
 
+    // Horizontal scroll navigation
+    const cardWidth = 320; // Minimum card width in pixels
+    const scrollAmount = cardWidth + 16; // Card width + gap
+    const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [, forceUpdate] = useState({});
+
+    // Set up scroll container ref and event listener for desktop
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (container && !isMobile) {
+            setScrollContainer(container);
+            
+            const handleScroll = () => {
+                // Force re-render to update button states
+                forceUpdate({});
+            };
+            
+            container.addEventListener('scroll', handleScroll);
+            return () => container.removeEventListener('scroll', handleScroll);
+        }
+    }, [isMobile]);
+
+    const handleScrollLeft = () => {
+        if (isMobile) {
+            setScrollPosition(prev => Math.max(0, prev - scrollAmount));
+        } else if (scrollContainer) {
+            scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    const handleScrollRight = () => {
+        if (isMobile) {
+            const maxScroll = (ridesData?.days.length || 0) * scrollAmount - (window.innerWidth - 100);
+            setScrollPosition(prev => Math.min(maxScroll, prev + scrollAmount));
+        } else if (scrollContainer) {
+            scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    const canScrollLeft = isMobile 
+        ? scrollPosition > 0 
+        : scrollContainer ? scrollContainer.scrollLeft > 0 : false;
+    
+    const canScrollRight = isMobile 
+        ? ridesData && scrollPosition < (ridesData.days.length * scrollAmount - (window.innerWidth - 100))
+        : scrollContainer ? scrollContainer.scrollLeft < (scrollContainer.scrollWidth - scrollContainer.clientWidth) : false;
+
     if (isLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -245,14 +301,141 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 </CardContent>
             </Card>
 
-            {/* Weekly Grid */}
-            <Grid container spacing={2}>
-                {ridesData.days.map((day) => (
-                    <Grid item xs={12} md={6} lg={1.71} key={day.date}>
+            {/* Weekly Grid with Horizontal Scroll */}
+            <Box sx={{ position: 'relative' }}>
+                {/* Desktop Scroll Navigation - Top Right */}
+                {!isMobile && (
+                    <Box sx={{ 
+                        position: 'absolute', 
+                        top: -60, 
+                        right: 0, 
+                        zIndex: 2,
+                        display: 'flex',
+                        gap: 1
+                    }}>
+                        <IconButton
+                            onClick={handleScrollLeft}
+                            disabled={!canScrollLeft}
+                            size="small"
+                            sx={{
+                                backgroundColor: 'background.paper',
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                '&:hover': {
+                                    backgroundColor: 'grey.50'
+                                },
+                                '&.Mui-disabled': {
+                                    opacity: 0.3
+                                }
+                            }}
+                        >
+                            <ChevronLeft fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                            onClick={handleScrollRight}
+                            disabled={!canScrollRight}
+                            size="small"
+                            sx={{
+                                backgroundColor: 'background.paper',
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                '&:hover': {
+                                    backgroundColor: 'grey.50'
+                                },
+                                '&.Mui-disabled': {
+                                    opacity: 0.3
+                                }
+                            }}
+                        >
+                            <ChevronRight fontSize="small" />
+                        </IconButton>
+                    </Box>
+                )}
+
+                {/* Mobile Scroll Navigation - Side Overlay */}
+                {isMobile && (
+                    <>
+                        <IconButton
+                            onClick={handleScrollLeft}
+                            disabled={!canScrollLeft}
+                            sx={{
+                                position: 'absolute',
+                                left: 0,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                zIndex: 2,
+                                backgroundColor: 'background.paper',
+                                boxShadow: 2,
+                                '&:hover': {
+                                    backgroundColor: 'grey.100'
+                                },
+                                '&.Mui-disabled': {
+                                    display: 'none'
+                                }
+                            }}
+                        >
+                            <ChevronLeft />
+                        </IconButton>
+                        <IconButton
+                            onClick={handleScrollRight}
+                            disabled={!canScrollRight}
+                            sx={{
+                                position: 'absolute',
+                                right: 0,
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                zIndex: 2,
+                                backgroundColor: 'background.paper',
+                                boxShadow: 2,
+                                '&:hover': {
+                                    backgroundColor: 'grey.100'
+                                },
+                                '&.Mui-disabled': {
+                                    display: 'none'
+                                }
+                            }}
+                        >
+                            <ChevronRight />
+                        </IconButton>
+                    </>
+                )}
+
+                {/* Scrollable Container */}
+                <Box
+                    ref={scrollContainerRef}
+                    sx={{
+                        display: 'flex',
+                        gap: 2,
+                        overflowX: isMobile ? 'hidden' : 'auto',
+                        overflowY: 'visible',
+                        transform: isMobile ? `translateX(-${scrollPosition}px)` : 'none',
+                        transition: isMobile ? 'transform 0.3s ease-in-out' : 'none',
+                        px: isMobile ? 5 : 0, // Add padding for scroll buttons
+                        '&::-webkit-scrollbar': {
+                            height: 8,
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            backgroundColor: 'grey.100',
+                            borderRadius: 4,
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: 'grey.400',
+                            borderRadius: 4,
+                            '&:hover': {
+                                backgroundColor: 'grey.600',
+                            },
+                        },
+                    }}
+                >
+                    {ridesData.days.map((day) => (
                         <Paper 
+                            key={day.date}
                             sx={{ 
                                 p: 2, 
                                 minHeight: 400,
+                                minWidth: cardWidth,
+                                maxWidth: isMobile ? cardWidth : 'none',
+                                flex: isMobile ? '0 0 auto' : '1 1 0',
                                 backgroundColor: day.clients.length === 0 ? 'grey.50' : 'background.paper',
                                 display: 'flex',
                                 flexDirection: 'column'
@@ -307,9 +490,9 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 )}
                             </Box>
                         </Paper>
-                    </Grid>
-                ))}
-            </Grid>
+                    ))}
+                </Box>
+            </Box>
 
             {getTotalRidesForWeek() === 0 && (
                 <Alert severity="info" sx={{ mt: 2 }}>
