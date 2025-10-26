@@ -23,7 +23,9 @@ export type WeeklyRide = {
     assignedDriver: AssignedDriver | null; // Primary driver with their hours
     secondDriver: AssignedDriver | null; // Second driver with their hours
     assignedTruck: AssignedTruck | null;
-    notes: string;
+    notes: string | null;
+    plannedStartTime: string | null; // HH:mm:ss format
+    plannedEndTime: string | null; // HH:mm:ss format
     creationMethod: 'TEMPLATE_GENERATED' | 'MANUAL';
 };
 

@@ -19,11 +19,16 @@ import {
     Schedule,
     Assignment,
     PersonAdd,
-    Delete
+    Delete,
+    Edit,
+    LocationOn,
+    Notes,
+    AccessTime
 } from '@mui/icons-material';
 import { WeeklyRide } from '@/hooks/useWeeklyRides';
 import { Driver, Truck } from '@/hooks/useDriversAndTrucks';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
+import RideDetailsDialog from './RideDetailsDialog';
 
 type Props = {
     ride: WeeklyRide;
@@ -68,6 +73,9 @@ export default function RideAssignmentCard({
     const [primaryDriverHoursDisplay, setPrimaryDriverHoursDisplay] = useState<string>('');
     const [secondDriverHoursDisplay, setSecondDriverHoursDisplay] = useState<string>('');
     const [plannedHoursDisplay, setPlannedHoursDisplay] = useState<string>('');
+    
+    // Ride details dialog state
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState<boolean>(false);
 
     // Sync local state with ride data (important for handling cancellations)
     useEffect(() => {
@@ -137,6 +145,18 @@ export default function RideAssignmentCard({
 
     const handleDriverHoursChange = (driverId: string, hours: number) => {
         debouncedDriverHoursChange(ride.id, driverId, hours);
+    };
+
+    // Helper function to format time for display (HH:mm:ss to HH:mm)
+    const formatTimeForDisplay = (time: string | null) => {
+        if (!time) return null;
+        // Convert HH:mm:ss to HH:mm for display
+        return time.substring(0, 5);
+    };
+
+    // Check if ride has additional details
+    const hasAdditionalDetails = () => {
+        return !!(ride.routeFromName || ride.routeToName || ride.notes || ride.plannedStartTime || ride.plannedEndTime);
     };
 
     const getStatusColor = () => {
@@ -377,23 +397,6 @@ export default function RideAssignmentCard({
                     />
                 </Box>
 
-                {/* Route Info (if available) */}
-                {(ride.routeFromName || ride.routeToName) && (
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="caption" color="text.secondary">
-                            Route: {ride.routeFromName || 'Unknown'} → {ride.routeToName || 'Unknown'}
-                        </Typography>
-                    </Box>
-                )}
-
-                {/* Notes (if available) */}
-                {ride.notes && (
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="caption" color="text.secondary">
-                            Notes: {ride.notes}
-                        </Typography>
-                    </Box>
-                )}
 
                 {/* Add Second Driver Button */}
                 {ride.assignedDriver && !ride.secondDriver && onAddSecondDriver && (
@@ -418,7 +421,84 @@ export default function RideAssignmentCard({
                         </Button>
                     </Box>
                 )}
+
+                {/* Additional Details Section */}
+                <Box sx={{ mt: 2 }}>
+                    {hasAdditionalDetails() ? (
+                        <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                                <Typography variant="subtitle2" color="text.secondary">
+                                    Additional Details
+                                </Typography>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => setDetailsDialogOpen(true)}
+                                    disabled={isAssigning}
+                                >
+                                    <Edit fontSize="small" />
+                                </IconButton>
+                            </Box>
+                            
+                            {/* Route Information */}
+                            {(ride.routeFromName || ride.routeToName) && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                    <LocationOn fontSize="small" color="action" />
+                                    <Typography variant="body2" color="text.secondary">
+                                        {ride.routeFromName || 'Unknown'} → {ride.routeToName || 'Unknown'}
+                                    </Typography>
+                                </Box>
+                            )}
+                            
+                            {/* Time Information */}
+                            {(ride.plannedStartTime || ride.plannedEndTime) && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                    <AccessTime fontSize="small" color="action" />
+                                    <Typography variant="body2" color="text.secondary">
+                                        {formatTimeForDisplay(ride.plannedStartTime) || '--:--'} - {formatTimeForDisplay(ride.plannedEndTime) || '--:--'}
+                                    </Typography>
+                                </Box>
+                            )}
+                            
+                            {/* Notes */}
+                            {ride.notes && (
+                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
+                                    <Notes fontSize="small" color="action" sx={{ mt: 0.25 }} />
+                                    <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word' }}>
+                                        {ride.notes}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    ) : (
+                        <Button
+                            size="small"
+                            startIcon={<Edit />}
+                            onClick={() => setDetailsDialogOpen(true)}
+                            disabled={isAssigning}
+                            variant="outlined"
+                            sx={{ 
+                                borderStyle: 'dashed',
+                                color: 'text.secondary',
+                                borderColor: 'grey.400',
+                                '&:hover': {
+                                    borderColor: 'primary.main',
+                                    color: 'primary.main'
+                                }
+                            }}
+                        >
+                            Add Additional Details
+                        </Button>
+                    )}
+                </Box>
             </CardContent>
+
+            {/* Ride Details Dialog */}
+            <RideDetailsDialog
+                open={detailsDialogOpen}
+                onClose={() => setDetailsDialogOpen(false)}
+                ride={ride}
+                clientName={clientName}
+            />
         </Card>
     );
 }
