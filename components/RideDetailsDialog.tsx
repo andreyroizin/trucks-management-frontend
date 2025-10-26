@@ -59,11 +59,23 @@ export default function RideDetailsDialog({ open, onClose, ride, clientName }: P
     const handleSave = async () => {
         if (!ride) return;
 
+        // Convert empty strings to null for API (backend expects null, not empty strings)
+        const apiData = {
+            routeFromName: formData.routeFromName === '' ? null : formData.routeFromName,
+            routeToName: formData.routeToName === '' ? null : formData.routeToName,
+            notes: formData.notes === '' ? null : formData.notes,
+            plannedStartTime: formData.plannedStartTime === '' ? null : formData.plannedStartTime,
+            plannedEndTime: formData.plannedEndTime === '' ? null : formData.plannedEndTime
+        };
+
+        console.log('Saving ride details with data:', apiData);
+
         try {
             await updateRideDetailsMutation.mutateAsync({
                 rideId: ride.id,
-                data: formData
+                data: apiData
             });
+            console.log('Ride details saved successfully');
             onClose();
         } catch (error) {
             console.error('Failed to save ride details:', error);
@@ -94,9 +106,12 @@ export default function RideDetailsDialog({ open, onClose, ride, clientName }: P
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const value = event.target.value;
+        const formattedValue = value === '' ? null : formatTimeForAPI(value);
+        console.log(`Time change for ${field}:`, { originalValue: value, formattedValue });
+        
         setFormData(prev => ({
             ...prev,
-            [field]: value === '' ? null : formatTimeForAPI(value)
+            [field]: formattedValue
         }));
     };
 
