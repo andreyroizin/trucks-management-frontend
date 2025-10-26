@@ -656,21 +656,17 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             }
                         }
 
-                        // Truck filter
-                        let passesTruckFilter = true;
+                        // Resource filter (truck OR driver, not both)
+                        let passesResourceFilter = true;
                         if (selectedTruckFilter) {
-                            passesTruckFilter = ride.assignedTruck?.id === selectedTruckFilter;
-                        }
-
-                        // Driver filter (check both primary and second driver)
-                        let passesDriverFilter = true;
-                        if (selectedDriverFilter) {
-                            passesDriverFilter = 
+                            passesResourceFilter = ride.assignedTruck?.id === selectedTruckFilter;
+                        } else if (selectedDriverFilter) {
+                            passesResourceFilter = 
                                 ride.assignedDriver?.id === selectedDriverFilter ||
                                 ride.secondDriver?.id === selectedDriverFilter;
                         }
 
-                        return passesStatusFilter && passesTruckFilter && passesDriverFilter;
+                        return passesStatusFilter && passesResourceFilter;
                     })
                 })).filter(client => client.rides.length > 0) // Remove clients with no rides after filtering
             }))
@@ -678,6 +674,49 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     };
 
     const filteredRidesData = getFilteredRidesData();
+
+    // Calculate total hours for selected truck/driver on a specific day
+    const getResourceHoursForDay = (day: any) => {
+        if (!selectedTruckFilter && !selectedDriverFilter) return null;
+
+        let totalHours = 0;
+
+        // Use original ridesData to get all rides for the day (not filtered)
+        const originalDay = ridesData?.days.find(d => d.date === day.date);
+        if (!originalDay) return 0;
+
+        for (const client of originalDay.clients) {
+            for (const ride of client.rides) {
+                if (selectedTruckFilter && ride.assignedTruck?.id === selectedTruckFilter) {
+                    // For truck filter, use planned hours (total ride duration)
+                    totalHours += ride.plannedHours;
+                } else if (selectedDriverFilter) {
+                    // For driver filter, sum up driver's individual hours
+                    if (ride.assignedDriver?.id === selectedDriverFilter) {
+                        totalHours += ride.assignedDriver.plannedHours;
+                    }
+                    if (ride.secondDriver?.id === selectedDriverFilter) {
+                        totalHours += ride.secondDriver.plannedHours;
+                    }
+                }
+            }
+        }
+
+        return totalHours;
+    };
+
+    // Get the name of the selected resource for display
+    const getSelectedResourceName = () => {
+        if (selectedTruckFilter) {
+            const truck = trucks?.find(t => t.id === selectedTruckFilter);
+            return truck ? `Truck ${truck.licensePlate}` : 'Selected Truck';
+        }
+        if (selectedDriverFilter) {
+            const driver = drivers?.find(d => d.id === selectedDriverFilter);
+            return driver ? driver.fullName : 'Selected Driver';
+        }
+        return '';
+    };
 
     // Horizontal scroll navigation
     const cardWidth = 320; // Minimum card width in pixels
@@ -890,6 +929,10 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             value={trucks?.find(t => t.id === selectedTruckFilter) || null}
                             onChange={(_, newValue) => {
                                 setSelectedTruckFilter(newValue?.id || null);
+                                // Clear driver filter when truck is selected
+                                if (newValue?.id) {
+                                    setSelectedDriverFilter(null);
+                                }
                             }}
                             sx={{ minWidth: 200 }}
                             renderInput={(params) => (
@@ -916,6 +959,10 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             value={drivers?.find(d => d.id === selectedDriverFilter) || null}
                             onChange={(_, newValue) => {
                                 setSelectedDriverFilter(newValue?.id || null);
+                                // Clear truck filter when driver is selected
+                                if (newValue?.id) {
+                                    setSelectedTruckFilter(null);
+                                }
                             }}
                             sx={{ minWidth: 200 }}
                             renderInput={(params) => (
@@ -1107,6 +1154,28 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
                                     {day.clients.reduce((total, client) => total + client.rides.length, 0)} ride{day.clients.reduce((total, client) => total + client.rides.length, 0) !== 1 ? 's' : ''}
                                 </Typography>
+                                
+                                {/* Resource Hours Display */}
+                                {(selectedTruckFilter || selectedDriverFilter) && (() => {
+                                    const resourceHours = getResourceHoursForDay(day);
+                                    const resourceName = getSelectedResourceName();
+                                    
+                                    if (resourceHours !== null && resourceHours > 0) {
+                                        return (
+                                            <Typography 
+                                                variant="body2" 
+                                                sx={{ 
+                                                    mt: 0.5,
+                                                    color: resourceHours > 8 ? 'error.main' : 'success.main',
+                                                    fontWeight: 'medium'
+                                                }}
+                                            >
+                                                {resourceName}: {resourceHours}h
+                                            </Typography>
+                                        );
+                                    }
+                                    return null;
+                                })()}
                             </Box>
 
                             {/* Rides for this day */}
