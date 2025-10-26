@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Card,
@@ -62,6 +62,21 @@ export default function RideAssignmentCard({
         ride.assignedTruck ? trucks.find(t => t.id === ride.assignedTruck!.id) || null : null
     );
     const [hoursValue, setHoursValue] = useState<number>(ride.plannedHours);
+
+    // Sync local state with ride data (important for handling cancellations)
+    useEffect(() => {
+        const newDriverValue = ride.assignedDriver ? drivers.find(d => d.id === ride.assignedDriver!.id) || null : null;
+        setDriverValue(newDriverValue);
+    }, [ride.assignedDriver, drivers]);
+
+    useEffect(() => {
+        const newTruckValue = ride.assignedTruck ? trucks.find(t => t.id === ride.assignedTruck!.id) || null : null;
+        setTruckValue(newTruckValue);
+    }, [ride.assignedTruck, trucks]);
+
+    useEffect(() => {
+        setHoursValue(ride.plannedHours);
+    }, [ride.plannedHours]);
 
     const isUnassigned = !ride.assignedDriver || !ride.assignedTruck;
     const isPartiallyAssigned = (ride.assignedDriver && !ride.assignedTruck) || (!ride.assignedDriver && ride.assignedTruck);
