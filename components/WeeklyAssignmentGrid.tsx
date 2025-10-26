@@ -29,6 +29,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useWeeklyRides } from '@/hooks/useWeeklyRides';
 import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
+import { useAssignDriverTruck, useUpdateRideHours } from '@/hooks/useRideAssignment';
 import WeekSelector from './WeekSelector';
 import RideAssignmentCard from './RideAssignmentCard';
 import AddDriverDialog from './AddDriverDialog';
@@ -84,53 +85,119 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         isLoading: isLoadingResources, 
         error: resourcesError 
     } = useDriversAndTrucks();
+    
+    // Assignment mutations
+    const assignDriverTruckMutation = useAssignDriverTruck();
+    const updateHoursMutation = useUpdateRideHours();
 
     const isLoading = isLoadingRides || isLoadingResources;
     const error = ridesError || resourcesError;
 
     const handleDriverAssign = async (rideId: string, driverId: string | null) => {
         console.log('Assigning driver:', driverId, 'to ride:', rideId);
-        // TODO: Implement driver assignment API call in next step
+        
+        // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+        
         setAssigningRides(prev => new Set(prev).add(rideId));
         
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            // If only 1 driver (no second driver), driver hours = total ride hours
+            const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
+            
+            await assignDriverTruckMutation.mutateAsync({
+                rideId,
+                data: {
+                    driverId,
+                    driverPlannedHours: driverId ? driverHours : null,
+                    truckId: currentRide.assignedTruck?.id || null,
+                    totalPlannedHours: currentRide.plannedHours
+                }
+            });
+        } catch (error) {
+            console.error('Failed to assign driver:', error);
+        } finally {
             setAssigningRides(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(rideId);
                 return newSet;
             });
-        }, 1000);
+        }
     };
 
     const handleTruckAssign = async (rideId: string, truckId: string | null) => {
         console.log('Assigning truck:', truckId, 'to ride:', rideId);
-        // TODO: Implement truck assignment API call in next step
+        
+        // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+        
         setAssigningRides(prev => new Set(prev).add(rideId));
         
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            await assignDriverTruckMutation.mutateAsync({
+                rideId,
+                data: {
+                    driverId: currentRide.assignedDriver?.id || null,
+                    driverPlannedHours: currentRide.assignedDriver?.plannedHours || null,
+                    truckId,
+                    totalPlannedHours: currentRide.plannedHours
+                }
+            });
+        } catch (error) {
+            console.error('Failed to assign truck:', error);
+        } finally {
             setAssigningRides(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(rideId);
                 return newSet;
             });
-        }, 1000);
+        }
     };
 
     const handleHoursChange = async (rideId: string, hours: number) => {
         console.log('Changing hours for ride:', rideId, 'to:', hours);
-        // TODO: Implement hours update API call in next step
+        
+        // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+        
         setAssigningRides(prev => new Set(prev).add(rideId));
         
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            // If only 1 driver (no second driver), driver hours = total ride hours
+            const primaryDriverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours : hours;
+            
+            await updateHoursMutation.mutateAsync({
+                rideId,
+                data: {
+                    totalPlannedHours: hours,
+                    primaryDriverHours: primaryDriverHours,
+                    secondDriverHours: currentRide.secondDriver?.plannedHours
+                }
+            });
+        } catch (error) {
+            console.error('Failed to update hours:', error);
+        } finally {
             setAssigningRides(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(rideId);
                 return newSet;
             });
-        }, 500);
+        }
     };
 
     // Second driver handlers
@@ -624,7 +691,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                                 onHoursChange={handleHoursChange}
                                                 onAddSecondDriver={handleAddSecondDriver}
                                                 onRemoveSecondDriver={handleRemoveSecondDriver}
-                                                secondDrivers={secondDrivers[ride.id] || []}
+                                                secondDrivers={ride.secondDriver ? [{ 
+                                                    id: ride.secondDriver.id, 
+                                                    fullName: ride.secondDriver.fullName, 
+                                                    plannedHours: ride.secondDriver.plannedHours 
+                                                }] : []}
                                                 isAssigning={assigningRides.has(ride.id)}
                                             />
                                         ))}
@@ -669,8 +740,15 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             .map(ride => ride.assignedDriver!.id)
                         : []
                     ),
-                    // Exclude already assigned second drivers
-                    ...(addDriverDialog.rideId ? (secondDrivers[addDriverDialog.rideId] || []).map(d => d.id) : [])
+                    // Exclude already assigned second driver
+                    ...(addDriverDialog.rideId && ridesData ? 
+                        ridesData.days
+                            .flatMap(day => day.clients)
+                            .flatMap(client => client.rides)
+                            .filter(ride => ride.id === addDriverDialog.rideId && ride.secondDriver)
+                            .map(ride => ride.secondDriver!.id)
+                        : []
+                    )
                 ]}
                 isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
             />

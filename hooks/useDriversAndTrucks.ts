@@ -35,11 +35,33 @@ export type TrucksResponse = {
     totalPages: number;
 };
 
-const fetchDrivers = async (): Promise<DriversResponse> => {
+// Updated to match working useDrivers pattern
+export type DriverUser = {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+};
+
+export type DriverForAssignment = {
+    id: string;
+    companyId: string;
+    companyName: string;
+    user: DriverUser;
+};
+
+export type DriversApiResponse = {
+    totalDrivers: number;
+    pageNumber: number;
+    pageSize: number;
+    drivers: DriverForAssignment[];
+};
+
+const fetchDrivers = async (): Promise<DriverForAssignment[]> => {
     console.log('API: Fetching drivers for assignment');
     
     try {
-        const response = await api.get<ApiResponse<DriversResponse>>('/drivers', {
+        const response = await api.get<ApiResponse<DriversApiResponse>>('/drivers', {
             params: {
                 pageNumber: 1,
                 pageSize: 1000 // Get all drivers for assignment
@@ -48,7 +70,7 @@ const fetchDrivers = async (): Promise<DriversResponse> => {
         console.log('API: Drivers response:', response.data);
         
         if (response.data.isSuccess) {
-            return response.data.data;
+            return response.data.data.drivers; // Match working pattern
         }
         throw new Error(response.data.errors?.[0] || 'Failed to fetch drivers');
     } catch (error: any) {
@@ -57,11 +79,33 @@ const fetchDrivers = async (): Promise<DriversResponse> => {
     }
 };
 
-const fetchTrucks = async (): Promise<TrucksResponse> => {
+// Updated to match working useCars pattern
+export type CarForAssignment = {
+    id: string;
+    licensePlate: string;
+    remark: string;
+    companyId: string;
+    vehicleYear?: string;
+    registrationDate?: string;
+    driverId?: string | null;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
+    driverEmail?: string | null;
+};
+
+export type CarsApiResponse = {
+    totalCars: number;
+    totalPages: number;
+    pageNumber: number;
+    pageSize: number;
+    cars: CarForAssignment[];
+};
+
+const fetchTrucks = async (): Promise<CarForAssignment[]> => {
     console.log('API: Fetching trucks for assignment');
     
     try {
-        const response = await api.get<ApiResponse<TrucksResponse>>('/cars', {
+        const response = await api.get<ApiResponse<CarsApiResponse>>('/cars', {
             params: {
                 pageNumber: 1,
                 pageSize: 1000 // Get all trucks for assignment
@@ -70,7 +114,7 @@ const fetchTrucks = async (): Promise<TrucksResponse> => {
         console.log('API: Trucks response:', response.data);
         
         if (response.data.isSuccess) {
-            return response.data.data;
+            return response.data.data.cars; // Match working pattern
         }
         throw new Error(response.data.errors?.[0] || 'Failed to fetch trucks');
     } catch (error: any) {
@@ -80,18 +124,37 @@ const fetchTrucks = async (): Promise<TrucksResponse> => {
 };
 
 export const useDrivers = () => {
-    return useQuery<DriversResponse, Error>({
+    return useQuery<DriverForAssignment[], Error>({
         queryKey: ['drivers-for-assignment'],
         queryFn: fetchDrivers,
     });
 };
 
 export const useTrucks = () => {
-    return useQuery<TrucksResponse, Error>({
+    return useQuery<CarForAssignment[], Error>({
         queryKey: ['trucks-for-assignment'],
         queryFn: fetchTrucks,
     });
 };
+
+// Transform driver data to match RideAssignmentCard expectations
+const transformDriverForAssignment = (driver: DriverForAssignment): Driver => ({
+    id: driver.id,
+    firstName: driver.user.firstName,
+    lastName: driver.user.lastName,
+    fullName: `${driver.user.firstName} ${driver.user.lastName}`,
+    email: driver.user.email,
+    phoneNumber: '' // Not available in this API response
+});
+
+// Transform car data to match RideAssignmentCard expectations
+const transformCarForAssignment = (car: CarForAssignment): Truck => ({
+    id: car.id,
+    licensePlate: car.licensePlate,
+    brand: '', // Not available in this API response
+    model: car.remark || '', // Use remark as model fallback
+    year: parseInt(car.vehicleYear || '0') || 0
+});
 
 // Combined hook for convenience
 export const useDriversAndTrucks = () => {
@@ -99,8 +162,8 @@ export const useDriversAndTrucks = () => {
     const trucksQuery = useTrucks();
     
     return {
-        drivers: driversQuery.data?.data || [],
-        trucks: trucksQuery.data?.data || [],
+        drivers: driversQuery.data?.map(transformDriverForAssignment) || [],
+        trucks: trucksQuery.data?.map(transformCarForAssignment) || [],
         isLoadingDrivers: driversQuery.isLoading,
         isLoadingTrucks: trucksQuery.isLoading,
         isLoading: driversQuery.isLoading || trucksQuery.isLoading,

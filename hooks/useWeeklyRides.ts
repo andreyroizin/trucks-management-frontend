@@ -7,7 +7,7 @@ export type AssignedDriver = {
     firstName: string;
     lastName: string;
     fullName: string;
-    plannedHours?: number; // Hours for this specific driver
+    plannedHours: number; // Hours for this specific driver
 };
 
 export type AssignedTruck = {
@@ -17,11 +17,11 @@ export type AssignedTruck = {
 
 export type WeeklyRide = {
     id: string;
-    plannedHours: number;
+    plannedHours: number; // Total ride hours (for truck)
     routeFromName: string | null;
     routeToName: string | null;
-    assignedDriver: AssignedDriver | null; // Primary driver
-    assignedDrivers?: AssignedDriver[]; // Multiple drivers (future backend support)
+    assignedDriver: AssignedDriver | null; // Primary driver with their hours
+    secondDriver: AssignedDriver | null; // Second driver with their hours
     assignedTruck: AssignedTruck | null;
     notes: string;
     creationMethod: 'TEMPLATE_GENERATED' | 'MANUAL';
