@@ -33,6 +33,8 @@ import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemove
 import WeekSelector from './WeekSelector';
 import RideAssignmentCard from './RideAssignmentCard';
 import AddDriverDialog from './AddDriverDialog';
+import OverallocationWarningDialog from './OverallocationWarningDialog';
+import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
 
 type Props = {
     selectedDate: Date;
@@ -49,6 +51,13 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     
     // Second driver management
     const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
+
+    // Conflict detection
+    const [conflictWarning, setConflictWarning] = useState<{
+        open: boolean;
+        conflict: ConflictWarning | null;
+        pendingAction: (() => void) | null;
+    }>({ open: false, conflict: null, pendingAction: null });
 
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
@@ -103,6 +112,37 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             .flatMap(client => client.rides)
             .find(ride => ride.id === rideId);
             
+        if (!currentRide || !ridesData) return;
+
+        // If unassigning driver, proceed without conflict check
+        if (!driverId) {
+            return performDriverAssignment(rideId, driverId);
+        }
+
+        // Check for driver conflict
+        const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
+        const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+        const conflict = checkDriverConflict(ridesData, rideId, driverId, driverHours, driverName);
+
+        if (conflict) {
+            // Show warning dialog
+            setConflictWarning({
+                open: true,
+                conflict,
+                pendingAction: () => performDriverAssignment(rideId, driverId)
+            });
+        } else {
+            // No conflict, proceed directly
+            performDriverAssignment(rideId, driverId);
+        }
+    };
+
+    const performDriverAssignment = async (rideId: string, driverId: string | null) => {
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
         if (!currentRide) return;
         
         setAssigningRides(prev => new Set(prev).add(rideId));
@@ -140,6 +180,37 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             .flatMap(client => client.rides)
             .find(ride => ride.id === rideId);
             
+        if (!currentRide || !ridesData) return;
+
+        // If unassigning truck, proceed without conflict check
+        if (!truckId) {
+            return performTruckAssignment(rideId, truckId);
+        }
+
+        // Check for truck conflict
+        const truckHours = currentRide.plannedHours;
+        const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
+        const conflict = checkTruckConflict(ridesData, rideId, truckId, truckHours, truckLicensePlate);
+
+        if (conflict) {
+            // Show warning dialog
+            setConflictWarning({
+                open: true,
+                conflict,
+                pendingAction: () => performTruckAssignment(rideId, truckId)
+            });
+        } else {
+            // No conflict, proceed directly
+            performTruckAssignment(rideId, truckId);
+        }
+    };
+
+    const performTruckAssignment = async (rideId: string, truckId: string | null) => {
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
         if (!currentRide) return;
         
         setAssigningRides(prev => new Set(prev).add(rideId));
@@ -169,6 +240,31 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         console.log('Changing driver hours for ride:', rideId, 'driver:', driverId, 'to:', hours);
         
         // Find the current ride to get its current state
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide || !ridesData) return;
+
+        // Check for driver hours conflict
+        const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+        const conflict = checkDriverHoursConflict(ridesData, rideId, driverId, hours, driverName);
+
+        if (conflict) {
+            // Show warning dialog
+            setConflictWarning({
+                open: true,
+                conflict,
+                pendingAction: () => performDriverHoursUpdate(rideId, driverId, hours)
+            });
+        } else {
+            // No conflict, proceed directly
+            performDriverHoursUpdate(rideId, driverId, hours);
+        }
+    };
+
+    const performDriverHoursUpdate = async (rideId: string, driverId: string, hours: number) => {
         const currentRide = ridesData?.days
             .flatMap(day => day.clients)
             .flatMap(client => client.rides)
@@ -462,6 +558,18 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [, forceUpdate] = useState({});
+
+    // Conflict warning dialog handlers
+    const handleConflictWarningClose = () => {
+        setConflictWarning({ open: false, conflict: null, pendingAction: null });
+    };
+
+    const handleConflictWarningAssignAnyway = () => {
+        if (conflictWarning.pendingAction) {
+            conflictWarning.pendingAction();
+        }
+        handleConflictWarningClose();
+    };
 
     // Set up scroll container ref and event listener for desktop
     useEffect(() => {
@@ -899,6 +1007,15 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                     : 8
                 }
                 isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+            />
+
+            {/* Overallocation Warning Dialog */}
+            <OverallocationWarningDialog
+                open={conflictWarning.open}
+                onClose={handleConflictWarningClose}
+                onAssignAnyway={handleConflictWarningAssignAnyway}
+                conflict={conflictWarning.conflict}
+                isLoading={conflictWarning.pendingAction ? assigningRides.size > 0 : false}
             />
         </Box>
     );
