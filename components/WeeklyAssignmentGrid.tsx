@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     Box,
     Typography,
@@ -44,6 +45,7 @@ type Props = {
 };
 
 export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Props) {
+    const router = useRouter();
     const { user } = useAuth();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -718,6 +720,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         return '';
     };
 
+    // Navigate to daily view for a specific date
+    const handleDayClick = (date: string) => {
+        router.push(`/planning/daily?date=${date}`);
+    };
+
     // Horizontal scroll navigation
     const cardWidth = 320; // Minimum card width in pixels
     const scrollAmount = cardWidth + 16; // Card width + gap
@@ -1139,8 +1146,21 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 flexDirection: 'column'
                             }}
                         >
-                            {/* Day Header */}
-                            <Box sx={{ mb: 2, textAlign: 'center' }}>
+                            {/* Day Header - Clickable */}
+                            <Box 
+                                sx={{ 
+                                    mb: 2, 
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    p: 1,
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        bgcolor: 'action.hover'
+                                    }
+                                }}
+                                onClick={() => handleDayClick(day.date)}
+                                title="Click to view daily planning"
+                            >
                                 <Typography variant="h6" fontWeight="bold">
                                     {day.dayName}
                                 </Typography>

@@ -94,8 +94,9 @@ export const useAssignDriverTruck = () => {
         mutationFn: ({ rideId, data }: { rideId: string; data: AssignDriverTruckRequest }) => 
             assignDriverTruck(rideId, data),
         onSuccess: () => {
-            // Invalidate weekly rides query to refresh data
+            // Invalidate both weekly and daily rides queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
         },
     });
 };
@@ -107,7 +108,9 @@ export const useAddSecondDriver = () => {
         mutationFn: ({ rideId, data }: { rideId: string; data: AddSecondDriverRequest }) => 
             addSecondDriver(rideId, data),
         onSuccess: () => {
+            // Invalidate both weekly and daily rides queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
         },
     });
 };
@@ -118,7 +121,9 @@ export const useRemoveSecondDriver = () => {
     return useMutation({
         mutationFn: (rideId: string) => removeSecondDriver(rideId),
         onSuccess: () => {
+            // Invalidate both weekly and daily rides queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
         },
     });
 };
@@ -130,7 +135,9 @@ export const useUpdateRideHours = () => {
         mutationFn: ({ rideId, data }: { rideId: string; data: UpdateHoursRequest }) => 
             updateRideHours(rideId, data),
         onSuccess: () => {
+            // Invalidate both weekly and daily rides queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
         },
     });
 };

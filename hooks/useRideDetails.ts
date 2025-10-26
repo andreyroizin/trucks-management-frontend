@@ -37,8 +37,9 @@ export const useUpdateRideDetails = () => {
             return response.data;
         },
         onSuccess: () => {
-            // Invalidate weekly rides query to refresh the data
+            // Invalidate both weekly and daily rides queries to refresh the data
             queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
         },
         onError: (error) => {
             console.error('Failed to update ride details:', error);
