@@ -318,6 +318,34 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             .flatMap(client => client.rides)
             .find(ride => ride.id === rideId);
             
+        if (!currentRide || !ridesData) return;
+
+        // Check for truck conflict if truck is assigned (truck hours = planned hours)
+        if (currentRide.assignedTruck) {
+            const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck!.id)?.licensePlate || 'Unknown Truck';
+            const conflict = checkTruckConflict(ridesData, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate);
+
+            if (conflict) {
+                // Show warning dialog
+                setConflictWarning({
+                    open: true,
+                    conflict,
+                    pendingAction: () => performHoursUpdate(rideId, hours)
+                });
+                return;
+            }
+        }
+
+        // No conflict, proceed directly
+        performHoursUpdate(rideId, hours);
+    };
+
+    const performHoursUpdate = async (rideId: string, hours: number) => {
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
         if (!currentRide) return;
         
         setAssigningRides(prev => new Set(prev).add(rideId));
