@@ -31,6 +31,7 @@ import { useWeeklyRides } from '@/hooks/useWeeklyRides';
 import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
 import WeekSelector from './WeekSelector';
 import RideAssignmentCard from './RideAssignmentCard';
+import AddDriverDialog from './AddDriverDialog';
 
 type Props = {
     selectedDate: Date;
@@ -44,6 +45,10 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
     const [scrollPosition, setScrollPosition] = useState(0);
     const [activeFilter, setActiveFilter] = useState<'all' | 'assigned' | 'partial' | 'unassigned'>('all');
+    
+    // Second driver management
+    const [secondDrivers, setSecondDrivers] = useState<Record<string, { id: string; fullName: string; plannedHours: number }[]>>({});
+    const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
 
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
@@ -126,6 +131,67 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 return newSet;
             });
         }, 500);
+    };
+
+    // Second driver handlers
+    const handleAddSecondDriver = (rideId: string) => {
+        setAddDriverDialog({ open: true, rideId });
+    };
+
+    const handleAddDriverConfirm = async (driverId: string, plannedHours: number) => {
+        const rideId = addDriverDialog.rideId;
+        if (!rideId) return;
+
+        setAssigningRides(prev => new Set(prev).add(rideId));
+        try {
+            // TODO: Implement add second driver API call in next step
+            console.log('Adding second driver to ride:', rideId, 'driver:', driverId, 'hours:', plannedHours);
+            
+            // Find driver details
+            const driver = drivers?.find(d => d.id === driverId);
+            if (driver) {
+                setSecondDrivers(prev => ({
+                    ...prev,
+                    [rideId]: [
+                        ...(prev[rideId] || []),
+                        { id: driver.id, fullName: driver.fullName, plannedHours }
+                    ]
+                }));
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
+        } catch (error) {
+            console.error('Failed to add second driver:', error);
+        } finally {
+            setAssigningRides(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(rideId);
+                return newSet;
+            });
+        }
+    };
+
+    const handleRemoveSecondDriver = async (rideId: string, driverId: string) => {
+        setAssigningRides(prev => new Set(prev).add(rideId));
+        try {
+            // TODO: Implement remove second driver API call in next step
+            console.log('Removing second driver from ride:', rideId, 'driver:', driverId);
+            
+            setSecondDrivers(prev => ({
+                ...prev,
+                [rideId]: (prev[rideId] || []).filter(d => d.id !== driverId)
+            }));
+            
+            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
+        } catch (error) {
+            console.error('Failed to remove second driver:', error);
+        } finally {
+            setAssigningRides(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(rideId);
+                return newSet;
+            });
+        }
     };
 
     const getTotalRidesForWeek = (): number => {
@@ -556,6 +622,9 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                                 onDriverAssign={handleDriverAssign}
                                                 onTruckAssign={handleTruckAssign}
                                                 onHoursChange={handleHoursChange}
+                                                onAddSecondDriver={handleAddSecondDriver}
+                                                onRemoveSecondDriver={handleRemoveSecondDriver}
+                                                secondDrivers={secondDrivers[ride.id] || []}
                                                 isAssigning={assigningRides.has(ride.id)}
                                             />
                                         ))}
@@ -583,6 +652,28 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                     No rides found for this week. Generate rides in the Weekly Planning view first.
                 </Alert>
             )}
+
+            {/* Add Driver Dialog */}
+            <AddDriverDialog
+                open={addDriverDialog.open}
+                onClose={() => setAddDriverDialog({ open: false, rideId: null })}
+                onAdd={handleAddDriverConfirm}
+                drivers={drivers || []}
+                excludeDriverIds={[
+                    // Exclude primary driver if assigned
+                    ...(addDriverDialog.rideId && ridesData ? 
+                        ridesData.days
+                            .flatMap(day => day.clients)
+                            .flatMap(client => client.rides)
+                            .filter(ride => ride.id === addDriverDialog.rideId && ride.assignedDriver)
+                            .map(ride => ride.assignedDriver!.id)
+                        : []
+                    ),
+                    // Exclude already assigned second drivers
+                    ...(addDriverDialog.rideId ? (secondDrivers[addDriverDialog.rideId] || []).map(d => d.id) : [])
+                ]}
+                isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+            />
         </Box>
     );
 }

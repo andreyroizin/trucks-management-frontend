@@ -8,13 +8,18 @@ import {
     Typography,
     Chip,
     Autocomplete,
-    TextField
+    TextField,
+    Button,
+    IconButton,
+    Divider
 } from '@mui/material';
 import {
     Person,
     LocalShipping,
     Schedule,
-    Assignment
+    Assignment,
+    PersonAdd,
+    Delete
 } from '@mui/icons-material';
 import { WeeklyRide } from '@/hooks/useWeeklyRides';
 import { Driver, Truck } from '@/hooks/useDriversAndTrucks';
@@ -27,6 +32,9 @@ type Props = {
     onDriverAssign?: (rideId: string, driverId: string | null) => void;
     onTruckAssign?: (rideId: string, truckId: string | null) => void;
     onHoursChange?: (rideId: string, hours: number) => void;
+    onAddSecondDriver?: (rideId: string) => void;
+    onRemoveSecondDriver?: (rideId: string, driverId: string) => void;
+    secondDrivers?: { id: string; fullName: string; plannedHours: number }[]; // Additional drivers for this ride
     isAssigning?: boolean;
 };
 
@@ -38,6 +46,9 @@ export default function RideAssignmentCard({
     onDriverAssign,
     onTruckAssign,
     onHoursChange,
+    onAddSecondDriver,
+    onRemoveSecondDriver,
+    secondDrivers = [],
     isAssigning = false
 }: Props) {
     const [driverValue, setDriverValue] = useState<Driver | null>(
@@ -109,7 +120,7 @@ export default function RideAssignmentCard({
                     </Box>
                 </Box>
 
-                {/* Driver Assignment Dropdown */}
+                {/* Primary Driver Assignment Dropdown */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <Person fontSize="small" color="primary" />
                     <Autocomplete
@@ -123,8 +134,8 @@ export default function RideAssignmentCard({
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Driver"
-                                placeholder="Select driver..."
+                                label="Primary Driver"
+                                placeholder="Select primary driver..."
                                 variant="outlined"
                             />
                         )}
@@ -140,6 +151,71 @@ export default function RideAssignmentCard({
                         )}
                     />
                 </Box>
+
+                {/* Second Drivers Section */}
+                {secondDrivers.length > 0 && (
+                    <Box sx={{ mb: 2 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                            Additional Drivers:
+                        </Typography>
+                        {secondDrivers.map((driver) => (
+                            <Box 
+                                key={driver.id}
+                                sx={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: 1, 
+                                    mb: 1,
+                                    p: 1,
+                                    backgroundColor: 'grey.50',
+                                    borderRadius: 1,
+                                    border: '1px solid',
+                                    borderColor: 'grey.200'
+                                }}
+                            >
+                                <Person fontSize="small" color="secondary" />
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <Typography variant="body2">{driver.fullName}</Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {driver.plannedHours}h planned
+                                    </Typography>
+                                </Box>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => onRemoveSecondDriver?.(ride.id, driver.id)}
+                                    disabled={isAssigning}
+                                    sx={{ color: 'error.main' }}
+                                >
+                                    <Delete fontSize="small" />
+                                </IconButton>
+                            </Box>
+                        ))}
+                    </Box>
+                )}
+
+                {/* Add Second Driver Button */}
+                {ride.assignedDriver && onAddSecondDriver && (
+                    <Box sx={{ mb: 2 }}>
+                        <Button
+                            size="small"
+                            startIcon={<PersonAdd />}
+                            onClick={() => onAddSecondDriver(ride.id)}
+                            disabled={isAssigning}
+                            variant="outlined"
+                            sx={{ 
+                                borderStyle: 'dashed',
+                                color: 'text.secondary',
+                                borderColor: 'grey.400',
+                                '&:hover': {
+                                    borderColor: 'primary.main',
+                                    color: 'primary.main'
+                                }
+                            }}
+                        >
+                            Add Driver
+                        </Button>
+                    </Box>
+                )}
 
                 {/* Truck Assignment Dropdown */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
