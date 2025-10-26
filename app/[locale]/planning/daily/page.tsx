@@ -72,6 +72,11 @@ export default function DailyPlanningPage() {
     
     // Second driver management
     const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
+    
+    // Filtering state
+    const [activeFilter, setActiveFilter] = useState<'all' | 'assigned' | 'partial' | 'unassigned'>('all');
+    const [selectedTruckFilter, setSelectedTruckFilter] = useState<string | null>(null);
+    const [selectedDriverFilter, setSelectedDriverFilter] = useState<string | null>(null);
 
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;
@@ -305,7 +310,97 @@ export default function DailyPlanningPage() {
         // Implementation similar to weekly grid
     };
 
-    // Calculate stats for the day
+    // Filtering logic
+    const getFilteredRidesData = () => {
+        if (!ridesData) return { clients: [] };
+
+        const filteredClients = ridesData.clients.map(client => {
+            let filteredRides = client.rides;
+
+            // Apply status filter
+            if (activeFilter !== 'all') {
+                filteredRides = filteredRides.filter(ride => {
+                    const hasDriver = !!ride.assignedDriver;
+                    const hasTruck = !!ride.assignedTruck;
+
+                    switch (activeFilter) {
+                        case 'assigned':
+                            return hasDriver && hasTruck;
+                        case 'partial':
+                            return (hasDriver && !hasTruck) || (!hasDriver && hasTruck);
+                        case 'unassigned':
+                            return !hasDriver && !hasTruck;
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            // Apply truck filter (mutually exclusive with driver filter)
+            if (selectedTruckFilter && !selectedDriverFilter) {
+                filteredRides = filteredRides.filter(ride => 
+                    ride.assignedTruck?.id === selectedTruckFilter
+                );
+            }
+
+            // Apply driver filter (mutually exclusive with truck filter)
+            if (selectedDriverFilter && !selectedTruckFilter) {
+                filteredRides = filteredRides.filter(ride => 
+                    ride.assignedDriver?.id === selectedDriverFilter || 
+                    ride.secondDriver?.id === selectedDriverFilter
+                );
+            }
+
+            return {
+                ...client,
+                rides: filteredRides
+            };
+        }).filter(client => client.rides.length > 0); // Only show clients with rides after filtering
+
+        return { clients: filteredClients };
+    };
+
+    // Get resource hours for the selected date
+    const getResourceHoursForDate = () => {
+        if (!ridesData) return 0;
+
+        const allRides = ridesData.clients.flatMap(client => client.rides);
+        let totalHours = 0;
+
+        if (selectedTruckFilter) {
+            // Calculate truck hours (sum of all ride planned hours for this truck)
+            totalHours = allRides
+                .filter(ride => ride.assignedTruck?.id === selectedTruckFilter)
+                .reduce((sum, ride) => sum + ride.plannedHours, 0);
+        } else if (selectedDriverFilter) {
+            // Calculate driver hours (sum of individual driver hours)
+            allRides.forEach(ride => {
+                if (ride.assignedDriver?.id === selectedDriverFilter) {
+                    totalHours += ride.assignedDriver.plannedHours || ride.plannedHours;
+                }
+                if (ride.secondDriver?.id === selectedDriverFilter) {
+                    totalHours += ride.secondDriver.plannedHours || 0;
+                }
+            });
+        }
+
+        return totalHours;
+    };
+
+    // Get the name of the selected resource for display
+    const getSelectedResourceName = () => {
+        if (selectedTruckFilter) {
+            const truck = trucks?.find(t => t.id === selectedTruckFilter);
+            return truck ? `Truck ${truck.licensePlate}` : 'Selected Truck';
+        }
+        if (selectedDriverFilter) {
+            const driver = drivers?.find(d => d.id === selectedDriverFilter);
+            return driver ? driver.fullName : 'Selected Driver';
+        }
+        return '';
+    };
+
+    // Calculate stats for the day (using original data, not filtered)
     const getStats = () => {
         if (!ridesData) return { total: 0, assigned: 0, partial: 0, unassigned: 0 };
         
@@ -319,6 +414,9 @@ export default function DailyPlanningPage() {
     };
 
     const stats = getStats();
+    const filteredData = getFilteredRidesData();
+    const resourceHours = getResourceHoursForDate();
+    const resourceName = getSelectedResourceName();
 
     // Format date for display
     const formatDateForDisplay = (dateString: string) => {
@@ -424,37 +522,125 @@ export default function DailyPlanningPage() {
                         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                             <Chip
                                 icon={<Assignment />}
-                                label={`Total: ${stats.total}`}
+                                label={`All Rides: ${stats.total}`}
                                 color="primary"
-                                variant="outlined"
+                                variant={activeFilter === 'all' ? 'filled' : 'outlined'}
+                                onClick={() => setActiveFilter('all')}
+                                sx={{ cursor: 'pointer' }}
                             />
                             <Chip
                                 icon={<Person />}
-                                label={`Assigned: ${stats.assigned}`}
+                                label={`Fully Assigned: ${stats.assigned}`}
                                 color="success"
-                                variant="outlined"
+                                variant={activeFilter === 'assigned' ? 'filled' : 'outlined'}
+                                onClick={() => setActiveFilter('assigned')}
+                                sx={{ cursor: 'pointer' }}
                             />
                             <Chip
                                 icon={<LocalShipping />}
-                                label={`Partial: ${stats.partial}`}
+                                label={`Partially Assigned: ${stats.partial}`}
                                 color="warning"
-                                variant="outlined"
+                                variant={activeFilter === 'partial' ? 'filled' : 'outlined'}
+                                onClick={() => setActiveFilter('partial')}
+                                sx={{ cursor: 'pointer' }}
                             />
                             <Chip
                                 icon={<Assignment />}
                                 label={`Unassigned: ${stats.unassigned}`}
                                 color="error"
-                                variant="outlined"
+                                variant={activeFilter === 'unassigned' ? 'filled' : 'outlined'}
+                                onClick={() => setActiveFilter('unassigned')}
+                                sx={{ cursor: 'pointer' }}
                             />
                         </Box>
                     </Box>
                 </CardContent>
             </Card>
 
+            {/* Resource Filters */}
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                        {/* Truck Filter */}
+                        <Autocomplete
+                            size="small"
+                            options={trucks || []}
+                            getOptionLabel={(truck) => `${truck.licensePlate}`}
+                            value={trucks?.find(t => t.id === selectedTruckFilter) || null}
+                            onChange={(_, newValue) => {
+                                setSelectedTruckFilter(newValue?.id || null);
+                                if (newValue) {
+                                    setSelectedDriverFilter(null); // Clear driver filter
+                                }
+                            }}
+                            sx={{ minWidth: 200 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Filter by Truck"
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+
+                        {/* Driver Filter */}
+                        <Autocomplete
+                            size="small"
+                            options={drivers || []}
+                            getOptionLabel={(driver) => driver.fullName}
+                            value={drivers?.find(d => d.id === selectedDriverFilter) || null}
+                            onChange={(_, newValue) => {
+                                setSelectedDriverFilter(newValue?.id || null);
+                                if (newValue) {
+                                    setSelectedTruckFilter(null); // Clear truck filter
+                                }
+                            }}
+                            sx={{ minWidth: 200 }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Filter by Driver"
+                                    variant="outlined"
+                                />
+                            )}
+                        />
+
+                        {/* Clear Filters Button */}
+                        {(selectedTruckFilter || selectedDriverFilter) && (
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {
+                                    setSelectedTruckFilter(null);
+                                    setSelectedDriverFilter(null);
+                                }}
+                            >
+                                Clear Filters
+                            </Button>
+                        )}
+
+                        {/* Resource Hours Display */}
+                        {(selectedTruckFilter || selectedDriverFilter) && (
+                            <Box sx={{ ml: 'auto' }}>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                        color: resourceHours > 8 ? 'error.main' : 'success.main',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    {resourceName}: {resourceHours}h
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+
             {/* Rides Display */}
-            {ridesData && ridesData.clients.length > 0 ? (
+            {filteredData && filteredData.clients.length > 0 ? (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {ridesData.clients.map((client) => (
+                    {filteredData.clients.map((client) => (
                         <Box key={client.clientId}>
                             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Assignment color="primary" />
@@ -482,7 +668,7 @@ export default function DailyPlanningPage() {
                                 ))}
                             </Box>
                             
-                            {client !== ridesData.clients[ridesData.clients.length - 1] && (
+                            {client !== filteredData.clients[filteredData.clients.length - 1] && (
                                 <Divider sx={{ mt: 3 }} />
                             )}
                         </Box>
@@ -490,12 +676,25 @@ export default function DailyPlanningPage() {
                 </Box>
             ) : (
                 <Paper sx={{ p: 4, textAlign: 'center' }}>
-                    <Typography variant="h6" color="text.secondary" gutterBottom>
-                        No rides planned for {formatDateForDisplay(selectedDate)}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Select a different date or generate rides from the weekly planning view.
-                    </Typography>
+                    {ridesData && ridesData.clients.length > 0 ? (
+                        <>
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                No rides match the current filters
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Try adjusting your filters or clear them to see all rides.
+                            </Typography>
+                        </>
+                    ) : (
+                        <>
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                No rides planned for {formatDateForDisplay(selectedDate)}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Select a different date or generate rides from the weekly planning view.
+                            </Typography>
+                        </>
+                    )}
                 </Paper>
             )}
 
