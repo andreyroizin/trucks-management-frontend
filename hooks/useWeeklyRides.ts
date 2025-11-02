@@ -28,6 +28,7 @@ export type WeeklyRide = {
     plannedStartTime: string | null; // HH:mm:ss format
     plannedEndTime: string | null; // HH:mm:ss format
     creationMethod: 'TEMPLATE_GENERATED' | 'MANUAL';
+    executionCompletionStatus?: string; // "none", "partial", "complete", "approved"
 };
 
 export type WeeklyRideClient = {
