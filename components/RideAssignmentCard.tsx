@@ -233,7 +233,7 @@ export default function RideAssignmentCard({
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 {/* Header with Trip Number and Status */}
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flexGrow: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1 }}>
                         {/* Trip Number - Primary Display */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             {tripNumberEditing ? (
@@ -246,30 +246,33 @@ export default function RideAssignmentCard({
                                     placeholder="Enter trip number"
                                     autoFocus
                                     sx={{ 
+                                        flexGrow: 1,
                                         '& .MuiInputBase-root': { 
-                                            fontSize: '1.1rem',
-                                            fontWeight: 'bold'
+                                            fontSize: '1rem',
+                                            fontWeight: 'medium'
                                         }
                                     }}
                                 />
                             ) : (
                                 <Typography 
-                                    variant="h6" 
-                                    fontWeight="bold"
+                                    variant="body1" 
+                                    fontWeight="medium"
                                     onClick={handleTripNumberEdit}
                                     sx={{ 
                                         cursor: 'pointer',
                                         color: ride.tripNumber ? 'text.primary' : 'text.secondary',
                                         fontStyle: ride.tripNumber ? 'normal' : 'italic',
+                                        py: 0.5,
+                                        px: 1,
+                                        borderRadius: 1,
+                                        border: '1px solid transparent',
                                         '&:hover': {
                                             backgroundColor: 'action.hover',
-                                            borderRadius: 1,
-                                            px: 1,
-                                            mx: -1
+                                            borderColor: 'divider'
                                         }
                                     }}
                                 >
-                                    {ride.tripNumber || 'Click to add trip number'}
+                                    {ride.tripNumber || 'Add trip number'}
                                 </Typography>
                             )}
                         </Box>
