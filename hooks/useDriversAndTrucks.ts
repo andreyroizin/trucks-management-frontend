@@ -9,6 +9,11 @@ export type Driver = {
     fullName: string;
     email: string;
     phoneNumber: string;
+    // Car assignment info (from backend response)
+    carId?: string | null;
+    carLicensePlate?: string | null;
+    carVehicleYear?: number | null;
+    carRegistrationDate?: string | null;
 };
 
 export type Truck = {
@@ -17,6 +22,11 @@ export type Truck = {
     brand: string;
     model: string;
     year: number;
+    // Driver assignment info (from backend response)
+    driverId?: string | null;
+    driverFirstName?: string | null;
+    driverLastName?: string | null;
+    driverEmail?: string | null;
 };
 
 export type DriversResponse = {
@@ -144,7 +154,12 @@ const transformDriverForAssignment = (driver: DriverForAssignment): Driver => ({
     lastName: driver.user.lastName,
     fullName: `${driver.user.firstName} ${driver.user.lastName}`,
     email: driver.user.email,
-    phoneNumber: '' // Not available in this API response
+    phoneNumber: '', // Not available in this API response
+    // Car assignment info (will be added by backend in future)
+    carId: undefined,
+    carLicensePlate: undefined,
+    carVehicleYear: undefined,
+    carRegistrationDate: undefined
 });
 
 // Transform car data to match RideAssignmentCard expectations
@@ -153,7 +168,12 @@ const transformCarForAssignment = (car: CarForAssignment): Truck => ({
     licensePlate: car.licensePlate,
     brand: '', // Not available in this API response
     model: car.remark || '', // Use remark as model fallback
-    year: parseInt(car.vehicleYear || '0') || 0
+    year: parseInt(car.vehicleYear || '0') || 0,
+    // Driver assignment info (from backend response)
+    driverId: car.driverId,
+    driverFirstName: car.driverFirstName,
+    driverLastName: car.driverLastName,
+    driverEmail: car.driverEmail
 });
 
 // Combined hook for convenience

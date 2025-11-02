@@ -38,6 +38,7 @@ import RideAssignmentCard from './RideAssignmentCard';
 import AddDriverDialog from './AddDriverDialog';
 import OverallocationWarningDialog from './OverallocationWarningDialog';
 import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
+import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
 
 type Props = {
     selectedDate: Date;
@@ -100,6 +101,12 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         error: resourcesError 
     } = useDriversAndTrucks();
     
+    // Driver-truck relationship mapping for auto-selection
+    const driverTruckMaps = React.useMemo(() => {
+        if (!drivers || !trucks) return { driverToTruck: new Map(), truckToDriver: new Map() };
+        return createDriverTruckMaps(drivers, trucks);
+    }, [drivers, trucks]);
+    
     // Assignment mutations
     const assignDriverTruckMutation = useAssignDriverTruck();
     const updateHoursMutation = useUpdateRideHours();
@@ -135,11 +142,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             setConflictWarning({
                 open: true,
                 conflict,
-                pendingAction: () => performDriverAssignment(rideId, driverId)
+                pendingAction: () => performDriverAssignmentWithAutoSelect(rideId, driverId)
             });
         } else {
-            // No conflict, proceed directly
-            performDriverAssignment(rideId, driverId);
+            // No conflict, proceed with auto-selection logic
+            performDriverAssignmentWithAutoSelect(rideId, driverId);
         }
     };
 
@@ -177,6 +184,59 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         }
     };
 
+    const performDriverAssignmentWithAutoSelect = async (rideId: string, driverId: string | null) => {
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+        
+        // Check if we should auto-select truck
+        const autoSelection = shouldAutoSelect(
+            currentRide.assignedDriver?.id || null,
+            currentRide.assignedTruck?.id || null,
+            driverId,
+            null // We're not selecting a truck in this function
+        );
+        
+        let finalTruckId = currentRide.assignedTruck?.id || null;
+        
+        // Auto-select truck if conditions are met
+        if (driverId && autoSelection.autoSelectTruck) {
+            const assignedTruck = getDriverAssignedTruck(driverId, driverTruckMaps);
+            if (assignedTruck) {
+                finalTruckId = assignedTruck.id;
+                console.log(`Auto-selecting truck ${assignedTruck.licensePlate} for driver ${drivers?.find(d => d.id === driverId)?.fullName}`);
+            }
+        }
+        
+        setAssigningRides(prev => new Set(prev).add(rideId));
+        
+        try {
+            // If only 1 driver (no second driver), driver hours = total ride hours
+            const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
+            
+            await assignDriverTruckMutation.mutateAsync({
+                rideId,
+                data: {
+                    driverId,
+                    driverPlannedHours: driverId ? driverHours : null,
+                    truckId: finalTruckId,
+                    totalPlannedHours: currentRide.plannedHours
+                }
+            });
+        } catch (error) {
+            console.error('Failed to assign driver with auto-selection:', error);
+        } finally {
+            setAssigningRides(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(rideId);
+                return newSet;
+            });
+        }
+    };
+
     const handleTruckAssign = async (rideId: string, truckId: string | null) => {
         console.log('Assigning truck:', truckId, 'to ride:', rideId);
         
@@ -203,11 +263,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             setConflictWarning({
                 open: true,
                 conflict,
-                pendingAction: () => performTruckAssignment(rideId, truckId)
+                pendingAction: () => performTruckAssignmentWithAutoSelect(rideId, truckId)
             });
         } else {
-            // No conflict, proceed directly
-            performTruckAssignment(rideId, truckId);
+            // No conflict, proceed with auto-selection logic
+            performTruckAssignmentWithAutoSelect(rideId, truckId);
         }
     };
 
@@ -233,6 +293,58 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             });
         } catch (error) {
             console.error('Failed to assign truck:', error);
+        } finally {
+            setAssigningRides(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(rideId);
+                return newSet;
+            });
+        }
+    };
+
+    const performTruckAssignmentWithAutoSelect = async (rideId: string, truckId: string | null) => {
+        const currentRide = ridesData?.days
+            .flatMap(day => day.clients)
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+        
+        // Check if we should auto-select driver
+        const autoSelection = shouldAutoSelect(
+            currentRide.assignedDriver?.id || null,
+            currentRide.assignedTruck?.id || null,
+            null, // We're not selecting a driver in this function
+            truckId
+        );
+        
+        let finalDriverId = currentRide.assignedDriver?.id || null;
+        let finalDriverHours = currentRide.assignedDriver?.plannedHours || null;
+        
+        // Auto-select driver if conditions are met
+        if (truckId && autoSelection.autoSelectDriver) {
+            const assignedDriver = getTruckAssignedDriver(truckId, driverTruckMaps);
+            if (assignedDriver) {
+                finalDriverId = assignedDriver.id;
+                finalDriverHours = currentRide.secondDriver ? 8 : currentRide.plannedHours; // Default hours
+                console.log(`Auto-selecting driver ${assignedDriver.fullName} for truck ${trucks?.find(t => t.id === truckId)?.licensePlate}`);
+            }
+        }
+        
+        setAssigningRides(prev => new Set(prev).add(rideId));
+        
+        try {
+            await assignDriverTruckMutation.mutateAsync({
+                rideId,
+                data: {
+                    driverId: finalDriverId,
+                    driverPlannedHours: finalDriverHours,
+                    truckId,
+                    totalPlannedHours: currentRide.plannedHours
+                }
+            });
+        } catch (error) {
+            console.error('Failed to assign truck with auto-selection:', error);
         } finally {
             setAssigningRides(prev => {
                 const newSet = new Set(prev);
