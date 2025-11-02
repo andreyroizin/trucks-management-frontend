@@ -1321,12 +1321,21 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                     const resourceName = getSelectedResourceName();
                                     
                                     if (resourceHours !== null && resourceHours > 0) {
+                                        // Get custom availability hours for the selected resource
+                                        const resourceId = selectedTruckFilter || selectedDriverFilter;
+                                        const resourceType = selectedTruckFilter ? 'truck' : 'driver';
+                                        const availableHours = availabilityData ? 
+                                            (resourceType === 'driver' 
+                                                ? availabilityData.drivers.find(d => d.driverId === resourceId)?.availability[day.date]?.hours 
+                                                : availabilityData.trucks.find(t => t.truckId === resourceId)?.availability[day.date]?.hours
+                                            ) || 8.0 : 8.0;
+                                        
                                         return (
                                             <Typography 
                                                 variant="body2" 
                                                 sx={{ 
                                                     mt: 0.5,
-                                                    color: resourceHours > 8 ? 'error.main' : 'success.main',
+                                                    color: resourceHours > availableHours ? 'error.main' : 'success.main',
                                                     fontWeight: 'medium'
                                                 }}
                                             >
