@@ -165,6 +165,7 @@ export default function SideNavigation() {
                 {/* Work Management parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
                          active={pathNoLocale.startsWith('/partrides')
+                             || pathNoLocale.startsWith('/rides/executions')
                              || pathNoLocale.startsWith('/driver/rides')
                              || pathNoLocale.startsWith('/disputes')
                              || pathNoLocale.startsWith('/weeks-to-submit')}
@@ -184,8 +185,8 @@ export default function SideNavigation() {
                                 <ListItemText primary="My Rides"/>
                             </NavItem>
                         ) : (
-                            <NavItem active={isActive('/partrides')} onClick={() => go('/partrides')} sx={{pl: 6}}>
-                                <ListItemText primary={t('navigation.workdays.overviewList')}/>
+                            <NavItem active={isActive('/rides/executions')} onClick={() => go('/rides/executions')} sx={{pl: 6}}>
+                                <ListItemText primary="Ride Executions"/>
                             </NavItem>
                         )}
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
