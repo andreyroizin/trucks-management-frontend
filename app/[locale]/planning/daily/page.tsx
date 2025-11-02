@@ -29,9 +29,13 @@ import { useDailyRides, useAvailableDates } from '@/hooks/useDailyRides';
 import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
 import RideAssignmentCard from '@/components/RideAssignmentCard';
 import AddDriverDialog from '@/components/AddDriverDialog';
+import DriverAvailabilityDialog from '@/components/DriverAvailabilityDialog';
+import TruckAvailabilityDialog from '@/components/TruckAvailabilityDialog';
 import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemoveSecondDriver } from '@/hooks/useRideAssignment';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
 import { useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
+import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
+import OverallocationWarningDialog from '@/components/OverallocationWarningDialog';
 
 export default function DailyPlanningPage() {
     const router = useRouter();
@@ -79,6 +83,17 @@ export default function DailyPlanningPage() {
     const [activeFilter, setActiveFilter] = useState<'all' | 'assigned' | 'partial' | 'unassigned'>('all');
     const [selectedTruckFilter, setSelectedTruckFilter] = useState<string | null>(null);
     const [selectedDriverFilter, setSelectedDriverFilter] = useState<string | null>(null);
+    
+    // Availability management dialogs
+    const [driverAvailabilityDialog, setDriverAvailabilityDialog] = useState(false);
+    const [truckAvailabilityDialog, setTruckAvailabilityDialog] = useState(false);
+
+    // Conflict detection
+    const [conflictWarning, setConflictWarning] = useState<{
+        open: boolean;
+        conflict: ConflictWarning | null;
+        pendingAction: (() => void) | null;
+    }>({ open: false, conflict: null, pendingAction: null });
 
     // Driver-truck relationship mapping for auto-selection
     const driverTruckMaps = React.useMemo(() => {
@@ -104,6 +119,20 @@ export default function DailyPlanningPage() {
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;
 
+    // Convert daily rides data to weekly format for conflict detection
+    const createWeeklyRidesDataForConflict = () => {
+        if (!ridesData) return null;
+        
+        return {
+            weekStartDate: selectedDate,
+            days: [{
+                date: selectedDate,
+                dayName: new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }),
+                clients: ridesData.clients
+            }]
+        };
+    };
+
     // Update URL when date changes
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -113,10 +142,55 @@ export default function DailyPlanningPage() {
         }
     }, [selectedDate]);
 
-    // Assignment handlers (same as WeeklyAssignmentGrid)
+    // Conflict warning dialog handlers
+    const handleConflictWarningClose = () => {
+        setConflictWarning({ open: false, conflict: null, pendingAction: null });
+    };
+
+    const handleConflictWarningAssignAnyway = () => {
+        if (conflictWarning.pendingAction) {
+            conflictWarning.pendingAction();
+        }
+        handleConflictWarningClose();
+    };
+
+    // Assignment handlers with conflict detection
     const handleDriverAssign = async (rideId: string, driverId: string | null) => {
         console.log('Assigning driver:', driverId, 'to ride:', rideId);
         
+        const currentRide = ridesData?.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+
+        // If unassigning driver, proceed without conflict check
+        if (!driverId) {
+            return performDriverAssignmentWithAutoSelect(rideId, driverId);
+        }
+
+        // Check for driver conflict using custom availability
+        const weeklyRidesData = createWeeklyRidesDataForConflict();
+        if (weeklyRidesData) {
+            const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
+            const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+            const conflict = checkDriverConflict(weeklyRidesData, rideId, driverId, driverHours, driverName, availabilityData);
+
+            if (conflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict,
+                    pendingAction: () => performDriverAssignmentWithAutoSelect(rideId, driverId)
+                });
+                return;
+            }
+        }
+
+        // No conflict, proceed directly
+        performDriverAssignmentWithAutoSelect(rideId, driverId);
+    };
+
+    const performDriverAssignmentWithAutoSelect = async (rideId: string, driverId: string | null) => {
         const currentRide = ridesData?.clients
             .flatMap(client => client.rides)
             .find(ride => ride.id === rideId);
@@ -128,7 +202,7 @@ export default function DailyPlanningPage() {
             currentRide.assignedDriver?.id || null,
             currentRide.assignedTruck?.id || null,
             driverId,
-            null // We're not selecting a truck in this function
+            null
         );
         
         let finalTruckId = currentRide.assignedTruck?.id || null;
@@ -175,12 +249,45 @@ export default function DailyPlanningPage() {
             .find(ride => ride.id === rideId);
             
         if (!currentRide) return;
+
+        // If unassigning truck, proceed without conflict check
+        if (!truckId) {
+            return performTruckAssignmentWithAutoSelect(rideId, truckId);
+        }
+
+        // Check for truck conflict using custom availability
+        const weeklyRidesData = createWeeklyRidesDataForConflict();
+        if (weeklyRidesData) {
+            const truckHours = currentRide.plannedHours;
+            const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
+            const conflict = checkTruckConflict(weeklyRidesData, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
+
+            if (conflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict,
+                    pendingAction: () => performTruckAssignmentWithAutoSelect(rideId, truckId)
+                });
+                return;
+            }
+        }
+
+        // No conflict, proceed directly
+        performTruckAssignmentWithAutoSelect(rideId, truckId);
+    };
+
+    const performTruckAssignmentWithAutoSelect = async (rideId: string, truckId: string | null) => {
+        const currentRide = ridesData?.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
         
         // Check if we should auto-select driver
         const autoSelection = shouldAutoSelect(
             currentRide.assignedDriver?.id || null,
             currentRide.assignedTruck?.id || null,
-            null, // We're not selecting a driver in this function
+            null,
             truckId
         );
         
@@ -192,7 +299,7 @@ export default function DailyPlanningPage() {
             const assignedDriver = getTruckAssignedDriver(truckId, driverTruckMaps);
             if (assignedDriver) {
                 finalDriverId = assignedDriver.id;
-                finalDriverHours = currentRide.secondDriver ? 8 : currentRide.plannedHours; // Default hours
+                finalDriverHours = currentRide.secondDriver ? 8 : currentRide.plannedHours;
                 console.log(`Auto-selecting driver ${assignedDriver.fullName} for truck ${trucks?.find(t => t.id === truckId)?.licensePlate}`);
             }
         }
@@ -228,6 +335,67 @@ export default function DailyPlanningPage() {
             .find(ride => ride.id === rideId);
             
         if (!currentRide) return;
+
+        const weeklyRidesData = createWeeklyRidesDataForConflict();
+        if (!weeklyRidesData) {
+            performHoursChange(rideId, hours);
+            return;
+        }
+
+        // Check for truck conflict when changing total ride hours
+        if (currentRide.assignedTruck) {
+            const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck?.id)?.licensePlate || 'Unknown Truck';
+            const truckConflict = checkTruckConflict(weeklyRidesData, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate, availabilityData);
+
+            if (truckConflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict: truckConflict,
+                    pendingAction: () => performHoursChange(rideId, hours)
+                });
+                return;
+            }
+        }
+
+        // Check for primary driver conflict when changing total ride hours (if no second driver)
+        if (currentRide.assignedDriver && !currentRide.secondDriver) {
+            const driverName = drivers?.find(d => d.id === currentRide.assignedDriver?.id)?.fullName || 'Unknown Driver';
+            
+            console.log('Primary driver hours conflict check (total hours change):', {
+                driverId: currentRide.assignedDriver.id,
+                driverName,
+                newTotalHours: hours,
+                selectedDate,
+                availabilityData: availabilityData ? {
+                    drivers: availabilityData.drivers.map(d => ({
+                        id: d.driverId,
+                        availability: d.availability[selectedDate]
+                    }))
+                } : null
+            });
+            
+            const driverConflict = checkDriverHoursConflict(weeklyRidesData, rideId, currentRide.assignedDriver.id, hours, driverName, availabilityData);
+
+            if (driverConflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict: driverConflict,
+                    pendingAction: () => performHoursChange(rideId, hours)
+                });
+                return;
+            }
+        }
+
+        // No conflict, proceed directly
+        performHoursChange(rideId, hours);
+    };
+
+    const performHoursChange = async (rideId: string, hours: number) => {
+        const currentRide = ridesData?.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
         
         setAssigningRides(prev => new Set(prev).add(rideId));
         
@@ -256,6 +424,48 @@ export default function DailyPlanningPage() {
     const handleDriverHoursChange = async (rideId: string, driverId: string, hours: number) => {
         console.log('Changing driver hours for ride:', rideId, 'driver:', driverId, 'to:', hours);
         
+        const currentRide = ridesData?.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+
+        // Check for driver conflict when changing individual driver hours
+        const weeklyRidesData = createWeeklyRidesDataForConflict();
+        if (weeklyRidesData) {
+            const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+            
+            // Debug logging
+            console.log('Driver hours conflict check:', {
+                driverId,
+                driverName,
+                hours,
+                selectedDate,
+                availabilityData: availabilityData ? {
+                    drivers: availabilityData.drivers.map(d => ({
+                        id: d.driverId,
+                        availability: d.availability[selectedDate]
+                    }))
+                } : null
+            });
+            
+            const conflict = checkDriverHoursConflict(weeklyRidesData, rideId, driverId, hours, driverName, availabilityData);
+
+            if (conflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict,
+                    pendingAction: () => performDriverHoursChange(rideId, driverId, hours)
+                });
+                return;
+            }
+        }
+
+        // No conflict, proceed directly
+        performDriverHoursChange(rideId, driverId, hours);
+    };
+
+    const performDriverHoursChange = async (rideId: string, driverId: string, hours: number) => {
         const currentRide = ridesData?.clients
             .flatMap(client => client.rides)
             .find(ride => ride.id === rideId);
@@ -573,6 +783,28 @@ export default function DailyPlanningPage() {
                                 )}
                             />
                             <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<Person />}
+                                onClick={() => setDriverAvailabilityDialog(true)}
+                                disabled={isLoadingAvailability}
+                            >
+                                {availabilityData?.drivers.some(d => 
+                                    Object.values(d.availability).some(a => a.isCustom)
+                                ) ? 'Driver Availability ✓' : 'Set Driver Availability'}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<LocalShipping />}
+                                onClick={() => setTruckAvailabilityDialog(true)}
+                                disabled={isLoadingAvailability}
+                            >
+                                {availabilityData?.trucks.some(t => 
+                                    Object.values(t.availability).some(a => a.isCustom)
+                                ) ? 'Truck Availability ✓' : 'Set Truck Availability'}
+                            </Button>
+                            <Button
                                 startIcon={<Refresh />}
                                 onClick={() => refetchRides()}
                                 variant="outlined"
@@ -683,19 +915,30 @@ export default function DailyPlanningPage() {
                         )}
 
                         {/* Resource Hours Display */}
-                        {(selectedTruckFilter || selectedDriverFilter) && (
-                            <Box sx={{ ml: 'auto' }}>
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{ 
-                                        color: resourceHours > 8 ? 'error.main' : 'success.main',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {resourceName}: {resourceHours}h
-                                </Typography>
-                            </Box>
-                        )}
+                        {(selectedTruckFilter || selectedDriverFilter) && (() => {
+                            // Get custom availability hours for the selected resource
+                            const resourceId = selectedTruckFilter || selectedDriverFilter;
+                            const resourceType = selectedTruckFilter ? 'truck' : 'driver';
+                            const availableHours = availabilityData ? 
+                                (resourceType === 'driver' 
+                                    ? availabilityData.drivers.find(d => d.driverId === resourceId)?.availability[selectedDate]?.hours 
+                                    : availabilityData.trucks.find(t => t.truckId === resourceId)?.availability[selectedDate]?.hours
+                                ) || 8.0 : 8.0;
+                            
+                            return (
+                                <Box sx={{ ml: 'auto' }}>
+                                    <Typography 
+                                        variant="body2" 
+                                        sx={{ 
+                                            color: resourceHours > availableHours ? 'error.main' : 'success.main',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        {resourceName}: {resourceHours}h
+                                    </Typography>
+                                </Box>
+                            );
+                        })()}
                     </Box>
                 </CardContent>
             </Card>
@@ -804,6 +1047,31 @@ export default function DailyPlanningPage() {
                     : 8
                 }
                 isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+            />
+
+            {/* Driver Availability Dialog */}
+            <DriverAvailabilityDialog
+                open={driverAvailabilityDialog}
+                onClose={() => setDriverAvailabilityDialog(false)}
+                weekStartDate={weekStartDate}
+                companyId={user?.companyId}
+            />
+
+            {/* Truck Availability Dialog */}
+            <TruckAvailabilityDialog
+                open={truckAvailabilityDialog}
+                onClose={() => setTruckAvailabilityDialog(false)}
+                weekStartDate={weekStartDate}
+                companyId={user?.companyId}
+            />
+
+            {/* Overallocation Warning Dialog */}
+            <OverallocationWarningDialog
+                open={conflictWarning.open}
+                onClose={handleConflictWarningClose}
+                onAssignAnyway={handleConflictWarningAssignAnyway}
+                conflict={conflictWarning.conflict}
+                isLoading={conflictWarning.pendingAction ? assigningRides.size > 0 : false}
             />
         </Box>
     );
