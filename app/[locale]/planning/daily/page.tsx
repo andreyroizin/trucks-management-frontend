@@ -99,7 +99,7 @@ export default function DailyPlanningPage() {
     const { 
         data: availabilityData,
         isLoading: isLoadingAvailability 
-    } = useWeeklyAvailability(weekStartDate, companyId);
+    } = useWeeklyAvailability(weekStartDate, user?.companyId);
 
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;
