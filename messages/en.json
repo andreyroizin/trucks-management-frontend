@@ -3,8 +3,7 @@
     "driver": {
       "title": "Vervoer-Manager",
       "account": "My Account",
-      "submit": "Submit Workday",
-      "current": "My Workdays",
+      "myRides": "My Rides",
       "pending": "Pending Periods",
       "disputes": "Disputes",
       "archived": "Archived Periods",
@@ -16,18 +15,14 @@
     "driver": {
       "greeting": "Hello",
       "greetingName": "Hello, {first} {last}",
-      "description": "Keep track of your workdays and add new ones when needed.",
-      "submit": {
-        "title": "Submit Workday",
-        "subtitle": "Register a new workday quickly and easily"
-      },
-      "myWorkdays": {
-        "title": "My Workdays",
-        "subtitle": "View and manage all your registered workdays"
+      "description": "Manage your assigned rides and submit execution details.",
+      "myRides": {
+        "title": "My Rides",
+        "subtitle": "View assigned rides and submit execution details"
       },
       "disputes": {
         "title": "Disputes",
-        "subtitle": "Track your workdays with unresolved issues"
+        "subtitle": "Track your rides with unresolved issues"
       },
       "pending": {
         "title": "Under Review Periods",

@@ -162,28 +162,32 @@ export default function SideNavigation() {
                     </List>
                 </Collapse>
 
-                {/* Workdays parent */}
+                {/* Work Management parent */}
                 <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
                          active={pathNoLocale.startsWith('/partrides')
+                             || pathNoLocale.startsWith('/driver/rides')
                              || pathNoLocale.startsWith('/disputes')
                              || pathNoLocale.startsWith('/weeks-to-submit')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
-                    <ListItemText primary={t('navigation.workdays.title')}/>
+                    <ListItemText primary="Work Management"/>
                     <KeyboardArrowDown
                         sx={{transform: workdaysOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
                     />
                 </NavItem>
 
-                {/* Workdays children */}
+                {/* Work Management children */}
                 <Collapse in={workdaysOpen} timeout="auto" unmountOnExit>
                     <List disablePadding>
-                        <NavItem active={isActive('/partrides')} onClick={() => go('/partrides')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.workdays.overviewList')}/>
-                        </NavItem>
-                        <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
-                            <ListItemText primary="My Rides"/>
-                        </NavItem>
+                        {user?.roles?.includes('driver') ? (
+                            <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
+                                <ListItemText primary="My Rides"/>
+                            </NavItem>
+                        ) : (
+                            <NavItem active={isActive('/partrides')} onClick={() => go('/partrides')} sx={{pl: 6}}>
+                                <ListItemText primary={t('navigation.workdays.overviewList')}/>
+                            </NavItem>
+                        )}
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
                             <ListItemText primary={t('navigation.workdays.disputesList')}/>
                         </NavItem>
@@ -234,17 +238,19 @@ export default function SideNavigation() {
 
             {/* ───────── Bottom Actions ───────── */}
             <Box sx={{mt: 3}}>
-                {/* Create Workday */}
-                <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon/>}
-                    onClick={() => router.push('/partrides/create')}
-                    sx={{px: 1, py: 1}}
-                >
-                    {t('navigation.createNewWorkday')}
-                </Button>
+                {/* Create Workday - Only for non-drivers */}
+                {!user?.roles?.includes('driver') && (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        startIcon={<AddIcon/>}
+                        onClick={() => router.push('/partrides/create')}
+                        sx={{px: 1, py: 1}}
+                    >
+                        {t('navigation.createNewWorkday')}
+                    </Button>
+                )}
 
                 <Divider sx={{my: 3}}/>
 

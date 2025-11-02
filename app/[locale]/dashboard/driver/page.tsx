@@ -5,7 +5,6 @@ import {useRouter} from 'next/navigation';
 import DriverDashboardCardButton from '@/components/DriverDashboardCardButton';
 import {useEffect} from 'react';
 import {useAuth} from '@/hooks/useAuth';
-import AddIcon from "@mui/icons-material/Add";
 import {useTranslations} from 'next-intl';
 
 export default function DriverHomePage() {
@@ -65,17 +64,11 @@ export default function DriverHomePage() {
                     gap={1.5}
                     px={{xs: 2, md: 0}} // optional: adds side padding on small screens
                 > <DriverDashboardCardButton
-                    title={t('dashboard.driver.submit.title')}
-                    subtitle={t('dashboard.driver.submit.subtitle')}
-                    icon={<AddIcon fontSize="medium"/>}
+                    title={t('dashboard.driver.myRides.title')}
+                    subtitle={t('dashboard.driver.myRides.subtitle')}
                     highlight
-                    onClick={() => router.push('/partrides/create')}
+                    onClick={() => router.push('/driver/rides')}
                 />
-                    <DriverDashboardCardButton
-                        title={t('dashboard.driver.myWorkdays.title')}
-                        subtitle={t('dashboard.driver.myWorkdays.subtitle')}
-                        onClick={() => router.push('/periods/driver/current')}
-                    />
                     <DriverDashboardCardButton
                         title={t('dashboard.driver.disputes.title')}
                         subtitle={t('dashboard.driver.disputes.subtitle')}

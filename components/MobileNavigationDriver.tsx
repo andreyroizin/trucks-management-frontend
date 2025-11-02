@@ -104,16 +104,9 @@ export default function MobileNavigationDriver() {
                         </ListItemButton>
                         <Divider/>
 
-                        <ListItemButton onClick={() => go('/partrides/create')}
+                        <ListItemButton onClick={() => go('/driver/rides')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('submit')}/>
-                            <ArrowRightIcon fontSize="small"/>
-                        </ListItemButton>
-                        <Divider/>
-
-                        <ListItemButton onClick={() => go('/periods/driver/current')}
-                                        sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('current')}/>
+                            <ListItemText primary={t('myRides')}/>
                             <ArrowRightIcon fontSize="small"/>
                         </ListItemButton>
                         <Divider/>
