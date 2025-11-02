@@ -626,26 +626,27 @@ function EditPartRidePageWrapper() {
                                         )}
                                     />
 
-                                    {/*Various Compensation*/}
-                                    <Controller
-                                        name="variousCompensation"
-                                        control={control}
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                type="number"
-                                                variant="outlined"
-                                                fullWidth
-                                                margin="normal"
-                                                sx={{mt: 2}}
+                                    {/* Various Compensation - Admin only */}
+                                    {!isDriverRole && (
+                                        <Controller
+                                            name="variousCompensation"
+                                            control={control}
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    type="number"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    sx={{mt: 2}}
                                                     label={t('variousCompensation.label')}
                                                     placeholder={t('variousCompensation.placeholder')}
                                                     error={!!errors.variousCompensation}
                                                     helperText={errors.variousCompensation?.message || t('variousCompensation.helperText')}
-
-                                            />
-                                        )}
-                                    />
+                                                />
+                                            )}
+                                        />
+                                    )}
                                 </>
                             )}
                             {/* Distance/ Kilometers */}

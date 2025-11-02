@@ -551,24 +551,27 @@ export default function CreatePartRidePage() {
                                     )}
                                 />
 
-                                <Controller
-                                    name="variousCompensation"
-                                    control={control}
-                                    render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            type="number"
-                                            variant="outlined"
-                                            fullWidth
-                                            margin="normal"
-                                            sx={{mt: 2}}
-                                            label={t('form.variousCompensation.label')}
-                                            placeholder={t('form.variousCompensation.placeholder')}
-                                            error={!!errors.variousCompensation}
-                                            helperText={errors.variousCompensation?.message || t('form.variousCompensation.helperText')}
-                                        />
-                                    )}
-                                />
+                                {/* Various Compensation - Admin only */}
+                                {!isDriverRole && (
+                                    <Controller
+                                        name="variousCompensation"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                type="number"
+                                                variant="outlined"
+                                                fullWidth
+                                                margin="normal"
+                                                sx={{mt: 2}}
+                                                label={t('form.variousCompensation.label')}
+                                                placeholder={t('form.variousCompensation.placeholder')}
+                                                error={!!errors.variousCompensation}
+                                                helperText={errors.variousCompensation?.message || t('form.variousCompensation.helperText')}
+                                            />
+                                        )}
+                                    />
+                                )}
                                 {/*/!* turnover *!/*/}
                                 {/*{!isDriverRole && (*/}
                                 {/*    <>*/}

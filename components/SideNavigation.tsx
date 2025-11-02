@@ -181,6 +181,9 @@ export default function SideNavigation() {
                         <NavItem active={isActive('/partrides')} onClick={() => go('/partrides')} sx={{pl: 6}}>
                             <ListItemText primary={t('navigation.workdays.overviewList')}/>
                         </NavItem>
+                        <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
+                            <ListItemText primary="My Rides"/>
+                        </NavItem>
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
                             <ListItemText primary={t('navigation.workdays.disputesList')}/>
                         </NavItem>

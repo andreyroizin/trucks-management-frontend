@@ -1,0 +1,594 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  Alert,
+  CircularProgress,
+  Divider,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import { 
+  Delete as DeleteIcon, 
+  Download as DownloadIcon, 
+  Upload as UploadIcon,
+  AttachFile as AttachFileIcon 
+} from '@mui/icons-material';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { RideDriverExecution, SubmitExecutionRequest } from '@/types/rideExecution';
+import { ExecutionFile } from '@/types/myAssignedRides';
+import { useSubmitExecution, useDeleteMyExecution } from '@/hooks/useRideExecution';
+import { 
+  useMyExecutionFiles, 
+  useUploadExecutionFile, 
+  useDeleteExecutionFile, 
+  useDownloadExecutionFile 
+} from '@/hooks/useMyAssignedRides';
+import { useSnack } from '@/providers/SnackProvider';
+import { useAuth } from '@/hooks/useAuth';
+
+const schema = yup.object({
+  actualStartTime: yup.string().required('Start time is required'),
+  actualEndTime: yup.string().required('End time is required'),
+  actualRestTime: yup.string().optional(),
+  actualKilometers: yup.number().min(0, 'Kilometers must be positive').optional(),
+  extraKilometers: yup.number().min(0, 'Extra kilometers must be positive').optional(),
+  actualCosts: yup.number().min(0, 'Costs must be positive').optional(),
+  costsDescription: yup.string().optional(),
+  turnover: yup.number().min(0, 'Turnover must be positive').optional(),
+  remark: yup.string().optional(),
+  variousCompensation: yup.number().min(0, 'Compensation must be positive').optional()
+});
+
+interface Props {
+  rideId: string;
+  execution?: RideDriverExecution | null;
+  onSuccess?: () => void;
+}
+
+export default function RideDriverExecutionForm({ rideId, execution, onSuccess }: Props) {
+  const showSnack = useSnack();
+  const { user } = useAuth();
+  
+  // Check if current user is a driver (should not see turnover/various compensation)
+  const isDriverRole = user?.roles?.includes('driver');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const submitExecutionMutation = useSubmitExecution();
+  const deleteExecutionMutation = useDeleteMyExecution();
+  const { data: files, refetch: refetchFiles } = useMyExecutionFiles(rideId);
+  const uploadFileMutation = useUploadExecutionFile();
+  const deleteFileMutation = useDeleteExecutionFile();
+  const downloadFileMutation = useDownloadExecutionFile();
+
+  const { control, handleSubmit, formState: { errors }, reset, watch } = useForm<SubmitExecutionRequest>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      actualStartTime: execution?.actualStartTime || '',
+      actualEndTime: execution?.actualEndTime || '',
+      actualRestTime: execution?.actualRestTime || '',
+      actualKilometers: execution?.actualKilometers || undefined,
+      extraKilometers: execution?.extraKilometers || undefined,
+      actualCosts: execution?.actualCosts || undefined,
+      costsDescription: execution?.costsDescription || '',
+      turnover: execution?.turnover || undefined,
+      remark: execution?.remark || '',
+      variousCompensation: execution?.variousCompensation || undefined
+    }
+  });
+
+  // Reset form when execution data changes
+  useEffect(() => {
+    if (execution) {
+      reset({
+        actualStartTime: execution.actualStartTime || '',
+        actualEndTime: execution.actualEndTime || '',
+        actualRestTime: execution.actualRestTime || '',
+        actualKilometers: execution.actualKilometers || undefined,
+        extraKilometers: execution.extraKilometers || undefined,
+        actualCosts: execution.actualCosts || undefined,
+        costsDescription: execution.costsDescription || '',
+        turnover: execution.turnover || undefined,
+        remark: execution.remark || '',
+        variousCompensation: execution.variousCompensation || undefined
+      });
+    }
+  }, [execution, reset]);
+
+  const onSubmit = async (data: SubmitExecutionRequest) => {
+    console.log('Form submission started with data:', data);
+    console.log('Form errors:', errors);
+    
+    try {
+      await submitExecutionMutation.mutateAsync({ rideId, data });
+      showSnack('Execution submitted successfully', 'success');
+      onSuccess?.();
+    } catch (error: any) {
+      console.error('Submission error:', error);
+      showSnack(error.message || 'Failed to submit execution', 'error');
+    }
+  };
+
+  const handleDeleteExecution = async () => {
+    try {
+      await deleteExecutionMutation.mutateAsync(rideId);
+      showSnack('Execution deleted successfully', 'success');
+      setDeleteDialogOpen(false);
+      onSuccess?.();
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to delete execution', 'error');
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+
+    try {
+      await uploadFileMutation.mutateAsync({ rideId, file: selectedFile });
+      showSnack('File uploaded successfully', 'success');
+      setSelectedFile(null);
+      refetchFiles();
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to upload file', 'error');
+    }
+  };
+
+  const handleFileDelete = async (fileId: string) => {
+    try {
+      await deleteFileMutation.mutateAsync({ rideId, fileId });
+      showSnack('File deleted successfully', 'success');
+      refetchFiles();
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to delete file', 'error');
+    }
+  };
+
+  const handleFileDownload = async (fileId: string, fileName: string) => {
+    try {
+      await downloadFileMutation.mutateAsync({ rideId, fileId, fileName });
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to download file', 'error');
+    }
+  };
+
+  const canDelete = execution && (execution.status === 0 || execution.status === 2); // Pending or Rejected
+  const isReadOnly = execution && execution.status === 1; // Approved
+
+  return (
+    <Box>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container spacing={3}>
+          {/* Time Fields */}
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Work Time
+            </Typography>
+          </Grid>
+          
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="actualStartTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Start Time"
+                  type="time"
+                  fullWidth
+                  error={!!errors.actualStartTime}
+                  helperText={errors.actualStartTime?.message}
+                  InputLabelProps={{ shrink: true }}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="actualEndTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="End Time"
+                  type="time"
+                  fullWidth
+                  error={!!errors.actualEndTime}
+                  helperText={errors.actualEndTime?.message}
+                  InputLabelProps={{ shrink: true }}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="actualRestTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Rest Time"
+                  type="time"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Distance and Costs */}
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Distance & Costs
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="actualKilometers"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Total Kilometers"
+                  type="number"
+                  fullWidth
+                  error={!!errors.actualKilometers}
+                  helperText={errors.actualKilometers?.message}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="extraKilometers"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Extra Kilometers"
+                  type="number"
+                  fullWidth
+                  error={!!errors.extraKilometers}
+                  helperText={errors.extraKilometers?.message}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name="actualCosts"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Costs (€)"
+                  type="number"
+                  step="0.01"
+                  fullWidth
+                  error={!!errors.actualCosts}
+                  helperText={errors.actualCosts?.message}
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Turnover - Admin only */}
+          {!isDriverRole && (
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="turnover"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Turnover (€)"
+                    type="number"
+                    step="0.01"
+                    fullWidth
+                    error={!!errors.turnover}
+                    helperText={errors.turnover?.message}
+                    disabled={isReadOnly}
+                  />
+                )}
+              />
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            <Controller
+              name="costsDescription"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Costs Description"
+                  multiline
+                  rows={2}
+                  fullWidth
+                  placeholder="Fuel, tolls, parking, etc."
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Additional Fields */}
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Additional Information
+            </Typography>
+          </Grid>
+
+          {/* Various Compensation - Admin only */}
+          {!isDriverRole && (
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="variousCompensation"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Various Compensation (€)"
+                    type="number"
+                    step="0.01"
+                    fullWidth
+                    error={!!errors.variousCompensation}
+                    helperText={errors.variousCompensation?.message}
+                    disabled={isReadOnly}
+                  />
+                )}
+              />
+            </Grid>
+          )}
+
+
+          <Grid item xs={12}>
+            <Controller
+              name="remark"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Remarks"
+                  multiline
+                  rows={3}
+                  fullWidth
+                  placeholder="Any additional notes about this ride..."
+                  disabled={isReadOnly}
+                />
+              )}
+            />
+          </Grid>
+
+          {/* Calculated Compensations Display */}
+          {execution && (
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Calculated Compensations
+              </Typography>
+              <Grid container spacing={2}>
+                {(execution.decimalHours ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Total Hours</Typography>
+                    <Typography variant="h6">{execution.decimalHours}h</Typography>
+                  </Grid>
+                )}
+                {(execution.nightAllowance ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Night Allowance</Typography>
+                    <Typography variant="h6">€{execution.nightAllowance!.toFixed(2)}</Typography>
+                  </Grid>
+                )}
+                {(execution.kilometerReimbursement ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Kilometer Reimbursement</Typography>
+                    <Typography variant="h6">€{execution.kilometerReimbursement!.toFixed(2)}</Typography>
+                  </Grid>
+                )}
+                {(execution.consignmentFee ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Consignment Fee</Typography>
+                    <Typography variant="h6">€{execution.consignmentFee!.toFixed(2)}</Typography>
+                  </Grid>
+                )}
+                {(execution.taxFreeCompensation ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Tax Free Compensation</Typography>
+                    <Typography variant="h6">€{execution.taxFreeCompensation!.toFixed(2)}</Typography>
+                  </Grid>
+                )}
+                {(execution.standOver ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Stand Over</Typography>
+                    <Typography variant="h6">€{execution.standOver!.toFixed(2)}</Typography>
+                  </Grid>
+                )}
+                {(execution.saturdayHours ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Saturday Hours</Typography>
+                    <Typography variant="h6">{execution.saturdayHours}h</Typography>
+                  </Grid>
+                )}
+                {(execution.sundayHolidayHours ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Sunday/Holiday Hours</Typography>
+                    <Typography variant="h6">{execution.sundayHolidayHours}h</Typography>
+                  </Grid>
+                )}
+                {(execution.vacationHoursEarned ?? 0) > 0 && (
+                  <Grid item xs={6} sm={3}>
+                    <Typography variant="body2" color="text.secondary">Vacation Hours Earned</Typography>
+                    <Typography variant="h6">{execution.vacationHoursEarned}h</Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          )}
+
+          {/* Action Buttons */}
+          <Grid item xs={12}>
+            <Box display="flex" gap={2} mt={2}>
+              {!isReadOnly && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={submitExecutionMutation.isPending}
+                  startIcon={submitExecutionMutation.isPending ? <CircularProgress size={20} /> : null}
+                >
+                  {execution ? 'Update Execution' : 'Submit Execution'}
+                </Button>
+              )}
+
+              {canDelete && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  disabled={deleteExecutionMutation.isPending}
+                >
+                  Delete Execution
+                </Button>
+              )}
+
+              {execution?.status !== undefined && (
+                <Chip 
+                  label={execution.status === 0 ? 'Pending' : execution.status === 1 ? 'Approved' : execution.status === 2 ? 'Rejected' : 'Dispute'}
+                  color={execution.status === 0 ? 'warning' : execution.status === 1 ? 'success' : execution.status === 2 ? 'error' : 'secondary'}
+                />
+              )}
+            </Box>
+          </Grid>
+        </Grid>
+      </form>
+
+      {/* File Attachments Section */}
+      {execution && (
+        <Box mt={4}>
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            File Attachments
+          </Typography>
+
+          {/* File Upload */}
+          {!isReadOnly && (
+            <Box mb={3}>
+              <input
+                type="file"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                style={{ display: 'none' }}
+                id="file-upload"
+                accept=".pdf,.jpg,.jpeg,.png"
+              />
+              <Box display="flex" gap={2} alignItems="center">
+                <label htmlFor="file-upload">
+                  <Button variant="outlined" component="span" startIcon={<AttachFileIcon />}>
+                    Choose File
+                  </Button>
+                </label>
+                {selectedFile && (
+                  <>
+                    <Typography variant="body2">{selectedFile.name}</Typography>
+                    <Button
+                      variant="contained"
+                      onClick={handleFileUpload}
+                      disabled={uploadFileMutation.isPending}
+                      startIcon={uploadFileMutation.isPending ? <CircularProgress size={20} /> : <UploadIcon />}
+                    >
+                      Upload
+                    </Button>
+                  </>
+                )}
+              </Box>
+            </Box>
+          )}
+
+          {/* Files List */}
+          {files && files.length > 0 ? (
+            <List>
+              {files.map((file) => (
+                <ListItem key={file.id} divider>
+                  <ListItemText
+                    primary={file.fileName}
+                    secondary={`${(file.fileSize / 1024).toFixed(1)} KB • Uploaded ${new Date(file.uploadedAt).toLocaleDateString()}`}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => handleFileDownload(file.id, file.fileName)}
+                      disabled={downloadFileMutation.isPending}
+                    >
+                      <DownloadIcon />
+                    </IconButton>
+                    {!isReadOnly && (
+                      <IconButton
+                        onClick={() => handleFileDelete(file.id)}
+                        disabled={deleteFileMutation.isPending}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No files uploaded yet
+            </Typography>
+          )}
+        </Box>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete Execution</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this execution? This action cannot be undone.
+            All uploaded files will also be deleted.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button 
+            onClick={handleDeleteExecution} 
+            color="error" 
+            disabled={deleteExecutionMutation.isPending}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}
+
