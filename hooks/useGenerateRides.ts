@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
@@ -63,7 +63,15 @@ const generateRides = async (input: GenerateRidesInput): Promise<GenerateRidesRe
 };
 
 export const useGenerateRides = () => {
+    const queryClient = useQueryClient();
+    
     return useMutation<GenerateRidesResponse, Error, GenerateRidesInput>({
         mutationFn: generateRides,
+        onSuccess: () => {
+            // Invalidate weekly rides queries to trigger refetch
+            queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+            // Also invalidate daily rides queries in case user switches to daily view
+            queryClient.invalidateQueries({ queryKey: ['daily-rides'] });
+        },
     });
 };

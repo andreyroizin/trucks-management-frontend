@@ -17,6 +17,7 @@ export type AssignedTruck = {
 
 export type WeeklyRide = {
     id: string;
+    tripNumber: string | null; // Trip number for the ride
     plannedHours: number; // Total ride hours (for truck)
     routeFromName: string | null;
     routeToName: string | null;

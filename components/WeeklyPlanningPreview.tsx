@@ -320,11 +320,9 @@ export default function WeeklyPlanningPreview() {
             // Reset modifications since rides are now generated
             setModifiedCounts({});
             
-            // Show success message
-            alert(`Success! ${result.totalRidesCreated} rides created for the week of ${new Date(weekStartDate).toLocaleDateString()}. Switching to assignment view...`);
-            
             // The component will automatically switch to assignment view on next render
-            // because hasRidesForWeek() will now return true
+            // because hasRidesForWeek() will now return true after query invalidation
+            console.log(`Success! ${result.totalRidesCreated} rides created for the week of ${new Date(weekStartDate).toLocaleDateString()}. Switching to assignment view...`);
             
         } catch (error: any) {
             console.error('Failed to generate rides:', error);

@@ -28,6 +28,7 @@ import {
 import { WeeklyRide } from '@/hooks/useWeeklyRides';
 import { Driver, Truck } from '@/hooks/useDriversAndTrucks';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
+import { useUpdateTripNumber } from '@/hooks/useTripNumber';
 import RideDetailsDialog from './RideDetailsDialog';
 
 type Props = {
@@ -76,6 +77,13 @@ export default function RideAssignmentCard({
     
     // Ride details dialog state
     const [detailsDialogOpen, setDetailsDialogOpen] = useState<boolean>(false);
+    
+    // Trip number editing state
+    const [tripNumberEditing, setTripNumberEditing] = useState(false);
+    const [tripNumberValue, setTripNumberValue] = useState(ride.tripNumber || '');
+    
+    // Trip number mutation
+    const updateTripNumberMutation = useUpdateTripNumber();
 
     // Sync local state with ride data (important for handling cancellations)
     useEffect(() => {
@@ -106,6 +114,11 @@ export default function RideAssignmentCard({
             setSecondDriverHoursDisplay('');
         }
     }, [ride.secondDriver?.plannedHours]);
+
+    // Sync trip number value with ride data
+    useEffect(() => {
+        setTripNumberValue(ride.tripNumber || '');
+    }, [ride.tripNumber]);
 
     const isUnassigned = !ride.assignedDriver || !ride.assignedTruck;
     const isPartiallyAssigned = (ride.assignedDriver && !ride.assignedTruck) || (!ride.assignedDriver && ride.assignedTruck);
@@ -147,6 +160,43 @@ export default function RideAssignmentCard({
         debouncedDriverHoursChange(ride.id, driverId, hours);
     };
 
+    // Trip number handlers
+    const handleTripNumberEdit = () => {
+        setTripNumberEditing(true);
+    };
+
+    const handleTripNumberSave = async () => {
+        try {
+            const trimmedValue = tripNumberValue.trim();
+            const finalValue = trimmedValue === '' ? null : trimmedValue;
+            
+            await updateTripNumberMutation.mutateAsync({
+                rideId: ride.id,
+                tripNumber: finalValue
+            });
+            
+            setTripNumberEditing(false);
+        } catch (error) {
+            console.error('Failed to update trip number:', error);
+            // Revert to original value on error
+            setTripNumberValue(ride.tripNumber || '');
+            setTripNumberEditing(false);
+        }
+    };
+
+    const handleTripNumberCancel = () => {
+        setTripNumberValue(ride.tripNumber || '');
+        setTripNumberEditing(false);
+    };
+
+    const handleTripNumberKeyPress = (event: React.KeyboardEvent) => {
+        if (event.key === 'Enter') {
+            handleTripNumberSave();
+        } else if (event.key === 'Escape') {
+            handleTripNumberCancel();
+        }
+    };
+
     // Helper function to format time for display (HH:mm:ss to HH:mm)
     const formatTimeForDisplay = (time: string | null) => {
         if (!time) return null;
@@ -181,18 +231,61 @@ export default function RideAssignmentCard({
             }}
         >
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                {/* Header with Status Label and Client Name */}
+                {/* Header with Trip Number and Status */}
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                        <Chip 
-                            label={getStatusText()} 
-                            size="small" 
-                            color={getStatusColor()}
-                            variant="outlined"
-                        />
-                        <Typography variant="body1" fontWeight="medium">
-                            {clientName}
-                        </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flexGrow: 1 }}>
+                        {/* Trip Number - Primary Display */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {tripNumberEditing ? (
+                                <TextField
+                                    size="small"
+                                    value={tripNumberValue}
+                                    onChange={(e) => setTripNumberValue(e.target.value)}
+                                    onKeyDown={handleTripNumberKeyPress}
+                                    onBlur={handleTripNumberSave}
+                                    placeholder="Enter trip number"
+                                    autoFocus
+                                    sx={{ 
+                                        '& .MuiInputBase-root': { 
+                                            fontSize: '1.1rem',
+                                            fontWeight: 'bold'
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <Typography 
+                                    variant="h6" 
+                                    fontWeight="bold"
+                                    onClick={handleTripNumberEdit}
+                                    sx={{ 
+                                        cursor: 'pointer',
+                                        color: ride.tripNumber ? 'text.primary' : 'text.secondary',
+                                        fontStyle: ride.tripNumber ? 'normal' : 'italic',
+                                        '&:hover': {
+                                            backgroundColor: 'action.hover',
+                                            borderRadius: 1,
+                                            px: 1,
+                                            mx: -1
+                                        }
+                                    }}
+                                >
+                                    {ride.tripNumber || 'Click to add trip number'}
+                                </Typography>
+                            )}
+                        </Box>
+                        
+                        {/* Client Name and Status */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Chip 
+                                label={getStatusText()} 
+                                size="small" 
+                                color={getStatusColor()}
+                                variant="outlined"
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                                {clientName}
+                            </Typography>
+                        </Box>
                     </Box>
                 </Box>
 
