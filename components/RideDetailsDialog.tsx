@@ -89,7 +89,7 @@ export default function RideDetailsDialog({ open, onClose, ride, clientName }: P
     };
 
     // Format time for display (HH:mm:ss to HH:mm)
-    const formatTimeForInput = (time: string | null) => {
+    const formatTimeForInput = (time: string | null | undefined) => {
         if (!time) return '';
         // Convert HH:mm:ss to HH:mm for input[type="time"]
         return time.substring(0, 5);
