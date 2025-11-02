@@ -523,6 +523,49 @@ export default function DailyPlanningPage() {
             
         if (!currentRide) return;
 
+        // Check for conflicts for both primary and second driver
+        const weeklyRidesData = createWeeklyRidesDataForConflict();
+        if (weeklyRidesData) {
+            const primaryDriverName = currentRide.assignedDriver?.fullName || 'Primary Driver';
+            const secondDriverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
+
+            // Check primary driver conflict (if hours are changing)
+            if (currentRide.assignedDriver && primaryDriverHours !== currentRide.assignedDriver.plannedHours) {
+                const primaryConflict = checkDriverHoursConflict(weeklyRidesData, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName, availabilityData);
+                if (primaryConflict) {
+                    setConflictWarning({
+                        open: true,
+                        conflict: primaryConflict,
+                        pendingAction: () => performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours)
+                    });
+                    return;
+                }
+            }
+
+            // Check second driver conflict
+            const secondConflict = checkDriverConflict(weeklyRidesData, rideId, driverId, secondDriverHours, secondDriverName, availabilityData);
+            if (secondConflict) {
+                setConflictWarning({
+                    open: true,
+                    conflict: secondConflict,
+                    pendingAction: () => performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours)
+                });
+                return;
+            }
+        }
+
+        // No conflicts, proceed directly
+        performAddSecondDriver(rideId, driverId, secondDriverHours, primaryDriverHours);
+        setAddDriverDialog({ open: false, rideId: null });
+    };
+
+    const performAddSecondDriver = async (rideId: string, driverId: string, secondDriverHours: number, primaryDriverHours: number) => {
+        const currentRide = ridesData?.clients
+            .flatMap(client => client.rides)
+            .find(ride => ride.id === rideId);
+            
+        if (!currentRide) return;
+
         setAssigningRides(prev => new Set(prev).add(rideId));
         
         try {
@@ -547,8 +590,7 @@ export default function DailyPlanningPage() {
                 });
             }
 
-            // Close dialog
-            setAddDriverDialog({ open: false, rideId: null });
+            console.log('Added second driver:', driverId, 'with hours:', secondDriverHours, 'primary driver hours:', primaryDriverHours, 'to ride:', rideId);
         } catch (error) {
             console.error('Failed to add second driver:', error);
         } finally {

@@ -534,7 +534,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         // Check primary driver conflict (if hours are changing)
         if (currentRide.assignedDriver && primaryDriverHours !== currentRide.assignedDriver.plannedHours) {
-            const primaryConflict = checkDriverHoursConflict(ridesData, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName);
+            const primaryConflict = checkDriverHoursConflict(ridesData, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName, availabilityData);
             if (primaryConflict) {
                 setConflictWarning({
                     open: true,
@@ -546,7 +546,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         }
 
         // Check second driver conflict
-        const secondConflict = checkDriverConflict(ridesData, rideId, driverId, secondDriverHours, secondDriverName);
+        const secondConflict = checkDriverConflict(ridesData, rideId, driverId, secondDriverHours, secondDriverName, availabilityData);
         if (secondConflict) {
             setConflictWarning({
                 open: true,
@@ -624,7 +624,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         // Check for second driver conflict (using default 4 hours)
         const defaultHours = 4;
         const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
-        const conflict = checkDriverConflict(ridesData, rideId, driverId, defaultHours, driverName);
+        const conflict = checkDriverConflict(ridesData, rideId, driverId, defaultHours, driverName, availabilityData);
 
         if (conflict) {
             setConflictWarning({
