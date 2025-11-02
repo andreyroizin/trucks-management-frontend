@@ -25,7 +25,6 @@ import {
     Assignment,
     Person,
     LocalShipping,
-    Refresh,
     ChevronLeft,
     ChevronRight
 } from '@mui/icons-material';
@@ -1001,14 +1000,6 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 {availabilityData?.trucks.some(t => 
                                     Object.values(t.availability).some(a => a.isCustom)
                                 ) ? 'Truck Availability ✓' : 'Set Truck Availability'}
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                startIcon={<Refresh />}
-                                onClick={() => refetchRides()}
-                            >
-                                Refresh
                             </Button>
                         </Box>
                     </Box>

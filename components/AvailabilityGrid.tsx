@@ -148,23 +148,67 @@ export default function AvailabilityGrid({
 
     // Quick action handlers
     const handleSetAllWeek = (resourceId: string, hours: number) => {
+        // Update local changes first for immediate visual feedback
+        setLocalChanges(prev => ({
+            ...prev,
+            [resourceId]: weekDates.reduce((acc, { date }) => ({
+                ...acc,
+                [date]: hours.toString()
+            }), prev[resourceId] || {})
+        }));
+        
+        // Then notify parent
         weekDates.forEach(({ date }) => {
             onAvailabilityChange(resourceId, date, hours);
         });
     };
 
     const handleWeekdaysOnly = (resourceId: string, weekdayHours: number) => {
+        // Update local changes first for immediate visual feedback
+        const updates: Record<string, string> = {};
         weekDates.forEach(({ date }, index) => {
             // Monday = 0, Sunday = 6
             const isWeekend = index === 5 || index === 6; // Saturday or Sunday
+            const hours = isWeekend ? 0 : weekdayHours;
+            updates[date] = hours.toString();
+        });
+        
+        setLocalChanges(prev => ({
+            ...prev,
+            [resourceId]: {
+                ...prev[resourceId],
+                ...updates
+            }
+        }));
+        
+        // Then notify parent
+        weekDates.forEach(({ date }, index) => {
+            const isWeekend = index === 5 || index === 6;
             onAvailabilityChange(resourceId, date, isWeekend ? 0 : weekdayHours);
         });
     };
 
     const handleWeekendOff = (resourceId: string) => {
+        // Update local changes first for immediate visual feedback
+        const updates: Record<string, string> = {};
         weekDates.forEach(({ date }, index) => {
-            // Only set weekend days to 0
             const isWeekend = index === 5 || index === 6; // Saturday or Sunday
+            if (isWeekend) {
+                updates[date] = '0';
+            }
+        });
+        
+        setLocalChanges(prev => ({
+            ...prev,
+            [resourceId]: {
+                ...prev[resourceId],
+                ...updates
+            }
+        }));
+        
+        // Then notify parent
+        weekDates.forEach(({ date }, index) => {
+            const isWeekend = index === 5 || index === 6;
             if (isWeekend) {
                 onAvailabilityChange(resourceId, date, 0);
             }
@@ -172,6 +216,16 @@ export default function AvailabilityGrid({
     };
 
     const handleResetAll = (resourceId: string) => {
+        // Update local changes first for immediate visual feedback
+        setLocalChanges(prev => ({
+            ...prev,
+            [resourceId]: weekDates.reduce((acc, { date }) => ({
+                ...acc,
+                [date]: '8'
+            }), prev[resourceId] || {})
+        }));
+        
+        // Then notify parent
         weekDates.forEach(({ date }) => {
             onAvailabilityChange(resourceId, date, 8.0);
         });
@@ -202,17 +256,17 @@ export default function AvailabilityGrid({
             {/* Quick Actions */}
             <Box sx={{ mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                 <Typography variant="subtitle2" sx={{ mr: 2 }}>
-                    Quick Actions:
+                    Quick Actions (applies to all {type === 'driver' ? 'drivers' : 'trucks'}):
                 </Typography>
                 <Button
                     size="small"
                     variant="outlined"
                     startIcon={<AccessTimeOutlined />}
                     onClick={() => {
-                        // Apply to first resource as example - in real use, would need resource selection
-                        if (resources.length > 0) {
-                            handleSetAllWeek(getResourceId(resources[0]), 8);
-                        }
+                        // Apply to all resources
+                        resources.forEach(resource => {
+                            handleSetAllWeek(getResourceId(resource), 8);
+                        });
                     }}
                 >
                     Set All: 8h
@@ -222,9 +276,9 @@ export default function AvailabilityGrid({
                     variant="outlined"
                     startIcon={<ContentCopyOutlined />}
                     onClick={() => {
-                        if (resources.length > 0) {
-                            handleWeekdaysOnly(getResourceId(resources[0]), 8);
-                        }
+                        resources.forEach(resource => {
+                            handleWeekdaysOnly(getResourceId(resource), 8);
+                        });
                     }}
                 >
                     Weekdays: 8h
@@ -234,9 +288,9 @@ export default function AvailabilityGrid({
                     variant="outlined"
                     startIcon={<EventBusyOutlined />}
                     onClick={() => {
-                        if (resources.length > 0) {
-                            handleWeekendOff(getResourceId(resources[0]));
-                        }
+                        resources.forEach(resource => {
+                            handleWeekendOff(getResourceId(resource));
+                        });
                     }}
                 >
                     Weekend Off
@@ -246,9 +300,9 @@ export default function AvailabilityGrid({
                     variant="outlined"
                     startIcon={<RestoreOutlined />}
                     onClick={() => {
-                        if (resources.length > 0) {
-                            handleResetAll(getResourceId(resources[0]));
-                        }
+                        resources.forEach(resource => {
+                            handleResetAll(getResourceId(resource));
+                        });
                     }}
                 >
                     Reset All
@@ -317,15 +371,6 @@ export default function AvailabilityGrid({
                                                     }
                                                 }}
                                             />
-                                            {isCustom(resource, date) && (
-                                                <Chip
-                                                    size="small"
-                                                    label="Custom"
-                                                    color="primary"
-                                                    variant="outlined"
-                                                    sx={{ mt: 0.5, fontSize: '0.6rem', height: 16 }}
-                                                />
-                                            )}
                                         </TableCell>
                                     ))}
                                     <TableCell align="center">
