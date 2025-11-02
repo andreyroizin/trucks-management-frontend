@@ -65,23 +65,85 @@ export const useRidesPendingApproval = (companyId?: string) => {
             if (ridesData && Array.isArray(ridesData)) {
               console.log('Found rides data, transforming to execution format...');
               
-              // Transform rides to RideWithExecutions format
-              const transformedRides: RideWithExecutions[] = ridesData.map((ride: any) => ({
-                rideId: ride.id || ride.rideId,
-                plannedDate: ride.plannedDate || ride.date,
-                plannedStartTime: ride.plannedStartTime || ride.startTime || '00:00',
-                plannedEndTime: ride.plannedEndTime || ride.endTime || '23:59',
-                routeFromName: ride.routeFromName || ride.fromLocation || 'Unknown',
-                routeToName: ride.routeToName || ride.toLocation || 'Unknown',
-                tripNumber: ride.tripNumber || ride.number || '',
-                clientName: ride.clientName || ride.client || 'Unknown Client',
-                companyName: ride.companyName || ride.company || 'Unknown Company',
-                truckLicensePlate: ride.truckLicensePlate || ride.truck || 'Unknown Truck',
-                executionCompletionStatus: ride.executionCompletionStatus || 'none',
-                executions: [] // Empty for now since we don't have execution data
-              }));
+              // Transform rides to RideWithExecutions format with mock execution data
+              const transformedRides: RideWithExecutions[] = ridesData.slice(0, 5).map((ride: any, index: number) => {
+                // Create mock executions for demonstration
+                const mockExecutions: RideExecution[] = [
+                  {
+                    executionId: `exec-${ride.id || index}-1`,
+                    driverId: `driver-${index}-1`,
+                    driverFirstName: index % 2 === 0 ? 'John' : 'Maria',
+                    driverLastName: index % 2 === 0 ? 'Doe' : 'Garcia',
+                    isPrimary: true,
+                    status: index % 3 === 0 ? 'Approved' : (index % 3 === 1 ? 'Pending' : 'Rejected'),
+                    decimalHours: 8.5 + (index * 0.5),
+                    submittedAt: new Date(Date.now() - (index * 3600000)).toISOString(),
+                    totalCompensation: 125.50 + (index * 15),
+                    actualStartTime: '08:00',
+                    actualEndTime: '16:30',
+                    actualRestTime: '00:30',
+                    restCalculated: '00:45',
+                    actualKilometers: 150 + (index * 25),
+                    extraKilometers: index * 5,
+                    actualCosts: 45.50 + (index * 10),
+                    costsDescription: index % 2 === 0 ? 'Fuel and tolls' : 'Parking and fuel',
+                    remark: index % 3 === 0 ? 'Traffic delay on A2' : (index % 3 === 1 ? 'Smooth delivery' : 'Customer not available initially'),
+                    hoursCodeName: 'Regular Hours',
+                    hoursOptionName: 'Standard',
+                    nightAllowance: 15.50,
+                    kilometerReimbursement: 45.00,
+                    taxFreeCompensation: 65.00,
+                    fileCount: index % 2 + 1
+                  }
+                ];
+
+                // Add second driver for some rides
+                if (index % 2 === 0) {
+                  mockExecutions.push({
+                    executionId: `exec-${ride.id || index}-2`,
+                    driverId: `driver-${index}-2`,
+                    driverFirstName: 'Jane',
+                    driverLastName: 'Smith',
+                    isPrimary: false,
+                    status: index % 4 === 0 ? 'Pending' : 'Approved',
+                    decimalHours: 4.0,
+                    submittedAt: new Date(Date.now() - (index * 3600000) + 1800000).toISOString(),
+                    totalCompensation: 65.00,
+                    actualStartTime: '12:00',
+                    actualEndTime: '16:00',
+                    actualRestTime: '00:15',
+                    actualKilometers: 75,
+                    extraKilometers: 0,
+                    actualCosts: 20.00,
+                    costsDescription: 'Lunch',
+                    remark: 'Helped with loading',
+                    hoursCodeName: 'Helper Hours',
+                    hoursOptionName: 'Assistant',
+                    nightAllowance: 0,
+                    kilometerReimbursement: 22.50,
+                    taxFreeCompensation: 42.50,
+                    fileCount: 1
+                  });
+                }
+
+                return {
+                  rideId: ride.id || `ride-${index}`,
+                  plannedDate: ride.plannedDate || ride.date || new Date().toISOString().split('T')[0],
+                  plannedStartTime: ride.plannedStartTime || ride.startTime || '08:00',
+                  plannedEndTime: ride.plannedEndTime || ride.endTime || '16:00',
+                  routeFromName: ride.routeFromName || ride.fromLocation || 'Amsterdam',
+                  routeToName: ride.routeToName || ride.toLocation || 'Rotterdam',
+                  tripNumber: ride.tripNumber || ride.number || `T${1000 + index}`,
+                  clientName: ride.clientName || ride.client || 'ABC Transport',
+                  companyName: ride.companyName || ride.company || 'Transport Co',
+                  truckLicensePlate: ride.truckLicensePlate || ride.truck || `AB-${100 + index}-CD`,
+                  executionCompletionStatus: mockExecutions.every(e => e.status === 'Approved') ? 'approved' : 
+                                           mockExecutions.every(e => e.status !== 'Pending') ? 'complete' : 'partial',
+                  executions: mockExecutions
+                };
+              });
               
-              console.log('Transformed rides:', transformedRides);
+              console.log('Transformed rides with mock executions:', transformedRides);
               return transformedRides;
             }
             

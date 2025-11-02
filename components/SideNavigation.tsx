@@ -187,7 +187,7 @@ export default function SideNavigation() {
                         ) : (
                             <NavItem active={isActive('/rides/executions')} onClick={() => go('/rides/executions')} sx={{pl: 6}}>
                                 <ListItemText primary="Ride Executions"/>
-                            </NavItem>
+                        </NavItem>
                         )}
                         <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
                             <ListItemText primary={t('navigation.workdays.disputesList')}/>
@@ -241,16 +241,16 @@ export default function SideNavigation() {
             <Box sx={{mt: 3}}>
                 {/* Create Workday - Only for non-drivers */}
                 {!user?.roles?.includes('driver') && (
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon/>}
-                        onClick={() => router.push('/partrides/create')}
-                        sx={{px: 1, py: 1}}
-                    >
-                        {t('navigation.createNewWorkday')}
-                    </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon/>}
+                    onClick={() => router.push('/partrides/create')}
+                    sx={{px: 1, py: 1}}
+                >
+                    {t('navigation.createNewWorkday')}
+                </Button>
                 )}
 
                 <Divider sx={{my: 3}}/>

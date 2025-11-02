@@ -10,14 +10,37 @@ export interface RideExecution {
   decimalHours: number;
   submittedAt: string;
   totalCompensation: number;
+  
+  // Time & Work Details
   actualStartTime?: string;
   actualEndTime?: string;
   actualRestTime?: string;
+  restCalculated?: string;
   actualKilometers?: number;
   extraKilometers?: number;
   actualCosts?: number;
   costsDescription?: string;
   remark?: string;
+  
+  // Work Classification
+  hoursCodeId?: string;
+  hoursCodeName?: string;
+  hoursOptionId?: string;
+  hoursOptionName?: string;
+  
+  // Compensation Breakdown
+  nightAllowance?: number;
+  kilometerReimbursement?: number;
+  consignmentFee?: number;
+  taxFreeCompensation?: number;
+  variousCompensation?: number;
+  standOver?: number;
+  saturdayHours?: number;
+  sundayHolidayHours?: number;
+  vacationHoursEarned?: number;
+  
+  // File attachments count (for display)
+  fileCount?: number;
 }
 
 export interface RideWithExecutions {

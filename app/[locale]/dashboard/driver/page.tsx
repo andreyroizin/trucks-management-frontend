@@ -68,7 +68,7 @@ export default function DriverHomePage() {
                     subtitle={t('dashboard.driver.myRides.subtitle')}
                     highlight
                     onClick={() => router.push('/driver/rides')}
-                />
+                    />
                     <DriverDashboardCardButton
                         title={t('dashboard.driver.disputes.title')}
                         subtitle={t('dashboard.driver.disputes.subtitle')}

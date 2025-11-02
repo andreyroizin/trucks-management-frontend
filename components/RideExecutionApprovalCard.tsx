@@ -10,10 +10,9 @@ import {
   Button,
   IconButton,
   Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
+  Grid,
+  Paper,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -21,7 +20,11 @@ import {
   TextField,
   Alert,
   CircularProgress,
-  Collapse
+  Collapse,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow
 } from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
@@ -31,7 +34,13 @@ import {
   ExpandLess as ExpandLessIcon,
   Person as PersonIcon,
   Schedule as ScheduleIcon,
-  Euro as EuroIcon
+  Euro as EuroIcon,
+  AttachFile as FileIcon,
+  AccessTime as TimeIcon,
+  LocalShipping as TruckIcon,
+  Business as ClientIcon,
+  DirectionsCar as KmIcon,
+  Receipt as CostIcon
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { 
@@ -52,18 +61,87 @@ interface Props {
 }
 
 export default function RideExecutionApprovalCard({ ride }: Props) {
+  const showSnack = useSnack();
   const [expanded, setExpanded] = useState(false);
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [selectedExecution, setSelectedExecution] = useState<RideExecution | null>(null);
-  const [rejectComment, setRejectComment] = useState('');
-  const [newComment, setNewComment] = useState('');
+  const [commentText, setCommentText] = useState('');
 
-  const showSnack = useSnack();
-  const approveExecutionMutation = useApproveExecution();
+  // Mutations
+  const approveMutation = useApproveExecution();
   const bulkApproveMutation = useBulkApproveExecutions();
-  const rejectExecutionMutation = useRejectExecution();
+  const rejectMutation = useRejectExecution();
   const addCommentMutation = useAddExecutionComment();
+
+  // Comments query
+  const { data: comments, isLoading: commentsLoading } = useExecutionComments(
+    ride.rideId,
+    selectedExecution?.driverId || ''
+  );
+
+  const handleApprove = async (execution: RideExecution) => {
+    try {
+      await approveMutation.mutateAsync({
+        rideId: ride.rideId,
+        driverId: execution.driverId
+      });
+      showSnack({ text: 'Execution approved successfully', severity: 'success' });
+    } catch (error: any) {
+      showSnack({ text: error.message || 'Failed to approve execution', severity: 'error' });
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    try {
+      await bulkApproveMutation.mutateAsync(ride.rideId);
+      showSnack({ text: 'All executions approved successfully', severity: 'success' });
+    } catch (error: any) {
+      showSnack({ text: error.message || 'Failed to approve executions', severity: 'error' });
+    }
+  };
+
+  const handleReject = async (execution: RideExecution) => {
+    try {
+      await rejectMutation.mutateAsync({
+        rideId: ride.rideId,
+        driverId: execution.driverId,
+        comment: commentText
+      });
+      showSnack({ text: 'Execution rejected successfully', severity: 'success' });
+      setCommentDialogOpen(false);
+      setCommentText('');
+    } catch (error: any) {
+      showSnack({ text: error.message || 'Failed to reject execution', severity: 'error' });
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!selectedExecution || !commentText.trim()) return;
+
+    try {
+      await addCommentMutation.mutateAsync({
+        rideId: ride.rideId,
+        driverId: selectedExecution.driverId,
+        comment: commentText
+      });
+      showSnack({ text: 'Comment added successfully', severity: 'success' });
+      setCommentText('');
+    } catch (error: any) {
+      showSnack({ text: error.message || 'Failed to add comment', severity: 'error' });
+    }
+  };
+
+  const openCommentDialog = (execution: RideExecution) => {
+    setSelectedExecution(execution);
+    setCommentDialogOpen(true);
+    setCommentText('');
+  };
+
+  const closeCommentDialog = () => {
+    setCommentDialogOpen(false);
+    setSelectedExecution(null);
+    setCommentText('');
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -75,98 +153,49 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     }
   };
 
-  const getCompletionStatusColor = (status: string) => {
-    switch (status) {
-      case 'none': return 'default';
-      case 'partial': return 'warning';
-      case 'complete': return 'info';
-      case 'approved': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const handleApproveExecution = async (execution: RideExecution) => {
-    try {
-      await approveExecutionMutation.mutateAsync({
-        rideId: ride.rideId,
-        driverId: execution.driverId
-      });
-      showSnack(`${execution.driverFirstName} ${execution.driverLastName}'s execution approved`, 'success');
-    } catch (error: any) {
-      showSnack(error.message || 'Failed to approve execution', 'error');
-    }
-  };
-
-  const handleBulkApprove = async () => {
-    try {
-      const result = await bulkApproveMutation.mutateAsync(ride.rideId);
-      showSnack(`Approved ${result?.approvedCount || 0} execution(s) successfully`, 'success');
-    } catch (error: any) {
-      showSnack(error.message || 'Failed to bulk approve executions', 'error');
-    }
-  };
-
-  const handleRejectExecution = async () => {
-    if (!selectedExecution) return;
-
-    try {
-      await rejectExecutionMutation.mutateAsync({
-        rideId: ride.rideId,
-        driverId: selectedExecution.driverId,
-        comment: rejectComment || undefined
-      });
-      showSnack(`${selectedExecution.driverFirstName} ${selectedExecution.driverLastName}'s execution rejected`, 'success');
-      setRejectDialogOpen(false);
-      setRejectComment('');
-      setSelectedExecution(null);
-    } catch (error: any) {
-      showSnack(error.message || 'Failed to reject execution', 'error');
-    }
-  };
-
-  const handleAddComment = async () => {
-    if (!selectedExecution || !newComment.trim()) return;
-
-    try {
-      await addCommentMutation.mutateAsync({
-        rideId: ride.rideId,
-        driverId: selectedExecution.driverId,
-        comment: newComment.trim()
-      });
-      showSnack('Comment added successfully', 'success');
-      setCommentDialogOpen(false);
-      setNewComment('');
-      setSelectedExecution(null);
-    } catch (error: any) {
-      showSnack(error.message || 'Failed to add comment', 'error');
-    }
-  };
-
-  const pendingExecutions = ride.executions.filter(e => e.status === 'Pending');
-  const hasPendingExecutions = pendingExecutions.length > 0;
+  const pendingExecutions = ride.executions.filter(exec => exec.status === 'Pending');
+  const canBulkApprove = pendingExecutions.length > 1;
 
   return (
     <>
-      <Card sx={{ mb: 2 }}>
+      <Card sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }}>
         <CardContent>
-          {/* Ride Header */}
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+          {/* Header - Ride Information */}
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3}>
             <Box flex={1}>
-              <Typography variant="h6" gutterBottom>
-                {ride.tripNumber || `Ride ${ride.rideId.slice(0, 8)}`}
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
+                <TruckIcon sx={{ mr: 1, verticalAlign: 'middle', fontSize: 20 }} />
+                {ride.tripNumber ? `Trip ${ride.tripNumber}` : `Ride ${ride.rideId.slice(0, 8)}`}
+              </Typography>
+              
+              <Grid container spacing={2} sx={{ mb: 1 }}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    <TimeIcon sx={{ mr: 0.5, fontSize: 16, verticalAlign: 'middle' }} />
+                    {dayjs(ride.plannedDate).format('MMM D, YYYY')} • {ride.plannedStartTime}-{ride.plannedEndTime}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    <ClientIcon sx={{ mr: 0.5, fontSize: 16, verticalAlign: 'middle' }} />
+                    {ride.clientName}
+                  </Typography>
+                </Grid>
+              </Grid>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                📍 {ride.routeFromName} → {ride.routeToName}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {dayjs(ride.plannedDate).format('dddd, MMMM D, YYYY')} • {ride.plannedStartTime} - {ride.plannedEndTime}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {ride.routeFromName} → {ride.routeToName} • {ride.clientName}
+                🚚 {ride.truckLicensePlate}
               </Typography>
             </Box>
-            <Box display="flex" gap={1} alignItems="center">
+            
+            <Box display="flex" alignItems="center" gap={1}>
               <Chip 
-                label={ride.executionCompletionStatus}
-                color={getCompletionStatusColor(ride.executionCompletionStatus)}
-                size="small"
+                label={ride.executionCompletionStatus.toUpperCase()} 
+                color={ride.executionCompletionStatus === 'complete' ? 'success' : 'warning'}
+                size="small" 
               />
               <IconButton 
                 onClick={() => setExpanded(!expanded)}
@@ -177,30 +206,37 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
             </Box>
           </Box>
 
-          {/* Executions Summary */}
-          <Box display="flex" gap={1} mb={2} flexWrap="wrap">
+          {/* Driver Executions - Main Cards */}
+          <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
+            👥 Driver Executions ({ride.executions.length})
+          </Typography>
+          
+          <Stack spacing={2} sx={{ mb: 2 }}>
             {ride.executions.map((execution) => (
-              <Chip
+              <ExecutionSummaryCard
                 key={execution.executionId}
-                label={`${execution.driverFirstName} ${execution.driverLastName} (${execution.status})`}
-                color={getStatusColor(execution.status)}
-                size="small"
-                variant={execution.isPrimary ? 'filled' : 'outlined'}
+                execution={execution}
+                rideId={ride.rideId}
+                onApprove={() => handleApprove(execution)}
+                onReject={() => openCommentDialog(execution)}
+                onComment={() => openCommentDialog(execution)}
+                isLoading={approveMutation.isPending || rejectMutation.isPending}
               />
             ))}
-          </Box>
+          </Stack>
 
           {/* Bulk Actions */}
-          {hasPendingExecutions && (
-            <Box display="flex" gap={2} mb={2}>
+          {canBulkApprove && (
+            <Box display="flex" gap={1} mb={2}>
               <Button
                 variant="contained"
                 color="success"
-                startIcon={<ApproveIcon />}
+                size="small"
+                startIcon={bulkApproveMutation.isPending ? <CircularProgress size={16} /> : <ApproveIcon />}
                 onClick={handleBulkApprove}
                 disabled={bulkApproveMutation.isPending}
               >
-                {bulkApproveMutation.isPending ? 'Approving...' : `Approve All (${pendingExecutions.length})`}
+                Approve All Pending ({pendingExecutions.length})
               </Button>
             </Box>
           )}
@@ -208,97 +244,86 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
           {/* Expanded Details */}
           <Collapse in={expanded}>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" gutterBottom>
-              Driver Executions
+            <Typography variant="subtitle2" gutterBottom>
+              📋 Detailed Execution Information
             </Typography>
-            
-            <List disablePadding>
-              {ride.executions.map((execution) => (
-                <ExecutionListItem
-                  key={execution.executionId}
-                  execution={execution}
-                  rideId={ride.rideId}
-                  onApprove={() => handleApproveExecution(execution)}
-                  onReject={() => {
-                    setSelectedExecution(execution);
-                    setRejectDialogOpen(true);
-                  }}
-                  onComment={() => {
-                    setSelectedExecution(execution);
-                    setCommentDialogOpen(true);
-                  }}
-                  isLoading={approveExecutionMutation.isPending}
-                />
-              ))}
-            </List>
+            {ride.executions.map((execution) => (
+              <Box key={execution.executionId} sx={{ mb: 3 }}>
+                <ExecutionDetailView execution={execution} />
+              </Box>
+            ))}
           </Collapse>
         </CardContent>
       </Card>
 
-      {/* Reject Dialog */}
-      <Dialog open={rejectDialogOpen} onClose={() => setRejectDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Reject Execution - {selectedExecution?.driverFirstName} {selectedExecution?.driverLastName}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Rejection Reason (Optional)"
-            multiline
-            rows={3}
-            fullWidth
-            value={rejectComment}
-            onChange={(e) => setRejectComment(e.target.value)}
-            placeholder="Explain why this execution is being rejected..."
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRejectDialogOpen(false)}>Cancel</Button>
-          <Button 
-            onClick={handleRejectExecution}
-            color="error"
-            variant="contained"
-            disabled={rejectExecutionMutation.isPending}
-          >
-            {rejectExecutionMutation.isPending ? 'Rejecting...' : 'Reject'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       {/* Comment Dialog */}
-      <Dialog open={commentDialogOpen} onClose={() => setCommentDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={commentDialogOpen} onClose={closeCommentDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          Add Comment - {selectedExecution?.driverFirstName} {selectedExecution?.driverLastName}
+          💬 {selectedExecution ? `${selectedExecution.driverFirstName} ${selectedExecution.driverLastName}` : 'Execution'} - Comments
         </DialogTitle>
         <DialogContent>
           <TextField
-            label="Comment"
+            autoFocus
+            margin="dense"
+            label="Add Comment"
+            fullWidth
             multiline
             rows={3}
-            fullWidth
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment about this execution..."
-            sx={{ mt: 1 }}
+            variant="outlined"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            sx={{ mb: 2 }}
+            placeholder="Add your comment or reason for rejection..."
           />
+          
+          {/* Previous Comments */}
+          {commentsLoading ? (
+            <Box display="flex" justifyContent="center" p={2}>
+              <CircularProgress size={20} />
+            </Box>
+          ) : comments && comments.length > 0 ? (
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>Previous Comments</Typography>
+              <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                {comments.map((comment) => (
+                  <Box key={comment.id} sx={{ mb: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {comment.userFirstName} {comment.userLastName} • {dayjs(comment.createdAt).format('MMM D, HH:mm')}
+                    </Typography>
+                    <Typography variant="body2">{comment.comment}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCommentDialogOpen(false)}>Cancel</Button>
+          <Button onClick={closeCommentDialog}>Cancel</Button>
           <Button 
-            onClick={handleAddComment}
-            variant="contained"
-            disabled={addCommentMutation.isPending || !newComment.trim()}
+            onClick={handleAddComment} 
+            disabled={!commentText.trim() || addCommentMutation.isPending}
+            startIcon={addCommentMutation.isPending ? <CircularProgress size={16} /> : null}
           >
-            {addCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
+            Add Comment
           </Button>
+          {selectedExecution?.status === 'Pending' && (
+            <Button 
+              onClick={() => handleReject(selectedExecution)}
+              color="error"
+              disabled={rejectMutation.isPending}
+              startIcon={rejectMutation.isPending ? <CircularProgress size={16} /> : <RejectIcon />}
+            >
+              Reject with Comment
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </>
   );
 }
 
-// Individual execution list item component
-interface ExecutionListItemProps {
+// Individual Execution Summary Card Component
+interface ExecutionSummaryCardProps {
   execution: RideExecution;
   rideId: string;
   onApprove: () => void;
@@ -307,125 +332,214 @@ interface ExecutionListItemProps {
   isLoading: boolean;
 }
 
-function ExecutionListItem({ 
+function ExecutionSummaryCard({ 
   execution, 
   rideId, 
   onApprove, 
   onReject, 
   onComment, 
   isLoading 
-}: ExecutionListItemProps) {
-  const { data: comments } = useExecutionComments(rideId, execution.driverId);
-  
+}: ExecutionSummaryCardProps) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Pending': return 'warning';
+      case 'Approved': return 'success';
+      case 'Rejected': return 'error';
+      case 'Dispute': return 'secondary';
+      default: return 'default';
+    }
+  };
+
   return (
-    <ListItem divider sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+    <Paper 
+      variant="outlined" 
+      sx={{ 
+        p: 2, 
+        bgcolor: execution.status === 'Pending' ? 'warning.50' : 'background.paper',
+        border: execution.status === 'Pending' ? '1px solid' : undefined,
+        borderColor: execution.status === 'Pending' ? 'warning.main' : undefined
+      }}
+    >
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
         <Box flex={1}>
-          <ListItemText
-            primary={
-              <Box display="flex" alignItems="center" gap={1}>
-                <PersonIcon fontSize="small" />
-                <Typography variant="body1" fontWeight={execution.isPrimary ? 600 : 400}>
-                  {execution.driverFirstName} {execution.driverLastName}
-                  {execution.isPrimary && ' (Primary)'}
-                </Typography>
-                <Chip 
-                  label={execution.status}
-                  color={getStatusColor(execution.status)}
-                  size="small"
-                />
-              </Box>
-            }
-            secondary={
-              <Box display="flex" gap={2} mt={0.5}>
-                <Box display="flex" alignItems="center" gap={0.5}>
-                  <ScheduleIcon fontSize="small" />
-                  <Typography variant="body2">
-                    {execution.decimalHours}h
-                  </Typography>
-                </Box>
-                <Box display="flex" alignItems="center" gap={0.5}>
-                  <EuroIcon fontSize="small" />
-                  <Typography variant="body2">
-                    €{execution.totalCompensation.toFixed(2)}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  Submitted: {dayjs(execution.submittedAt).format('MMM D, HH:mm')}
-                </Typography>
-              </Box>
-            }
-          />
-        </Box>
-        
-        <ListItemSecondaryAction>
-          <Box display="flex" gap={1}>
-            <IconButton 
-              onClick={onComment}
-              size="small"
-              title="Add comment"
-            >
-              <CommentIcon />
-            </IconButton>
-            {execution.status === 'Pending' && (
-              <>
-                <IconButton 
-                  onClick={onApprove}
-                  size="small"
-                  color="success"
-                  disabled={isLoading}
-                  title="Approve execution"
-                >
-                  <ApproveIcon />
-                </IconButton>
-                <IconButton 
-                  onClick={onReject}
-                  size="small"
-                  color="error"
-                  disabled={isLoading}
-                  title="Reject execution"
-                >
-                  <RejectIcon />
-                </IconButton>
-              </>
-            )}
+          <Typography variant="subtitle1" fontWeight={600}>
+            <PersonIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />
+            {execution.driverFirstName} {execution.driverLastName}
+            <Chip 
+              label={execution.isPrimary ? 'Primary' : 'Second'} 
+              size="small" 
+              sx={{ ml: 1 }} 
+              color={execution.isPrimary ? 'primary' : 'default'}
+            />
+          </Typography>
+          
+          <Box display="flex" alignItems="center" gap={2} mt={1}>
+            <Chip 
+              label={execution.status} 
+              color={getStatusColor(execution.status)} 
+              size="small" 
+            />
+            <Typography variant="body2" color="text.secondary">
+              Submitted: {dayjs(execution.submittedAt).format('MMM D, HH:mm')}
+            </Typography>
           </Box>
-        </ListItemSecondaryAction>
+        </Box>
       </Box>
 
-      {/* Comments */}
-      {comments && comments.length > 0 && (
-        <Box mt={1} pl={4}>
-          <Typography variant="caption" color="text.secondary" gutterBottom>
-            Comments ({comments.length})
-          </Typography>
-          {comments.slice(0, 2).map((comment) => (
-            <Alert key={comment.id} severity="info" sx={{ mt: 0.5, py: 0 }}>
-              <Typography variant="body2">
-                <strong>{comment.userFirstName} {comment.userLastName}:</strong> {comment.comment}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {dayjs(comment.createdAt).format('MMM D, HH:mm')}
-              </Typography>
-            </Alert>
-          ))}
-          {comments.length > 2 && (
-            <Typography variant="caption" color="text.secondary">
-              +{comments.length - 2} more comments
+      {/* Key Execution Data */}
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={6} sm={3}>
+          <Box textAlign="center">
+            <Typography variant="h6" color="primary.main" fontWeight={600}>
+              {execution.decimalHours || 0}h
             </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Total Hours
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Box textAlign="center">
+            <Typography variant="h6" color="success.main" fontWeight={600}>
+              €{execution.totalCompensation?.toFixed(2) || '0.00'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Compensation
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Box textAlign="center">
+            <Typography variant="body2" fontWeight={500}>
+              {execution.actualKilometers || 0} km
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Distance
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Box textAlign="center">
+            <Typography variant="body2" fontWeight={500}>
+              €{execution.actualCosts?.toFixed(2) || '0.00'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Costs
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+
+      {/* Time Details */}
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          <TimeIcon sx={{ mr: 0.5, fontSize: 14, verticalAlign: 'middle' }} />
+          {execution.actualStartTime || '--:--'} - {execution.actualEndTime || '--:--'} 
+          {execution.actualRestTime && (
+            <span> • Rest: {execution.actualRestTime}</span>
           )}
+        </Typography>
+      </Box>
+
+      {/* Driver Remarks */}
+      {execution.remark && (
+        <Box sx={{ mb: 2, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+          <Typography variant="caption" color="text.secondary" display="block">
+            Driver Comment:
+          </Typography>
+          <Typography variant="body2">
+            "{execution.remark}"
+          </Typography>
         </Box>
       )}
-    </ListItem>
+
+      {/* Action Buttons */}
+      <Box display="flex" gap={1} justifyContent="flex-end">
+        <Button
+          size="small"
+          startIcon={<CommentIcon />}
+          onClick={onComment}
+        >
+          Comment
+        </Button>
+        
+        {execution.status === 'Pending' && (
+          <>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              startIcon={isLoading ? <CircularProgress size={16} /> : <RejectIcon />}
+              onClick={onReject}
+              disabled={isLoading}
+            >
+              Reject
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              size="small"
+              startIcon={isLoading ? <CircularProgress size={16} /> : <ApproveIcon />}
+              onClick={onApprove}
+              disabled={isLoading}
+            >
+              Approve
+            </Button>
+          </>
+        )}
+      </Box>
+    </Paper>
   );
 }
 
-function getStatusColor(status: string): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" {
-  switch (status) {
-    case 'Pending': return 'warning';
-    case 'Approved': return 'success';
-    case 'Rejected': return 'error';
-    case 'Dispute': return 'secondary';
-    default: return 'default';
-  }
+// Detailed Execution View Component (for expanded section)
+interface ExecutionDetailViewProps {
+  execution: RideExecution;
+}
+
+function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
+  return (
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Typography variant="subtitle2" gutterBottom>
+        {execution.driverFirstName} {execution.driverLastName} - Detailed Information
+      </Typography>
+      
+      <Table size="small">
+        <TableBody>
+          <TableRow>
+            <TableCell sx={{ border: 'none', width: 160 }}>Start Time</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.actualStartTime || '—'}</TableCell>
+            <TableCell sx={{ border: 'none', width: 160 }}>End Time</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.actualEndTime || '—'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ border: 'none' }}>Rest Time</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.actualRestTime || '—'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>Total Hours</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.decimalHours || 0}h</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ border: 'none' }}>Kilometers</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.actualKilometers || 0} km</TableCell>
+            <TableCell sx={{ border: 'none' }}>Extra Kilometers</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.extraKilometers || 0} km</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ border: 'none' }}>Actual Costs</TableCell>
+            <TableCell sx={{ border: 'none' }}>€{execution.actualCosts?.toFixed(2) || '0.00'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>Cost Description</TableCell>
+            <TableCell sx={{ border: 'none' }}>{execution.costsDescription || '—'}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ border: 'none' }}>Total Compensation</TableCell>
+            <TableCell sx={{ border: 'none' }}>€{execution.totalCompensation?.toFixed(2) || '0.00'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>Status</TableCell>
+            <TableCell sx={{ border: 'none' }}>
+              <Chip label={execution.status} size="small" />
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Paper>
+  );
 }
