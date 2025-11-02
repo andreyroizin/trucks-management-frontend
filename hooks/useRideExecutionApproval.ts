@@ -33,13 +33,12 @@ export const useRidesPendingApproval = (companyId?: string, statusFilter?: strin
 
         console.log('Rides API Response:', response.data);
 
-        // Handle both success and isSuccess fields
-        const isSuccess = response.data.success || response.data.isSuccess;
-        if (!isSuccess) {
-          const errorMessage = response.data.error || response.data.errors?.[0] || response.data.message || 'Failed to fetch rides';
-          console.error('API Error:', errorMessage);
-          throw new Error(errorMessage);
-        }
+                // Check isSuccess field
+                if (!response.data.isSuccess) {
+                  const errorMessage = response.data.errors?.[0] || 'Failed to fetch rides';
+                  console.error('API Error:', errorMessage);
+                  throw new Error(errorMessage);
+                }
 
         return response.data.data || [];
       } catch (apiError: any) {
@@ -47,7 +46,7 @@ export const useRidesPendingApproval = (companyId?: string, statusFilter?: strin
         console.error('Error response:', apiError.response?.data);
         console.error('Error status:', apiError.response?.status);
         
-        throw new Error(apiError.response?.data?.message || apiError.response?.data?.error || apiError.message || 'Failed to fetch rides');
+                throw new Error(apiError.response?.data?.errors?.[0] || apiError.message || 'Failed to fetch rides');
       }
     }
   });
@@ -62,7 +61,7 @@ export const useRideExecutions = (rideId: string) => {
         `/rides/${rideId}/executions`
       );
 
-      if (!response.data.success) {
+      if (!response.data.isSuccess) {
         throw new Error(response.data.errors?.[0] || 'Failed to fetch ride executions');
       }
 
@@ -88,13 +87,12 @@ export const useApproveExecution = () => {
         console.log('Approval API Response:', response.data);
         console.log('Full response:', response);
 
-        // Handle both success and isSuccess fields
-        const isSuccess = response.data.success || response.data.isSuccess;
-        if (!isSuccess) {
-          const errorMessage = response.data.error || response.data.errors?.[0] || response.data.message || 'Failed to approve execution';
-          console.error('Approval API Error:', errorMessage);
-          throw new Error(errorMessage);
-        }
+                // Check isSuccess field
+                if (!response.data.isSuccess) {
+                  const errorMessage = response.data.errors?.[0] || 'Failed to approve execution';
+                  console.error('Approval API Error:', errorMessage);
+                  throw new Error(errorMessage);
+                }
 
         console.log('Approval successful');
         return response.data;
@@ -104,7 +102,7 @@ export const useApproveExecution = () => {
         console.error('Error status:', apiError.response?.status);
         
         
-        throw new Error(apiError.response?.data?.message || apiError.response?.data?.error || apiError.message || 'Failed to approve execution');
+                throw new Error(apiError.response?.data?.errors?.[0] || apiError.message || 'Failed to approve execution');
       }
     },
     onSuccess: (data, variables) => {
@@ -129,9 +127,9 @@ export const useBulkApproveExecutions = () => {
         `/rides/${rideId}/executions/bulk-approve`
       );
 
-      if (!response.data.success) {
-        throw new Error(response.data.errors?.[0] || 'Failed to bulk approve executions');
-      }
+                if (!response.data.isSuccess) {
+                  throw new Error(response.data.errors?.[0] || 'Failed to bulk approve executions');
+                }
 
       return response.data.data;
     },
@@ -167,13 +165,12 @@ export const useRejectExecution = () => {
 
         console.log('Rejection API Response:', response.data);
 
-        // Handle both success and isSuccess fields
-        const isSuccess = response.data.success || response.data.isSuccess;
-        if (!isSuccess) {
-          const errorMessage = response.data.error || response.data.errors?.[0] || response.data.message || 'Failed to reject execution';
-          console.error('Rejection API Error:', errorMessage);
-          throw new Error(errorMessage);
-        }
+                // Check isSuccess field
+                if (!response.data.isSuccess) {
+                  const errorMessage = response.data.errors?.[0] || 'Failed to reject execution';
+                  console.error('Rejection API Error:', errorMessage);
+                  throw new Error(errorMessage);
+                }
 
         console.log('Rejection successful');
         return response.data;
@@ -183,7 +180,7 @@ export const useRejectExecution = () => {
         console.error('Error status:', apiError.response?.status);
         
         
-        throw new Error(apiError.response?.data?.message || apiError.response?.data?.error || apiError.message || 'Failed to reject execution');
+                throw new Error(apiError.response?.data?.errors?.[0] || apiError.message || 'Failed to reject execution');
       }
     },
     onSuccess: (data, variables) => {
@@ -212,20 +209,41 @@ export const useAddExecutionComment = () => {
       driverId: string; 
       comment: string; 
     }) => {
-      const response = await api.post<ApiResponse<ExecutionComment>>(
-        `/rides/${rideId}/executions/${driverId}/comments`,
-        { comment }
-      );
+      try {
+        console.log('Adding comment:', { rideId, driverId, comment });
+        
+        const response = await api.post<ApiResponse<ExecutionComment>>(
+          `/rides/${rideId}/executions/${driverId}/comments`,
+          { comment }
+        );
 
-      if (!response.data.success) {
-        throw new Error(response.data.errors?.[0] || 'Failed to add comment');
+        console.log('Add comment API Response:', response.data);
+        console.log('Full response:', response);
+
+        // Check isSuccess field
+        if (!response.data.isSuccess) {
+          const errorMessage = response.data.errors?.[0] || 'Failed to add comment';
+          console.error('Add comment API Error:', errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        console.log('Comment added successfully');
+        return response.data.data;
+      } catch (apiError: any) {
+        console.error('Add comment API call failed:', apiError);
+        console.error('Error response:', apiError.response?.data);
+        console.error('Error status:', apiError.response?.status);
+        
+        throw new Error(apiError.response?.data?.errors?.[0] || apiError.message || 'Failed to add comment');
       }
-
-      return response.data.data;
     },
     onSuccess: (data, variables) => {
+      console.log('Add comment mutation success, invalidating queries...');
       // Invalidate comments query
       queryClient.invalidateQueries({ 
+        queryKey: ['executionComments', variables.rideId, variables.driverId] 
+      });
+      queryClient.refetchQueries({ 
         queryKey: ['executionComments', variables.rideId, variables.driverId] 
       });
     }
@@ -237,15 +255,30 @@ export const useExecutionComments = (rideId: string, driverId: string) => {
   return useQuery<ExecutionComment[], Error>({
     queryKey: ['executionComments', rideId, driverId],
     queryFn: async () => {
-      const response = await api.get<ApiResponse<ExecutionComment[]>>(
-        `/rides/${rideId}/executions/${driverId}/comments`
-      );
+      try {
+        console.log('Fetching comments for:', { rideId, driverId });
+        
+        const response = await api.get<ApiResponse<ExecutionComment[]>>(
+          `/rides/${rideId}/executions/${driverId}/comments`
+        );
 
-      if (!response.data.success) {
-        throw new Error(response.data.errors?.[0] || 'Failed to fetch comments');
+        console.log('Fetch comments API Response:', response.data);
+
+        // Check isSuccess field
+        if (!response.data.isSuccess) {
+          const errorMessage = response.data.errors?.[0] || 'Failed to fetch comments';
+          console.error('Fetch comments API Error:', errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        return response.data.data || [];
+      } catch (apiError: any) {
+        console.error('Fetch comments API call failed:', apiError);
+        console.error('Error response:', apiError.response?.data);
+        console.error('Error status:', apiError.response?.status);
+        
+        throw new Error(apiError.response?.data?.errors?.[0] || apiError.message || 'Failed to fetch comments');
       }
-
-      return response.data.data || [];
     },
     enabled: !!rideId && !!driverId
   });

@@ -66,6 +66,9 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [selectedExecution, setSelectedExecution] = useState<RideExecution | null>(null);
   const [commentText, setCommentText] = useState('');
+  
+  // Ref for comments container to handle scrolling
+  const commentsContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Mutations
   const approveMutation = useApproveExecution();
@@ -78,6 +81,17 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     ride.rideId,
     selectedExecution?.driverId || ''
   );
+
+  // Auto-scroll to bottom when comments are loaded or dialog opens
+  React.useEffect(() => {
+    if (commentDialogOpen && comments && comments.length > 0 && commentsContainerRef.current) {
+      setTimeout(() => {
+        if (commentsContainerRef.current) {
+          commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight;
+        }
+      }, 100);
+    }
+  }, [commentDialogOpen, comments]);
 
   const handleApprove = async (execution: RideExecution) => {
     try {
@@ -126,6 +140,13 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
       });
       showSnack({ text: 'Comment added successfully', severity: 'success' });
       setCommentText('');
+      
+      // Scroll to bottom of comments after adding new comment
+      setTimeout(() => {
+        if (commentsContainerRef.current) {
+          commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight;
+        }
+      }, 100);
     } catch (error: any) {
       showSnack({ text: error.message || 'Failed to add comment', severity: 'error' });
     }
@@ -283,19 +304,54 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
             </Box>
           ) : comments && comments.length > 0 ? (
             <Box>
-              <Typography variant="subtitle2" gutterBottom>Previous Comments</Typography>
-              <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
-                {comments.map((comment) => (
-                  <Box key={comment.id} sx={{ mb: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      {comment.userFirstName} {comment.userLastName} • {dayjs(comment.createdAt).format('MMM D, HH:mm')}
+              <Typography variant="subtitle2" gutterBottom>
+                Previous Comments ({comments.length})
+              </Typography>
+              <Box 
+                ref={commentsContainerRef}
+                sx={{ 
+                  maxHeight: 300, 
+                  overflowY: 'auto',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 1,
+                  bgcolor: 'grey.25'
+                }}
+              >
+                {comments
+                  .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) // Sort by oldest first
+                  .map((comment, index) => (
+                  <Box 
+                    key={comment.id} 
+                    sx={{ 
+                      mb: 1, 
+                      p: 2, 
+                      bgcolor: 'background.paper', 
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: 'grey.200',
+                      '&:last-child': { mb: 0 }
+                    }}
+                  >
+                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
+                      <strong>{comment.userFirstName} {comment.userLastName}</strong> • {dayjs(comment.createdAt).format('MMM D, YYYY HH:mm')}
                     </Typography>
-                    <Typography variant="body2">{comment.comment}</Typography>
+                    <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
+                      {comment.comment}
+                    </Typography>
                   </Box>
                 ))}
               </Box>
             </Box>
-          ) : null}
+          ) : (
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>Previous Comments</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                No comments yet. Be the first to add a comment!
+              </Typography>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={closeCommentDialog}>Cancel</Button>
