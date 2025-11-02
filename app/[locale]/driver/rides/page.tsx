@@ -20,6 +20,8 @@ import { useMyAssignedRides } from '@/hooks/useMyAssignedRides';
 import { MyAssignedRide } from '@/types/myAssignedRides';
 import dayjs from 'dayjs';
 
+type StatusFilter = 'all' | 'notSubmitted' | 'pending' | 'approved' | 'rejected' | 'dispute';
+
 export default function MyRidesPage() {
   const router = useRouter();
   const t = useTranslations();
@@ -32,6 +34,9 @@ export default function MyRidesPage() {
   const [endDate, setEndDate] = useState<string>(
     dayjs().endOf('month').format('YYYY-MM-DD')
   );
+  
+  // Status filter - default to 'all'
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const { data: rides, isLoading, error } = useMyAssignedRides(startDate, endDate);
 
@@ -86,11 +91,21 @@ export default function MyRidesPage() {
     dispute: rides?.filter(r => r.myExecutionStatus.status === 'Dispute') || []
   };
 
+  // Get filtered rides based on status filter
+  const getFilteredRides = () => {
+    if (statusFilter === 'all') {
+      return rides || [];
+    }
+    return groupedRides[statusFilter] || [];
+  };
+
+  const filteredRides = getFilteredRides();
+
   const renderRideCard = (ride: MyAssignedRide) => (
     <Card key={ride.rideId} sx={{ mb: 2, cursor: 'pointer' }} onClick={() => router.push(`/driver/rides/${ride.rideId}`)}>
       <CardContent>
-        <Box display="flex" justifyContent="between" alignItems="flex-start" mb={2}>
-          <Box flex={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+          <Box flex={1} mr={3}>
             <Typography variant="h6" gutterBottom>
               {ride.tripNumber || `Ride ${ride.rideId.slice(0, 8)}`}
             </Typography>
@@ -173,68 +188,78 @@ export default function MyRidesPage() {
         />
       </Box>
 
-      {/* Summary */}
-      <Box display="flex" gap={2} mb={3}>
-        <Chip label={`Not Submitted: ${groupedRides.notSubmitted.length}`} color="warning" />
-        <Chip label={`Pending: ${groupedRides.pending.length}`} color="info" />
-        <Chip label={`Approved: ${groupedRides.approved.length}`} color="success" />
-        <Chip label={`Rejected: ${groupedRides.rejected.length}`} color="error" />
-        <Chip label={`Dispute: ${groupedRides.dispute.length}`} color="secondary" />
+      {/* Status Filter Chips */}
+      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
+        <Chip 
+          label={`All Rides: ${rides?.length || 0}`}
+          color="primary"
+          variant={statusFilter === 'all' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('all')}
+          clickable
+        />
+        <Chip 
+          label={`Not Submitted: ${groupedRides.notSubmitted.length}`}
+          color="warning"
+          variant={statusFilter === 'notSubmitted' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('notSubmitted')}
+          clickable
+        />
+        <Chip 
+          label={`Pending: ${groupedRides.pending.length}`}
+          color="info"
+          variant={statusFilter === 'pending' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('pending')}
+          clickable
+        />
+        <Chip 
+          label={`Approved: ${groupedRides.approved.length}`}
+          color="success"
+          variant={statusFilter === 'approved' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('approved')}
+          clickable
+        />
+        <Chip 
+          label={`Rejected: ${groupedRides.rejected.length}`}
+          color="error"
+          variant={statusFilter === 'rejected' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('rejected')}
+          clickable
+        />
+        <Chip 
+          label={`Dispute: ${groupedRides.dispute.length}`}
+          color="secondary"
+          variant={statusFilter === 'dispute' ? 'filled' : 'outlined'}
+          onClick={() => setStatusFilter('dispute')}
+          clickable
+        />
       </Box>
 
-      {/* Rides Sections */}
-      {groupedRides.notSubmitted.length > 0 && (
+      {/* Filtered Rides */}
+      {filteredRides.length > 0 ? (
         <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="warning.main">
-            Needs Execution Submission ({groupedRides.notSubmitted.length})
+          <Typography variant="h6" gutterBottom>
+            {statusFilter === 'all' ? 'All Rides' :
+             statusFilter === 'notSubmitted' ? 'Needs Execution Submission' :
+             statusFilter === 'pending' ? 'Pending Approval' :
+             statusFilter === 'approved' ? 'Approved' :
+             statusFilter === 'rejected' ? 'Rejected - Needs Revision' :
+             statusFilter === 'dispute' ? 'In Dispute' : ''} ({filteredRides.length})
           </Typography>
-          {groupedRides.notSubmitted.map(renderRideCard)}
+          {filteredRides.map(renderRideCard)}
         </Box>
-      )}
-
-      {groupedRides.pending.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="info.main">
-            Pending Approval ({groupedRides.pending.length})
-          </Typography>
-          {groupedRides.pending.map(renderRideCard)}
-        </Box>
-      )}
-
-      {groupedRides.rejected.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="error.main">
-            Rejected - Needs Revision ({groupedRides.rejected.length})
-          </Typography>
-          {groupedRides.rejected.map(renderRideCard)}
-        </Box>
-      )}
-
-      {groupedRides.dispute.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="secondary.main">
-            In Dispute ({groupedRides.dispute.length})
-          </Typography>
-          {groupedRides.dispute.map(renderRideCard)}
-        </Box>
-      )}
-
-      {groupedRides.approved.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="success.main">
-            Approved ({groupedRides.approved.length})
-          </Typography>
-          {groupedRides.approved.map(renderRideCard)}
-        </Box>
-      )}
-
-      {!rides || rides.length === 0 && (
+      ) : (
         <Box textAlign="center" py={4}>
           <Typography variant="h6" color="text.secondary">
-            No rides found for the selected period
+            {statusFilter === 'all' 
+              ? 'No rides found for the selected period'
+              : `No ${statusFilter === 'notSubmitted' ? 'unsubmitted' : statusFilter} rides found`
+            }
           </Typography>
           <Typography variant="body2" color="text.secondary" mt={1}>
-            Try adjusting the date range or contact your administrator
+            {statusFilter === 'all' 
+              ? 'Try adjusting the date range or contact your administrator'
+              : 'Click "All Rides" to see all your rides'
+            }
           </Typography>
         </Box>
       )}

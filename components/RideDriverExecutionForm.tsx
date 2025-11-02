@@ -48,8 +48,10 @@ import { useAuth } from '@/hooks/useAuth';
 const schema = yup.object({
   actualStartTime: yup.string().required('Start time is required'),
   actualEndTime: yup.string().required('End time is required'),
-  actualRestTime: yup.string().optional(),
-  actualKilometers: yup.number().min(0, 'Kilometers must be positive').optional(),
+  actualRestTime: yup.string().required('Rest time is required'),
+  actualKilometers: yup.number()
+    .min(0, 'Kilometers must be positive')
+    .required('Actual kilometers is required'),
   extraKilometers: yup.number().min(0, 'Extra kilometers must be positive').optional(),
   actualCosts: yup.number().min(0, 'Costs must be positive').optional(),
   costsDescription: yup.string().optional(),
@@ -119,6 +121,12 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   }, [execution, reset]);
 
   const onSubmit = async (data: SubmitExecutionRequest) => {
+    // Check if there are any validation errors
+    if (Object.keys(errors).length > 0) {
+      showSnack('Please fix the validation errors before submitting', 'error');
+      return;
+    }
+
     try {
       // Convert pending files to base64 for submission
       const filesData = await Promise.all(
@@ -279,9 +287,10 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Start Time"
+                  label="Start Time *"
                   type="time"
                   fullWidth
+                  required
                   error={!!errors.actualStartTime}
                   helperText={errors.actualStartTime?.message}
                   InputLabelProps={{ shrink: true }}
@@ -298,9 +307,10 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="End Time"
+                  label="End Time *"
                   type="time"
                   fullWidth
+                  required
                   error={!!errors.actualEndTime}
                   helperText={errors.actualEndTime?.message}
                   InputLabelProps={{ shrink: true }}
@@ -317,9 +327,12 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Rest Time"
+                  label="Rest Time *"
                   type="time"
                   fullWidth
+                  required
+                  error={!!errors.actualRestTime}
+                  helperText={errors.actualRestTime?.message}
                   InputLabelProps={{ shrink: true }}
                   disabled={isReadOnly}
                 />
@@ -341,9 +354,10 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Total Kilometers"
+                  label="Total Kilometers *"
                   type="number"
                   fullWidth
+                  required
                   error={!!errors.actualKilometers}
                   helperText={errors.actualKilometers?.message}
                   disabled={isReadOnly}
