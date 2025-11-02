@@ -7,13 +7,13 @@ import {
   ExecutionComment 
 } from '@/types/rideExecutionApproval';
 
-// Hook to get rides with executions (with status filter)
+// Hook to get rides with executions (with status filter only - date/driver filtering on frontend)
 export const useRidesPendingApproval = (companyId?: string, statusFilter?: string) => {
   return useQuery<RideWithExecutions[], Error>({
     queryKey: ['ridesPendingApproval', companyId, statusFilter],
     queryFn: async () => {
       try {
-        // Build query parameters
+        // Build query parameters (only company and status sent to backend)
         const params = new URLSearchParams();
         if (companyId) {
           params.append('companyId', companyId);
