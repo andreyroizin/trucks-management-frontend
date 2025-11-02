@@ -51,7 +51,7 @@ export default function OverallocationWarningDialog({
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
                     <Alert severity="warning" sx={{ mb: 2 }}>
                         <Typography variant="body2">
-                            This assignment would exceed the recommended 8-hour daily limit for this resource.
+                            This assignment would exceed the available {conflict.availableHours}h daily limit for this resource.
                         </Typography>
                     </Alert>
 
@@ -99,9 +99,21 @@ export default function OverallocationWarningDialog({
                                 borderTop: '1px solid',
                                 borderColor: 'grey.300'
                             }}>
+                                <Schedule fontSize="small" color="info" />
+                                <Typography variant="body2" color="info.main">
+                                    Available hours: <strong>{conflict.availableHours}h</strong>
+                                </Typography>
+                            </Box>
+                            
+                            <Box sx={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: 1,
+                                pt: 1
+                            }}>
                                 <Schedule fontSize="small" color="warning" />
                                 <Typography variant="body2" color="warning.main">
-                                    <strong>Total hours would be: {conflict.totalHours}h</strong>
+                                    <strong>Total hours would be: {conflict.totalHours}h (exceeds by {(conflict.totalHours - conflict.availableHours).toFixed(1)}h)</strong>
                                 </Typography>
                             </Box>
                         </Box>
@@ -109,7 +121,7 @@ export default function OverallocationWarningDialog({
 
                     {/* Explanation */}
                     <Typography variant="body2" color="text.secondary">
-                        The recommended daily limit is 8 hours per {resourceType.toLowerCase()}. 
+                        The available daily limit is {conflict.availableHours} hours for this {resourceType.toLowerCase()}. 
                         You can still proceed with this assignment if needed, but please consider 
                         the workload implications.
                     </Typography>

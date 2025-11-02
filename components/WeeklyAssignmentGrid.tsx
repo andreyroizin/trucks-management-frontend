@@ -37,8 +37,11 @@ import WeekSelector from './WeekSelector';
 import RideAssignmentCard from './RideAssignmentCard';
 import AddDriverDialog from './AddDriverDialog';
 import OverallocationWarningDialog from './OverallocationWarningDialog';
+import DriverAvailabilityDialog from './DriverAvailabilityDialog';
+import TruckAvailabilityDialog from './TruckAvailabilityDialog';
 import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
+import { useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
 
 type Props = {
     selectedDate: Date;
@@ -58,6 +61,10 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     
     // Second driver management
     const [addDriverDialog, setAddDriverDialog] = useState<{ open: boolean; rideId: string | null }>({ open: false, rideId: null });
+    
+    // Availability management dialogs
+    const [driverAvailabilityDialog, setDriverAvailabilityDialog] = useState(false);
+    const [truckAvailabilityDialog, setTruckAvailabilityDialog] = useState(false);
 
     // Conflict detection
     const [conflictWarning, setConflictWarning] = useState<{
@@ -107,6 +114,12 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         return createDriverTruckMaps(drivers, trucks);
     }, [drivers, trucks]);
     
+    // Weekly availability data
+    const { 
+        data: availabilityData,
+        isLoading: isLoadingAvailability 
+    } = useWeeklyAvailability(weekStartDate, companyId);
+    
     // Assignment mutations
     const assignDriverTruckMutation = useAssignDriverTruck();
     const updateHoursMutation = useUpdateRideHours();
@@ -135,7 +148,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         // Check for driver conflict
         const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
         const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
-        const conflict = checkDriverConflict(ridesData, rideId, driverId, driverHours, driverName);
+        const conflict = checkDriverConflict(ridesData, rideId, driverId, driverHours, driverName, availabilityData);
 
         if (conflict) {
             // Show warning dialog
@@ -256,7 +269,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         // Check for truck conflict
         const truckHours = currentRide.plannedHours;
         const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
-        const conflict = checkTruckConflict(ridesData, rideId, truckId, truckHours, truckLicensePlate);
+        const conflict = checkTruckConflict(ridesData, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
 
         if (conflict) {
             // Show warning dialog
@@ -966,14 +979,38 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         <Typography variant="h6">
                             Assignment Summary
                         </Typography>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<Refresh />}
-                            onClick={() => refetchRides()}
-                        >
-                            Refresh
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<Person />}
+                                onClick={() => setDriverAvailabilityDialog(true)}
+                                disabled={isLoadingAvailability}
+                            >
+                                {availabilityData?.drivers.some(d => 
+                                    Object.values(d.availability).some(a => a.isCustom)
+                                ) ? 'Driver Availability ✓' : 'Set Driver Availability'}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<LocalShipping />}
+                                onClick={() => setTruckAvailabilityDialog(true)}
+                                disabled={isLoadingAvailability}
+                            >
+                                {availabilityData?.trucks.some(t => 
+                                    Object.values(t.availability).some(a => a.isCustom)
+                                ) ? 'Truck Availability ✓' : 'Set Truck Availability'}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<Refresh />}
+                                onClick={() => refetchRides()}
+                            >
+                                Refresh
+                            </Button>
+                        </Box>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                         <Chip
@@ -1418,6 +1455,22 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 onAssignAnyway={handleConflictWarningAssignAnyway}
                 conflict={conflictWarning.conflict}
                 isLoading={conflictWarning.pendingAction ? assigningRides.size > 0 : false}
+            />
+
+            {/* Driver Availability Dialog */}
+            <DriverAvailabilityDialog
+                open={driverAvailabilityDialog}
+                onClose={() => setDriverAvailabilityDialog(false)}
+                weekStartDate={weekStartDate}
+                companyId={companyId}
+            />
+
+            {/* Truck Availability Dialog */}
+            <TruckAvailabilityDialog
+                open={truckAvailabilityDialog}
+                onClose={() => setTruckAvailabilityDialog(false)}
+                weekStartDate={weekStartDate}
+                companyId={companyId}
             />
         </Box>
     );

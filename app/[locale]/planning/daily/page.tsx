@@ -31,6 +31,7 @@ import RideAssignmentCard from '@/components/RideAssignmentCard';
 import AddDriverDialog from '@/components/AddDriverDialog';
 import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemoveSecondDriver } from '@/hooks/useRideAssignment';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
+import { useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
 
 export default function DailyPlanningPage() {
     const router = useRouter();
@@ -84,6 +85,21 @@ export default function DailyPlanningPage() {
         if (!drivers || !trucks) return { driverToTruck: new Map(), truckToDriver: new Map() };
         return createDriverTruckMaps(drivers, trucks);
     }, [drivers, trucks]);
+    
+    // Weekly availability data (for the week containing the selected date)
+    const weekStartDate = React.useMemo(() => {
+        if (!selectedDate) return '';
+        const date = new Date(selectedDate);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Monday start
+        const monday = new Date(date.setDate(diff));
+        return monday.toISOString().split('T')[0];
+    }, [selectedDate]);
+    
+    const { 
+        data: availabilityData,
+        isLoading: isLoadingAvailability 
+    } = useWeeklyAvailability(weekStartDate, companyId);
 
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;

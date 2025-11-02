@@ -1,4 +1,5 @@
 import { WeeklyRidesData, WeeklyRide } from '@/hooks/useWeeklyRides';
+import { WeeklyAvailabilityData, getAvailabilityHours } from '@/hooks/useWeeklyAvailability';
 
 export type ConflictType = 'driver' | 'truck';
 
@@ -9,6 +10,7 @@ export type ConflictWarning = {
     currentHours: number;
     newHours: number;
     totalHours: number;
+    availableHours: number; // Custom availability hours
     date: string;
     dayName: string;
 };
@@ -97,15 +99,19 @@ export const checkDriverConflict = (
     rideId: string,
     driverId: string,
     newDriverHours: number,
-    driverName: string
+    driverName: string,
+    availabilityData?: WeeklyAvailabilityData
 ): ConflictWarning | null => {
     const rideDateInfo = getRideDateAndDay(ridesData, rideId);
     if (!rideDateInfo) return null;
 
     const currentHours = calculateDriverHoursForDate(ridesData, driverId, rideDateInfo.date, rideId);
     const totalHours = currentHours + newDriverHours;
+    
+    // Get custom availability hours or default to 8
+    const availableHours = getAvailabilityHours(driverId, rideDateInfo.date, availabilityData, 'driver');
 
-    if (totalHours > 8) {
+    if (totalHours > availableHours) {
         return {
             type: 'driver',
             resourceId: driverId,
@@ -113,6 +119,7 @@ export const checkDriverConflict = (
             currentHours,
             newHours: newDriverHours,
             totalHours,
+            availableHours,
             date: rideDateInfo.date,
             dayName: rideDateInfo.dayName
         };
@@ -129,15 +136,19 @@ export const checkTruckConflict = (
     rideId: string,
     truckId: string,
     newTruckHours: number,
-    truckLicensePlate: string
+    truckLicensePlate: string,
+    availabilityData?: WeeklyAvailabilityData
 ): ConflictWarning | null => {
     const rideDateInfo = getRideDateAndDay(ridesData, rideId);
     if (!rideDateInfo) return null;
 
     const currentHours = calculateTruckHoursForDate(ridesData, truckId, rideDateInfo.date, rideId);
     const totalHours = currentHours + newTruckHours;
+    
+    // Get custom availability hours or default to 8
+    const availableHours = getAvailabilityHours(truckId, rideDateInfo.date, availabilityData, 'truck');
 
-    if (totalHours > 8) {
+    if (totalHours > availableHours) {
         return {
             type: 'truck',
             resourceId: truckId,
@@ -145,6 +156,7 @@ export const checkTruckConflict = (
             currentHours,
             newHours: newTruckHours,
             totalHours,
+            availableHours,
             date: rideDateInfo.date,
             dayName: rideDateInfo.dayName
         };
@@ -161,7 +173,8 @@ export const checkDriverHoursConflict = (
     rideId: string,
     driverId: string,
     newHours: number,
-    driverName: string
+    driverName: string,
+    availabilityData?: WeeklyAvailabilityData
 ): ConflictWarning | null => {
     const rideDateInfo = getRideDateAndDay(ridesData, rideId);
     if (!rideDateInfo) return null;
@@ -171,8 +184,11 @@ export const checkDriverHoursConflict = (
     
     // Add the new hours for this assignment
     const totalHours = currentHours + newHours;
+    
+    // Get custom availability hours or default to 8
+    const availableHours = getAvailabilityHours(driverId, rideDateInfo.date, availabilityData, 'driver');
 
-    if (totalHours > 8) {
+    if (totalHours > availableHours) {
         return {
             type: 'driver',
             resourceId: driverId,
@@ -180,6 +196,7 @@ export const checkDriverHoursConflict = (
             currentHours,
             newHours: newHours,
             totalHours,
+            availableHours,
             date: rideDateInfo.date,
             dayName: rideDateInfo.dayName
         };
