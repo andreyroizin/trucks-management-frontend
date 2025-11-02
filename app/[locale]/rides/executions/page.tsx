@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -19,23 +19,27 @@ import { useRidesPendingApproval } from '@/hooks/useRideExecutionApproval';
 import RideExecutionApprovalCard from '@/components/RideExecutionApprovalCard';
 import { useCompanies, Company } from '@/hooks/useCompanies';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { RideWithExecutions } from '@/types/rideExecutionApproval';
+
+type ExecutionStatus = 'all' | 'Pending' | 'Approved' | 'Rejected' | 'Dispute';
 
 export default function RideExecutionsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<ExecutionStatus>('all');
   
   // Fetch companies for filtering (get first 100 companies)
   const { data: companiesResponse } = useCompanies(1, 100);
   const companies = companiesResponse?.data || [];
   
-  // Fetch rides pending approval
+  // Fetch rides with executions (filtered by status on backend)
   const { 
     data: rides, 
     isLoading, 
     error, 
     refetch 
-  } = useRidesPendingApproval(selectedCompanyId || undefined);
+  } = useRidesPendingApproval(selectedCompanyId || undefined, statusFilter);
 
   // Redirect if not authenticated or not authorized
   useEffect(() => {
@@ -57,6 +61,24 @@ export default function RideExecutionsPage() {
     }
   }, [user, companies]);
 
+  // We need to fetch statistics separately since we're now filtering on backend
+  const { data: allRides } = useRidesPendingApproval(selectedCompanyId || undefined, 'all');
+  
+  // Calculate statistics for all executions (from unfiltered data)
+  const executionStats = useMemo(() => {
+    if (!allRides) return { all: 0, Pending: 0, Approved: 0, Rejected: 0, Dispute: 0 };
+    
+    const allExecutions = allRides.flatMap(ride => ride.executions);
+    
+    return {
+      all: allExecutions.length,
+      Pending: allExecutions.filter(exec => exec.status === 'Pending').length,
+      Approved: allExecutions.filter(exec => exec.status === 'Approved').length,
+      Rejected: allExecutions.filter(exec => exec.status === 'Rejected').length,
+      Dispute: allExecutions.filter(exec => exec.status === 'Dispute').length,
+    };
+  }, [allRides]);
+
   if (authLoading || isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -75,19 +97,6 @@ export default function RideExecutionsPage() {
     );
   }
 
-  // Filter and group rides
-  const pendingRides = rides?.filter(ride => 
-    ride.executions.some(exec => exec.status === 'Pending')
-  ) || [];
-
-  const completedRides = rides?.filter(ride => 
-    ride.executions.every(exec => exec.status !== 'Pending')
-  ) || [];
-
-  const totalExecutions = rides?.reduce((sum, ride) => sum + ride.executions.length, 0) || 0;
-  const pendingExecutions = rides?.reduce((sum, ride) => 
-    sum + ride.executions.filter(exec => exec.status === 'Pending').length, 0
-  ) || 0;
 
   return (
     <Box p={3}>
@@ -121,84 +130,96 @@ export default function RideExecutionsPage() {
             />
           )}
           
-          {/* Summary Stats */}
-          <Box display="flex" gap={2} ml="auto">
+          {/* Status Filter Chips */}
+          <Box display="flex" gap={1} ml="auto" flexWrap="wrap">
             <Chip 
-              label={`${rides?.length || 0} Rides`} 
-              color="primary" 
-              variant="outlined" 
+              label={`All Executions (${executionStats.all})`}
+              color={statusFilter === 'all' ? 'primary' : 'default'}
+              variant={statusFilter === 'all' ? 'filled' : 'outlined'}
+              onClick={() => setStatusFilter('all')}
+              sx={{ cursor: 'pointer' }}
             />
             <Chip 
-              label={`${pendingExecutions} Pending`} 
-              color="warning" 
-              variant={pendingExecutions > 0 ? "filled" : "outlined"}
+              label={`Pending (${executionStats.Pending})`}
+              color={statusFilter === 'Pending' ? 'warning' : 'default'}
+              variant={statusFilter === 'Pending' ? 'filled' : 'outlined'}
+              onClick={() => setStatusFilter('Pending')}
+              sx={{ cursor: 'pointer' }}
             />
             <Chip 
-              label={`${totalExecutions} Total Executions`} 
-              color="info" 
-              variant="outlined" 
+              label={`Approved (${executionStats.Approved})`}
+              color={statusFilter === 'Approved' ? 'success' : 'default'}
+              variant={statusFilter === 'Approved' ? 'filled' : 'outlined'}
+              onClick={() => setStatusFilter('Approved')}
+              sx={{ cursor: 'pointer' }}
+            />
+            <Chip 
+              label={`Rejected (${executionStats.Rejected})`}
+              color={statusFilter === 'Rejected' ? 'error' : 'default'}
+              variant={statusFilter === 'Rejected' ? 'filled' : 'outlined'}
+              onClick={() => setStatusFilter('Rejected')}
+              sx={{ cursor: 'pointer' }}
+            />
+            <Chip 
+              label={`Dispute (${executionStats.Dispute})`}
+              color={statusFilter === 'Dispute' ? 'secondary' : 'default'}
+              variant={statusFilter === 'Dispute' ? 'filled' : 'outlined'}
+              onClick={() => setStatusFilter('Dispute')}
+              sx={{ cursor: 'pointer' }}
             />
           </Box>
         </Box>
       </Paper>
 
-      {/* Pending Rides Section */}
-      {pendingRides.length > 0 && (
+      {/* Filtered Rides Section */}
+      {rides && rides.length > 0 ? (
         <Box mb={4}>
-          <Typography variant="h6" gutterBottom color="warning.main">
-            Pending Approval ({pendingRides.length} rides)
+          <Typography variant="h6" gutterBottom>
+            {statusFilter === 'all' 
+              ? `All Ride Executions (${rides.length} rides)`
+              : `${statusFilter} Executions (${rides.length} rides)`
+            }
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            Rides with executions that need your review and approval
+            {statusFilter === 'all' 
+              ? 'Showing all rides with driver executions'
+              : statusFilter === 'Pending'
+                ? 'Rides with executions that need your review and approval'
+                : statusFilter === 'Approved'
+                  ? 'Rides with approved executions'
+                  : statusFilter === 'Rejected'
+                    ? 'Rides with rejected executions'
+                    : 'Rides with disputed executions'
+            }
           </Typography>
-          {pendingRides.map((ride) => (
+          {rides.map((ride) => (
             <RideExecutionApprovalCard key={ride.rideId} ride={ride} />
           ))}
         </Box>
-      )}
-
-      {/* Recently Completed Section */}
-      {completedRides.length > 0 && (
-        <Box mb={4}>
-          <Divider sx={{ my: 3 }} />
-          <Typography variant="h6" gutterBottom color="success.main">
-            Recently Processed ({completedRides.length} rides)
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mb={2}>
-            Rides with all executions approved or rejected
-          </Typography>
-          {completedRides.slice(0, 5).map((ride) => (
-            <RideExecutionApprovalCard key={ride.rideId} ride={ride} />
-          ))}
-          {completedRides.length > 5 && (
-            <Typography variant="body2" color="text.secondary" textAlign="center" mt={2}>
-              +{completedRides.length - 5} more completed rides
-            </Typography>
-          )}
-        </Box>
-      )}
-
-      {/* Empty State */}
-      {!rides || rides.length === 0 ? (
+      ) : (
+        /* Empty State */
         <Box textAlign="center" py={8}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            No ride executions found
+            {statusFilter === 'all' 
+              ? 'No ride executions found'
+              : `No ${statusFilter.toLowerCase()} executions found`
+            }
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {selectedCompanyId 
-              ? 'No executions pending approval for the selected company'
-              : 'No executions pending approval across all companies'
+              ? `No ${statusFilter === 'all' ? 'executions' : statusFilter.toLowerCase() + ' executions'} found for the selected company`
+              : `No ${statusFilter === 'all' ? 'executions' : statusFilter.toLowerCase() + ' executions'} found across all companies`
             }
           </Typography>
-        </Box>
-      ) : pendingRides.length === 0 && (
-        <Box textAlign="center" py={4}>
-          <Typography variant="h6" color="success.main" gutterBottom>
-            🎉 All caught up!
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            No executions pending approval. All driver executions have been processed.
-          </Typography>
+          {statusFilter !== 'all' && (
+            <Button 
+              variant="outlined" 
+              onClick={() => setStatusFilter('all')} 
+              sx={{ mt: 2 }}
+            >
+              Show All Executions
+            </Button>
+          )}
         </Box>
       )}
     </Box>
