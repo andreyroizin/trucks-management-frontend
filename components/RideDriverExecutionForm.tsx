@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -64,6 +65,7 @@ interface Props {
 }
 
 export default function RideDriverExecutionForm({ rideId, execution, onSuccess }: Props) {
+  const router = useRouter();
   const showSnack = useSnack();
   const { user } = useAuth();
   
@@ -143,6 +145,12 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         `Execution submitted successfully${filesData.length > 0 ? ` with ${filesData.length} file(s)` : ''}!`, 
         'success'
       );
+      
+      // Navigate back to rides list for drivers
+      if (isDriverRole) {
+        setTimeout(() => router.push('/driver/rides'), 1000);
+      }
+      
       onSuccess?.();
     } catch (error: any) {
       showSnack(error.message || 'Failed to submit execution', 'error');
@@ -154,6 +162,12 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       await deleteExecutionMutation.mutateAsync(rideId);
       showSnack('Execution deleted successfully', 'success');
       setDeleteDialogOpen(false);
+      
+      // Navigate back to rides list for drivers
+      if (isDriverRole) {
+        setTimeout(() => router.push('/driver/rides'), 1000);
+      }
+      
       onSuccess?.();
     } catch (error: any) {
       showSnack(error.message || 'Failed to delete execution', 'error');
@@ -463,71 +477,6 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
             />
           </Grid>
 
-          {/* Calculated Compensations Display - Only show after submission */}
-          {execution && (
-            <Grid item xs={12}>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" gutterBottom>
-                Calculated Compensations
-              </Typography>
-              <Grid container spacing={2}>
-                {(execution.decimalHours ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Total Hours</Typography>
-                    <Typography variant="h6">{execution.decimalHours}h</Typography>
-                  </Grid>
-                )}
-                {(execution.nightAllowance ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Night Allowance</Typography>
-                    <Typography variant="h6">€{execution.nightAllowance!.toFixed(2)}</Typography>
-                  </Grid>
-                )}
-                {(execution.kilometerReimbursement ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Kilometer Reimbursement</Typography>
-                    <Typography variant="h6">€{execution.kilometerReimbursement!.toFixed(2)}</Typography>
-                  </Grid>
-                )}
-                {(execution.consignmentFee ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Consignment Fee</Typography>
-                    <Typography variant="h6">€{execution.consignmentFee!.toFixed(2)}</Typography>
-                  </Grid>
-                )}
-                {(execution.taxFreeCompensation ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Tax Free Compensation</Typography>
-                    <Typography variant="h6">€{execution.taxFreeCompensation!.toFixed(2)}</Typography>
-                  </Grid>
-                )}
-                {(execution.standOver ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Stand Over</Typography>
-                    <Typography variant="h6">€{execution.standOver!.toFixed(2)}</Typography>
-                  </Grid>
-                )}
-                {(execution.saturdayHours ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Saturday Hours</Typography>
-                    <Typography variant="h6">{execution.saturdayHours}h</Typography>
-                  </Grid>
-                )}
-                {(execution.sundayHolidayHours ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Sunday/Holiday Hours</Typography>
-                    <Typography variant="h6">{execution.sundayHolidayHours}h</Typography>
-                  </Grid>
-                )}
-                {(execution.vacationHoursEarned ?? 0) > 0 && (
-                  <Grid item xs={6} sm={3}>
-                    <Typography variant="body2" color="text.secondary">Vacation Hours Earned</Typography>
-                    <Typography variant="h6">{execution.vacationHoursEarned}h</Typography>
-                  </Grid>
-                )}
-              </Grid>
-            </Grid>
-          )}
 
           {/* File Attachments Section */}
           <Grid item xs={12}>
