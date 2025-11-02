@@ -89,7 +89,15 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         return undefined;
     };
 
-    const weekStartDate = formatDateForAPI(selectedDate);
+    // Calculate the Monday of the week for the selected date
+    const weekStartDate = React.useMemo(() => {
+        const date = new Date(selectedDate);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Monday start
+        const monday = new Date(date.setDate(diff));
+        return formatDateForAPI(monday);
+    }, [selectedDate]);
+    
     const companyId = getCompanyId();
 
     const { 
