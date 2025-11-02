@@ -34,11 +34,18 @@ export function SnackProvider({ children }: { children: React.ReactNode }) {
                     onClose={() => setOpen(false)}
                 >
                     <Alert
-                        elevation={3}
+                        elevation={6}
                         variant="filled"
                         severity={snack.severity ?? 'info'}
                         onClose={() => setOpen(false)}
-                        sx={{ minWidth: 260 }}
+                        sx={{ 
+                            minWidth: 300,
+                            borderRadius: 2,
+                            fontWeight: 500,
+                            '& .MuiAlert-message': {
+                                fontSize: '0.95rem'
+                            }
+                        }}
                     >
                         {snack.text}
                     </Alert>

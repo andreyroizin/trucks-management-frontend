@@ -71,10 +71,13 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const isDriverRole = user?.roles?.includes('driver');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const submitExecutionMutation = useSubmitExecution();
   const deleteExecutionMutation = useDeleteMyExecution();
   const { data: files, refetch: refetchFiles } = useMyExecutionFiles(rideId);
+  
   const uploadFileMutation = useUploadExecutionFile();
   const deleteFileMutation = useDeleteExecutionFile();
   const downloadFileMutation = useDownloadExecutionFile();
@@ -114,15 +117,34 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   }, [execution, reset]);
 
   const onSubmit = async (data: SubmitExecutionRequest) => {
-    console.log('Form submission started with data:', data);
-    console.log('Form errors:', errors);
-    
     try {
-      await submitExecutionMutation.mutateAsync({ rideId, data });
-      showSnack('Execution submitted successfully', 'success');
+      // Convert pending files to base64 for submission
+      const filesData = await Promise.all(
+        pendingFiles.map(async (file) => ({
+          fileName: file.name,
+          contentType: file.type,
+          fileDataBase64: await fileToBase64(file)
+        }))
+      );
+
+      // Include files in the submission
+      const submissionData = {
+        ...data,
+        files: filesData.length > 0 ? filesData : undefined
+      };
+
+      await submitExecutionMutation.mutateAsync({ rideId, data: submissionData });
+      
+      // Clear pending files after successful submission
+      setPendingFiles([]);
+      setSelectedFile(null);
+      
+      showSnack(
+        `Execution submitted successfully${filesData.length > 0 ? ` with ${filesData.length} file(s)` : ''}!`, 
+        'success'
+      );
       onSuccess?.();
     } catch (error: any) {
-      console.error('Submission error:', error);
       showSnack(error.message || 'Failed to submit execution', 'error');
     }
   };
@@ -138,14 +160,61 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     }
   };
 
+  // Helper function to convert file to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleAddFileToPending = () => {
+    if (!selectedFile) {
+      showSnack('Please select a file first', 'error');
+      return;
+    }
+
+    // Check if file already exists in pending
+    if (pendingFiles.some(f => f.name === selectedFile.name && f.size === selectedFile.size)) {
+      showSnack('This file is already added', 'warning');
+      return;
+    }
+
+    setPendingFiles(prev => [...prev, selectedFile]);
+    setSelectedFile(null);
+    setFileInputKey(prev => prev + 1); // Force file input reset
+    showSnack(`File "${selectedFile.name}" added to submission`, 'success');
+  };
+
+  const handleRemovePendingFile = (index: number) => {
+    setPendingFiles(prev => prev.filter((_, i) => i !== index));
+    showSnack('File removed from submission', 'info');
+  };
+
   const handleFileUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      showSnack('Please select a file first', 'error');
+      return;
+    }
+
+    if (!rideId) {
+      showSnack('Cannot upload file: No ride ID available. Please submit execution first.', 'error');
+      return;
+    }
 
     try {
       await uploadFileMutation.mutateAsync({ rideId, file: selectedFile });
-      showSnack('File uploaded successfully', 'success');
+      showSnack(`File "${selectedFile.name}" uploaded successfully!`, 'success');
       setSelectedFile(null);
-      refetchFiles();
+      setFileInputKey(prev => prev + 1); // Force file input reset
+      
+      // Force refresh the files list
+      await refetchFiles();
     } catch (error: any) {
       showSnack(error.message || 'Failed to upload file', 'error');
     }
@@ -155,7 +224,13 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     try {
       await deleteFileMutation.mutateAsync({ rideId, fileId });
       showSnack('File deleted successfully', 'success');
-      refetchFiles();
+      
+      // Reset file input to allow re-uploading same file
+      setSelectedFile(null);
+      setFileInputKey(prev => prev + 1);
+      
+      // Force refresh the files list
+      await refetchFiles();
     } catch (error: any) {
       showSnack(error.message || 'Failed to delete file', 'error');
     }
@@ -388,7 +463,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
             />
           </Grid>
 
-          {/* Calculated Compensations Display */}
+          {/* Calculated Compensations Display - Only show after submission */}
           {execution && (
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
@@ -454,6 +529,170 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
             </Grid>
           )}
 
+          {/* File Attachments Section */}
+          <Grid item xs={12}>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              File Attachments
+            </Typography>
+
+            {/* File Upload */}
+            {!isReadOnly && (
+              <Box mb={3}>
+                <input
+                  key={fileInputKey}
+                  type="file"
+                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  style={{ display: 'none' }}
+                  id="file-upload"
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                />
+                <Box display="flex" gap={2} alignItems="center" mb={2}>
+                  <label htmlFor="file-upload">
+                    <Button variant="outlined" component="span" startIcon={<AttachFileIcon />}>
+                      Choose File
+                    </Button>
+                  </label>
+                  {selectedFile && (
+                    <>
+                      <Typography variant="body2" sx={{ flex: 1 }}>
+                        📎 {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+                      </Typography>
+                      {!execution ? (
+                        <Button
+                          variant="contained"
+                          onClick={handleAddFileToPending}
+                          startIcon={<AttachFileIcon />}
+                        >
+                          Add to Submission
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          onClick={handleFileUpload}
+                          disabled={uploadFileMutation.isPending}
+                          startIcon={uploadFileMutation.isPending ? <CircularProgress size={20} /> : <UploadIcon />}
+                        >
+                          {uploadFileMutation.isPending ? 'Uploading...' : 'Upload Now'}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </Box>
+
+                {/* Pending Files (for new submissions) */}
+                {!execution && pendingFiles.length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+                      Files to Submit ({pendingFiles.length})
+                    </Typography>
+                    <List sx={{ bgcolor: 'primary.50', borderRadius: 1, border: '1px solid', borderColor: 'primary.200' }}>
+                      {pendingFiles.map((file, index) => (
+                        <ListItem key={index} divider={index < pendingFiles.length - 1}>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                📎 {file.name}
+                              </Typography>
+                            }
+                            secondary={
+                              <Typography variant="body2" color="text.secondary">
+                                {(file.size / 1024).toFixed(1)} KB • Will be uploaded with submission
+                              </Typography>
+                            }
+                          />
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              onClick={() => handleRemovePendingFile(index)}
+                              color="error"
+                              title="Remove from submission"
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+
+                {/* Info message for new executions */}
+                {!execution && pendingFiles.length === 0 && (
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    <Typography variant="body2">
+                      💡 You can attach files (receipts, photos, documents) and submit everything together!
+                    </Typography>
+                  </Alert>
+                )}
+              </Box>
+            )}
+
+            {/* Files List */}
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                Uploaded Files ({files?.length || 0})
+              </Typography>
+              {files && files.length > 0 ? (
+                <List sx={{ bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                  {files.map((file, index) => (
+                    <ListItem key={file.id} divider={index < files.length - 1}>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            📎 {file.fileName || file.originalFileName}
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="body2" color="text.secondary">
+                            {file.fileSize ? `${(file.fileSize / 1024).toFixed(1)} KB` : 'Unknown size'} • 
+                            {file.uploadedAt ? ` Uploaded ${new Date(file.uploadedAt).toLocaleDateString()}` : ' Recently uploaded'}
+                          </Typography>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          onClick={() => handleFileDownload(file.id, file.fileName || file.originalFileName)}
+                          disabled={downloadFileMutation.isPending}
+                          title="Download file"
+                        >
+                          <DownloadIcon />
+                        </IconButton>
+                        {!isReadOnly && (
+                          <IconButton
+                            onClick={() => handleFileDelete(file.id)}
+                            disabled={deleteFileMutation.isPending}
+                            color="error"
+                            title="Delete file"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Box 
+                  sx={{ 
+                    p: 3, 
+                    textAlign: 'center', 
+                    bgcolor: 'grey.50', 
+                    borderRadius: 1, 
+                    border: '1px dashed', 
+                    borderColor: 'grey.300' 
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    📎 No files uploaded yet
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Upload receipts, photos, or documents related to this ride
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Grid>
+
           {/* Action Buttons */}
           <Grid item xs={12}>
             <Box display="flex" gap={2} mt={2}>
@@ -489,84 +728,6 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
           </Grid>
         </Grid>
       </form>
-
-      {/* File Attachments Section */}
-      {execution && (
-        <Box mt={4}>
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            File Attachments
-          </Typography>
-
-          {/* File Upload */}
-          {!isReadOnly && (
-            <Box mb={3}>
-              <input
-                type="file"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                style={{ display: 'none' }}
-                id="file-upload"
-                accept=".pdf,.jpg,.jpeg,.png"
-              />
-              <Box display="flex" gap={2} alignItems="center">
-                <label htmlFor="file-upload">
-                  <Button variant="outlined" component="span" startIcon={<AttachFileIcon />}>
-                    Choose File
-                  </Button>
-                </label>
-                {selectedFile && (
-                  <>
-                    <Typography variant="body2">{selectedFile.name}</Typography>
-                    <Button
-                      variant="contained"
-                      onClick={handleFileUpload}
-                      disabled={uploadFileMutation.isPending}
-                      startIcon={uploadFileMutation.isPending ? <CircularProgress size={20} /> : <UploadIcon />}
-                    >
-                      Upload
-                    </Button>
-                  </>
-                )}
-              </Box>
-            </Box>
-          )}
-
-          {/* Files List */}
-          {files && files.length > 0 ? (
-            <List>
-              {files.map((file) => (
-                <ListItem key={file.id} divider>
-                  <ListItemText
-                    primary={file.fileName}
-                    secondary={`${(file.fileSize / 1024).toFixed(1)} KB • Uploaded ${new Date(file.uploadedAt).toLocaleDateString()}`}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      onClick={() => handleFileDownload(file.id, file.fileName)}
-                      disabled={downloadFileMutation.isPending}
-                    >
-                      <DownloadIcon />
-                    </IconButton>
-                    {!isReadOnly && (
-                      <IconButton
-                        onClick={() => handleFileDelete(file.id)}
-                        disabled={deleteFileMutation.isPending}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No files uploaded yet
-            </Typography>
-          )}
-        </Box>
-      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

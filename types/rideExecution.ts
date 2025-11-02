@@ -22,6 +22,13 @@ export interface SubmitExecutionRequest {
   hoursOptionId?: string;
   charterId?: string;
   variousCompensation?: number;
+  
+  // NEW: Optional files array for single-step submission
+  files?: Array<{
+    fileName: string;
+    contentType: string;
+    fileDataBase64: string;
+  }>;
 }
 
 // Complete execution data interface

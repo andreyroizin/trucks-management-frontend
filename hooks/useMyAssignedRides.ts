@@ -17,8 +17,6 @@ export const useMyAssignedRides = (startDate?: string, endDate?: string) => {
         { params }
       );
 
-      console.log('API Response:', response.data);
-      console.log('Full response:', response);
 
       // Check if response uses 'success' or 'isSuccess' field
       const isSuccess = response.data.success ?? response.data.isSuccess;
@@ -69,11 +67,19 @@ export const useMyExecutionFiles = (rideId: string) => {
         `/rides/${rideId}/my-execution/files`
       );
 
-      if (!response.data.success) {
-        throw new Error(response.data.error || 'Failed to fetch files');
+      // Check for different response structures
+      const isSuccess = response.data.success ?? response.data.isSuccess;
+      const errorMessage = response.data.error ?? response.data.errors?.[0];
+      const data = response.data.data ?? response.data;
+
+      if (!isSuccess && response.status !== 200) {
+        throw new Error(errorMessage || 'Failed to fetch files');
       }
 
-      return response.data.data;
+      // If success field is missing but status is 200, assume success
+      const filesData = Array.isArray(data) ? data : (data?.data || []);
+      
+      return filesData;
     },
     enabled: !!rideId
   });
@@ -93,20 +99,40 @@ export const useUploadExecutionFile = () => {
         contentType: file.type,
         fileDataBase64: base64
       };
+      
+      try {
+        const response = await api.post<ApiResponse<ExecutionFile>>(
+          `/rides/${rideId}/my-execution/files`,
+          request
+        );
 
-      const response = await api.post<ApiResponse<ExecutionFile>>(
-        `/rides/${rideId}/my-execution/files`,
-        request
-      );
+        // Check for different response structures
+        const isSuccess = response.data.success ?? response.data.isSuccess;
+        const errorMessage = response.data.error ?? response.data.errors?.[0] ?? response.data.message;
 
-      if (!response.data.success) {
-        throw new Error(response.data.error || 'Failed to upload file');
+        if (!isSuccess && response.status !== 200) {
+          throw new Error(errorMessage || 'Failed to upload file');
+        }
+
+        // If success field is missing but status is 200, assume success
+        if (response.status === 200) {
+          return response.data.data || response.data;
+        }
+      } catch (apiError: any) {
+        // Extract error message from different possible locations
+        const errorMsg = apiError.response?.data?.error || 
+                        apiError.response?.data?.errors?.[0] || 
+                        apiError.response?.data?.message || 
+                        apiError.message || 
+                        'Failed to upload file';
+        
+        throw new Error(errorMsg);
       }
-
-      return response.data.data;
     },
     onSuccess: (data, variables) => {
+      // Invalidate and refetch immediately for upload
       queryClient.invalidateQueries({ queryKey: ['executionFiles', variables.rideId] });
+      queryClient.refetchQueries({ queryKey: ['executionFiles', variables.rideId] });
     }
   });
 };
@@ -121,14 +147,20 @@ export const useDeleteExecutionFile = () => {
         `/rides/${rideId}/my-execution/files/${fileId}`
       );
 
-      if (!response.data.success) {
-        throw new Error(response.data.error || 'Failed to delete file');
+      // Check for different response structures
+      const isSuccess = response.data.success ?? response.data.isSuccess;
+      const errorMessage = response.data.error ?? response.data.errors?.[0];
+
+      if (!isSuccess && response.status !== 200) {
+        throw new Error(errorMessage || 'Failed to delete file');
       }
 
-      return response.data.data;
+      return response.data.data || response.data;
     },
     onSuccess: (data, variables) => {
+      // Invalidate and refetch immediately for delete
       queryClient.invalidateQueries({ queryKey: ['executionFiles', variables.rideId] });
+      queryClient.refetchQueries({ queryKey: ['executionFiles', variables.rideId] });
     }
   });
 };

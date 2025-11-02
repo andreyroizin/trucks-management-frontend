@@ -32,6 +32,11 @@ export const useSubmitExecution = () => {
       queryClient.invalidateQueries({ queryKey: ['rideExecution', variables.rideId] });
       queryClient.invalidateQueries({ queryKey: ['rideExecutions', variables.rideId] });
       queryClient.invalidateQueries({ queryKey: ['weekly-rides'] });
+      
+      // If files were included in submission, invalidate files query too
+      if (variables.data.files && variables.data.files.length > 0) {
+        queryClient.invalidateQueries({ queryKey: ['executionFiles', variables.rideId] });
+      }
     }
   });
 };
