@@ -24,7 +24,12 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableRow
+  TableRow,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel
 } from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
@@ -74,6 +79,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
   const [commentText, setCommentText] = useState('');
   const [disputeCommentText, setDisputeCommentText] = useState('');
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const [resolutionType, setResolutionType] = useState<'accept' | 'reject'>('reject');
   
   // Ref for comments container to handle scrolling
   const commentsContainerRef = React.useRef<HTMLDivElement>(null);
@@ -185,6 +191,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     setDisputeDialogOpen(true);
     setDisputeCommentText('');
     setResolutionNotes('');
+    setResolutionType('reject'); // Default to reject
   };
 
   const closeDisputeDialog = () => {
@@ -192,6 +199,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     setSelectedExecution(null);
     setDisputeCommentText('');
     setResolutionNotes('');
+    setResolutionType('reject');
   };
 
   const handleAddDisputeComment = async () => {
@@ -227,12 +235,20 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     try {
       await closeDisputeMutation.mutateAsync({
         disputeId: activeDispute.id,
-        request: { resolutionNotes }
+        request: { 
+          resolutionType,
+          resolutionNotes 
+        }
       });
-      showSnack('Dispute closed successfully', 'success');
+      
+      const resolutionMessage = resolutionType === 'accept' 
+        ? 'Dispute accepted - Execution has been approved' 
+        : 'Dispute rejected - Execution remains rejected';
+      
+      showSnack(resolutionMessage, 'success');
       closeDisputeDialog();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to close dispute', 'error');
+      showSnack(error.message || 'Failed to resolve dispute', 'error');
     }
   };
 
@@ -518,44 +534,113 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
                     </Box>
                   )}
 
-                  {/* Close Dispute */}
+                  {/* Resolve Dispute */}
                   {dispute.status === 'Open' && (
                     <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
                       <Typography variant="subtitle2" gutterBottom>
-                        Close Dispute
+                        Resolve Dispute
                       </Typography>
+                      
+                      {/* Resolution Type Selection */}
+                      <FormControl component="fieldset" sx={{ mb: 2 }}>
+                        <FormLabel component="legend" sx={{ mb: 1 }}>
+                          Resolution Decision *
+                        </FormLabel>
+                        <RadioGroup
+                          value={resolutionType}
+                          onChange={(e) => setResolutionType(e.target.value as 'accept' | 'reject')}
+                          sx={{ gap: 1 }}
+                        >
+                          <FormControlLabel 
+                            value="accept" 
+                            control={<Radio />} 
+                            label={
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
+                                  ✅ Accept Dispute (Driver was right)
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  The execution will be approved
+                                </Typography>
+                              </Box>
+                            }
+                            sx={{ mb: 1 }}
+                          />
+                          <FormControlLabel 
+                            value="reject" 
+                            control={<Radio />} 
+                            label={
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.main' }}>
+                                  ❌ Reject Dispute (Admin was right)
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  The execution will remain rejected
+                                </Typography>
+                              </Box>
+                            }
+                          />
+                        </RadioGroup>
+                      </FormControl>
+
+                      {/* Resolution Notes */}
                       <TextField
                         fullWidth
                         multiline
                         rows={3}
                         label="Resolution Notes *"
-                        placeholder="Explain your decision to close this dispute..."
+                        placeholder="Explain your decision..."
                         value={resolutionNotes}
                         onChange={(e) => setResolutionNotes(e.target.value)}
                         sx={{ mb: 2 }}
                       />
+                      
                       <Button
                         variant="contained"
-                        color="error"
+                        color={resolutionType === 'accept' ? 'success' : 'error'}
                         onClick={handleCloseDispute}
                         disabled={!resolutionNotes.trim() || closeDisputeMutation.isPending}
                         startIcon={closeDisputeMutation.isPending ? <CircularProgress size={16} /> : null}
                       >
-                        Close Dispute
+                        {resolutionType === 'accept' ? 'Accept & Approve Execution' : 'Reject & Keep Rejected'}
                       </Button>
                     </Box>
                   )}
 
-                  {dispute.status === 'Closed' && dispute.resolutionNotes && (
-                    <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Resolution:
+                  {dispute.status === 'Closed' && (
+                    <Box sx={{ 
+                      mt: 2, 
+                      p: 2, 
+                      bgcolor: dispute.resolutionType === 'Accept' ? 'success.50' : 'error.50', 
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: dispute.resolutionType === 'Accept' ? 'success.main' : 'error.main'
+                    }}>
+                      <Typography variant="subtitle1" gutterBottom sx={{ 
+                        fontWeight: 600,
+                        color: dispute.resolutionType === 'Accept' ? 'success.main' : 'error.main'
+                      }}>
+                        {dispute.resolutionType === 'Accept' ? '✅ Dispute Accepted' : '❌ Dispute Rejected'}
                       </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        {dispute.resolutionNotes}
+                      
+                      <Chip 
+                        label={dispute.resolutionType === 'Accept' ? 'Execution Approved' : 'Execution Rejected'}
+                        color={dispute.resolutionType === 'Accept' ? 'success' : 'error'}
+                        size="small"
+                        sx={{ mb: 2 }}
+                      />
+                      
+                      {dispute.resolutionNotes && (
+                        <Typography variant="body2" sx={{ mb: 2 }}>
+                          <strong>Resolution Notes:</strong> {dispute.resolutionNotes}
+                        </Typography>
+                      )}
+                      
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        <strong>Resolved by:</strong> {dispute.resolvedByName}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        Closed: {dayjs(dispute.closedAtUtc).format('MMM D, YYYY HH:mm')} by {dispute.resolvedByName}
+                        <strong>Resolved at:</strong> {dayjs(dispute.closedAtUtc).format('MMM D, YYYY HH:mm')}
                       </Typography>
                     </Box>
                   )}

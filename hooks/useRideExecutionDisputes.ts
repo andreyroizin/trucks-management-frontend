@@ -19,6 +19,7 @@ export interface RideExecutionDispute {
   resolvedById?: string;
   resolvedByName?: string;
   resolutionNotes?: string;
+  resolutionType?: 'Accept' | 'Reject'; // NEW: Resolution decision
   comments: RideExecutionDisputeComment[];
 }
 
@@ -41,6 +42,7 @@ export interface AddCommentRequest {
 }
 
 export interface CloseDisputeRequest {
+  resolutionType: 'accept' | 'reject';
   resolutionNotes: string;
 }
 
