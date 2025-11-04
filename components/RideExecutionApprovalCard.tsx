@@ -54,6 +54,11 @@ import {
   useAddExecutionComment,
   useExecutionComments
 } from '@/hooks/useRideExecutionApproval';
+import {
+  useDriverExecutionDisputes,
+  useAddDisputeComment,
+  useCloseExecutionDispute
+} from '@/hooks/useRideExecutionDisputes';
 import { useSnack } from '@/providers/SnackProvider';
 
 interface Props {
@@ -64,8 +69,11 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
   const showSnack = useSnack();
   const [expanded, setExpanded] = useState(false);
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
   const [selectedExecution, setSelectedExecution] = useState<RideExecution | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [disputeCommentText, setDisputeCommentText] = useState('');
+  const [resolutionNotes, setResolutionNotes] = useState('');
   
   // Ref for comments container to handle scrolling
   const commentsContainerRef = React.useRef<HTMLDivElement>(null);
@@ -75,9 +83,17 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
   const bulkApproveMutation = useBulkApproveExecutions();
   const rejectMutation = useRejectExecution();
   const addCommentMutation = useAddExecutionComment();
+  const addDisputeCommentMutation = useAddDisputeComment();
+  const closeDisputeMutation = useCloseExecutionDispute();
 
   // Comments query
   const { data: comments, isLoading: commentsLoading } = useExecutionComments(
+    ride.rideId,
+    selectedExecution?.driverId || ''
+  );
+
+  // Disputes query
+  const { data: disputes, isLoading: disputesLoading } = useDriverExecutionDisputes(
     ride.rideId,
     selectedExecution?.driverId || ''
   );
@@ -164,6 +180,62 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
     setCommentText('');
   };
 
+  const openDisputeDialog = (execution: RideExecution) => {
+    setSelectedExecution(execution);
+    setDisputeDialogOpen(true);
+    setDisputeCommentText('');
+    setResolutionNotes('');
+  };
+
+  const closeDisputeDialog = () => {
+    setDisputeDialogOpen(false);
+    setSelectedExecution(null);
+    setDisputeCommentText('');
+    setResolutionNotes('');
+  };
+
+  const handleAddDisputeComment = async () => {
+    if (!selectedExecution || !disputeCommentText.trim()) return;
+
+    const activeDispute = disputes?.find(d => d.status === 'Open');
+    if (!activeDispute) {
+      showSnack('No active dispute found', 'error');
+      return;
+    }
+
+    try {
+      await addDisputeCommentMutation.mutateAsync({
+        disputeId: activeDispute.id,
+        request: { body: disputeCommentText }
+      });
+      showSnack('Comment added to dispute', 'success');
+      setDisputeCommentText('');
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to add dispute comment', 'error');
+    }
+  };
+
+  const handleCloseDispute = async () => {
+    if (!selectedExecution || !resolutionNotes.trim()) return;
+
+    const activeDispute = disputes?.find(d => d.status === 'Open');
+    if (!activeDispute) {
+      showSnack('No active dispute found', 'error');
+      return;
+    }
+
+    try {
+      await closeDisputeMutation.mutateAsync({
+        disputeId: activeDispute.id,
+        request: { resolutionNotes }
+      });
+      showSnack('Dispute closed successfully', 'success');
+      closeDisputeDialog();
+    } catch (error: any) {
+      showSnack(error.message || 'Failed to close dispute', 'error');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending': return 'warning';
@@ -241,6 +313,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
                 onApprove={() => handleApprove(execution)}
                 onReject={() => openCommentDialog(execution)}
                 onComment={() => openCommentDialog(execution)}
+                onDispute={() => openDisputeDialog(execution)}
                 isLoading={approveMutation.isPending || rejectMutation.isPending}
               />
             ))}
@@ -374,6 +447,131 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
           )}
         </DialogActions>
       </Dialog>
+
+      {/* Dispute Dialog */}
+      <Dialog open={disputeDialogOpen} onClose={closeDisputeDialog} maxWidth="md" fullWidth>
+        <DialogTitle>
+          🚨 Execution Dispute - {selectedExecution ? `${selectedExecution.driverFirstName} ${selectedExecution.driverLastName}` : 'Driver'}
+        </DialogTitle>
+        <DialogContent>
+          {disputesLoading ? (
+            <Box display="flex" justifyContent="center" p={2}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : disputes && disputes.length > 0 ? (
+            <Box>
+              {disputes.map((dispute) => (
+                <Box key={dispute.id} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'warning.main', borderRadius: 1, bgcolor: 'warning.50' }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    <strong>Dispute Reason:</strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    {dispute.reason}
+                  </Typography>
+                  
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                    Created: {dayjs(dispute.createdAtUtc).format('MMM D, YYYY HH:mm')} • Status: <Chip label={dispute.status} color={dispute.status === 'Open' ? 'warning' : 'default'} size="small" />
+                  </Typography>
+
+                  {/* Dispute Comments */}
+                  {dispute.comments.length > 0 && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Discussion ({dispute.comments.length})
+                      </Typography>
+                      <Box sx={{ maxHeight: 200, overflowY: 'auto', border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1 }}>
+                        {dispute.comments
+                          .sort((a, b) => new Date(a.createdAtUtc).getTime() - new Date(b.createdAtUtc).getTime())
+                          .map((comment) => (
+                          <Box key={comment.id} sx={{ mb: 1, p: 1, bgcolor: 'background.paper', borderRadius: 1 }}>
+                            <Typography variant="caption" color="text.secondary" display="block">
+                              <strong>{comment.authorFirstName} {comment.authorLastName}</strong> • {dayjs(comment.createdAtUtc).format('MMM D, HH:mm')}
+                            </Typography>
+                            <Typography variant="body2">{comment.body}</Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
+
+                  {/* Add Comment to Dispute */}
+                  {dispute.status === 'Open' && (
+                    <Box sx={{ mb: 2 }}>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        placeholder="Add a response to this dispute..."
+                        value={disputeCommentText}
+                        onChange={(e) => setDisputeCommentText(e.target.value)}
+                        sx={{ mb: 1 }}
+                      />
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={handleAddDisputeComment}
+                        disabled={!disputeCommentText.trim() || addDisputeCommentMutation.isPending}
+                        startIcon={addDisputeCommentMutation.isPending ? <CircularProgress size={16} /> : null}
+                      >
+                        Add Response
+                      </Button>
+                    </Box>
+                  )}
+
+                  {/* Close Dispute */}
+                  {dispute.status === 'Open' && (
+                    <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Close Dispute
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={3}
+                        label="Resolution Notes *"
+                        placeholder="Explain your decision to close this dispute..."
+                        value={resolutionNotes}
+                        onChange={(e) => setResolutionNotes(e.target.value)}
+                        sx={{ mb: 2 }}
+                      />
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleCloseDispute}
+                        disabled={!resolutionNotes.trim() || closeDisputeMutation.isPending}
+                        startIcon={closeDisputeMutation.isPending ? <CircularProgress size={16} /> : null}
+                      >
+                        Close Dispute
+                      </Button>
+                    </Box>
+                  )}
+
+                  {dispute.status === 'Closed' && dispute.resolutionNotes && (
+                    <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Resolution:
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        {dispute.resolutionNotes}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Closed: {dayjs(dispute.closedAtUtc).format('MMM D, YYYY HH:mm')} by {dispute.resolvedByName}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No disputes found for this execution.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDisputeDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
@@ -385,6 +583,7 @@ interface ExecutionSummaryCardProps {
   onApprove: () => void;
   onReject: () => void;
   onComment: () => void;
+  onDispute: () => void;
   isLoading: boolean;
 }
 
@@ -394,6 +593,7 @@ function ExecutionSummaryCard({
   onApprove, 
   onReject, 
   onComment, 
+  onDispute,
   isLoading 
 }: ExecutionSummaryCardProps) {
   const getStatusColor = (status: string) => {
@@ -518,6 +718,17 @@ function ExecutionSummaryCard({
         >
           Comment
         </Button>
+
+        {execution.status === 'Dispute' && (
+          <Button
+            variant="outlined"
+            color="warning"
+            size="small"
+            onClick={onDispute}
+          >
+            🚨 View Dispute
+          </Button>
+        )}
         
         {execution.status === 'Pending' && (
           <>

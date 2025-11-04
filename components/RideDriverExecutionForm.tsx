@@ -44,6 +44,7 @@ import {
 } from '@/hooks/useMyAssignedRides';
 import { useSnack } from '@/providers/SnackProvider';
 import { useAuth } from '@/hooks/useAuth';
+import RideExecutionDisputeDialog from '@/components/RideExecutionDisputeDialog';
 
 const schema = yup.object({
   actualStartTime: yup.string().required('Start time is required'),
@@ -74,6 +75,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   // Check if current user is a driver (should not see turnover/various compensation)
   const isDriverRole = user?.roles?.includes('driver');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -681,6 +683,17 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                 </Button>
               )}
 
+              {/* Dispute Button - show for rejected executions or existing disputes */}
+              {(execution?.status === 2 || execution?.status === 3) && isDriverRole && (
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  onClick={() => setDisputeDialogOpen(true)}
+                >
+                  {execution?.status === 2 ? '🚨 Dispute Rejection' : '🚨 View Dispute'}
+                </Button>
+              )}
+
               {execution?.status !== undefined && (
                 <Chip 
                   label={execution.status === 0 ? 'Pending' : execution.status === 1 ? 'Approved' : execution.status === 2 ? 'Rejected' : 'Dispute'}
@@ -712,6 +725,18 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Dispute Dialog */}
+      <RideExecutionDisputeDialog
+        open={disputeDialogOpen}
+        onClose={() => setDisputeDialogOpen(false)}
+        rideId={rideId}
+        executionStatus={execution?.status === 0 ? 'Pending' : execution?.status === 1 ? 'Approved' : execution?.status === 2 ? 'Rejected' : 'Dispute'}
+        rideInfo={{
+          plannedDate: execution?.plannedDate || new Date().toISOString(),
+          tripNumber: `Ride ${rideId.slice(0, 8)}`,
+        }}
+      />
     </Box>
   );
 }
