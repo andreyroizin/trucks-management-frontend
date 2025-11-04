@@ -167,7 +167,7 @@ export default function SideNavigation() {
                          active={pathNoLocale.startsWith('/partrides')
                              || pathNoLocale.startsWith('/rides/executions')
                              || pathNoLocale.startsWith('/driver/rides')
-                             || pathNoLocale.startsWith('/disputes')
+                             || pathNoLocale.startsWith('/execution-disputes')
                              || pathNoLocale.startsWith('/weeks-to-submit')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
@@ -189,7 +189,7 @@ export default function SideNavigation() {
                                 <ListItemText primary="Ride Executions"/>
                         </NavItem>
                         )}
-                        <NavItem active={isActive('/disputes')} onClick={() => go('/disputes')} sx={{pl: 6}}>
+                        <NavItem active={isActive('/execution-disputes')} onClick={() => go('/execution-disputes')} sx={{pl: 6}}>
                             <ListItemText primary={t('navigation.workdays.disputesList')}/>
                         </NavItem>
                         <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/weeks-to-submit')} sx={{pl: 6}}>

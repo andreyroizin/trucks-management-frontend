@@ -118,7 +118,7 @@ export default function MobileNavigationDriver() {
                         </ListItemButton>
                         <Divider/>
 
-                        <ListItemButton onClick={() => go('/disputes')}
+                        <ListItemButton onClick={() => go('/execution-disputes')}
                                         sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
                             <ListItemText primary={t('disputes')}/>
                             <ArrowRightIcon fontSize="small"/>
