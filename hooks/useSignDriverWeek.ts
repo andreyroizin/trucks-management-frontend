@@ -3,20 +3,18 @@ import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
 type SignDriverWeekResponse = {
-    message: string;
-    weekApprovalId: string;
-    status: number;
-    driverSignedAt: string;
-};
-
-type SignWeekPayload = {
+    id: string;
+    driverId: string;
     year: number;
     weekNumber: number;
+    newStatus: string;
+    signedAt: string;
+    message: string;
 };
 
-const signDriverWeekRequest = async ({ year, weekNumber }: SignWeekPayload): Promise<SignDriverWeekResponse> => {
-    const response = await api.post<ApiResponse<SignDriverWeekResponse>>(
-        `/drivers/week/sign?year=${year}&weekNumber=${weekNumber}`
+const signDriverWeekRequest = async (weekApprovalId: string): Promise<SignDriverWeekResponse> => {
+    const response = await api.put<ApiResponse<SignDriverWeekResponse>>(
+        `/rides/weeks-to-submit/${weekApprovalId}/sign` // ✅ Updated to use ride execution endpoint
     );
 
     if (response.data.isSuccess && response.data.data) {

@@ -36,7 +36,7 @@ export default function SignWorkWeekPage() {
     return (
         <Box maxWidth="600px" mx="auto" py={4}>
             <Typography variant="h4" sx={{ fontWeight: 500 }}>
-                {t('title', { week: data.week })}
+                {t('title', { week: data.weekNumber })}
             </Typography>
             {data.status !== 2 ? (
                 <Box mt={4} display="flex" flexDirection="column" alignItems="center" gap={2}>
@@ -49,12 +49,12 @@ export default function SignWorkWeekPage() {
                 </Box>
             ) : (
                 <WeekSummary
-                    startDate={data.startDate}
-                    endDate={data.endDate}
-                    vacationHoursTaken={data.vacationHoursTaken}
-                    vacationHoursLeft={data.vacationHoursLeft}
-                    rides={data.rides}
-                    totalHoursWorked={data.totalHoursWorked}
+                    week={data.weekNumber}
+                    year={data.year}
+                    executions={data.executions}
+                    totalHours={data.totalHours}
+                    totalCompensation={data.totalCompensation}
+                    adminAllowedAt={data.adminAllowedAt}
                 />
             )}
         </Box>

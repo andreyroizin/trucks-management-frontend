@@ -5,34 +5,32 @@ import { api } from '@/utils/api';         // ← your axios instance
 import { ApiResponse } from '@/types/api'; // generic response wrapper
 
 // ─── Types ──────────────────────────────────────────────────────────────
-export type WeekRide = {
-    id: string;
+export type WeekExecution = {
+    rideId: string;
     date: string;           // ISO string
-    decimalHours: number;
-    company?: { id: string; name: string } | null;
-    client?: { id: string; name: string } | null;
-    car?: { id: string; licensePlate: string } | null;
-    hoursCode?: { id: string; name: string } | null;
+    clientName: string;
+    actualStartTime: string; // "08:00"
+    actualEndTime: string;   // "16:30"
+    actualRestTime: string;  // "00:30"
+    totalHours: number;
+    compensation: number;
 };
 
 export type DriverWeekDetails = {
-    weekApprovalId: string;
-    week: number;
+    weekApprovalId: string;  // ✅ Critical for signing
     year: number;
-    startDate: string;       // e.g. 2025-12-22T00:00:00
-    endDate: string;         // e.g. 2025-12-28T00:00:00
-    status: number;          // 0 = on-going, 1 = ready to sign, 2 = signed
+    weekNumber: number;
+    status: number;          // 0 = PendingAdmin, 1 = PendingDriver, 2 = Signed, 3 = Invalidated
+    totalHours: number;
     totalCompensation: number;
-    totalHoursWorked: number;
-    vacationHoursTaken: number;
-    vacationHoursLeft: number;
-    rides: WeekRide[];
+    adminAllowedAt?: string; // When admin submitted to driver
+    executions: WeekExecution[]; // ✅ Ride executions instead of partrides
 };
 
 // ─── Fetcher ────────────────────────────────────────────────────────────
 const fetchDriverWeekDetails = async (year: number, weekNumber: number) => {
     const { data } = await api.get<ApiResponse<DriverWeekDetails>>(
-        `/drivers/week/details?year=${year}&weekNumber=${weekNumber}`
+        `/rides/drivers/week/details?year=${year}&weekNumber=${weekNumber}` // ✅ Updated to use ride execution endpoint
     );
 
     if (!data.isSuccess) {

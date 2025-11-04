@@ -57,13 +57,13 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                     {getWeekChip(week.status)}
                                 </Box>
                                 <Typography variant="body2" color="text.secondary">
-                                    {week.totalDecimalHours} {t('hoursWorked')}
+                                    {week.totalDecimalHours || 0} {t('hoursWorked')} • €{(week.totalCompensation || 0).toFixed(2)}
                                 </Typography>
                             </Box>
                         </AccordionSummary>
 
                         <AccordionDetails sx={{ px: 0 }}>
-                            {week.partRides.length === 0 ? (
+                            {!week.executions || week.executions.length === 0 ? (
                                 <Typography color="text.secondary" px={2} pb={1}>
                                     {t('noRecords')}
                                 </Typography>
@@ -73,37 +73,43 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.date')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Client</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Time</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.hours')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.hoursCode')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.status')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Compensation</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {week.partRides.map((pr, prIndex) => {
-                                                const d = dayjs(pr.date);
+                                            {(week.executions || []).map((execution, execIndex) => {
+                                                const d = dayjs(execution.date);
                                                 const isWeekendOrHoliday = d.day() === 0 || d.day() === 6 || isHolidayDayjs(d);
-                                                const isLast = prIndex === week.partRides.length - 1;
+                                                const isLast = execIndex === (week.executions || []).length - 1;
                                                 return (
                                                     <TableRow
-                                                        key={pr.id}
+                                                        key={execution.rideId}
                                                         hover
                                                         sx={{
-                                                            cursor: 'pointer',
                                                             backgroundColor: isWeekendOrHoliday ? WEEKEND_HOLIDAY_BG : 'inherit'
                                                         }}
-                                                        onClick={() => router.push(`/partrides/${pr.id}`)}
                                                     >
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {dayjs(pr.date).format('dd DD.MM.YY')}
+                                                            {dayjs(execution.date).format('dd DD.MM.YY')}
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {pr.decimalHours.toString().replace('.', ',')} h.
+                                                            {execution.clientName}
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {pr.hoursCode?.name ?? '-'}
+                                                            {execution.actualStartTime} - {execution.actualEndTime}
+                                                            <br />
+                                                            <Typography variant="caption" color="text.secondary">
+                                                                Rest: {execution.actualRestTime}
+                                                            </Typography>
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            <PartRideStatusChip status={pr.status} />
+                                                            {(execution.totalHours || 0).toFixed(1)}h
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            €{(execution.compensation || 0).toFixed(2)}
                                                         </TableCell>
                                                     </TableRow>
                                                 );

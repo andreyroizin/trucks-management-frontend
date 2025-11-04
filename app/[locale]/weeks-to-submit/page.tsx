@@ -25,13 +25,10 @@ import {
 } from '@mui/material';
 import SyncIcon from '@mui/icons-material/Sync';
 import {useQueryClient} from '@tanstack/react-query';
-import {useWeeksToSubmit, WeekToSubmit} from '@/hooks/useWeeksToSubmit';
-import {useAllowDriverForWeek} from '@/hooks/useAllowDriverForWeek';
+import {useRideWeeksToSubmit, useAllowDriverForWeek, DriverWeekSummary} from '@/hooks/useRideWeeksToSubmit';
 import {useDrivers} from '@/hooks/useDrivers';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 import {useSnack} from "@/providers/SnackProvider";
-import Link from "next/link";
-import WeekApprovalOverviewModal from "@/components/WeekApprovalOverviewModal";
 import { useTranslations } from 'next-intl';
 
 /* ------------------------------------------------------------------ */
@@ -45,10 +42,10 @@ export default function WeeksToSubmitPage() {
 
     // status filter options
     const STATUS_OPTIONS = useMemo(() => [
-        { label: t('statusOptions.hasDisputes'), value: 'hasDisputes' },
-        { label: t('statusOptions.allApproved'), value: 'allApprovedOrRejected' },
-        { label: t('statusOptions.hasPending'), value: 'hasPending' },
-        { label: t('statusOptions.hasRejected'), value: 'hasRejected' },
+        { label: t('statusOptions.allApproved'), value: 'All Approved' },
+        { label: t('statusOptions.hasPending'), value: 'Has Pending' },
+        { label: t('statusOptions.hasDisputes'), value: 'Has Disputes' },
+        { label: t('statusOptions.hasRejected'), value: 'Has Rejected' },
     ], [t]);
 
     // Dutch ISO weeks 1-53
@@ -60,11 +57,11 @@ export default function WeeksToSubmitPage() {
     /* ------------------------------ Filters ------------------------- */
     const [driverId, setDriverId] = useState<string | undefined>();
     const [weekNr, setWeekNr] = useState<number | undefined>();
-    const [status, setStatus] = useState<
-        'hasDisputes' | 'allApproved' | 'hasPending' | 'hasRejected' | undefined
+    const [summaryStatus, setSummaryStatus] = useState<
+        'All Approved' | 'Has Pending' | 'Has Disputes' | 'Has Rejected' | undefined
     >();
-    const [weekApprovalId, setWeekApprovalId] = useState<string | null>(null);
-    const [weekApprovalOverviewOpen, setWeekApprovalOverviewOpen] = useState(false);
+    const [selectedWeek, setSelectedWeek] = useState<DriverWeekSummary | null>(null);
+    const [weekDetailsOpen, setWeekDetailsOpen] = useState(false);
 
     /* ------------------------------ Pagination ---------------------- */
     const [pageNumber, setPageNumber] = useState(1);
@@ -76,10 +73,18 @@ export default function WeeksToSubmitPage() {
         setSelectedIds((prev) =>
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
         );
-    const toggleAll = (rows?: WeekToSubmit[]) =>
-        setSelectedIds((prev) =>
-            rows && prev.length !== rows.length ? rows.map((r) => r.id) : [],
+    const toggleAll = (rows?: DriverWeekSummary[]) => {
+        if (!rows) return;
+        
+        // Only select weeks that can be submitted (All Approved + PendingAdmin)
+        const submittableWeeks = rows.filter(w => 
+            w.summaryStatus === 'All Approved' && w.status === 'PendingAdmin'
         );
+        
+        setSelectedIds((prev) =>
+            prev.length !== submittableWeeks.length ? submittableWeeks.map((r) => r.id) : [],
+        );
+    };
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [successOpen, setSuccessOpen] = useState(false);
@@ -87,35 +92,80 @@ export default function WeeksToSubmitPage() {
     /* ------------------------------ Data hooks ---------------------- */
     const { data: drivers } = useDrivers();
     const {
-        data,
+        data: allWeeks,
         isLoading,
         isRefetching,
         error,
-    } = useWeeksToSubmit({
-        driverId,
-        weekNr,
-        status,
-        pageNumber,
-        pageSize: rowsPerPage,
-    });
+    } = useRideWeeksToSubmit(); // No driverId - admin sees all weeks
 
     /* ------------------------------ Mutations ----------------------- */
     const { mutateAsync: allowDriver, isPending } = useAllowDriverForWeek();
 
+    // Filter and paginate data on frontend
+    const filteredWeeks = useMemo(() => {
+        if (!allWeeks) return [];
+        
+        // Debug: Log all weeks to see their status
+        console.log('All weeks from API:', allWeeks.map(w => ({
+            id: w.id,
+            driver: `${w.driver.firstName} ${w.driver.lastName}`,
+            week: w.weekNumber,
+            status: w.status,
+            summaryStatus: w.summaryStatus,
+            pendingCount: w.pendingCount,
+            disputeCount: w.disputeCount,
+            rejectedCount: w.rejectedCount
+        })));
+        
+        return allWeeks.filter(week => {
+            // Only show weeks that are in PendingAdmin status (ready for admin action)
+            if (week.status !== 'PendingAdmin') return false;
+            
+            // Apply user filters
+            if (driverId && week.driverId !== driverId) return false;
+            if (weekNr && week.weekNumber !== weekNr) return false;
+            if (summaryStatus && week.summaryStatus !== summaryStatus) return false;
+            return true;
+        });
+    }, [allWeeks, driverId, weekNr, summaryStatus]);
+
+    // Paginate filtered results
+    const paginatedWeeks = useMemo(() => {
+        const startIndex = (pageNumber - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        return filteredWeeks.slice(startIndex, endIndex);
+    }, [filteredWeeks, pageNumber, rowsPerPage]);
+
+    const totalCount = filteredWeeks.length;
+
     const handleSendSelected = async () => {
         try {
+            console.log('Submitting weeks with IDs:', selectedIds);
+            
+            // Debug: Show details of selected weeks
+            const selectedWeeksDetails = paginatedWeeks?.filter(w => selectedIds.includes(w.id));
+            console.log('Selected weeks details:', selectedWeeksDetails?.map(w => ({
+                id: w.id,
+                driver: `${w.driver.firstName} ${w.driver.lastName}`,
+                week: w.weekNumber,
+                status: w.status,
+                summaryStatus: w.summaryStatus
+            })));
+            
             for (const id of selectedIds) {
+                console.log(`Calling allowDriver for week ID: ${id}`);
                 await allowDriver(id);
             }
             setSuccessOpen(true);
         } catch (e: any) {
+            console.error('Error submitting weeks:', e);
             showSnack({
                 text: e?.response?.data?.errors?.[0] ?? t('error.submitFailed'),
                 severity: 'error',
             });
         } finally {
             setSelectedIds([]);
-            await qc.invalidateQueries({ queryKey: ['weeksToSubmit'] });
+            await qc.invalidateQueries({ queryKey: ['rideWeeksToSubmit'] });
         }
     };
 
@@ -148,7 +198,7 @@ export default function WeeksToSubmitPage() {
                     {(isLoading || isRefetching) ? (
                         <CircularProgress size={20} />
                     ) : (
-                        <IconButton onClick={() => qc.invalidateQueries({ queryKey: ['weeksToSubmit']})}>
+                        <IconButton onClick={() => qc.invalidateQueries({ queryKey: ['rideWeeksToSubmit']})}>
                             <SyncIcon sx={{ transform: 'rotate(90deg)' }} />
                         </IconButton>
                     )}
@@ -194,7 +244,7 @@ export default function WeeksToSubmitPage() {
                             options={STATUS_OPTIONS}
                             sx={{ minWidth: 180 }}
                             onChange={(_, v) =>
-                                setStatus(v?.value as typeof status | undefined)
+                                setSummaryStatus(v?.value as typeof summaryStatus | undefined)
                             }
                             renderInput={(p) => <TextField {...p} label={t('filters.status')} />}
                         />
@@ -218,16 +268,21 @@ export default function WeeksToSubmitPage() {
                                 <TableCell padding="checkbox">
                                     <Checkbox
                                         size="small"
-                                        checked={
-                                            !!data?.data &&
-                                            selectedIds.length === data.data.length
-                                        }
-                                        indeterminate={
-                                            !!data?.data &&
-                                            selectedIds.length > 0 &&
-                                            selectedIds.length < data.data.length
-                                        }
-                                        onChange={() => toggleAll(data?.data)}
+                                        checked={(() => {
+                                            if (!paginatedWeeks) return false;
+                                            const submittableWeeks = paginatedWeeks.filter(w => 
+                                                w.summaryStatus === 'All Approved' && w.status === 'PendingAdmin'
+                                            );
+                                            return submittableWeeks.length > 0 && selectedIds.length === submittableWeeks.length;
+                                        })()}
+                                        indeterminate={(() => {
+                                            if (!paginatedWeeks) return false;
+                                            const submittableWeeks = paginatedWeeks.filter(w => 
+                                                w.summaryStatus === 'All Approved' && w.status === 'PendingAdmin'
+                                            );
+                                            return selectedIds.length > 0 && selectedIds.length < submittableWeeks.length;
+                                        })()}
+                                        onChange={() => toggleAll(paginatedWeeks)}
                                     />
                                 </TableCell>
                                 <TableCell>{t('table.headers.driver')}</TableCell>
@@ -248,11 +303,13 @@ export default function WeeksToSubmitPage() {
                             )}
 
                             {!isLoading &&
-                                data?.data?.map((w) => {
+                                paginatedWeeks?.map((w) => {
                                     const disabled =
                                         w.summaryStatus === 'Has Pending' ||
                                         w.summaryStatus === 'Has Disputes' ||
                                         w.summaryStatus === 'Has Rejected';
+                                    
+                                    const canSubmit = w.summaryStatus === 'All Approved' && w.status === 'PendingAdmin';
 
                                     return (
                                         <TableRow
@@ -265,46 +322,29 @@ export default function WeeksToSubmitPage() {
                                                     size="small"
                                                     checked={selectedIds.includes(w.id)}
                                                     onChange={() => toggleRow(w.id)}
+                                                    disabled={!canSubmit}
                                                 />
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
                                                 {w.driver.firstName} {w.driver.lastName}
                                             </TableCell>
-                                            <TableCell sx={{ py: 2.6 }}>{t('table.weekNumber', { number: w.weekNr })}</TableCell>
+                                            <TableCell sx={{ py: 2.6 }}>{t('table.weekNumber', { number: w.weekNumber })}</TableCell>
                                             <TableCell align="right" sx={{ py: 2.6 }}>
                                                 {t('table.hours', { hours: w.totalHours.toFixed(1) })}
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
                                                {w.rejectedCount > 0 ? (
-                                                    <Link
-                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=3`}
-                                                        style={{ textDecoration: 'underline' }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {w.rejectedCount} {w.rejectedCount === 1 ? t('table.rejected') : t('table.rejects')}
-                                                    </Link>
+                                                    `${w.rejectedCount} ${w.rejectedCount === 1 ? t('table.rejected') : t('table.rejects')}`
                                                 ) : w.disputeCount > 0 ? (
-                                                    <Link
-                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=1`}
-                                                        style={{ textDecoration: 'underline' }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {w.disputeCount} {w.disputeCount === 1 ? t('table.dispute') : t('table.disputes')}
-                                                    </Link>
-                                                ) : w.pendingAdminCount > 0 ? (
-                                                    <Link
-                                                        href={`/partrides?weekNumbers=${w.weekNr}&driverIds=${w.driver.driverId}&statusIds=0`}
-                                                        style={{ textDecoration: 'underline' }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {w.pendingAdminCount} {t('table.pending')}
-                                                    </Link>
+                                                    `${w.disputeCount} ${w.disputeCount === 1 ? t('table.dispute') : t('table.disputes')}`
+                                                ) : w.pendingCount > 0 ? (
+                                                    `${w.pendingCount} ${t('table.pending')}`
                                                 ) : (
                                                     w.summaryStatus
                                                 )}
                                             </TableCell>
                                             <TableCell align="right" sx={{ py: 2.6 }}>
-                                                €{w.forecastedEarning.toFixed(2)}
+                                                €{w.totalCompensation.toFixed(2)}
                                             </TableCell>
                                             <TableCell sx={{ py: 2.6 }}>
                                                 <Button
@@ -312,8 +352,8 @@ export default function WeeksToSubmitPage() {
                                                     variant="outlined"
                                                     disabled={disabled}
                                                     onClick={() => {
-                                                        setWeekApprovalId(w.id)
-                                                        setWeekApprovalOverviewOpen(true)
+                                                        setSelectedWeek(w);
+                                                        setWeekDetailsOpen(true);
                                                     }}
                                                 >
                                                     {t('actions.seeOverview')}
@@ -329,7 +369,7 @@ export default function WeeksToSubmitPage() {
                 <TablePagination
                     component="div"
                     rowsPerPageOptions={[5, 10, 25, 50]}
-                    count={data?.totalCount ?? 0}
+                    count={totalCount}
                     rowsPerPage={rowsPerPage}
                     page={pageNumber - 1}
                     onPageChange={(_, p) => setPageNumber(p + 1)}
@@ -400,23 +440,57 @@ export default function WeeksToSubmitPage() {
                 <Button
                   fullWidth
                   variant="contained"
-                  href="/partrides"
+                  href="/rides/executions"
                   sx={{ backgroundColor: '#0070f3' }}
                 >
                   {t('successDialog.goToOverview')}
                 </Button>
               </DialogContent>
             </Dialog>
-            {weekApprovalId && (
-                <WeekApprovalOverviewModal
-                    open={weekApprovalOverviewOpen}
-                    weekApprovalId={weekApprovalId}
-                    onClose={() => {
-                        setWeekApprovalOverviewOpen(false)
-                        setWeekApprovalId(null);
-                    }}
-                />
-            )}
+
+            {/* Week Overview Dialog */}
+            <Dialog 
+              open={weekDetailsOpen} 
+              onClose={() => setWeekDetailsOpen(false)} 
+              maxWidth="md"
+              fullWidth
+            >
+              <DialogContent sx={{ p: 3 }}>
+                {selectedWeek && (
+                  <Box>
+                    <Typography variant="h5" gutterBottom>
+                      Week {selectedWeek.weekNumber} ({selectedWeek.year}) - {selectedWeek.driver.firstName} {selectedWeek.driver.lastName}
+                    </Typography>
+                    
+                    <Box sx={{ mb: 3, display: 'flex', gap: 3 }}>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">Executions</Typography>
+                        <Typography variant="h6">{selectedWeek.executionCount}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">Total Hours</Typography>
+                        <Typography variant="h6">{selectedWeek.totalHours.toFixed(1)}h</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">Total Compensation</Typography>
+                        <Typography variant="h6">€{selectedWeek.totalCompensation.toFixed(2)}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">Status</Typography>
+                        <Typography variant="h6">{selectedWeek.summaryStatus}</Typography>
+                      </Box>
+                    </Box>
+
+                    <Typography variant="body2" color="text.secondary">
+                      Week period: {selectedWeek.weekStartDate} (Period {selectedWeek.periodNumber})
+                    </Typography>
+                  </Box>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setWeekDetailsOpen(false)}>Close</Button>
+              </DialogActions>
+            </Dialog>
         </Box>
     );
 }

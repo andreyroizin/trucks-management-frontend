@@ -43,8 +43,14 @@ export default function SignWorkWeekPage() {
     // ─── UI ───────────────────────────────────────────────────────────
     const handleSignClick = async () => {
         setSignError(null);
+        
+        if (!data?.weekApprovalId) {
+            setSignError('Week approval ID not found');
+            return;
+        }
+        
         try {
-            await mutateAsync({ year, weekNumber });
+            await mutateAsync(data.weekApprovalId); // ✅ Use weekApprovalId instead of year/weekNumber
             router.push(`/weeks/sign/success/${year}-${weekNumber}`);
         } catch (err) {
             const message = t('errorSign');
@@ -58,13 +64,12 @@ export default function SignWorkWeekPage() {
             </Typography>
 
             <WeekSummary
-                week={data.week}
-                startDate={data.startDate}
-                endDate={data.endDate}
-                vacationHoursTaken={data.vacationHoursTaken}
-                vacationHoursLeft={data.vacationHoursLeft}
-                rides={data.rides}
-                totalHoursWorked={data.totalHoursWorked}
+                week={data.weekNumber}
+                year={data.year}
+                executions={data.executions}
+                totalHours={data.totalHours}
+                totalCompensation={data.totalCompensation}
+                adminAllowedAt={data.adminAllowedAt}
             />
 
             {/* sign button only if status = 1 (ready to sign) */}

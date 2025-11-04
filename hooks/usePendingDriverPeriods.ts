@@ -27,11 +27,11 @@ async function fetchArchivedDriverPeriods(
     pageSize: number
 ): Promise<ArchivedPeriodPage> {
     const res = await api.get<ApiResponse<ArchivedPeriodPage>>(
-        `/drivers/periods/pending`,       // ⬅️  adjust if your endpoint differs
+        `/rides/periods/driver/pending`,  // ✅ Updated to use ride execution endpoint
         { params: { pageNumber, pageSize } }
     );
     if (!res.data.isSuccess || !res.data.data)
-        throw new Error(res.data.errors?.[0] || 'Failed to fetch archived periods');
+        throw new Error(res.data.errors?.[0] || 'Failed to fetch pending periods');
 
     return res.data.data;
 }
