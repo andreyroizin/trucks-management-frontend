@@ -40,7 +40,7 @@ export default function DisputesPage() {
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
 
   // Data hooks
-  const { data: drivers = [], isLoading: isLoadingDrivers } = useDriversAndTrucks();
+  const { drivers, isLoadingDrivers } = useDriversAndTrucks();
   const { data: allRidesFromAPI, isLoading, error } = useRidesPendingApproval(
     selectedCompanyId,
     statusFilter // Always 'Dispute'
