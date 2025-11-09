@@ -274,7 +274,7 @@ export default function CreateDriverPage() {
         );
     }
 
-    if (!isAuthenticated || !hasAccess) {
+    if (!hasAccess) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
                 <Alert severity="error">{t('drivers.create.errors.noPermission')}</Alert>

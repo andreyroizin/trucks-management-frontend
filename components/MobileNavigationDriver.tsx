@@ -19,17 +19,20 @@ import BellIcon from '@mui/icons-material/NotificationsNoneRounded';
 import PersonIcon from '@mui/icons-material/PersonRounded';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import ArrowRightIcon from '@mui/icons-material/ChevronRightRounded';
-import {useRouter} from 'next/navigation';
+import {useRouter, usePathname} from 'next/navigation';
 import {useAuth} from '@/hooks/useAuth';
-import React, {useState} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import LanguageDialogDriver from "@/components/LanguageDialogDriver";
 import Link from "next/link"; // adjust path to your auth hook
 import {useTranslations} from 'next-intl';
+import { SUPPORTED_LOCALES } from '@/utils/constants/supportedLocales';
+import { routing } from '@/i18n/routing';
 
 /* ------------------------------------------------- */
 export default function MobileNavigationDriver() {
     const router = useRouter();
-    const {isAuthenticated, user, logout} = useAuth();
+    const pathname = usePathname();
+    const {isAuthenticated, user, logout, loading} = useAuth();
     const t = useTranslations('nav.driver');
 
     const [open, setOpen] = useState(false);
@@ -40,6 +43,19 @@ export default function MobileNavigationDriver() {
         router.push(href);
         setOpen(false);
     };
+
+    const locale = useMemo(() => {
+        const parts = pathname.split('/');
+        return parts.length > 1 && SUPPORTED_LOCALES.includes(parts[1] as any) ? parts[1] : routing.defaultLocale;
+    }, [pathname]);
+
+    useEffect(() => {
+        if (!loading && !isAuthenticated) {
+            if (!pathname.includes('/auth/')) {
+                router.replace(`/${locale}/auth/login`);
+            }
+        }
+    }, [loading, isAuthenticated, pathname, router, locale]);
 
     if (!isAuthenticated || !user?.roles.includes("driver")) return null;
 

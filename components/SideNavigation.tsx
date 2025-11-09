@@ -21,6 +21,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
 import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
+import { routing } from '@/i18n/routing';
 
 // small helper for active styling
 const NavItem = styled(ListItemButton, {
@@ -67,7 +68,11 @@ export default function SideNavigation() {
     };
 
     const pathNoLocale = React.useMemo(() => stripLocale(pathname), [pathname]);
-    const { isAuthenticated, user, logout } = useAuth(); // { firstName, lastName, roles }
+    const locale = React.useMemo(() => {
+        const parts = pathname.split('/');
+        return parts.length > 1 && SUPPORTED_LOCALES.includes(parts[1] as any) ? parts[1] : routing.defaultLocale;
+    }, [pathname]);
+    const { isAuthenticated, user, logout, loading } = useAuth(); // { firstName, lastName, roles }
 
     const allowedToView = user?.roles?.some(role =>
         ['globalAdmin', 'customerAdmin', 'employer', 'customerAccountant', 'customer'].includes(role)
@@ -106,6 +111,14 @@ export default function SideNavigation() {
     /* helpers */
     const go = (href: string) => router.push(href);
     const isActive = (href: string) => pathNoLocale === href;
+
+    React.useEffect(() => {
+        if (!loading && !isAuthenticated) {
+            if (!pathname.includes('/auth/')) {
+                router.replace(`/${locale}/auth/login`);
+            }
+        }
+    }, [loading, isAuthenticated, router, pathname, locale]);
 
     if (!isAuthenticated || !allowedToView) return null;
 
