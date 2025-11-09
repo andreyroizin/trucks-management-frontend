@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {Box, Button, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, styled, Menu, MenuItem, IconButton} from '@mui/material';
+import {Box, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, styled, Menu, MenuItem, IconButton} from '@mui/material';
 import {usePathname, useRouter} from 'next/navigation';
 import {useTranslations} from 'next-intl';
 
@@ -17,7 +17,6 @@ import BusinessIcon from '@mui/icons-material/BusinessRounded';
 import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import AddIcon from '@mui/icons-material/AddRounded';
 import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
@@ -239,20 +238,6 @@ export default function SideNavigation() {
 
             {/* ───────── Bottom Actions ───────── */}
             <Box sx={{mt: 3}}>
-                {/* Create Workday - Only for non-drivers */}
-                {!user?.roles?.includes('driver') && (
-                <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon/>}
-                    onClick={() => router.push('/partrides/create')}
-                    sx={{px: 1, py: 1}}
-                >
-                    {t('navigation.createNewWorkday')}
-                </Button>
-                )}
-
                 <Divider sx={{my: 3}}/>
 
                 {/* Profile */}
