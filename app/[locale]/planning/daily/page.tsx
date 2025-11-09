@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Box,
@@ -33,8 +33,9 @@ import DriverAvailabilityDialog from '@/components/DriverAvailabilityDialog';
 import TruckAvailabilityDialog from '@/components/TruckAvailabilityDialog';
 import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemoveSecondDriver } from '@/hooks/useRideAssignment';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
-import { useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
-import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
+import { useWeeklyAvailability, getAvailabilityHours } from '@/hooks/useWeeklyAvailability';
+import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning, calculateDriverHoursForDate, calculateTruckHoursForDate } from '@/utils/conflictDetection';
+import { AvailabilityStatus } from '@/components/RideAssignmentCard';
 import OverallocationWarningDialog from '@/components/OverallocationWarningDialog';
 
 export default function DailyPlanningPage() {
@@ -120,18 +121,197 @@ export default function DailyPlanningPage() {
     const error = ridesError || resourcesError;
 
     // Convert daily rides data to weekly format for conflict detection
-    const createWeeklyRidesDataForConflict = () => {
+    const weeklyRidesDataForConflict = useMemo(() => {
         if (!ridesData) return null;
-        
         return {
             weekStartDate: selectedDate,
             days: [{
                 date: selectedDate,
                 dayName: new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }),
-                clients: ridesData.clients
-            }]
+                clients: ridesData.clients,
+            }],
         };
-    };
+    }, [ridesData, selectedDate]);
+
+    const formatHoursValue = React.useCallback((value: number) => {
+        const rounded = Number.isFinite(value) ? Number(value) : 0;
+        return Number.isInteger(rounded) ? `${rounded}h` : `${rounded.toFixed(1)}h`;
+    }, []);
+
+    const formatHoursSummary = React.useCallback((used: number, total: number) => {
+        return `${formatHoursValue(used)} / ${formatHoursValue(total)} scheduled`;
+    }, [formatHoursValue]);
+
+    const findRideById = React.useCallback((rideId: string | null) => {
+        if (!rideId || !ridesData) return null;
+        for (const client of ridesData.clients) {
+            const ride = client.rides.find(r => r.id === rideId);
+            if (ride) return ride;
+        }
+        return null;
+    }, [ridesData]);
+
+    const getPrimaryDriverDefaultHours = React.useCallback((ride) => {
+        if (ride.assignedDriver?.plannedHours != null) {
+            return ride.assignedDriver.plannedHours;
+        }
+        if (ride.secondDriver?.plannedHours != null) {
+            const remaining = ride.plannedHours - ride.secondDriver.plannedHours;
+            return remaining > 0 ? remaining : ride.plannedHours;
+        }
+        return ride.plannedHours;
+    }, []);
+
+    const getSecondDriverDefaultHours = React.useCallback((ride) => {
+        if (ride.secondDriver?.plannedHours != null) {
+            return ride.secondDriver.plannedHours;
+        }
+        return Math.min(Math.max(ride.plannedHours / 2, 4), ride.plannedHours);
+    }, []);
+
+    const calculateDriverDayHours = React.useCallback((driverId: string, excludeRideId?: string) => {
+        if (!weeklyRidesDataForConflict) return 0;
+        return calculateDriverHoursForDate(
+            weeklyRidesDataForConflict,
+            driverId,
+            selectedDate,
+            excludeRideId
+        );
+    }, [weeklyRidesDataForConflict, selectedDate]);
+
+    const calculateTruckDayHours = React.useCallback((truckId: string, excludeRideId?: string) => {
+        if (!weeklyRidesDataForConflict) return 0;
+        return calculateTruckHoursForDate(
+            weeklyRidesDataForConflict,
+            truckId,
+            selectedDate,
+            excludeRideId
+        );
+    }, [weeklyRidesDataForConflict, selectedDate]);
+
+    const getDriverAvailabilityStatus = React.useCallback(({ ride, driver, context }) => {
+        if (!weeklyRidesDataForConflict) return null;
+
+        const defaultHours = context === 'primary'
+            ? getPrimaryDriverDefaultHours(ride)
+            : getSecondDriverDefaultHours(ride);
+        const availableHours = getAvailabilityHours(driver.id, selectedDate, availabilityData, 'driver');
+        const currentHours = calculateDriverDayHours(driver.id, ride.id);
+
+        const isPrimarySelection = ride.assignedDriver?.id === driver.id;
+        const isSecondSelection = ride.secondDriver?.id === driver.id;
+        const assignedHoursForRide = isPrimarySelection
+            ? ride.assignedDriver?.plannedHours ?? defaultHours
+            : isSecondSelection
+                ? ride.secondDriver?.plannedHours ?? defaultHours
+                : 0;
+
+        const projectedHours = currentHours + defaultHours;
+        const displayHours = (isPrimarySelection || isSecondSelection)
+            ? currentHours + assignedHoursForRide
+            : currentHours;
+
+        const conflict = checkDriverConflict(
+            weeklyRidesDataForConflict,
+            ride.id,
+            driver.id,
+            defaultHours,
+            driver.fullName,
+            availabilityData
+        );
+
+        if (conflict) {
+            return {
+                level: 'busy',
+                label: 'Busy',
+                message: formatHoursSummary(displayHours, availableHours),
+            };
+        }
+
+        const isCurrentSelection =
+            (context === 'primary' && isPrimarySelection) ||
+            (context === 'second' && isSecondSelection);
+
+        return {
+            level: 'available',
+            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            message: formatHoursSummary(displayHours, availableHours),
+        };
+    }, [
+        weeklyRidesDataForConflict,
+        availabilityData,
+        selectedDate,
+        calculateDriverDayHours,
+        formatHoursSummary,
+        getPrimaryDriverDefaultHours,
+        getSecondDriverDefaultHours,
+    ]);
+
+    const getTruckAvailabilityStatus = React.useCallback(({ ride, truck }) => {
+        if (!weeklyRidesDataForConflict) return null;
+
+        const defaultHours = ride.plannedHours;
+        const availableHours = getAvailabilityHours(truck.id, selectedDate, availabilityData, 'truck');
+        const currentHours = calculateTruckDayHours(truck.id, ride.id);
+        const isCurrentSelection = ride.assignedTruck?.id === truck.id;
+        const displayHours = isCurrentSelection ? currentHours + ride.plannedHours : currentHours;
+        const projectedHours = currentHours + defaultHours;
+
+        const conflict = checkTruckConflict(
+            weeklyRidesDataForConflict,
+            ride.id,
+            truck.id,
+            defaultHours,
+            truck.licensePlate,
+            availabilityData
+        );
+
+        if (conflict) {
+            return {
+                level: 'busy',
+                label: 'Busy',
+                message: formatHoursSummary(displayHours, availableHours),
+            };
+        }
+
+        return {
+            level: 'available',
+            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            message: formatHoursSummary(displayHours, availableHours),
+        };
+    }, [
+        weeklyRidesDataForConflict,
+        availabilityData,
+        selectedDate,
+        calculateTruckDayHours,
+        formatHoursSummary,
+    ]);
+
+    const addDriverRide = React.useMemo(
+        () => findRideById(addDriverDialog.rideId),
+        [findRideById, addDriverDialog.rideId]
+    );
+
+    const addDriverAvailabilityStatus = React.useMemo(() => {
+        if (!addDriverRide || !drivers) return {};
+        const statusMap: Record<string, AvailabilityStatus> = {};
+        drivers.forEach((driver) => {
+            const status = getDriverAvailabilityStatus({
+                ride: addDriverRide,
+                driver,
+                context: 'second',
+            });
+            if (status) {
+                statusMap[driver.id] = status;
+            }
+        });
+        return statusMap;
+    }, [addDriverRide, drivers, getDriverAvailabilityStatus]);
+
+    const addDriverRideTotalHours = addDriverRide?.plannedHours ?? 8;
+    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? 'Primary driver';
+    const addDriverPrimaryHours =
+        addDriverRide?.assignedDriver?.plannedHours ?? addDriverRide?.plannedHours ?? 8;
 
     // Update URL when date changes
     useEffect(() => {
@@ -170,13 +350,12 @@ export default function DailyPlanningPage() {
         }
 
         // Check for driver conflict using custom availability
-        const weeklyRidesData = createWeeklyRidesDataForConflict();
-        if (weeklyRidesData) {
+        if (weeklyRidesDataForConflict) {
             const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
             const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
-            const conflict = checkDriverConflict(weeklyRidesData, rideId, driverId, driverHours, driverName, availabilityData);
+            const conflict = checkDriverConflict(weeklyRidesDataForConflict, rideId, driverId, driverHours, driverName, availabilityData);
 
-            if (conflict) {
+        if (conflict) {
                 setConflictWarning({
                     open: true,
                     conflict,
@@ -256,13 +435,12 @@ export default function DailyPlanningPage() {
         }
 
         // Check for truck conflict using custom availability
-        const weeklyRidesData = createWeeklyRidesDataForConflict();
-        if (weeklyRidesData) {
+        if (weeklyRidesDataForConflict) {
             const truckHours = currentRide.plannedHours;
             const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
-            const conflict = checkTruckConflict(weeklyRidesData, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
+            const conflict = checkTruckConflict(weeklyRidesDataForConflict, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
 
-            if (conflict) {
+        if (conflict) {
                 setConflictWarning({
                     open: true,
                     conflict,
@@ -336,8 +514,7 @@ export default function DailyPlanningPage() {
             
         if (!currentRide) return;
 
-        const weeklyRidesData = createWeeklyRidesDataForConflict();
-        if (!weeklyRidesData) {
+        if (!weeklyRidesDataForConflict) {
             performHoursChange(rideId, hours);
             return;
         }
@@ -345,9 +522,9 @@ export default function DailyPlanningPage() {
         // Check for truck conflict when changing total ride hours
         if (currentRide.assignedTruck) {
             const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck?.id)?.licensePlate || 'Unknown Truck';
-            const truckConflict = checkTruckConflict(weeklyRidesData, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate, availabilityData);
+            const truckConflict = checkTruckConflict(weeklyRidesDataForConflict, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate, availabilityData);
 
-            if (truckConflict) {
+        if (truckConflict) {
                 setConflictWarning({
                     open: true,
                     conflict: truckConflict,
@@ -374,9 +551,9 @@ export default function DailyPlanningPage() {
                 } : null
             });
             
-            const driverConflict = checkDriverHoursConflict(weeklyRidesData, rideId, currentRide.assignedDriver.id, hours, driverName, availabilityData);
+            const driverConflict = checkDriverHoursConflict(weeklyRidesDataForConflict, rideId, currentRide.assignedDriver.id, hours, driverName, availabilityData);
 
-            if (driverConflict) {
+        if (driverConflict) {
                 setConflictWarning({
                     open: true,
                     conflict: driverConflict,
@@ -431,8 +608,7 @@ export default function DailyPlanningPage() {
         if (!currentRide) return;
 
         // Check for driver conflict when changing individual driver hours
-        const weeklyRidesData = createWeeklyRidesDataForConflict();
-        if (weeklyRidesData) {
+        if (weeklyRidesDataForConflict) {
             const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
             
             // Debug logging
@@ -449,9 +625,9 @@ export default function DailyPlanningPage() {
                 } : null
             });
             
-            const conflict = checkDriverHoursConflict(weeklyRidesData, rideId, driverId, hours, driverName, availabilityData);
+            const conflict = checkDriverHoursConflict(weeklyRidesDataForConflict, rideId, driverId, hours, driverName, availabilityData);
 
-            if (conflict) {
+        if (conflict) {
                 setConflictWarning({
                     open: true,
                     conflict,
@@ -524,15 +700,14 @@ export default function DailyPlanningPage() {
         if (!currentRide) return;
 
         // Check for conflicts for both primary and second driver
-        const weeklyRidesData = createWeeklyRidesDataForConflict();
-        if (weeklyRidesData) {
+        if (weeklyRidesDataForConflict) {
             const primaryDriverName = currentRide.assignedDriver?.fullName || 'Primary Driver';
             const secondDriverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
 
             // Check primary driver conflict (if hours are changing)
             if (currentRide.assignedDriver && primaryDriverHours !== currentRide.assignedDriver.plannedHours) {
-                const primaryConflict = checkDriverHoursConflict(weeklyRidesData, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName, availabilityData);
-                if (primaryConflict) {
+                const primaryConflict = checkDriverHoursConflict(weeklyRidesDataForConflict, rideId, currentRide.assignedDriver.id, primaryDriverHours, primaryDriverName, availabilityData);
+            if (primaryConflict) {
                     setConflictWarning({
                         open: true,
                         conflict: primaryConflict,
@@ -543,8 +718,8 @@ export default function DailyPlanningPage() {
             }
 
             // Check second driver conflict
-            const secondConflict = checkDriverConflict(weeklyRidesData, rideId, driverId, secondDriverHours, secondDriverName, availabilityData);
-            if (secondConflict) {
+        const secondConflict = checkDriverConflict(weeklyRidesDataForConflict, rideId, driverId, secondDriverHours, secondDriverName, availabilityData);
+        if (secondConflict) {
                 setConflictWarning({
                     open: true,
                     conflict: secondConflict,
@@ -1012,6 +1187,13 @@ export default function DailyPlanningPage() {
                                         onAddSecondDriver={handleAddSecondDriver}
                                         onRemoveSecondDriver={handleRemoveSecondDriver}
                                         isAssigning={assigningRides.has(ride.id)}
+                                        secondDrivers={ride.secondDriver ? [{
+                                            id: ride.secondDriver.id,
+                                            fullName: ride.secondDriver.fullName,
+                                            plannedHours: ride.secondDriver.plannedHours,
+                                        }] : []}
+                                        getDriverAvailabilityStatus={getDriverAvailabilityStatus}
+                                        getTruckAvailabilityStatus={getTruckAvailabilityStatus}
                                     />
                                 ))}
                             </Box>
@@ -1070,25 +1252,11 @@ export default function DailyPlanningPage() {
                         : []
                     )
                 ]}
-                totalRideHours={addDriverDialog.rideId && ridesData ? 
-                    ridesData.clients
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.plannedHours || 8
-                    : 8
-                }
-                primaryDriverName={addDriverDialog.rideId && ridesData ? 
-                    ridesData.clients
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.fullName || "Primary driver"
-                    : "Primary driver"
-                }
-                currentPrimaryDriverHours={addDriverDialog.rideId && ridesData ? 
-                    ridesData.clients
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.plannedHours || 8
-                    : 8
-                }
+                totalRideHours={addDriverRideTotalHours}
+                primaryDriverName={addDriverPrimaryName}
+                currentPrimaryDriverHours={addDriverPrimaryHours}
                 isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+                driverAvailabilityStatus={addDriverAvailabilityStatus}
             />
 
             {/* Driver Availability Dialog */}
