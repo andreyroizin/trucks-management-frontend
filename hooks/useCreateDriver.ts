@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
+import axios from 'axios';
 
 // --- TYPES ---
 export type CreateDriverInput = {
@@ -81,11 +82,37 @@ export type CreateDriverResponse = {
 
 // --- API CALL ---
 const createDriver = async (driver: CreateDriverInput): Promise<CreateDriverResponse> => {
-    const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
-    if (response.data.isSuccess) {
-        return response.data.data;
+    const safePayload = {
+        ...driver,
+        Password: driver.Password ? '***masked***' : undefined,
+    };
+    console.log('[useCreateDriver] Submitting create driver request', safePayload);
+
+    try {
+        const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
+        console.log('[useCreateDriver] Received create driver response', response.data);
+
+        if (response.data.isSuccess) {
+            return response.data.data;
+        }
+
+        console.error('[useCreateDriver] Create driver failed with response', response.data);
+        throw new Error(response.data.errors?.[0] || 'Failed to create driver');
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error(
+                '[useCreateDriver] Axios error while creating driver',
+                {
+                    status: error.response?.status,
+                    data: error.response?.data,
+                    message: error.message,
+                }
+            );
+        } else {
+            console.error('[useCreateDriver] Unexpected error while creating driver', error);
+        }
+        throw error instanceof Error ? error : new Error('Failed to create driver');
     }
-    throw new Error(response.data.errors?.[0] || 'Failed to create driver');
 };
 
 // --- MUTATION HOOK ---

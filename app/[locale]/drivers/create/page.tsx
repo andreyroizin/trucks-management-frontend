@@ -83,7 +83,10 @@ export default function CreateDriverPage() {
     const schema = yup.object().shape({
         CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
         Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
-        Password: yup.string().required(t('drivers.create.fields.password.required')),
+        Password: yup
+            .string()
+            .required(t('drivers.create.fields.password.required'))
+            .matches(/[^a-zA-Z0-9]/, t('drivers.create.validation.passwordSpecialChar')),
         FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
         LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
         DateOfBirth: yup.string().optional(),
@@ -249,6 +252,19 @@ export default function CreateDriverPage() {
             /* Error handled by isError & error */
         }
     };
+
+    React.useEffect(() => {
+        const firstErrorField = Object.keys(errors)[0];
+        if (firstErrorField) {
+            const fieldElement = document.querySelector<HTMLElement>(`[name="${firstErrorField}"]`);
+            if (fieldElement) {
+                fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (typeof fieldElement.focus === 'function') {
+                    fieldElement.focus({ preventScroll: true } as any);
+                }
+            }
+        }
+    }, [errors]);
 
     if (authLoading) {
         return (

@@ -1202,7 +1202,8 @@
         }
       },
       "validation": {
-        "positiveNumber": "Must be a positive number"
+        "positiveNumber": "Must be a positive number",
+        "passwordSpecialChar": "Password must include at least one special character."
       },
       "periodOptions": {
         "1": "1 month",
