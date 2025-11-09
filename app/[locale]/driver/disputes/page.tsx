@@ -227,9 +227,9 @@ export default function DriverDisputesPage() {
                             <Typography variant="body2" color="text.secondary" gutterBottom>
                               {dayjs(ride.plannedDate).format('dddd, MMMM D, YYYY')}
                             </Typography>
-                            {ride.route && (
+                            {ride.routeFromName && ride.routeToName && (
                               <Typography variant="body2" color="text.secondary">
-                                📍 {ride.route}
+                                📍 {ride.routeFromName} → {ride.routeToName}
                               </Typography>
                             )}
                             {ride.clientName && (
@@ -284,9 +284,9 @@ export default function DriverDisputesPage() {
                             <Typography variant="body2" color="text.secondary" gutterBottom>
                               {dayjs(ride.plannedDate).format('dddd, MMMM D, YYYY')}
                             </Typography>
-                            {ride.route && (
+                            {ride.routeFromName && ride.routeToName && (
                               <Typography variant="body2" color="text.secondary">
-                                📍 {ride.route}
+                                📍 {ride.routeFromName} → {ride.routeToName}
                               </Typography>
                             )}
                             {ride.clientName && (
@@ -355,7 +355,9 @@ export default function DriverDisputesPage() {
             rideInfo={{
               plannedDate: selectedRide.plannedDate,
               tripNumber: selectedRide.tripNumber,
-              route: selectedRide.route,
+              route: selectedRide.routeFromName && selectedRide.routeToName
+                ? `${selectedRide.routeFromName} → ${selectedRide.routeToName}`
+                : undefined,
             }}
           />
         )}
