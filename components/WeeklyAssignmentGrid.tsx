@@ -29,18 +29,18 @@ import {
     ChevronRight
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
-import { useWeeklyRides } from '@/hooks/useWeeklyRides';
-import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
+import { useWeeklyRides, WeeklyRide } from '@/hooks/useWeeklyRides';
+import { useDriversAndTrucks, Driver, Truck } from '@/hooks/useDriversAndTrucks';
 import { useAssignDriverTruck, useUpdateRideHours, useAddSecondDriver, useRemoveSecondDriver } from '@/hooks/useRideAssignment';
 import WeekSelector from './WeekSelector';
-import RideAssignmentCard from './RideAssignmentCard';
+import RideAssignmentCard, { AvailabilityStatus } from './RideAssignmentCard';
 import AddDriverDialog from './AddDriverDialog';
 import OverallocationWarningDialog from './OverallocationWarningDialog';
 import DriverAvailabilityDialog from './DriverAvailabilityDialog';
 import TruckAvailabilityDialog from './TruckAvailabilityDialog';
-import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning } from '@/utils/conflictDetection';
+import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning, calculateDriverHoursForDate, calculateTruckHoursForDate, getRideDateAndDay } from '@/utils/conflictDetection';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
-import { useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
+import { getAvailabilityHours, useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
 
 type Props = {
     selectedDate: Date;
@@ -120,12 +120,125 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         if (!drivers || !trucks) return { driverToTruck: new Map(), truckToDriver: new Map() };
         return createDriverTruckMaps(drivers, trucks);
     }, [drivers, trucks]);
-    
+
     // Weekly availability data
-    const { 
+    const {
         data: availabilityData,
-        isLoading: isLoadingAvailability 
+        isLoading: isLoadingAvailability,
     } = useWeeklyAvailability(weekStartDate, companyId);
+
+    const formatHoursValue = React.useCallback((value: number) => {
+        const rounded = Number.isFinite(value) ? Number(value) : 0;
+        return Number.isInteger(rounded) ? `${rounded}h` : `${rounded.toFixed(1)}h`;
+    }, []);
+
+    const formatHoursSummary = React.useCallback((used: number, total: number) => {
+        return `${formatHoursValue(used)} / ${formatHoursValue(total)} scheduled`;
+    }, [formatHoursValue]);
+
+    const getPrimaryDriverDefaultHours = React.useCallback((ride: WeeklyRide): number => {
+        if (ride.assignedDriver?.plannedHours != null) {
+            return ride.assignedDriver.plannedHours;
+        }
+        if (ride.secondDriver?.plannedHours != null) {
+            const remaining = ride.plannedHours - ride.secondDriver.plannedHours;
+            return remaining > 0 ? remaining : ride.plannedHours;
+        }
+        return ride.plannedHours;
+    }, []);
+
+    const getSecondDriverDefaultHours = React.useCallback((ride: WeeklyRide): number => {
+        if (ride.secondDriver?.plannedHours != null) {
+            return ride.secondDriver.plannedHours;
+        }
+        return Math.min(Math.max(ride.plannedHours / 2, 4), ride.plannedHours);
+    }, []);
+
+    const getDriverAvailabilityStatus = React.useCallback(({ ride, driver, context }: {
+        ride: WeeklyRide;
+        driver: Driver;
+        context: 'primary' | 'second';
+    }): AvailabilityStatus | null => {
+        if (!ridesData) return null;
+
+        const rideDateInfo = getRideDateAndDay(ridesData, ride.id);
+        if (!rideDateInfo) return null;
+
+        const defaultHours = context === 'primary'
+            ? getPrimaryDriverDefaultHours(ride)
+            : getSecondDriverDefaultHours(ride);
+
+        const availableHours = getAvailabilityHours(driver.id, rideDateInfo.date, availabilityData, 'driver');
+        const currentHours = calculateDriverHoursForDate(ridesData, driver.id, rideDateInfo.date, ride.id);
+        const projectedHours = currentHours + defaultHours;
+
+        const conflict = checkDriverConflict(
+            ridesData,
+            ride.id,
+            driver.id,
+            defaultHours,
+            driver.fullName,
+            availabilityData
+        );
+
+        if (conflict) {
+            return {
+                level: 'busy',
+                label: 'Busy',
+                message: formatHoursSummary(projectedHours, availableHours),
+            };
+        }
+
+        const isCurrentSelection =
+            (context === 'primary' && ride.assignedDriver?.id === driver.id) ||
+            (context === 'second' && ride.secondDriver?.id === driver.id);
+
+        return {
+            level: 'available',
+            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            message: formatHoursSummary(projectedHours, availableHours),
+        };
+    }, [ridesData, availabilityData, formatHoursSummary, getPrimaryDriverDefaultHours, getSecondDriverDefaultHours]);
+
+    const getTruckAvailabilityStatus = React.useCallback(({ ride, truck }: {
+        ride: WeeklyRide;
+        truck: Truck;
+    }): AvailabilityStatus | null => {
+        if (!ridesData) return null;
+
+        const rideDateInfo = getRideDateAndDay(ridesData, ride.id);
+        if (!rideDateInfo) return null;
+
+        const defaultHours = ride.plannedHours;
+        const availableHours = getAvailabilityHours(truck.id, rideDateInfo.date, availabilityData, 'truck');
+        const currentHours = calculateTruckHoursForDate(ridesData, truck.id, rideDateInfo.date, ride.id);
+        const projectedHours = currentHours + defaultHours;
+
+        const conflict = checkTruckConflict(
+            ridesData,
+            ride.id,
+            truck.id,
+            defaultHours,
+            truck.licensePlate,
+            availabilityData
+        );
+
+        if (conflict) {
+            return {
+                level: 'busy',
+                label: 'Busy',
+                message: formatHoursSummary(projectedHours, availableHours),
+            };
+        }
+
+        const isCurrentSelection = ride.assignedTruck?.id === truck.id;
+
+        return {
+            level: 'available',
+            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            message: formatHoursSummary(projectedHours, availableHours),
+        };
+    }, [ridesData, availabilityData, formatHoursSummary]);
     
     // Assignment mutations
     const assignDriverTruckMutation = useAssignDriverTruck();
@@ -1379,6 +1492,8 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                                     plannedHours: ride.secondDriver.plannedHours 
                                                 }] : []}
                                                 isAssigning={assigningRides.has(ride.id)}
+                                            getDriverAvailabilityStatus={getDriverAvailabilityStatus}
+                                            getTruckAvailabilityStatus={getTruckAvailabilityStatus}
                                             />
                                         ))}
                                     </Box>

@@ -31,6 +31,12 @@ import { useDebouncedCallback } from '@/hooks/useDebounce';
 import { useUpdateTripNumber } from '@/hooks/useTripNumber';
 import RideDetailsDialog from './RideDetailsDialog';
 
+export type AvailabilityStatus = {
+    level: 'available' | 'busy';
+    label: string;
+    message?: string;
+};
+
 type Props = {
     ride: WeeklyRide;
     clientName: string;
@@ -45,6 +51,15 @@ type Props = {
     onRemoveSecondDriver?: (rideId: string, driverId: string) => void;
     secondDrivers?: { id: string; fullName: string; plannedHours: number }[]; // Additional drivers for this ride
     isAssigning?: boolean;
+    getDriverAvailabilityStatus?: (params: {
+        ride: WeeklyRide;
+        driver: Driver;
+        context: 'primary' | 'second';
+    }) => AvailabilityStatus | null;
+    getTruckAvailabilityStatus?: (params: {
+        ride: WeeklyRide;
+        truck: Truck;
+    }) => AvailabilityStatus | null;
 };
 
 export default function RideAssignmentCard({
@@ -60,7 +75,9 @@ export default function RideAssignmentCard({
     onAddSecondDriver,
     onRemoveSecondDriver,
     secondDrivers = [],
-    isAssigning = false
+    isAssigning = false,
+    getDriverAvailabilityStatus,
+    getTruckAvailabilityStatus
 }: Props) {
     const [driverValue, setDriverValue] = useState<Driver | null>(
         ride.assignedDriver ? drivers.find(d => d.id === ride.assignedDriver!.id) || null : null
@@ -312,11 +329,42 @@ export default function RideAssignmentCard({
                                     variant="outlined"
                                 />
                             )}
-                            renderOption={(props, driver) => (
-                                <Box component="li" {...props}>
-                                    <Typography variant="body2">{driver.fullName}</Typography>
-                                </Box>
-                            )}
+                            renderOption={(props, driver) => {
+                                const status = getDriverAvailabilityStatus?.({
+                                    ride,
+                                    driver,
+                                    context: 'primary',
+                                });
+                                return (
+                                    <Box
+                                        component="li"
+                                        {...props}
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: status?.message ? 'flex-start' : 'center',
+                                            gap: 1,
+                                        }}
+                                    >
+                                        <Box>
+                                            <Typography variant="body2">{driver.fullName}</Typography>
+                                            {status?.message && (
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {status.message}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        {status && (
+                                            <Chip
+                                                size="small"
+                                                label={status.label}
+                                                color={status.level === 'available' ? 'success' : 'warning'}
+                                                variant={status.level === 'available' ? 'outlined' : 'filled'}
+                                            />
+                                        )}
+                                    </Box>
+                                );
+                            }}
                         />
                     </Box>
                     {ride.assignedDriver && ride.secondDriver && (
@@ -380,11 +428,42 @@ export default function RideAssignmentCard({
                                         variant="outlined"
                                     />
                                 )}
-                                renderOption={(props, driver) => (
-                                    <Box component="li" {...props}>
-                                        <Typography variant="body2">{driver.fullName}</Typography>
-                                    </Box>
-                                )}
+                                renderOption={(props, driver) => {
+                                    const status = getDriverAvailabilityStatus?.({
+                                        ride,
+                                        driver,
+                                        context: 'second',
+                                    });
+                                    return (
+                                        <Box
+                                            component="li"
+                                            {...props}
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: status?.message ? 'flex-start' : 'center',
+                                                gap: 1,
+                                            }}
+                                        >
+                                            <Box>
+                                                <Typography variant="body2">{driver.fullName}</Typography>
+                                                {status?.message && (
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {status.message}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                            {status && (
+                                                <Chip
+                                                    size="small"
+                                                    label={status.label}
+                                                    color={status.level === 'available' ? 'success' : 'warning'}
+                                                    variant={status.level === 'available' ? 'outlined' : 'filled'}
+                                                />
+                                            )}
+                                        </Box>
+                                    );
+                                }}
                             />
                             <IconButton
                                 size="small"
@@ -449,11 +528,41 @@ export default function RideAssignmentCard({
                                 variant="outlined"
                             />
                         )}
-                        renderOption={(props, truck) => (
-                            <Box component="li" {...props}>
-                                <Typography variant="body2">{truck.licensePlate}</Typography>
-                            </Box>
-                        )}
+                        renderOption={(props, truck) => {
+                            const status = getTruckAvailabilityStatus?.({
+                                ride,
+                                truck,
+                            });
+                            return (
+                                <Box
+                                    component="li"
+                                    {...props}
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: status?.message ? 'flex-start' : 'center',
+                                        gap: 1,
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography variant="body2">{truck.licensePlate}</Typography>
+                                        {status?.message && (
+                                            <Typography variant="caption" color="text.secondary">
+                                                {status.message}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                    {status && (
+                                        <Chip
+                                            size="small"
+                                            label={status.label}
+                                            color={status.level === 'available' ? 'success' : 'warning'}
+                                            variant={status.level === 'available' ? 'outlined' : 'filled'}
+                                        />
+                                    )}
+                                </Box>
+                            );
+                        }}
                     />
                 </Box>
 
