@@ -7,7 +7,7 @@ import {usePathname, useRouter} from 'next/navigation';
 import {useTranslations} from 'next-intl';
 
 // ── MUI Icons ────────────────────────────────
-import DashboardIcon from '@mui/icons-material/GridViewRounded';
+// import DashboardIcon from '@mui/icons-material/GridViewRounded';
 import ListIcon from '@mui/icons-material/ListRounded';
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDownRounded';
 import PersonIcon from '@mui/icons-material/PersonRounded';
@@ -130,10 +130,12 @@ export default function SideNavigation() {
 
             <List disablePadding sx={{flexGrow: 1}}>
                 {/* Dashboard */}
+                {/*
                 <NavItem active={isActive('/')} main onClick={() => go('/')}>
                     <ListItemIcon><DashboardIcon/></ListItemIcon>
                     <ListItemText primary={t('navigation.dashboard')}/>
                 </NavItem>
+                */}
 
                 {/* Planning parent */}
                 <NavItem onClick={() => setPlanningOpen((p) => !p)}
