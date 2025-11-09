@@ -36,6 +36,8 @@ import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, 
 import { useWeeklyAvailability, getAvailabilityHours } from '@/hooks/useWeeklyAvailability';
 import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning, calculateDriverHoursForDate, calculateTruckHoursForDate } from '@/utils/conflictDetection';
 import { AvailabilityStatus } from '@/components/RideAssignmentCard';
+import type { Driver, Truck } from '@/hooks/useDriversAndTrucks';
+import type { WeeklyRide } from '@/hooks/useWeeklyRides';
 import OverallocationWarningDialog from '@/components/OverallocationWarningDialog';
 
 export default function DailyPlanningPage() {
@@ -151,7 +153,7 @@ export default function DailyPlanningPage() {
         return null;
     }, [ridesData]);
 
-    const getPrimaryDriverDefaultHours = React.useCallback((ride) => {
+    const getPrimaryDriverDefaultHours = React.useCallback((ride: WeeklyRide): number => {
         if (ride.assignedDriver?.plannedHours != null) {
             return ride.assignedDriver.plannedHours;
         }
@@ -162,7 +164,7 @@ export default function DailyPlanningPage() {
         return ride.plannedHours;
     }, []);
 
-    const getSecondDriverDefaultHours = React.useCallback((ride) => {
+    const getSecondDriverDefaultHours = React.useCallback((ride: WeeklyRide): number => {
         if (ride.secondDriver?.plannedHours != null) {
             return ride.secondDriver.plannedHours;
         }
@@ -189,7 +191,16 @@ export default function DailyPlanningPage() {
         );
     }, [weeklyRidesDataForConflict, selectedDate]);
 
-    const getDriverAvailabilityStatus = React.useCallback(({ ride, driver, context }) => {
+    const getDriverAvailabilityStatus = React.useCallback(
+        ({
+            ride,
+            driver,
+            context,
+        }: {
+            ride: WeeklyRide;
+            driver: Driver;
+            context: 'primary' | 'second';
+        }): AvailabilityStatus | null => {
         if (!weeklyRidesDataForConflict) return null;
 
         const defaultHours = context === 'primary'
@@ -237,17 +248,26 @@ export default function DailyPlanningPage() {
             label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
             message: formatHoursSummary(displayHours, availableHours),
         };
-    }, [
-        weeklyRidesDataForConflict,
-        availabilityData,
-        selectedDate,
-        calculateDriverDayHours,
-        formatHoursSummary,
-        getPrimaryDriverDefaultHours,
-        getSecondDriverDefaultHours,
-    ]);
+    },
+        [
+            weeklyRidesDataForConflict,
+            availabilityData,
+            selectedDate,
+            calculateDriverDayHours,
+            formatHoursSummary,
+            getPrimaryDriverDefaultHours,
+            getSecondDriverDefaultHours,
+        ]
+    );
 
-    const getTruckAvailabilityStatus = React.useCallback(({ ride, truck }) => {
+    const getTruckAvailabilityStatus = React.useCallback(
+        ({
+            ride,
+            truck,
+        }: {
+            ride: WeeklyRide;
+            truck: Truck;
+        }): AvailabilityStatus | null => {
         if (!weeklyRidesDataForConflict) return null;
 
         const defaultHours = ride.plannedHours;
@@ -279,13 +299,15 @@ export default function DailyPlanningPage() {
             label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
             message: formatHoursSummary(displayHours, availableHours),
         };
-    }, [
-        weeklyRidesDataForConflict,
-        availabilityData,
-        selectedDate,
-        calculateTruckDayHours,
-        formatHoursSummary,
-    ]);
+    },
+        [
+            weeklyRidesDataForConflict,
+            availabilityData,
+            selectedDate,
+            calculateTruckDayHours,
+            formatHoursSummary,
+        ]
+    );
 
     const addDriverRide = React.useMemo(
         () => findRideById(addDriverDialog.rideId),

@@ -8,11 +8,11 @@ export enum RideDriverExecutionStatus {
 
 // Request interface for submitting execution
 export interface SubmitExecutionRequest {
-  actualStartTime?: string;
-  actualEndTime?: string;
-  actualRestTime?: string;
-  startKilometers?: number;
-  endKilometers?: number;
+  actualStartTime: string;
+  actualEndTime: string;
+  actualRestTime: string;
+  startKilometers: number;
+  endKilometers: number;
   actualKilometers?: number;
   extraKilometers?: number;
   actualCosts?: number;

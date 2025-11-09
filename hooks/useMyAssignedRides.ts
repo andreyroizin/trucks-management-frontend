@@ -17,11 +17,12 @@ export const useMyAssignedRides = (startDate?: string, endDate?: string) => {
         { params }
       );
 
+      const rawData = response.data as any;
 
       // Check if response uses 'success' or 'isSuccess' field
-      const isSuccess = response.data.success ?? response.data.isSuccess;
-      const errorMessage = response.data.error ?? response.data.errors?.[0];
-      const data = response.data.data ?? response.data;
+      const isSuccess = rawData?.success ?? rawData?.isSuccess;
+      const errorMessage = rawData?.error ?? rawData?.errors?.[0];
+      const data = rawData?.data ?? rawData;
 
       if (!isSuccess && response.status !== 200) {
         throw new Error(errorMessage || 'Failed to fetch assigned rides');
@@ -43,11 +44,13 @@ export const useDeleteMyExecution = () => {
         `/rides/${rideId}/my-execution`
       );
 
-      if (!response.data.success) {
-        throw new Error(response.data.error || 'Failed to delete execution');
+      const rawData = response.data as any;
+
+      if (!rawData?.success && !rawData?.isSuccess && response.status !== 200) {
+        throw new Error(rawData?.error || 'Failed to delete execution');
       }
 
-      return response.data.data;
+      return rawData?.data ?? rawData;
     },
     onSuccess: (data, rideId) => {
       // Invalidate relevant queries
@@ -67,10 +70,12 @@ export const useMyExecutionFiles = (rideId: string) => {
         `/rides/${rideId}/my-execution/files`
       );
 
+      const rawData = response.data as any;
+
       // Check for different response structures
-      const isSuccess = response.data.success ?? response.data.isSuccess;
-      const errorMessage = response.data.error ?? response.data.errors?.[0];
-      const data = response.data.data ?? response.data;
+      const isSuccess = rawData?.success ?? rawData?.isSuccess;
+      const errorMessage = rawData?.error ?? rawData?.errors?.[0];
+      const data = rawData?.data ?? rawData;
 
       if (!isSuccess && response.status !== 200) {
         throw new Error(errorMessage || 'Failed to fetch files');
@@ -106,9 +111,11 @@ export const useUploadExecutionFile = () => {
           request
         );
 
+        const rawData = response.data as any;
+
         // Check for different response structures
-        const isSuccess = response.data.success ?? response.data.isSuccess;
-        const errorMessage = response.data.error ?? response.data.errors?.[0] ?? response.data.message;
+        const isSuccess = rawData?.success ?? rawData?.isSuccess;
+        const errorMessage = rawData?.error ?? rawData?.errors?.[0] ?? rawData?.message;
 
         if (!isSuccess && response.status !== 200) {
           throw new Error(errorMessage || 'Failed to upload file');
@@ -116,7 +123,7 @@ export const useUploadExecutionFile = () => {
 
         // If success field is missing but status is 200, assume success
         if (response.status === 200) {
-          return response.data.data || response.data;
+          return rawData?.data ?? rawData;
         }
       } catch (apiError: any) {
         // Extract error message from different possible locations
@@ -147,15 +154,17 @@ export const useDeleteExecutionFile = () => {
         `/rides/${rideId}/my-execution/files/${fileId}`
       );
 
+      const rawData = response.data as any;
+
       // Check for different response structures
-      const isSuccess = response.data.success ?? response.data.isSuccess;
-      const errorMessage = response.data.error ?? response.data.errors?.[0];
+      const isSuccess = rawData?.success ?? rawData?.isSuccess;
+      const errorMessage = rawData?.error ?? rawData?.errors?.[0];
 
       if (!isSuccess && response.status !== 200) {
         throw new Error(errorMessage || 'Failed to delete file');
       }
 
-      return response.data.data || response.data;
+      return rawData?.data ?? rawData;
     },
     onSuccess: (data, variables) => {
       // Invalidate and refetch immediately for delete

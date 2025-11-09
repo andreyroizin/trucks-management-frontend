@@ -96,6 +96,8 @@ interface Props {
   onSuccess?: () => void;
 }
 
+type FormValues = yup.InferType<typeof schema>;
+
 export default function RideDriverExecutionForm({ rideId, execution, onSuccess }: Props) {
   const router = useRouter();
   const showSnack = useSnack();
@@ -117,7 +119,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const deleteFileMutation = useDeleteExecutionFile();
   const downloadFileMutation = useDownloadExecutionFile();
 
-  const { 
+  const {
     control, 
     handleSubmit, 
     formState: { errors }, 
@@ -126,22 +128,22 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     setValue,
     setError,
     clearErrors
-  } = useForm<SubmitExecutionRequest>({
+  } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      actualStartTime: execution?.actualStartTime || '',
-      actualEndTime: execution?.actualEndTime || '',
-      actualRestTime: execution?.actualRestTime || '',
-      startKilometers: execution?.startKilometers ?? undefined,
-      endKilometers: execution?.endKilometers ?? undefined,
-      actualKilometers: execution?.actualKilometers || undefined,
-      extraKilometers: execution?.extraKilometers || undefined,
-      actualCosts: execution?.actualCosts || undefined,
-      costsDescription: execution?.costsDescription || '',
-      turnover: execution?.turnover || undefined,
-      remark: execution?.remark || '',
-      variousCompensation: execution?.variousCompensation || undefined
-    }
+      actualStartTime: execution?.actualStartTime ?? '',
+      actualEndTime: execution?.actualEndTime ?? '',
+      actualRestTime: execution?.actualRestTime ?? '',
+      startKilometers: execution?.startKilometers,
+      endKilometers: execution?.endKilometers,
+      actualKilometers: execution?.actualKilometers,
+      extraKilometers: execution?.extraKilometers,
+      actualCosts: execution?.actualCosts,
+      costsDescription: execution?.costsDescription ?? '',
+      turnover: execution?.turnover,
+      remark: execution?.remark ?? '',
+      variousCompensation: execution?.variousCompensation,
+    },
   });
 
   // Reset form when execution data changes
@@ -168,8 +170,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const endKilometers = watch('endKilometers');
 
   useEffect(() => {
-    const hasStart = startKilometers !== undefined && startKilometers !== null && startKilometers !== '';
-    const hasEnd = endKilometers !== undefined && endKilometers !== null && endKilometers !== '';
+    const hasStart = startKilometers !== undefined && startKilometers !== null;
+    const hasEnd = endKilometers !== undefined && endKilometers !== null;
 
     if (!hasStart || !hasEnd) {
       setValue('actualKilometers', undefined, { shouldValidate: true });
@@ -178,13 +180,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       return;
     }
 
-    const start = Number(startKilometers);
-    const end = Number(endKilometers);
-
-    if (Number.isNaN(start) || Number.isNaN(end)) {
-      setValue('actualKilometers', undefined, { shouldValidate: true });
-      return;
-    }
+    const start = startKilometers as number;
+    const end = endKilometers as number;
 
     if (end >= start) {
       const diff = parseFloat((end - start).toFixed(2));
@@ -200,16 +197,16 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     }
   }, [startKilometers, endKilometers, setValue, setError, clearErrors]);
 
-  const onSubmit = async (data: SubmitExecutionRequest) => {
+  const onSubmit = async (data: FormValues) => {
     // Check if there are any validation errors
     if (Object.keys(errors).length > 0) {
-      showSnack('Please fix the validation errors before submitting', 'error');
+      showSnack({ text: 'Please fix the validation errors before submitting', severity: 'error' });
       return;
     }
 
     try {
       if (data.actualKilometers == null) {
-        showSnack('Please enter start and end odometer readings to calculate total kilometers', 'error');
+        showSnack({ text: 'Please enter start and end odometer readings to calculate total kilometers', severity: 'error' });
         return;
       }
 
@@ -222,10 +219,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         }))
       );
 
-      // Include files in the submission
-      const submissionData = {
-        ...data,
-        files: filesData.length > 0 ? filesData : undefined
+      const { actualKilometers, ...rest } = data;
+      const submissionData: SubmitExecutionRequest = {
+        ...rest,
+        actualKilometers: actualKilometers ?? undefined,
+        files: filesData.length > 0 ? filesData : undefined,
       };
 
       await submitExecutionMutation.mutateAsync({ rideId, data: submissionData });
@@ -234,10 +232,10 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       setPendingFiles([]);
       setSelectedFile(null);
       
-      showSnack(
-        `Execution submitted successfully${filesData.length > 0 ? ` with ${filesData.length} file(s)` : ''}!`, 
-        'success'
-      );
+      showSnack({
+        text: `Execution submitted successfully${filesData.length > 0 ? ` with ${filesData.length} file(s)` : ''}!`,
+        severity: 'success',
+      });
       
       // Navigate back to rides list for drivers
       if (isDriverRole) {
@@ -246,14 +244,14 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       
       onSuccess?.();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to submit execution', 'error');
+      showSnack({ text: error.message || 'Failed to submit execution', severity: 'error' });
     }
   };
 
   const handleDeleteExecution = async () => {
     try {
       await deleteExecutionMutation.mutateAsync(rideId);
-      showSnack('Execution deleted successfully', 'success');
+      showSnack({ text: 'Execution deleted successfully', severity: 'success' });
       setDeleteDialogOpen(false);
       
       // Navigate back to rides list for drivers
@@ -263,7 +261,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       
       onSuccess?.();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to delete execution', 'error');
+      showSnack({ text: error.message || 'Failed to delete execution', severity: 'error' });
     }
   };
 
@@ -282,55 +280,55 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
 
   const handleAddFileToPending = () => {
     if (!selectedFile) {
-      showSnack('Please select a file first', 'error');
+      showSnack({ text: 'Please select a file first', severity: 'error' });
       return;
     }
 
     // Check if file already exists in pending
     if (pendingFiles.some(f => f.name === selectedFile.name && f.size === selectedFile.size)) {
-      showSnack('This file is already added', 'warning');
+      showSnack({ text: 'This file is already added', severity: 'warning' });
       return;
     }
 
     setPendingFiles(prev => [...prev, selectedFile]);
     setSelectedFile(null);
     setFileInputKey(prev => prev + 1); // Force file input reset
-    showSnack(`File "${selectedFile.name}" added to submission`, 'success');
+    showSnack({ text: `File "${selectedFile.name}" added to submission`, severity: 'success' });
   };
 
   const handleRemovePendingFile = (index: number) => {
     setPendingFiles(prev => prev.filter((_, i) => i !== index));
-    showSnack('File removed from submission', 'info');
+    showSnack({ text: 'File removed from submission', severity: 'info' });
   };
 
   const handleFileUpload = async () => {
     if (!selectedFile) {
-      showSnack('Please select a file first', 'error');
+      showSnack({ text: 'Please select a file first', severity: 'error' });
       return;
     }
 
     if (!rideId) {
-      showSnack('Cannot upload file: No ride ID available. Please submit execution first.', 'error');
+      showSnack({ text: 'Cannot upload file: No ride ID available. Please submit execution first.', severity: 'error' });
       return;
     }
 
     try {
       await uploadFileMutation.mutateAsync({ rideId, file: selectedFile });
-      showSnack(`File "${selectedFile.name}" uploaded successfully!`, 'success');
+      showSnack({ text: `File "${selectedFile.name}" uploaded successfully!`, severity: 'success' });
       setSelectedFile(null);
       setFileInputKey(prev => prev + 1); // Force file input reset
       
       // Force refresh the files list
       await refetchFiles();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to upload file', 'error');
+      showSnack({ text: error.message || 'Failed to upload file', severity: 'error' });
     }
   };
 
   const handleFileDelete = async (fileId: string) => {
     try {
       await deleteFileMutation.mutateAsync({ rideId, fileId });
-      showSnack('File deleted successfully', 'success');
+      showSnack({ text: 'File deleted successfully', severity: 'success' });
       
       // Reset file input to allow re-uploading same file
       setSelectedFile(null);
@@ -339,7 +337,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       // Force refresh the files list
       await refetchFiles();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to delete file', 'error');
+      showSnack({ text: error.message || 'Failed to delete file', severity: 'error' });
     }
   };
 
@@ -347,12 +345,12 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     try {
       await downloadFileMutation.mutateAsync({ rideId, fileId, fileName });
     } catch (error: any) {
-      showSnack(error.message || 'Failed to download file', 'error');
+      showSnack({ text: error.message || 'Failed to download file', severity: 'error' });
     }
   };
 
-  const canDelete = execution && (execution.status === 0 || execution.status === 2); // Pending or Rejected
-  const isReadOnly = execution && execution.status === 1; // Approved
+  const canDelete = !!execution && (execution.status === 0 || execution.status === 2); // Pending or Rejected
+  const isReadOnly = execution?.status === 1; // Approved
 
   return (
     <Box>
@@ -523,11 +521,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   {...field}
                   label="Costs (€)"
                   type="number"
-                  step="0.01"
                   fullWidth
                   error={!!errors.actualCosts}
                   helperText={errors.actualCosts?.message}
                   disabled={isReadOnly}
+                  inputProps={{ step: '0.01' }}
                 />
               )}
             />
@@ -544,11 +542,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                     {...field}
                     label="Turnover (€)"
                     type="number"
-                    step="0.01"
                     fullWidth
                     error={!!errors.turnover}
                     helperText={errors.turnover?.message}
                     disabled={isReadOnly}
+                  inputProps={{ step: '0.01' }}
                   />
                 )}
               />
@@ -591,11 +589,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                     {...field}
                     label="Various Compensation (€)"
                     type="number"
-                    step="0.01"
                     fullWidth
                     error={!!errors.variousCompensation}
                     helperText={errors.variousCompensation?.message}
                     disabled={isReadOnly}
+                  inputProps={{ step: '0.01' }}
                   />
                 )}
               />
@@ -732,7 +730,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                       <ListItemText
                         primary={
                           <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            📎 {file.fileName || file.originalFileName}
+                            📎 {file.fileName}
                           </Typography>
                         }
                         secondary={
@@ -744,7 +742,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                       />
                       <ListItemSecondaryAction>
                         <IconButton
-                          onClick={() => handleFileDownload(file.id, file.fileName || file.originalFileName)}
+                          onClick={() => handleFileDownload(file.id, file.fileName)}
                           disabled={downloadFileMutation.isPending}
                           title="Download file"
                         >
@@ -861,7 +859,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         rideId={rideId}
         executionStatus={execution?.status === 0 ? 'Pending' : execution?.status === 1 ? 'Approved' : execution?.status === 2 ? 'Rejected' : 'Dispute'}
         rideInfo={{
-          plannedDate: execution?.plannedDate || new Date().toISOString(),
+          plannedDate: execution?.submittedAt || new Date().toISOString(),
           tripNumber: `Ride ${rideId.slice(0, 8)}`,
         }}
       />

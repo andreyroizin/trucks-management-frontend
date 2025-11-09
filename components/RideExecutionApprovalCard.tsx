@@ -207,7 +207,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
 
     const activeDispute = disputes?.find(d => d.status === 'Open');
     if (!activeDispute) {
-      showSnack('No active dispute found', 'error');
+      showSnack({ text: 'No active dispute found', severity: 'error' });
       return;
     }
 
@@ -216,10 +216,10 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
         disputeId: activeDispute.id,
         request: { body: disputeCommentText }
       });
-      showSnack('Comment added to dispute', 'success');
+      showSnack({ text: 'Comment added to dispute', severity: 'success' });
       setDisputeCommentText('');
     } catch (error: any) {
-      showSnack(error.message || 'Failed to add dispute comment', 'error');
+      showSnack({ text: error.message || 'Failed to add dispute comment', severity: 'error' });
     }
   };
 
@@ -228,7 +228,7 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
 
     const activeDispute = disputes?.find(d => d.status === 'Open');
     if (!activeDispute) {
-      showSnack('No active dispute found', 'error');
+      showSnack({ text: 'No active dispute found', severity: 'error' });
       return;
     }
 
@@ -245,10 +245,10 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
         ? 'Dispute accepted - Execution has been approved' 
         : 'Dispute rejected - Execution remains rejected';
       
-      showSnack(resolutionMessage, 'success');
+      showSnack({ text: resolutionMessage, severity: 'success' });
       closeDisputeDialog();
     } catch (error: any) {
-      showSnack(error.message || 'Failed to resolve dispute', 'error');
+      showSnack({ text: error.message || 'Failed to resolve dispute', severity: 'error' });
     }
   };
 

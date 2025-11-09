@@ -100,7 +100,10 @@ export default function RideExecutionDisputeDialog({
         request: { reason: values.reason }
       });
       
-      showSnack('Dispute created successfully. Your execution status is now "Dispute".', 'success');
+      showSnack({
+        text: 'Dispute created successfully. Your execution status is now "Dispute".',
+        severity: 'success',
+      });
       reset();
       onClose();
     } catch (e: any) {
@@ -121,10 +124,10 @@ export default function RideExecutionDisputeDialog({
         request: { body: commentText }
       });
       
-      showSnack('Comment added successfully', 'success');
+      showSnack({ text: 'Comment added successfully', severity: 'success' });
       setCommentText('');
     } catch (e: any) {
-      showSnack(e.message || 'Failed to add comment', 'error');
+      showSnack({ text: e.message || 'Failed to add comment', severity: 'error' });
     }
   };
 
