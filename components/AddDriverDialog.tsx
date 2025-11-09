@@ -11,10 +11,12 @@ import {
     TextField,
     Box,
     Typography,
-    Alert
+    Alert,
+    Chip,
 } from '@mui/material';
 import { Person, Schedule } from '@mui/icons-material';
 import { Driver } from '@/hooks/useDriversAndTrucks';
+import { AvailabilityStatus } from './RideAssignmentCard';
 
 type Props = {
     open: boolean;
@@ -26,6 +28,7 @@ type Props = {
     primaryDriverName?: string; // Name of primary driver for context
     currentPrimaryDriverHours?: number; // Current hours for primary driver
     isLoading?: boolean;
+    driverAvailabilityStatus?: Record<string, AvailabilityStatus>;
 };
 
 export default function AddDriverDialog({ 
@@ -37,7 +40,8 @@ export default function AddDriverDialog({
     totalRideHours = 8,
     primaryDriverName = "Primary driver",
     currentPrimaryDriverHours = 8,
-    isLoading = false 
+    isLoading = false,
+    driverAvailabilityStatus,
 }: Props) {
     const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
     const [secondDriverHours, setSecondDriverHours] = useState<number>(totalRideHours);
@@ -166,18 +170,43 @@ export default function AddDriverDialog({
                                             variant="outlined"
                                         />
                                     )}
-                                    renderOption={(props, driver) => (
-                                        <Box component="li" {...props}>
-                                            <Box>
-                                                <Typography variant="body1">
-                                                    {driver.fullName}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    ID: {driver.id.slice(0, 8)}...
-                                                </Typography>
+                                    renderOption={(props, driver) => {
+                                        const status = driverAvailabilityStatus?.[driver.id];
+                                        return (
+                                            <Box
+                                                component="li"
+                                                {...props}
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: status?.message ? 'flex-start' : 'center',
+                                                    gap: 1,
+                                                }}
+                                            >
+                                                <Box>
+                                                    <Typography variant="body1">
+                                                        {driver.fullName}
+                                                    </Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        ID: {driver.id.slice(0, 8)}...
+                                                    </Typography>
+                                                    {status?.message && (
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            {status.message}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                                {status && (
+                                                    <Chip
+                                                        size="small"
+                                                        label={status.label}
+                                                        color={status.level === 'available' ? 'success' : 'warning'}
+                                                        variant={status.level === 'available' ? 'outlined' : 'filled'}
+                                                    />
+                                                )}
                                             </Box>
-                                        </Box>
-                                    )}
+                                        );
+                                    }}
                                 />
                             </Box>
 

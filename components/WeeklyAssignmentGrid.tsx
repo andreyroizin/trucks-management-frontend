@@ -170,7 +170,17 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         const availableHours = getAvailabilityHours(driver.id, rideDateInfo.date, availabilityData, 'driver');
         const currentHours = calculateDriverHoursForDate(ridesData, driver.id, rideDateInfo.date, ride.id);
+        const isPrimarySelection = ride.assignedDriver?.id === driver.id;
+        const isSecondSelection = ride.secondDriver?.id === driver.id;
+        const assignedHoursForRide = isPrimarySelection
+            ? ride.assignedDriver?.plannedHours ?? defaultHours
+            : isSecondSelection
+                ? ride.secondDriver?.plannedHours ?? defaultHours
+                : 0;
         const projectedHours = currentHours + defaultHours;
+        const displayHours = (isPrimarySelection || isSecondSelection)
+            ? currentHours + assignedHoursForRide
+            : currentHours;
 
         const conflict = checkDriverConflict(
             ridesData,
@@ -185,18 +195,18 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             return {
                 level: 'busy',
                 label: 'Busy',
-                message: formatHoursSummary(projectedHours, availableHours),
+                message: formatHoursSummary(displayHours, availableHours),
             };
         }
 
         const isCurrentSelection =
-            (context === 'primary' && ride.assignedDriver?.id === driver.id) ||
-            (context === 'second' && ride.secondDriver?.id === driver.id);
+            (context === 'primary' && isPrimarySelection) ||
+            (context === 'second' && isSecondSelection);
 
         return {
             level: 'available',
             label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
-            message: formatHoursSummary(projectedHours, availableHours),
+            message: formatHoursSummary(displayHours, availableHours),
         };
     }, [ridesData, availabilityData, formatHoursSummary, getPrimaryDriverDefaultHours, getSecondDriverDefaultHours]);
 
@@ -213,6 +223,8 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         const availableHours = getAvailabilityHours(truck.id, rideDateInfo.date, availabilityData, 'truck');
         const currentHours = calculateTruckHoursForDate(ridesData, truck.id, rideDateInfo.date, ride.id);
         const projectedHours = currentHours + defaultHours;
+        const isCurrentSelection = ride.assignedTruck?.id === truck.id;
+        const displayHours = isCurrentSelection ? currentHours + ride.plannedHours : currentHours;
 
         const conflict = checkTruckConflict(
             ridesData,
@@ -227,18 +239,55 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             return {
                 level: 'busy',
                 label: 'Busy',
-                message: formatHoursSummary(projectedHours, availableHours),
+                message: formatHoursSummary(displayHours, availableHours),
             };
         }
-
-        const isCurrentSelection = ride.assignedTruck?.id === truck.id;
 
         return {
             level: 'available',
             label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
-            message: formatHoursSummary(projectedHours, availableHours),
+            message: formatHoursSummary(displayHours, availableHours),
         };
     }, [ridesData, availabilityData, formatHoursSummary]);
+
+    const findRideById = React.useCallback((rideId: string | null): WeeklyRide | null => {
+        if (!rideId || !ridesData) return null;
+        for (const day of ridesData.days) {
+            for (const client of day.clients) {
+                const ride = client.rides.find((r) => r.id === rideId);
+                if (ride) {
+                    return ride;
+                }
+            }
+        }
+        return null;
+    }, [ridesData]);
+
+    const addDriverRide = React.useMemo(
+        () => findRideById(addDriverDialog.rideId),
+        [findRideById, addDriverDialog.rideId]
+    );
+
+    const addDriverAvailabilityStatus = React.useMemo(() => {
+        if (!addDriverRide || !drivers) return {};
+        const statusMap: Record<string, AvailabilityStatus> = {};
+        drivers.forEach((driver) => {
+            const status = getDriverAvailabilityStatus({
+                ride: addDriverRide,
+                driver,
+                context: 'second',
+            });
+            if (status) {
+                statusMap[driver.id] = status;
+            }
+        });
+        return statusMap;
+    }, [addDriverRide, drivers, getDriverAvailabilityStatus]);
+
+    const addDriverRideTotalHours = addDriverRide?.plannedHours ?? 8;
+    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? 'Primary driver';
+    const addDriverPrimaryHours =
+        addDriverRide?.assignedDriver?.plannedHours ?? addDriverRide?.plannedHours ?? 8;
     
     // Assignment mutations
     const assignDriverTruckMutation = useAssignDriverTruck();
@@ -1547,28 +1596,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         : []
                     )
                 ]}
-                totalRideHours={addDriverDialog.rideId && ridesData ? 
-                    ridesData.days
-                        .flatMap(day => day.clients)
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.plannedHours || 8
-                    : 8
-                }
-                primaryDriverName={addDriverDialog.rideId && ridesData ? 
-                    ridesData.days
-                        .flatMap(day => day.clients)
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.fullName || "Primary driver"
-                    : "Primary driver"
-                }
-                currentPrimaryDriverHours={addDriverDialog.rideId && ridesData ? 
-                    ridesData.days
-                        .flatMap(day => day.clients)
-                        .flatMap(client => client.rides)
-                        .find(ride => ride.id === addDriverDialog.rideId)?.assignedDriver?.plannedHours || 8
-                    : 8
-                }
+                totalRideHours={addDriverRideTotalHours}
+                primaryDriverName={addDriverPrimaryName}
+                currentPrimaryDriverHours={addDriverPrimaryHours}
                 isLoading={addDriverDialog.rideId ? assigningRides.has(addDriverDialog.rideId) : false}
+                driverAvailabilityStatus={addDriverAvailabilityStatus}
             />
 
             {/* Overallocation Warning Dialog */}
