@@ -611,6 +611,42 @@
     "periodHeader": {
       "title": "Период {year}–{periodNr}",
       "description": "Ето разбивка на вашата работа и приходи за този период."
+    },
+    "analytics": {
+      "title": "Анализ на изпълненията на курсове",
+      "description": "Подробен преглед на изпълненията на курсове за избрания период.",
+      "noData": "Няма намерени изпълнения за тази селекция.",
+      "filters": {
+        "status": "Статус",
+        "statusAll": "Всички статуси",
+        "statusPending": "Изчаква",
+        "statusApproved": "Одобрено",
+        "statusRejected": "Отхвърлено",
+        "statusDispute": "Спор"
+      },
+      "summary": {
+        "totalHours": "Общо часове",
+        "totalCompensation": "Общо възнаграждение",
+        "nightAllowance": "Нощна добавка",
+        "kilometerReimbursement": "Компенсация за километри",
+        "taxFreeCompensation": "Компенсация без данъци",
+        "variousCompensation": "Други компенсации"
+      },
+      "columns": {
+        "date": "Дата",
+        "ride": "Курс",
+        "client": "Клиент",
+        "status": "Статус",
+        "hours": "Часове",
+        "totalCompensation": "Общо възнаграждение",
+        "unknownClient": "Непознат клиент"
+      },
+      "status": {
+        "pending": "Изчаква",
+        "approved": "Одобрено",
+        "rejected": "Отхвърлено",
+        "dispute": "Спор"
+      }
     }
   },
   "companies": {

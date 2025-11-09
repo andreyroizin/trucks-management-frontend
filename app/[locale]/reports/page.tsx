@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Autocomplete,
     Box,
     Button,
     CircularProgress,
+    MenuItem,
     Table,
     TableBody,
     TableCell,
@@ -23,6 +24,8 @@ import { useWeekStatus, WeekDetail } from '@/hooks/useWeekStatus';
 import { usePeriodStatusByWeeks } from '@/hooks/usePeriodStatusByWeeks';
 import { useDownloadWeekReport, useDownloadPeriodReport } from '@/hooks/useDownloadReports';
 import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
+import { useRideExecutionReport } from '@/hooks/useRideExecutionReport';
+import dayjs from 'dayjs';
 
 // Period options for the filter
 const periodOptions = [
@@ -40,6 +43,22 @@ const periodOptions = [
     { label: '2025-P-12', value: { year: 2025, periodNr: 12 } },
     { label: '2025-P-13', value: { year: 2025, periodNr: 13 } },
 ];
+
+const getIsoWeekMonday = (year: number, weekNumber: number): Date => {
+    const jan4 = new Date(year, 0, 4);
+    const jan4Day = jan4.getDay();
+    const daysToMonday = jan4Day === 0 ? -6 : 1 - jan4Day;
+    const week1Monday = new Date(jan4);
+    week1Monday.setDate(jan4.getDate() + daysToMonday);
+
+    const targetMonday = new Date(week1Monday);
+    targetMonday.setDate(week1Monday.getDate() + (weekNumber - 1) * 7);
+
+    return targetMonday;
+};
+
+const formatCurrency = (value?: number) => `€${((value ?? 0)).toFixed(2)}`;
+const formatHours = (value?: number) => (value ?? 0).toFixed(2);
 
 // Component for individual week row with status checking
 function WeekReportRow({ 
@@ -135,6 +154,7 @@ export default function ReportsPage() {
     // Filter states
     const [selectedDriver, setSelectedDriver] = useState<any>(null);
     const [selectedPeriod, setSelectedPeriod] = useState<any>(null);
+    const [statusFilter, setStatusFilter] = useState<'all' | 'Pending' | 'Approved' | 'Rejected' | 'Dispute'>('all');
     
     // Data hooks
     const { data: driversData, isLoading: isLoadingDrivers } = useDrivers();
@@ -142,6 +162,53 @@ export default function ReportsPage() {
     // Report hooks
     const downloadWeekReport = useDownloadWeekReport();
     const downloadPeriodReport = useDownloadPeriodReport();
+    const statusOptions = useMemo(() => ([
+        { value: 'all', label: t('reports.analytics.filters.statusAll') },
+        { value: 'Pending', label: t('reports.analytics.filters.statusPending') },
+        { value: 'Approved', label: t('reports.analytics.filters.statusApproved') },
+        { value: 'Rejected', label: t('reports.analytics.filters.statusRejected') },
+        { value: 'Dispute', label: t('reports.analytics.filters.statusDispute') },
+    ]), [t]);
+    
+    const periodRange = useMemo(() => {
+        if (!selectedPeriod?.value?.year || !selectedPeriod?.value?.periodNr) {
+            return null;
+        }
+
+        const { year, periodNr } = selectedPeriod.value;
+        const baseWeek = (periodNr - 1) * 4 + 1;
+        const firstMonday = getIsoWeekMonday(year, baseWeek);
+        const lastMonday = getIsoWeekMonday(year, baseWeek + 3);
+        const lastSunday = new Date(lastMonday);
+        lastSunday.setDate(lastMonday.getDate() + 6);
+
+        return {
+            startDate: dayjs(firstMonday).format('YYYY-MM-DD'),
+            endDate: dayjs(lastSunday).format('YYYY-MM-DD'),
+        };
+    }, [selectedPeriod]);
+
+    const reportFilters = useMemo(() => {
+        if (!selectedDriver?.id || !periodRange) {
+            return null;
+        }
+
+        return {
+            startDate: periodRange.startDate,
+            endDate: periodRange.endDate,
+            driverId: selectedDriver.id as string,
+            status: statusFilter,
+        };
+    }, [periodRange, selectedDriver, statusFilter]);
+
+    const { data: reportData, isLoading: isReportLoading } = useRideExecutionReport(reportFilters);
+
+    const statusLabels: Record<string, string> = {
+        Pending: t('reports.analytics.status.pending'),
+        Approved: t('reports.analytics.status.approved'),
+        Rejected: t('reports.analytics.status.rejected'),
+        Dispute: t('reports.analytics.status.dispute'),
+    };
     
     // Period status check by individual weeks (works for admin roles)
     const { isPeriodSigned, isLoading: isPeriodLoading } = usePeriodStatusByWeeks(
@@ -296,11 +363,8 @@ export default function ReportsPage() {
                                     <TableCell>{t('reports.table.columns.actions')}</TableCell>
                                 </TableRow>
                             </TableHead>
-                                                         <TableBody>
-                                {/* Generate 4 weeks for each period - using ISO week numbers */}
+                            <TableBody>
                                 {(() => {
-                                    // Calculate approximate ISO week numbers based on period
-                                    // This is a simplified calculation for display purposes
                                     const baseWeek = (selectedPeriod.value.periodNr - 1) * 4 + 1;
                                     return [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
                                 })().map((weekNumber) => (
@@ -309,16 +373,165 @@ export default function ReportsPage() {
                                         weekNumber={weekNumber}
                                         driverId={selectedDriver.id}
                                         driverName={
-                                            selectedDriver?.user?.firstName && selectedDriver?.user?.lastName 
+                                            selectedDriver?.user?.firstName && selectedDriver?.user?.lastName
                                                 ? `${selectedDriver.user.firstName} ${selectedDriver.user.lastName}`
                                                 : 'Unknown Driver'
                                         }
                                         year={selectedPeriod.value.year}
                                     />
                                 ))}
-                             </TableBody>
+                            </TableBody>
                         </Table>
                     </TableContainer>
+
+                    <Box sx={{ mt: 6 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 2,
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                mb: 3,
+                            }}
+                        >
+                            <Box>
+                                <Typography variant="h4" fontWeight={500}>
+                                    {t('reports.analytics.title')}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {t('reports.analytics.description')}
+                                </Typography>
+                            </Box>
+                            <TextField
+                                select
+                                size="small"
+                                label={t('reports.analytics.filters.status')}
+                                value={statusFilter}
+                                onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
+                                sx={{ minWidth: 200 }}
+                            >
+                                {statusOptions.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Box>
+
+                        {isReportLoading ? (
+                            <Box sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+                                <CircularProgress size={28} />
+                            </Box>
+                        ) : !reportData || reportData.items.length === 0 ? (
+                            <Typography variant="body1" color="text.secondary" sx={{ py: 2 }}>
+                                {t('reports.analytics.noData')}
+                            </Typography>
+                        ) : (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                        gap: 2,
+                                        mb: 3,
+                                    }}
+                                >
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.totalHours')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatHours(reportData?.totals?.decimalHours)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.totalCompensation')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatCurrency(reportData?.totals?.totalCompensation)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.nightAllowance')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatCurrency(reportData?.totals?.nightAllowance)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.kilometerReimbursement')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatCurrency(reportData?.totals?.kilometerReimbursement)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.taxFreeCompensation')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatCurrency(reportData?.totals?.taxFreeCompensation)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ p: 2, borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {t('reports.analytics.summary.variousCompensation')}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            {formatCurrency(reportData?.totals?.variousCompensation)}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>{t('reports.analytics.columns.date')}</TableCell>
+                                                <TableCell>{t('reports.analytics.columns.ride')}</TableCell>
+                                                <TableCell>{t('reports.analytics.columns.client')}</TableCell>
+                                                <TableCell>{t('reports.analytics.columns.status')}</TableCell>
+                                                <TableCell align="right">{t('reports.analytics.columns.hours')}</TableCell>
+                                                <TableCell align="right">{t('reports.analytics.columns.totalCompensation')}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {reportData.items.map((item) => {
+                                                const formattedDate = item.rideDate ? dayjs(item.rideDate).format('YYYY-MM-DD') : '—';
+                                                const rowKey = `${item.rideId}-${item.driverId}-${item.rideDate || ''}`;
+                                                return (
+                                                    <TableRow key={rowKey}>
+                                                        <TableCell sx={{ py: 2.2 }}>
+                                                            {formattedDate}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2.2 }}>
+                                                            {item.rideId}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2.2 }}>
+                                                            {item.clientName || t('reports.analytics.columns.unknownClient')}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2.2 }}>
+                                                            {statusLabels[item.status] || item.status}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2.2 }} align="right">
+                                                            {formatHours(item.decimalHours)}
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2.2 }} align="right">
+                                                            {formatCurrency(item.totalCompensation)}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </>
+                        )}
+                    </Box>
                 </>
             )}
         </Box>

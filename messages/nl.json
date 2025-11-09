@@ -611,6 +611,42 @@
     "periodHeader": {
       "title": "Periode {year}–{periodNr}",
       "description": "Hier is een overzicht van je werk en verdiensten voor deze periode."
+    },
+    "analytics": {
+      "title": "Analyse rituitvoeringen",
+      "description": "Gedetailleerd overzicht van rituitvoeringen voor de geselecteerde periode.",
+      "noData": "Geen rituitvoeringen gevonden voor deze selectie.",
+      "filters": {
+        "status": "Status",
+        "statusAll": "Alle statussen",
+        "statusPending": "In behandeling",
+        "statusApproved": "Goedgekeurd",
+        "statusRejected": "Afgewezen",
+        "statusDispute": "In geschil"
+      },
+      "summary": {
+        "totalHours": "Totale uren",
+        "totalCompensation": "Totale vergoeding",
+        "nightAllowance": "Nachtvergoeding",
+        "kilometerReimbursement": "Kilometervergoeding",
+        "taxFreeCompensation": "Onbelaste vergoeding",
+        "variousCompensation": "Diverse vergoedingen"
+      },
+      "columns": {
+        "date": "Datum",
+        "ride": "Rit",
+        "client": "Klant",
+        "status": "Status",
+        "hours": "Uren",
+        "totalCompensation": "Totale vergoeding",
+        "unknownClient": "Onbekende klant"
+      },
+      "status": {
+        "pending": "In behandeling",
+        "approved": "Goedgekeurd",
+        "rejected": "Afgewezen",
+        "dispute": "In geschil"
+      }
     }
   },
   "companies": {

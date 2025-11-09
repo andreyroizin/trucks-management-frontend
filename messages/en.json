@@ -606,6 +606,42 @@
     "periodHeader": {
       "title": "{year}–{periodNr} Period",
       "description": "Here's a breakdown of your work and earnings for this period."
+    },
+    "analytics": {
+      "title": "Ride Execution Analytics",
+      "description": "Detailed breakdown of ride executions for the selected period.",
+      "noData": "No executions found for this selection.",
+      "filters": {
+        "status": "Status",
+        "statusAll": "All statuses",
+        "statusPending": "Pending",
+        "statusApproved": "Approved",
+        "statusRejected": "Rejected",
+        "statusDispute": "Dispute"
+      },
+      "summary": {
+        "totalHours": "Total hours",
+        "totalCompensation": "Total compensation",
+        "nightAllowance": "Night allowance",
+        "kilometerReimbursement": "Kilometer reimbursement",
+        "taxFreeCompensation": "Tax-free compensation",
+        "variousCompensation": "Various compensation"
+      },
+      "columns": {
+        "date": "Date",
+        "ride": "Ride",
+        "client": "Client",
+        "status": "Status",
+        "hours": "Hours",
+        "totalCompensation": "Total compensation",
+        "unknownClient": "Unknown client"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "dispute": "Dispute"
+      }
     }
   },
   "companies": {
