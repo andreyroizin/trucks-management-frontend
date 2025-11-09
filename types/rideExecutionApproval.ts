@@ -16,6 +16,8 @@ export interface RideExecution {
   actualEndTime?: string;
   actualRestTime?: string;
   restCalculated?: string;
+  startKilometers?: number;
+  endKilometers?: number;
   actualKilometers?: number;
   extraKilometers?: number;
   actualCosts?: number;

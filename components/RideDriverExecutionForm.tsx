@@ -46,13 +46,42 @@ import { useSnack } from '@/providers/SnackProvider';
 import { useAuth } from '@/hooks/useAuth';
 import RideExecutionDisputeDialog from '@/components/RideExecutionDisputeDialog';
 
+const numberTransform = (value: number, originalValue: unknown) =>
+  originalValue === '' || originalValue === null ? undefined : value;
+
 const schema = yup.object({
   actualStartTime: yup.string().required('Start time is required'),
   actualEndTime: yup.string().required('End time is required'),
   actualRestTime: yup.string().required('Rest time is required'),
-  actualKilometers: yup.number()
-    .min(0, 'Kilometers must be positive')
-    .required('Actual kilometers is required'),
+  startKilometers: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Start kilometers must be a number')
+    .min(0, 'Start kilometers must be positive')
+    .required('Start kilometers is required'),
+  endKilometers: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('End kilometers must be a number')
+    .min(0, 'End kilometers must be positive')
+    .required('End kilometers is required')
+    .test(
+      'end-greater-than-start',
+      'End kilometers must be greater than or equal to start kilometers',
+      function (value) {
+        const { startKilometers } = this.parent as { startKilometers?: number };
+        if (value === undefined || value === null || startKilometers === undefined || startKilometers === null) {
+          return true;
+        }
+        return value >= startKilometers;
+      }
+    ),
+  actualKilometers: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Total kilometers must be a number')
+    .min(0, 'Total kilometers must be positive')
+    .nullable(),
   extraKilometers: yup.number().min(0, 'Extra kilometers must be positive').optional(),
   actualCosts: yup.number().min(0, 'Costs must be positive').optional(),
   costsDescription: yup.string().optional(),
@@ -88,12 +117,23 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const deleteFileMutation = useDeleteExecutionFile();
   const downloadFileMutation = useDownloadExecutionFile();
 
-  const { control, handleSubmit, formState: { errors }, reset, watch } = useForm<SubmitExecutionRequest>({
+  const { 
+    control, 
+    handleSubmit, 
+    formState: { errors }, 
+    reset, 
+    watch, 
+    setValue,
+    setError,
+    clearErrors
+  } = useForm<SubmitExecutionRequest>({
     resolver: yupResolver(schema),
     defaultValues: {
       actualStartTime: execution?.actualStartTime || '',
       actualEndTime: execution?.actualEndTime || '',
       actualRestTime: execution?.actualRestTime || '',
+      startKilometers: execution?.startKilometers ?? undefined,
+      endKilometers: execution?.endKilometers ?? undefined,
       actualKilometers: execution?.actualKilometers || undefined,
       extraKilometers: execution?.extraKilometers || undefined,
       actualCosts: execution?.actualCosts || undefined,
@@ -111,6 +151,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         actualStartTime: execution.actualStartTime || '',
         actualEndTime: execution.actualEndTime || '',
         actualRestTime: execution.actualRestTime || '',
+        startKilometers: execution.startKilometers ?? undefined,
+        endKilometers: execution.endKilometers ?? undefined,
         actualKilometers: execution.actualKilometers || undefined,
         extraKilometers: execution.extraKilometers || undefined,
         actualCosts: execution.actualCosts || undefined,
@@ -122,6 +164,42 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     }
   }, [execution, reset]);
 
+  const startKilometers = watch('startKilometers');
+  const endKilometers = watch('endKilometers');
+
+  useEffect(() => {
+    const hasStart = startKilometers !== undefined && startKilometers !== null && startKilometers !== '';
+    const hasEnd = endKilometers !== undefined && endKilometers !== null && endKilometers !== '';
+
+    if (!hasStart || !hasEnd) {
+      setValue('actualKilometers', undefined, { shouldValidate: true });
+      clearErrors('endKilometers');
+      clearErrors('actualKilometers');
+      return;
+    }
+
+    const start = Number(startKilometers);
+    const end = Number(endKilometers);
+
+    if (Number.isNaN(start) || Number.isNaN(end)) {
+      setValue('actualKilometers', undefined, { shouldValidate: true });
+      return;
+    }
+
+    if (end >= start) {
+      const diff = parseFloat((end - start).toFixed(2));
+      setValue('actualKilometers', diff, { shouldValidate: true });
+      clearErrors('endKilometers');
+      clearErrors('actualKilometers');
+    } else {
+      setValue('actualKilometers', undefined, { shouldValidate: true });
+      setError('endKilometers', {
+        type: 'manual',
+        message: 'End kilometers must be greater than or equal to start kilometers'
+      });
+    }
+  }, [startKilometers, endKilometers, setValue, setError, clearErrors]);
+
   const onSubmit = async (data: SubmitExecutionRequest) => {
     // Check if there are any validation errors
     if (Object.keys(errors).length > 0) {
@@ -130,6 +208,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
     }
 
     try {
+      if (data.actualKilometers == null) {
+        showSnack('Please enter start and end odometer readings to calculate total kilometers', 'error');
+        return;
+      }
+
       // Convert pending files to base64 for submission
       const filesData = await Promise.all(
         pendingFiles.map(async (file) => ({
@@ -349,7 +432,47 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="startKilometers"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Start Odometer *"
+                  type="number"
+                  fullWidth
+                  required
+                  error={!!errors.startKilometers}
+                  helperText={errors.startKilometers?.message}
+                  disabled={isReadOnly}
+                  inputProps={{ step: '0.1', min: 0 }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="endKilometers"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="End Odometer *"
+                  type="number"
+                  fullWidth
+                  required
+                  error={!!errors.endKilometers}
+                  helperText={errors.endKilometers?.message}
+                  disabled={isReadOnly}
+                  inputProps={{ step: '0.1', min: 0 }}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
             <Controller
               name="actualKilometers"
               control={control}
@@ -359,10 +482,15 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   label="Total Kilometers *"
                   type="number"
                   fullWidth
-                  required
                   error={!!errors.actualKilometers}
-                  helperText={errors.actualKilometers?.message}
+                  helperText={
+                    errors.actualKilometers?.message ??
+                    (field.value != null ? 'Calculated automatically' : 'Enter start and end readings')
+                  }
                   disabled={isReadOnly}
+                  InputProps={{ readOnly: true }}
+                  InputLabelProps={{ shrink: true }}
+                  value={field.value ?? ''}
                 />
               )}
             />

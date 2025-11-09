@@ -752,11 +752,16 @@ function ExecutionSummaryCard({
         <Grid item xs={6} sm={3}>
           <Box textAlign="center">
             <Typography variant="body2" fontWeight={500}>
-              {execution.actualKilometers || 0} km
+              {(execution.actualKilometers ?? 0).toLocaleString()} km
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Distance
             </Typography>
+            {(execution.startKilometers != null || execution.endKilometers != null) && (
+              <Typography variant="caption" color="text.secondary" display="block">
+                {execution.startKilometers != null ? execution.startKilometers.toLocaleString() : '—'} → {execution.endKilometers != null ? execution.endKilometers.toLocaleString() : '—'}
+              </Typography>
+            )}
           </Box>
         </Grid>
         <Grid item xs={6} sm={3}>
@@ -871,8 +876,20 @@ function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
             <TableCell sx={{ border: 'none' }}>{execution.decimalHours || 0}h</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell sx={{ border: 'none' }}>Start Odometer</TableCell>
+            <TableCell sx={{ border: 'none' }}>
+              {execution.startKilometers != null ? execution.startKilometers.toLocaleString() : '—'}
+            </TableCell>
+            <TableCell sx={{ border: 'none' }}>End Odometer</TableCell>
+            <TableCell sx={{ border: 'none' }}>
+              {execution.endKilometers != null ? execution.endKilometers.toLocaleString() : '—'}
+            </TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell sx={{ border: 'none' }}>Kilometers</TableCell>
-            <TableCell sx={{ border: 'none' }}>{execution.actualKilometers || 0} km</TableCell>
+            <TableCell sx={{ border: 'none' }}>
+              {(execution.actualKilometers ?? 0).toLocaleString()} km
+            </TableCell>
             <TableCell sx={{ border: 'none' }}>Extra Kilometers</TableCell>
             <TableCell sx={{ border: 'none' }}>{execution.extraKilometers || 0} km</TableCell>
           </TableRow>
