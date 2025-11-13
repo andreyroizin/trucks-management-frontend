@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Edit, Check, Close, Info, Delete } from '@mui/icons-material';
 import { WeeklyPreviewClient } from '@/hooks/useWeeklyPreview';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     client: WeeklyPreviewClient;
@@ -29,6 +30,7 @@ export default function ClientDayCell({
     isEditable = true,
     isDeletable = false
 }: Props) {
+    const t = useTranslations('planning.weekly.clientCell');
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(client.trucksNeeded.toString());
     const [currentCount, setCurrentCount] = useState(client.trucksNeeded);
@@ -139,7 +141,7 @@ export default function ClientDayCell({
                 ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <Chip
-                            label={`${currentCount} truck${currentCount !== 1 ? 's' : ''}`}
+                            label={t('trucks', { count: currentCount })}
                             size="small"
                             color={isModified ? 'warning' : 'primary'}
                             variant={isModified ? 'filled' : 'outlined'}
@@ -157,7 +159,7 @@ export default function ClientDayCell({
             {client.sourceTemplates.length > 0 && (
                 <Box sx={{ mt: 0.5 }}>
                     <Tooltip 
-                        title={`From ${client.sourceTemplates.length} template${client.sourceTemplates.length !== 1 ? 's' : ''}`}
+                        title={t('templateInfo', { count: client.sourceTemplates.length })}
                         arrow
                     >
                         <Info fontSize="small" color="action" sx={{ cursor: 'help' }} />
@@ -168,7 +170,7 @@ export default function ClientDayCell({
             {/* Modified Indicator */}
             {isModified && (
                 <Typography variant="caption" color="warning.main" sx={{ mt: 0.5 }}>
-                    Modified from {client.trucksNeeded}
+                    {t('modifiedFrom', { count: client.trucksNeeded })}
                 </Typography>
             )}
         </Box>

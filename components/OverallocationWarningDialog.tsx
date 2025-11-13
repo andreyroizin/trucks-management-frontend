@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Warning, Person, LocalShipping, Schedule } from '@mui/icons-material';
 import { ConflictWarning } from '@/utils/conflictDetection';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     open: boolean;
@@ -28,12 +29,15 @@ export default function OverallocationWarningDialog({
     conflict,
     isLoading = false 
 }: Props) {
+    const t = useTranslations('planning.weekly.assignment.overallocation');
     if (!conflict) return null;
 
     const isDriver = conflict.type === 'driver';
     const resourceIcon = isDriver ? <Person /> : <LocalShipping />;
-    const resourceType = isDriver ? 'Driver' : 'Truck';
-    const resourceLabel = isDriver ? conflict.resourceName : `Truck ${conflict.resourceName}`;
+    const resourceType = isDriver ? t('resourceTypes.driver') : t('resourceTypes.truck');
+    const resourceLabel = isDriver
+        ? conflict.resourceName
+        : t('resourceLabel.truck', { name: conflict.resourceName });
 
     return (
         <Dialog 
@@ -44,14 +48,14 @@ export default function OverallocationWarningDialog({
         >
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Warning color="warning" />
-                Resource Overallocation Warning
+                {t('title')}
             </DialogTitle>
             
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
                     <Alert severity="warning" sx={{ mb: 2 }}>
                         <Typography variant="body2">
-                            This assignment would exceed the available {conflict.availableHours}h daily limit for this resource.
+                            {t('warning', { hours: conflict.availableHours, type: resourceType.toLowerCase() })}
                         </Typography>
                     </Alert>
 
@@ -80,14 +84,20 @@ export default function OverallocationWarningDialog({
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Schedule fontSize="small" color="action" />
                                 <Typography variant="body2">
-                                    Current scheduled hours: <strong>{conflict.currentHours}h</strong>
+                                {t.rich('details.currentHours', {
+                                    hours: conflict.currentHours,
+                                    strong: (chunks) => <strong>{chunks}</strong>,
+                                })}
                                 </Typography>
                             </Box>
                             
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Schedule fontSize="small" color="primary" />
                                 <Typography variant="body2">
-                                    New assignment hours: <strong>{conflict.newHours}h</strong>
+                                {t.rich('details.newHours', {
+                                    hours: conflict.newHours,
+                                    strong: (chunks) => <strong>{chunks}</strong>,
+                                })}
                                 </Typography>
                             </Box>
                             
@@ -101,7 +111,10 @@ export default function OverallocationWarningDialog({
                             }}>
                                 <Schedule fontSize="small" color="info" />
                                 <Typography variant="body2" color="info.main">
-                                    Available hours: <strong>{conflict.availableHours}h</strong>
+                                    {t.rich('details.availableHours', {
+                                        hours: conflict.availableHours,
+                                        strong: (chunks) => <strong>{chunks}</strong>,
+                                    })}
                                 </Typography>
                             </Box>
                             
@@ -113,7 +126,12 @@ export default function OverallocationWarningDialog({
                             }}>
                                 <Schedule fontSize="small" color="warning" />
                                 <Typography variant="body2" color="warning.main">
-                                    <strong>Total hours would be: {conflict.totalHours}h (exceeds by {(conflict.totalHours - conflict.availableHours).toFixed(1)}h)</strong>
+                                    <strong>
+                                        {t('details.totalHours', {
+                                            total: conflict.totalHours,
+                                            exceeded: (conflict.totalHours - conflict.availableHours).toFixed(1),
+                                        })}
+                                    </strong>
                                 </Typography>
                             </Box>
                         </Box>
@@ -121,9 +139,10 @@ export default function OverallocationWarningDialog({
 
                     {/* Explanation */}
                     <Typography variant="body2" color="text.secondary">
-                        The available daily limit is {conflict.availableHours} hours for this {resourceType.toLowerCase()}. 
-                        You can still proceed with this assignment if needed, but please consider 
-                        the workload implications.
+                        {t('explanation', {
+                            hours: conflict.availableHours,
+                            type: resourceType.toLowerCase(),
+                        })}
                     </Typography>
                 </Box>
             </DialogContent>
@@ -134,7 +153,7 @@ export default function OverallocationWarningDialog({
                     disabled={isLoading}
                     color="inherit"
                 >
-                    Cancel
+                    {t('buttons.cancel')}
                 </Button>
                 <Button 
                     onClick={onAssignAnyway} 
@@ -142,7 +161,7 @@ export default function OverallocationWarningDialog({
                     color="warning"
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Assigning...' : 'Assign Anyway'}
+                    {isLoading ? t('buttons.assigning') : t('buttons.assignAnyway')}
                 </Button>
             </DialogActions>
         </Dialog>

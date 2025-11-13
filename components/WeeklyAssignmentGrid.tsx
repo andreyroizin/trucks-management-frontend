@@ -41,6 +41,7 @@ import TruckAvailabilityDialog from './TruckAvailabilityDialog';
 import { checkDriverConflict, checkTruckConflict, checkDriverHoursConflict, ConflictWarning, calculateDriverHoursForDate, calculateTruckHoursForDate, getRideDateAndDay } from '@/utils/conflictDetection';
 import { createDriverTruckMaps, getDriverAssignedTruck, getTruckAssignedDriver, shouldAutoSelect } from '@/utils/autoSelection';
 import { getAvailabilityHours, useWeeklyAvailability } from '@/hooks/useWeeklyAvailability';
+import { useTranslations, useLocale } from 'next-intl';
 
 type Props = {
     selectedDate: Date;
@@ -50,6 +51,8 @@ type Props = {
 export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Props) {
     const router = useRouter();
     const { user } = useAuth();
+    const t = useTranslations('planning.weekly.assignment');
+    const locale = useLocale();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [assigningRides, setAssigningRides] = useState<Set<string>>(new Set());
@@ -76,6 +79,14 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const formatDateForAPI = (date: Date): string => {
         return date.toISOString().split('T')[0];
     };
+
+    const formatDate = React.useCallback(
+        (value: string | Date, options: Intl.DateTimeFormatOptions) => {
+            const date = typeof value === 'string' ? new Date(value) : value;
+            return new Intl.DateTimeFormat(locale, options).format(date);
+        },
+        [locale]
+    );
 
     // Get company ID based on user role
     const getCompanyId = (): string | undefined => {
@@ -136,6 +147,25 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         return `${formatHoursValue(used)} / ${formatHoursValue(total)} scheduled`;
     }, [formatHoursValue]);
 
+    const filterStatusLabels = React.useMemo(
+        () => ({
+            assigned: t('filters.status.assigned'),
+            partial: t('filters.status.partial'),
+            unassigned: t('filters.status.unassigned'),
+        }),
+        [t]
+    );
+
+    const availabilityLabels = React.useMemo(
+        () => ({
+            busy: t('availability.busy'),
+            assigned: t('availability.assigned'),
+            free: t('availability.free'),
+            available: t('availability.available'),
+        }),
+        [t]
+    );
+
     const getPrimaryDriverDefaultHours = React.useCallback((ride: WeeklyRide): number => {
         if (ride.assignedDriver?.plannedHours != null) {
             return ride.assignedDriver.plannedHours;
@@ -194,7 +224,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         if (conflict) {
             return {
                 level: 'busy',
-                label: 'Busy',
+                label: availabilityLabels.busy,
                 message: formatHoursSummary(displayHours, availableHours),
             };
         }
@@ -205,10 +235,14 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         return {
             level: 'available',
-            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            label: isCurrentSelection
+                ? availabilityLabels.assigned
+                : projectedHours === 0
+                ? availabilityLabels.free
+                : availabilityLabels.available,
             message: formatHoursSummary(displayHours, availableHours),
         };
-    }, [ridesData, availabilityData, formatHoursSummary, getPrimaryDriverDefaultHours, getSecondDriverDefaultHours]);
+    }, [ridesData, availabilityData, formatHoursSummary, getPrimaryDriverDefaultHours, getSecondDriverDefaultHours, availabilityLabels]);
 
     const getTruckAvailabilityStatus = React.useCallback(({ ride, truck }: {
         ride: WeeklyRide;
@@ -238,17 +272,21 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         if (conflict) {
             return {
                 level: 'busy',
-                label: 'Busy',
+                label: availabilityLabels.busy,
                 message: formatHoursSummary(displayHours, availableHours),
             };
         }
 
         return {
             level: 'available',
-            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            label: isCurrentSelection
+                ? availabilityLabels.assigned
+                : projectedHours === 0
+                ? availabilityLabels.free
+                : availabilityLabels.available,
             message: formatHoursSummary(displayHours, availableHours),
         };
-    }, [ridesData, availabilityData, formatHoursSummary]);
+    }, [ridesData, availabilityData, formatHoursSummary, availabilityLabels]);
 
     const findRideById = React.useCallback((rideId: string | null): WeeklyRide | null => {
         if (!rideId || !ridesData) return null;
@@ -919,6 +957,13 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     };
 
     const stats = getAssignmentStats();
+    const totalRides = getTotalRidesForWeek();
+    const driverAvailabilitySet = availabilityData?.drivers.some((d) =>
+        Object.values(d.availability).some((a) => a.isCustom)
+    ) ?? false;
+    const truckAvailabilitySet = availabilityData?.trucks.some((t) =>
+        Object.values(t.availability).some((a) => a.isCustom)
+    ) ?? false;
 
     // Filter rides based on active filter
     const getFilteredRidesData = () => {
@@ -1090,7 +1135,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     if (isRidesError) {
         return (
             <Alert severity="error" sx={{ mt: 2 }}>
-                Failed to load weekly rides: {ridesError?.message}
+                {t('alerts.ridesLoadFailed', { message: ridesError?.message ?? '' })}
             </Alert>
         );
     }
@@ -1098,7 +1143,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     if (resourcesError) {
         return (
             <Alert severity="error" sx={{ mt: 2 }}>
-                Failed to load drivers and trucks: {resourcesError?.message}
+                {t('alerts.resourcesLoadFailed', { message: resourcesError?.message ?? '' })}
             </Alert>
         );
     }
@@ -1106,7 +1151,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     if (!ridesData) {
         return (
             <Alert severity="info" sx={{ mt: 2 }}>
-                No rides data available
+                {t('alerts.noData')}
             </Alert>
         );
     }
@@ -1117,11 +1162,10 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
             <Box sx={{ mb: 3 }}>
                 <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Assignment />
-                    Weekly Assignment Grid
+                    {t('header.title')}
                     {activeFilter !== 'all' && (
                         <Chip 
-                            label={`Filtered: ${activeFilter === 'assigned' ? 'Fully Assigned' : 
-                                   activeFilter === 'partial' ? 'Partially Assigned' : 'Unassigned'}`}
+                            label={t('header.filtered', { status: filterStatusLabels[activeFilter as 'assigned' | 'partial' | 'unassigned'] })}
                             size="small"
                             color={activeFilter === 'assigned' ? 'success' : 
                                    activeFilter === 'partial' ? 'warning' : 'error'}
@@ -1130,8 +1174,8 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                     )}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                    Assign drivers and trucks to generated rides
-                    {activeFilter !== 'all' && ' • Click "All Rides" to clear filter'}
+                    {t('header.subtitle')}
+                    {activeFilter !== 'all' && ` • ${t('header.clearFilterHint')}`}
                 </Typography>
             </Box>
 
@@ -1146,7 +1190,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                         <Typography variant="h6">
-                            Assignment Summary
+                            {t('summary.title')}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <Button
@@ -1156,9 +1200,9 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 onClick={() => setDriverAvailabilityDialog(true)}
                                 disabled={isLoadingAvailability}
                             >
-                                {availabilityData?.drivers.some(d => 
-                                    Object.values(d.availability).some(a => a.isCustom)
-                                ) ? 'Driver Availability ✓' : 'Set Driver Availability'}
+                                {driverAvailabilitySet
+                                    ? t('summary.buttons.driverAvailabilityDone')
+                                    : t('summary.buttons.driverAvailability')}
                             </Button>
                             <Button
                                 variant="outlined"
@@ -1167,16 +1211,16 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 onClick={() => setTruckAvailabilityDialog(true)}
                                 disabled={isLoadingAvailability}
                             >
-                                {availabilityData?.trucks.some(t => 
-                                    Object.values(t.availability).some(a => a.isCustom)
-                                ) ? 'Truck Availability ✓' : 'Set Truck Availability'}
+                                {truckAvailabilitySet
+                                    ? t('summary.buttons.truckAvailabilityDone')
+                                    : t('summary.buttons.truckAvailability')}
                             </Button>
                         </Box>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                         <Chip
                             icon={<Assignment />}
-                            label={`All Rides: ${getTotalRidesForWeek()}`}
+                            label={t('summary.chips.all', { count: totalRides })}
                             color="primary"
                             variant={activeFilter === 'all' ? 'filled' : 'outlined'}
                             clickable
@@ -1190,7 +1234,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         />
                         <Chip
                             icon={<Person />}
-                            label={`Fully Assigned: ${stats.assigned}`}
+                            label={t('summary.chips.assigned', { count: stats.assigned })}
                             color="success"
                             variant={activeFilter === 'assigned' ? 'filled' : 'outlined'}
                             clickable
@@ -1204,7 +1248,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         />
                         <Chip
                             icon={<LocalShipping />}
-                            label={`Partially Assigned: ${stats.partial}`}
+                            label={t('summary.chips.partial', { count: stats.partial })}
                             color="warning"
                             variant={activeFilter === 'partial' ? 'filled' : 'outlined'}
                             clickable
@@ -1218,7 +1262,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                         />
                         <Chip
                             icon={<Assignment />}
-                            label={`Unassigned: ${stats.unassigned}`}
+                            label={t('summary.chips.unassigned', { count: stats.unassigned })}
                             color="error"
                             variant={activeFilter === 'unassigned' ? 'filled' : 'outlined'}
                             clickable
@@ -1235,7 +1279,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                     {/* Resource Filters */}
                     <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                         <Typography variant="body2" color="text.secondary" sx={{ minWidth: 'fit-content' }}>
-                            Filter by:
+                            {t('summary.filters.label')}
                         </Typography>
                         
                         {/* Truck Filter */}
@@ -1255,8 +1299,8 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Truck"
-                                    placeholder="All trucks"
+                                    label={t('summary.filters.truck.label')}
+                                    placeholder={t('summary.filters.truck.placeholder')}
                                     variant="outlined"
                                 />
                             )}
@@ -1285,15 +1329,17 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Driver"
-                                    placeholder="All drivers"
+                                    label={t('summary.filters.driver.label')}
+                                    placeholder={t('summary.filters.driver.placeholder')}
                                     variant="outlined"
                                 />
                             )}
                             renderOption={(props, driver) => (
                                 <Box component="li" {...props}>
                                     <Person fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
-                                    <Typography variant="body2">{driver.fullName}</Typography>
+                                    <Typography variant="body2">
+                                        {driver.fullName}
+                                    </Typography>
                                 </Box>
                             )}
                         />
@@ -1309,7 +1355,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                 }}
                                 sx={{ ml: 1 }}
                             >
-                                Clear Filters
+                                {t('summary.filters.clear')}
                             </Button>
                         )}
                     </Box>
@@ -1469,20 +1515,19 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                     }
                                 }}
                                 onClick={() => handleDayClick(day.date)}
-                                title="Click to view daily planning"
+                                title={t('dayCard.tooltip')}
                             >
                                 <Typography variant="h6" fontWeight="bold">
                                     {day.dayName}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {new Date(day.date).toLocaleDateString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric' 
-                                    })}
+                                    {formatDate(day.date, { month: 'short', day: 'numeric' })}
                                 </Typography>
                                 <Divider sx={{ mt: 1 }} />
                                 <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
-                                    {day.clients.reduce((total, client) => total + client.rides.length, 0)} ride{day.clients.reduce((total, client) => total + client.rides.length, 0) !== 1 ? 's' : ''}
+                                    {t('dayCard.ridesCount', {
+                                        count: day.clients.reduce((total, client) => total + client.rides.length, 0),
+                                    })}
                                 </Typography>
                                 
                                 {/* Resource Hours Display */}
@@ -1509,7 +1554,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                                     fontWeight: 'medium'
                                                 }}
                                             >
-                                                {resourceName}: {resourceHours}h
+                                                {t('dayCard.resourceHours', { name: resourceName, hours: resourceHours })}
                                             </Typography>
                                         );
                                     }
@@ -1555,7 +1600,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                         color="text.secondary" 
                                         sx={{ textAlign: 'center', fontStyle: 'italic', mt: 2 }}
                                     >
-                                        No rides scheduled
+                                        {t('dayCard.noRides')}
                                     </Typography>
                                 )}
                             </Box>
@@ -1564,9 +1609,9 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                 </Box>
             </Box>
 
-            {getTotalRidesForWeek() === 0 && (
+            {totalRides === 0 && (
                 <Alert severity="info" sx={{ mt: 2 }}>
-                    No rides found for this week. Generate rides in the Weekly Planning view first.
+                    {t('alerts.noRides')}
                 </Alert>
             )}
 

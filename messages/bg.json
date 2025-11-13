@@ -1595,7 +1595,272 @@
     },
     "weekly": {
       "title": "Седмично планиране",
-      "subtitle": "Управлявайте и назначавайте шофьори/камиони за курсове през седмицата"
+      "subtitle": "Управлявайте и назначавайте шофьори/камиони за курсове през седмицата",
+      "selector": {
+        "currentWeek": "Текуща седмица",
+        "range": "{start} - {end}, {year}"
+      },
+      "preview": {
+        "header": {
+          "title": "Преглед на седмичното планиране",
+          "subtitle": "Прегледайте и коригирайте разпределението на камионите преди да планирате курсовете"
+        },
+        "summary": {
+          "title": "Седмично обобщение",
+          "buttons": {
+            "plan": "Планирай курсовете за тази седмица",
+            "planning": "Планиране на курсовете..."
+          },
+          "metrics": {
+            "totalTrucks": "Общо камиони",
+            "activeDays": "Активни дни",
+            "totalClients": "Общо клиенти"
+          },
+          "modificationWarning": "Направихте промени в разпределението по шаблон. Проверете ги преди да планирате курсовете."
+        },
+        "alerts": {
+          "loadFailed": "Неуспешно зареждане на прегледа: {message}",
+          "noData": "Няма налични данни за преглед",
+          "noTrucks": "Няма планирани камиони за тази седмица. Създайте шаблони за капацитет в дългосрочното планиране, за да видите разпределение тук."
+        },
+        "dayCard": {
+          "totalTrucks": "{count, plural, one {# камион} other {# камиона}}",
+          "noTrucks": "Няма планирани камиони"
+        },
+        "addRide": {
+          "title": "Добавяне на курс за {day}",
+          "description": "Добавете ръчен курс за {date}",
+          "unknownDate": "неуточнена дата",
+          "clientLabel": "Изберете клиент",
+          "clientHelper": "Изберете от наличните клиенти (все още не е планиран за този ден)",
+          "trucksLabel": "Брой камиони",
+          "trucksHelper": "Колко камиона са нужни за този клиент",
+          "cancel": "Отказ",
+          "confirm": "Добави курсове"
+        },
+        "confirm": {
+          "title": "Потвърдете създаването на курсове",
+          "body": "Това ще създаде <strong>{count}</strong> курса за седмицата, започваща на <strong>{date}</strong>.",
+          "breakdownTitle": "Разбивка по клиент:",
+          "cancel": "Отказ",
+          "confirm": "Създай {count} курса",
+          "creating": "Създаване на курсове..."
+        },
+        "listLine": "{clientName}: {count, plural, one {# курс} other {# курса}}"
+      },
+      "clientCell": {
+        "trucks": "{count, plural, one {# камион} other {# камиона}}",
+        "templateInfo": "{count, plural, one {От 1 шаблон} other {От # шаблона}}",
+        "modifiedFrom": "Променено от {count}"
+      },
+      "assignment": {
+        "header": {
+          "title": "Грид за седмични назначения",
+          "subtitle": "Назначавайте шофьори и камиони към създадените курсове",
+          "filtered": "Филтър: {status}",
+          "clearFilterHint": "Щракнете „Всички курсове“, за да изчистите филтъра"
+        },
+        "filters": {
+          "status": {
+            "assigned": "Напълно назначени",
+            "partial": "Частично назначени",
+            "unassigned": "Без назначение"
+          }
+        },
+        "summary": {
+          "title": "Обобщение на назначенията",
+          "buttons": {
+            "driverAvailability": "Задаване на наличност на шофьори",
+            "driverAvailabilityDone": "Наличност на шофьори ✓",
+            "truckAvailability": "Задаване на наличност на камиони",
+            "truckAvailabilityDone": "Наличност на камиони ✓"
+          },
+          "chips": {
+            "all": "Всички курсове: {count}",
+            "assigned": "Напълно назначени: {count}",
+            "partial": "Частично назначени: {count}",
+            "unassigned": "Без назначение: {count}"
+          },
+          "filters": {
+            "label": "Филтър по:",
+            "truck": {
+              "label": "Камион",
+              "placeholder": "Всички камиони"
+            },
+            "driver": {
+              "label": "Шофьор",
+              "placeholder": "Всички шофьори"
+            },
+            "clear": "Изчисти филтрите"
+          }
+        },
+        "availability": {
+          "busy": "Зает",
+          "assigned": "Назначен",
+          "free": "Свободен",
+          "available": "Наличен"
+        },
+        "dayCard": {
+          "tooltip": "Щракнете за дневното планиране",
+          "ridesCount": "{count, plural, one {# курс} other {# курса}}",
+          "resourceHours": "{name}: {hours}ч",
+          "noRides": "Няма планирани курсове"
+        },
+        "alerts": {
+          "ridesLoadFailed": "Неуспешно зареждане на седмичните курсове: {message}",
+          "resourcesLoadFailed": "Неуспешно зареждане на шофьори и камиони: {message}",
+          "noData": "Няма данни за курсове",
+          "noRides": "Няма намерени курсове за тази седмица. Първо генерирайте курсове в седмичното планиране."
+        },
+        "card": {
+          "tripNumber": {
+            "placeholder": "Въведете номер на курс",
+            "add": "Добави номер на курс"
+          },
+          "status": {
+            "unassigned": "Без назначение",
+            "partial": "Частично",
+            "assigned": "Назначен"
+          },
+          "primaryDriver": {
+            "label": "Основен шофьор",
+            "placeholder": "Изберете основен шофьор...",
+            "hoursLabel": "Часове на основния шофьор"
+          },
+          "secondDriver": {
+            "label": "Втори шофьор",
+            "placeholder": "Изберете втори шофьор...",
+            "hoursLabel": "Часове на втория шофьор"
+          },
+          "truck": {
+            "label": "Камион",
+            "placeholder": "Изберете камион..."
+          },
+          "plannedHours": {
+            "label": "Планирани часове"
+          },
+          "buttons": {
+            "addSecondDriver": "Добавяне на шофьор",
+            "addDetails": "Добавяне на допълнителни данни"
+          },
+          "details": {
+            "title": "Допълнителни данни",
+            "add": "Добавяне на допълнителни данни",
+            "unknown": "Неизвестно"
+          }
+        },
+        "addDriverDialog": {
+          "title": "Добавяне на втори шофьор",
+          "description": "Добавете втори шофьор към този курс със собствени планирани часове.",
+          "rideInfo": {
+            "title": "Информация за курса:",
+            "totalDuration": "• Обща продължителност: <strong>{hours}ч</strong>",
+            "primaryDriver": "• Основен шофьор: <strong>{name}</strong>",
+            "note": "Бележка: Шофьорите могат да работят заедно, така че индивидуалните часове не е нужно да съвпадат с общата продължителност."
+          },
+          "noDrivers": "Няма свободни допълнителни шофьори. Вероятно всички вече са назначени за този курс.",
+          "fields": {
+            "driver": {
+              "label": "Изберете шофьор",
+              "placeholder": "Изберете шофьор..."
+            },
+            "primaryHours": {
+              "label": "Часове на {name}",
+              "helper": "Часове за {name} на този курс"
+            },
+            "secondHours": {
+              "label": "Часове на втория шофьор",
+              "helper": "Часове за втория шофьор на този курс"
+            }
+          },
+          "errors": {
+            "invalidHours": "Моля, въведете валидни часове",
+            "maxHours": "Часовете не могат да надвишават 24"
+          },
+          "buttons": {
+            "cancel": "Отказ",
+            "confirm": "Добави шофьор",
+            "loading": "Добавяне..."
+          }
+        },
+        "overallocation": {
+          "title": "Предупреждение за претоварване",
+          "resourceTypes": {
+            "driver": "шофьор",
+            "truck": "камион"
+          },
+          "resourceLabel": {
+            "truck": "Камион {name}"
+          },
+          "warning": "Това назначение ще надвиши наличния дневен лимит от {hours}ч за този ресурс.",
+          "details": {
+            "currentHours": "Текущо планирани: <strong>{hours}ч</strong>",
+            "newHours": "Ново назначение: <strong>{hours}ч</strong>",
+            "availableHours": "Налични: <strong>{hours}ч</strong>",
+            "totalHours": "Общо ще стане: {total}ч (надвишава с {exceeded}ч)"
+          },
+          "explanation": "Дневният лимит е {hours} часа за този {type}. Можете да продължите, но имайте предвид натоварването.",
+          "buttons": {
+            "cancel": "Отказ",
+            "assigning": "Назначаване...",
+            "assignAnyway": "Назначи въпреки това"
+          }
+        },
+        "driverAvailability": {
+          "title": "Настройване на наличност на шофьори",
+          "subtitle": "Седмица {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "Имате незапазени промени. Сигурни ли сте, че искате да ги отхвърлите?",
+          "noResources": "Няма налични шофьори за тази седмица",
+          "unsavedChanges": "Имате незапазени промени. Щракнете „Запази всички“, за да ги приложите.",
+          "buttons": {
+            "cancel": "Отказ",
+            "save": "Запази всички",
+            "saving": "Запазване..."
+          }
+        },
+        "truckAvailability": {
+          "title": "Настройване на наличност на камиони",
+          "subtitle": "Седмица {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "Имате незапазени промени. Сигурни ли сте, че искате да ги отхвърлите?",
+          "noResources": "Няма налични камиони за тази седмица",
+          "unsavedChanges": "Имате незапазени промени. Щракнете „Запази всички“, за да ги приложите.",
+          "buttons": {
+            "cancel": "Отказ",
+            "save": "Запази всички",
+            "saving": "Запазване..."
+          }
+        },
+        "availabilityGrid": {
+          "resourceType": {
+            "driver": {
+              "singular": "Шофьор",
+              "plural": "шофьори"
+            },
+            "truck": {
+              "singular": "Камион",
+              "plural": "камиони"
+            }
+          },
+          "quickActions": {
+            "title": "Бързи действия (важи за всички {resource}):",
+            "setAll": "Всички: {hours}ч",
+            "weekdays": "Работни дни: {hours}ч",
+            "weekend": "Почивни дни",
+            "reset": "Нулирай всички"
+          },
+          "headers": {
+            "resource": "{resource}",
+            "actions": "Действия"
+          },
+          "tooltips": {
+            "setAll": "Задай {hours}ч за цялата седмица",
+            "weekend": "Почивни дни",
+            "reset": "Връщане към стандартни стойности"
+          }
+        }
+      }
     },
     "daily": {
       "title": "Дневно планиране",

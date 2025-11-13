@@ -1595,7 +1595,272 @@
     },
     "weekly": {
       "title": "Weekplanning",
-      "subtitle": "Beheer en wijs chauffeurs/vrachtwagens toe aan ritten voor de week"
+      "subtitle": "Beheer en wijs chauffeurs/vrachtwagens toe aan ritten voor de week",
+      "selector": {
+        "currentWeek": "Huidige week",
+        "range": "{start} - {end}, {year}"
+      },
+      "preview": {
+        "header": {
+          "title": "Voorbeeld weekplanning",
+          "subtitle": "Controleer en pas de inzet van trucks aan voordat je ritten plant"
+        },
+        "summary": {
+          "title": "Weekoverzicht",
+          "buttons": {
+            "plan": "Plan ritten voor deze week",
+            "planning": "Ritten plannen..."
+          },
+          "metrics": {
+            "totalTrucks": "Totaal aantal trucks",
+            "activeDays": "Actieve dagen",
+            "totalClients": "Totaal aantal klanten"
+          },
+          "modificationWarning": "Je hebt wijzigingen aangebracht in de sjabloonverdeling. Controleer je aanpassingen voordat je ritten plant."
+        },
+        "alerts": {
+          "loadFailed": "Kan weekvoorbeeld niet laden: {message}",
+          "noData": "Geen voorbeeldgegevens beschikbaar",
+          "noTrucks": "Er zijn geen trucks ingepland voor deze week. Maak capaciteitssjablonen aan in Langetermijnplanning om hier een verdeling te zien."
+        },
+        "dayCard": {
+          "totalTrucks": "{count, plural, one {# truck} other {# trucks}}",
+          "noTrucks": "Geen trucks ingepland"
+        },
+        "addRide": {
+          "title": "Rit toevoegen voor {day}",
+          "description": "Voeg een handmatige rit toe voor {date}",
+          "unknownDate": "een onbekende datum",
+          "clientLabel": "Selecteer klant",
+          "clientHelper": "Kies uit beschikbare klanten (nog niet ingepland voor deze dag)",
+          "trucksLabel": "Aantal trucks",
+          "trucksHelper": "Hoeveel trucks zijn er nodig voor deze klant",
+          "cancel": "Annuleren",
+          "confirm": "Ritten toevoegen"
+        },
+        "confirm": {
+          "title": "Bevestig ritgeneratie",
+          "body": "Dit maakt <strong>{count}</strong> ritten aan voor de week van <strong>{date}</strong>.",
+          "breakdownTitle": "Verdeling per klant:",
+          "cancel": "Annuleren",
+          "confirm": "Maak {count} ritten aan",
+          "creating": "Ritten aanmaken..."
+        },
+        "listLine": "{clientName}: {count, plural, one {# rit} other {# ritten}}"
+      },
+      "clientCell": {
+        "trucks": "{count, plural, one {# truck} other {# trucks}}",
+        "templateInfo": "{count, plural, one {Uit 1 sjabloon} other {Uit # sjablonen}}",
+        "modifiedFrom": "Aangepast van {count}"
+      },
+      "assignment": {
+        "header": {
+          "title": "Weektoewijzing",
+          "subtitle": "Wijs chauffeurs en trucks toe aan gegenereerde ritten",
+          "filtered": "Gefilterd: {status}",
+          "clearFilterHint": "Klik op “Alle ritten” om het filter te wissen"
+        },
+        "filters": {
+          "status": {
+            "assigned": "Volledig toegewezen",
+            "partial": "Gedeeltelijk toegewezen",
+            "unassigned": "Niet toegewezen"
+          }
+        },
+        "summary": {
+          "title": "Overzicht toewijzingen",
+          "buttons": {
+            "driverAvailability": "Chauffeursbeschikbaarheid instellen",
+            "driverAvailabilityDone": "Chauffeursbeschikbaarheid ✓",
+            "truckAvailability": "Truckbeschikbaarheid instellen",
+            "truckAvailabilityDone": "Truckbeschikbaarheid ✓"
+          },
+          "chips": {
+            "all": "Alle ritten: {count}",
+            "assigned": "Volledig toegewezen: {count}",
+            "partial": "Gedeeltelijk toegewezen: {count}",
+            "unassigned": "Niet toegewezen: {count}"
+          },
+          "filters": {
+            "label": "Filter op:",
+            "truck": {
+              "label": "Truck",
+              "placeholder": "Alle trucks"
+            },
+            "driver": {
+              "label": "Chauffeur",
+              "placeholder": "Alle chauffeurs"
+            },
+            "clear": "Filters wissen"
+          }
+        },
+        "availability": {
+          "busy": "Bezet",
+          "assigned": "Toegewezen",
+          "free": "Vrij",
+          "available": "Beschikbaar"
+        },
+        "dayCard": {
+          "tooltip": "Klik om de dagplanning te bekijken",
+          "ridesCount": "{count, plural, one {# rit} other {# ritten}}",
+          "resourceHours": "{name}: {hours}u",
+          "noRides": "Geen ritten gepland"
+        },
+        "alerts": {
+          "ridesLoadFailed": "Kan weekritten niet laden: {message}",
+          "resourcesLoadFailed": "Kan chauffeurs en trucks niet laden: {message}",
+          "noData": "Geen ritgegevens beschikbaar",
+          "noRides": "Geen ritten gevonden voor deze week. Genereer eerst ritten in de weekplanning."
+        },
+        "card": {
+          "tripNumber": {
+            "placeholder": "Voer ritnummer in",
+            "add": "Ritnummer toevoegen"
+          },
+          "status": {
+            "unassigned": "Niet toegewezen",
+            "partial": "Deels toegewezen",
+            "assigned": "Toegewezen"
+          },
+          "primaryDriver": {
+            "label": "Hoofdchauffeur",
+            "placeholder": "Selecteer hoofdchauffeur...",
+            "hoursLabel": "Uren hoofdchauffeur"
+          },
+          "secondDriver": {
+            "label": "Tweede chauffeur",
+            "placeholder": "Selecteer tweede chauffeur...",
+            "hoursLabel": "Uren tweede chauffeur"
+          },
+          "truck": {
+            "label": "Truck",
+            "placeholder": "Selecteer truck..."
+          },
+          "plannedHours": {
+            "label": "Geplande uren"
+          },
+          "buttons": {
+            "addSecondDriver": "Extra chauffeur toevoegen",
+            "addDetails": "Aanvullende details toevoegen"
+          },
+          "details": {
+            "title": "Aanvullende details",
+            "add": "Aanvullende details toevoegen",
+            "unknown": "Onbekend"
+          }
+        },
+        "addDriverDialog": {
+          "title": "Tweede chauffeur toevoegen",
+          "description": "Voeg een tweede chauffeur toe aan deze rit met eigen geplande uren.",
+          "rideInfo": {
+            "title": "Ritinformatie:",
+            "totalDuration": "• Totale ritduur: <strong>{hours}u</strong>",
+            "primaryDriver": "• Hoofdchauffeur: <strong>{name}</strong>",
+            "note": "Let op: Chauffeurs kunnen samenwerken, de individuele uren hoeven niet op te tellen tot de totale ritduur."
+          },
+          "noDrivers": "Geen extra chauffeurs beschikbaar. Alle chauffeurs zijn mogelijk al aan deze rit gekoppeld.",
+          "fields": {
+            "driver": {
+              "label": "Selecteer chauffeur",
+              "placeholder": "Kies een chauffeur..."
+            },
+            "primaryHours": {
+              "label": "Uren {name}",
+              "helper": "Uren voor {name} op deze rit"
+            },
+            "secondHours": {
+              "label": "Uren tweede chauffeur",
+              "helper": "Uren voor de tweede chauffeur op deze rit"
+            }
+          },
+          "errors": {
+            "invalidHours": "Voer een geldig aantal uren in",
+            "maxHours": "Uren mogen niet meer zijn dan 24"
+          },
+          "buttons": {
+            "cancel": "Annuleren",
+            "confirm": "Chauffeur toevoegen",
+            "loading": "Bezig..."
+          }
+        },
+        "overallocation": {
+          "title": "Waarschuwing overbelasting",
+          "resourceTypes": {
+            "driver": "Chauffeur",
+            "truck": "Truck"
+          },
+          "resourceLabel": {
+            "truck": "Truck {name}"
+          },
+          "warning": "Deze toewijzing overschrijdt de beschikbare {hours}u per dag voor deze hulpbron.",
+          "details": {
+            "currentHours": "Huidig ingepland: <strong>{hours}u</strong>",
+            "newHours": "Nieuwe toewijzing: <strong>{hours}u</strong>",
+            "availableHours": "Beschikbaar: <strong>{hours}u</strong>",
+            "totalHours": "Totaal wordt: {total}u (overschrijdt met {exceeded}u)"
+          },
+          "explanation": "De dagelijkse limiet is {hours} uur voor deze {type}. Je kunt toch doorgaan als dat nodig is, maar houd rekening met de werkdruk.",
+          "buttons": {
+            "cancel": "Annuleren",
+            "assigning": "Bezig...",
+            "assignAnyway": "Toch toewijzen"
+          }
+        },
+        "driverAvailability": {
+          "title": "Beschikbaarheid chauffeurs instellen",
+          "subtitle": "Week van {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze wilt negeren?",
+          "noResources": "Geen chauffeurs gevonden voor deze week",
+          "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Klik op \"Alles opslaan\" om ze toe te passen.",
+          "buttons": {
+            "cancel": "Annuleren",
+            "save": "Alles opslaan",
+            "saving": "Opslaan..."
+          }
+        },
+        "truckAvailability": {
+          "title": "Beschikbaarheid trucks instellen",
+          "subtitle": "Week van {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze wilt negeren?",
+          "noResources": "Geen trucks gevonden voor deze week",
+          "unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Klik op \"Alles opslaan\" om ze toe te passen.",
+          "buttons": {
+            "cancel": "Annuleren",
+            "save": "Alles opslaan",
+            "saving": "Opslaan..."
+          }
+        },
+        "availabilityGrid": {
+          "resourceType": {
+            "driver": {
+              "singular": "Chauffeur",
+              "plural": "chauffeurs"
+            },
+            "truck": {
+              "singular": "Truck",
+              "plural": "trucks"
+            }
+          },
+          "quickActions": {
+            "title": "Snelle acties (voor alle {resource}):",
+            "setAll": "Alles: {hours}u",
+            "weekdays": "Werkdagen: {hours}u",
+            "weekend": "Weekend vrij",
+            "reset": "Alles resetten"
+          },
+          "headers": {
+            "resource": "{resource}",
+            "actions": "Acties"
+          },
+          "tooltips": {
+            "setAll": "Zet de hele week op {hours}u",
+            "weekend": "Weekend vrij",
+            "reset": "Terug naar standaard"
+          }
+        }
+      }
     },
     "daily": {
       "title": "Dagplanning",

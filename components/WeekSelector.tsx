@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Button, Typography, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { useTranslations, useLocale } from 'next-intl';
 
 type Props = {
     selectedDate: Date;
@@ -10,6 +11,8 @@ type Props = {
 };
 
 export default function WeekSelector({ selectedDate, onDateChange }: Props) {
+    const t = useTranslations('planning.weekly.selector');
+    const locale = useLocale();
     // Get Monday of the current week
     const getMondayOfWeek = (date: Date): Date => {
         const day = date.getDay();
@@ -44,16 +47,12 @@ export default function WeekSelector({ selectedDate, onDateChange }: Props) {
     };
 
     const formatDateRange = (monday: Date, sunday: Date): string => {
-        const options: Intl.DateTimeFormatOptions = { 
-            month: 'short', 
-            day: 'numeric' 
-        };
-        
-        const mondayStr = monday.toLocaleDateString('en-US', options);
-        const sundayStr = sunday.toLocaleDateString('en-US', options);
+        const formatter = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
+        const mondayStr = formatter.format(monday);
+        const sundayStr = formatter.format(sunday);
         const year = monday.getFullYear();
-        
-        return `${mondayStr} - ${sundayStr}, ${year}`;
+
+        return t('range', { start: mondayStr, end: sundayStr, year });
     };
 
     const isCurrentWeek = (): boolean => {
@@ -96,7 +95,7 @@ export default function WeekSelector({ selectedDate, onDateChange }: Props) {
                     size="small" 
                     onClick={goToCurrentWeek}
                 >
-                    Current Week
+                    {t('currentWeek')}
                 </Button>
             )}
         </Box>

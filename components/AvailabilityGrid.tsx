@@ -24,6 +24,7 @@ import {
     AccessTimeOutlined
 } from '@mui/icons-material';
 import { DriverAvailability, TruckAvailability } from '@/hooks/useWeeklyAvailability';
+import { useTranslations } from 'next-intl';
 
 type Resource = DriverAvailability | TruckAvailability;
 
@@ -44,6 +45,7 @@ export default function AvailabilityGrid({
     isLoading = false,
     clearLocalChanges = false
 }: Props) {
+    const t = useTranslations('planning.weekly.assignment.availabilityGrid');
     const [localChanges, setLocalChanges] = useState<Record<string, Record<string, string>>>({});
 
     // Clear local changes when parent component triggers it (after successful save)
@@ -81,6 +83,8 @@ export default function AvailabilityGrid({
             ? (resource as DriverAvailability).fullName 
             : (resource as TruckAvailability).licensePlate;
     };
+    const resourceLabelPlural = t(`resourceType.${type}.plural`);
+    const resourceLabelSingular = t(`resourceType.${type}.singular`);
 
     const getCurrentHours = (resource: Resource, date: string): number => {
         const resourceId = getResourceId(resource);
@@ -256,7 +260,7 @@ export default function AvailabilityGrid({
             {/* Quick Actions */}
             <Box sx={{ mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                 <Typography variant="subtitle2" sx={{ mr: 2 }}>
-                    Quick Actions (applies to all {type === 'driver' ? 'drivers' : 'trucks'}):
+                    {t('quickActions.title', { resource: resourceLabelPlural })}
                 </Typography>
                 <Button
                     size="small"
@@ -269,7 +273,7 @@ export default function AvailabilityGrid({
                         });
                     }}
                 >
-                    Set All: 8h
+                    {t('quickActions.setAll', { hours: 8 })}
                 </Button>
                 <Button
                     size="small"
@@ -281,7 +285,7 @@ export default function AvailabilityGrid({
                         });
                     }}
                 >
-                    Weekdays: 8h
+                    {t('quickActions.weekdays', { hours: 8 })}
                 </Button>
                 <Button
                     size="small"
@@ -293,7 +297,7 @@ export default function AvailabilityGrid({
                         });
                     }}
                 >
-                    Weekend Off
+                    {t('quickActions.weekend')}
                 </Button>
                 <Button
                     size="small"
@@ -305,7 +309,7 @@ export default function AvailabilityGrid({
                         });
                     }}
                 >
-                    Reset All
+                    {t('quickActions.reset')}
                 </Button>
             </Box>
 
@@ -315,7 +319,7 @@ export default function AvailabilityGrid({
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ minWidth: 150, fontWeight: 'bold' }}>
-                                {type === 'driver' ? 'Driver' : 'Truck'}
+                                {t('headers.resource', { resource: resourceLabelSingular })}
                             </TableCell>
                             {weekDates.map(({ date, dayName, fullDayName }) => (
                                 <TableCell key={date} align="center" sx={{ minWidth: 80, fontWeight: 'bold' }}>
@@ -332,7 +336,7 @@ export default function AvailabilityGrid({
                                 </TableCell>
                             ))}
                             <TableCell align="center" sx={{ fontWeight: 'bold' }}>
-                                Actions
+                                {t('headers.actions')}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -375,7 +379,7 @@ export default function AvailabilityGrid({
                                     ))}
                                     <TableCell align="center">
                                         <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                            <Tooltip title="Set all week to 8h">
+                                            <Tooltip title={t('tooltips.setAll', { hours: 8 })}>
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => handleSetAllWeek(resourceId, 8)}
@@ -384,7 +388,7 @@ export default function AvailabilityGrid({
                                                     <AccessTimeOutlined fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Weekend off">
+                                            <Tooltip title={t('tooltips.weekend')}>
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => handleWeekendOff(resourceId)}
@@ -393,7 +397,7 @@ export default function AvailabilityGrid({
                                                     <EventBusyOutlined fontSize="small" />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Reset to defaults">
+                                            <Tooltip title={t('tooltips.reset')}>
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => handleResetAll(resourceId)}

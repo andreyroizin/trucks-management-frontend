@@ -30,6 +30,7 @@ import { Driver, Truck } from '@/hooks/useDriversAndTrucks';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import { useUpdateTripNumber } from '@/hooks/useTripNumber';
 import RideDetailsDialog from './RideDetailsDialog';
+import { useTranslations } from 'next-intl';
 
 export type AvailabilityStatus = {
     level: 'available' | 'busy';
@@ -79,6 +80,7 @@ export default function RideAssignmentCard({
     getDriverAvailabilityStatus,
     getTruckAvailabilityStatus
 }: Props) {
+    const t = useTranslations('planning.weekly.assignment.card');
     const [driverValue, setDriverValue] = useState<Driver | null>(
         ride.assignedDriver ? drivers.find(d => d.id === ride.assignedDriver!.id) || null : null
     );
@@ -139,6 +141,14 @@ export default function RideAssignmentCard({
 
     const isUnassigned = !ride.assignedDriver || !ride.assignedTruck;
     const isPartiallyAssigned = (ride.assignedDriver && !ride.assignedTruck) || (!ride.assignedDriver && ride.assignedTruck);
+    const statusTextMap = React.useMemo(
+        () => ({
+            unassigned: t('status.unassigned'),
+            partial: t('status.partial'),
+            assigned: t('status.assigned'),
+        }),
+        [t]
+    );
 
     const handleDriverChange = (newDriver: Driver | null) => {
         setDriverValue(newDriver);
@@ -233,9 +243,9 @@ export default function RideAssignmentCard({
     };
 
     const getStatusText = () => {
-        if (!ride.assignedDriver && !ride.assignedTruck) return 'Unassigned';
-        if (isPartiallyAssigned) return 'Partial';
-        return 'Assigned';
+        if (!ride.assignedDriver && !ride.assignedTruck) return statusTextMap.unassigned;
+        if (isPartiallyAssigned) return statusTextMap.partial;
+        return statusTextMap.assigned;
     };
 
     return (
@@ -260,7 +270,7 @@ export default function RideAssignmentCard({
                                     onChange={(e) => setTripNumberValue(e.target.value)}
                                     onKeyDown={handleTripNumberKeyPress}
                                     onBlur={handleTripNumberSave}
-                                    placeholder="Enter trip number"
+                                    placeholder={t('tripNumber.placeholder')}
                                     autoFocus
                                     sx={{ 
                                         flexGrow: 1,
@@ -289,7 +299,7 @@ export default function RideAssignmentCard({
                                         }
                                     }}
                                 >
-                                    {ride.tripNumber || 'Add trip number'}
+                                    {ride.tripNumber || t('tripNumber.add')}
                                 </Typography>
                             )}
                         </Box>
@@ -324,8 +334,8 @@ export default function RideAssignmentCard({
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Primary Driver"
-                                    placeholder="Select primary driver..."
+                                    label={t('primaryDriver.label')}
+                                    placeholder={t('primaryDriver.placeholder')}
                                     variant="outlined"
                                 />
                             )}
@@ -372,7 +382,7 @@ export default function RideAssignmentCard({
                             <Schedule fontSize="small" color="primary" />
                             <TextField
                                 size="small"
-                                label="Primary Driver Hours"
+                                label={t('primaryDriver.hoursLabel')}
                                 type="number"
                                 value={primaryDriverHoursDisplay}
                                 onChange={(e) => {
@@ -423,8 +433,8 @@ export default function RideAssignmentCard({
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Second Driver"
-                                        placeholder="Select second driver..."
+                                        label={t('secondDriver.label')}
+                                        placeholder={t('secondDriver.placeholder')}
                                         variant="outlined"
                                     />
                                 )}
@@ -478,7 +488,7 @@ export default function RideAssignmentCard({
                             <Schedule fontSize="small" color="secondary" />
                             <TextField
                                 size="small"
-                                label="Second Driver Hours"
+                                label={t('secondDriver.hoursLabel')}
                                 type="number"
                                 value={secondDriverHoursDisplay}
                                 onChange={(e) => {
@@ -523,8 +533,8 @@ export default function RideAssignmentCard({
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Truck"
-                                placeholder="Select truck..."
+                                label={t('truck.label')}
+                                placeholder={t('truck.placeholder')}
                                 variant="outlined"
                             />
                         )}
@@ -571,7 +581,7 @@ export default function RideAssignmentCard({
                     <Schedule fontSize="small" color="primary" />
                     <TextField
                         size="small"
-                        label="Planned Hours"
+                        label={t('plannedHours.label')}
                         type="number"
                         value={plannedHoursDisplay}
                         onChange={(e) => {
@@ -622,7 +632,7 @@ export default function RideAssignmentCard({
                                 }
                             }}
                         >
-                            Add Driver
+                            {t('buttons.addSecondDriver')}
                         </Button>
                     </Box>
                 )}
@@ -633,7 +643,7 @@ export default function RideAssignmentCard({
                         <Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                                 <Typography variant="subtitle2" color="text.secondary">
-                                    Additional Details
+                                    {t('details.title')}
                                 </Typography>
                                 <IconButton
                                     size="small"
@@ -649,7 +659,7 @@ export default function RideAssignmentCard({
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                                     <LocationOn fontSize="small" color="action" />
                                     <Typography variant="body2" color="text.secondary">
-                                        {ride.routeFromName || 'Unknown'} → {ride.routeToName || 'Unknown'}
+                                        {ride.routeFromName || t('details.unknown')} → {ride.routeToName || t('details.unknown')}
                                     </Typography>
                                 </Box>
                             )}
@@ -691,7 +701,7 @@ export default function RideAssignmentCard({
                                 }
                             }}
                         >
-                            Add Additional Details
+                            {t('details.add')}
                         </Button>
                     )}
                 </Box>

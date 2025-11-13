@@ -16,6 +16,7 @@ import {
 import { Close } from '@mui/icons-material';
 import { useWeeklyAvailability, useUpdateDriverAvailability } from '@/hooks/useWeeklyAvailability';
 import AvailabilityGrid from './AvailabilityGrid';
+import { useTranslations, useLocale } from 'next-intl';
 
 type Props = {
     open: boolean;
@@ -30,6 +31,8 @@ export default function DriverAvailabilityDialog({
     weekStartDate,
     companyId
 }: Props) {
+    const t = useTranslations('planning.weekly.assignment.driverAvailability');
+    const locale = useLocale();
     const [pendingChanges, setPendingChanges] = useState<Record<string, Record<string, number>>>({});
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [clearLocalChanges, setClearLocalChanges] = useState(false);
@@ -42,19 +45,18 @@ export default function DriverAvailabilityDialog({
 
     const updateDriverAvailabilityMutation = useUpdateDriverAvailability();
 
-    const formatWeekRange = (weekStartDate: string): string => {
-        const startDate = new Date(weekStartDate);
+    const formatWeekRange = (start: string): string => {
+        const startDate = new Date(start);
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-        
-        return `${startDate.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-        })} - ${endDate.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-        })}`;
+
+        const format = (date: Date, options: Intl.DateTimeFormatOptions) =>
+            new Intl.DateTimeFormat(locale, options).format(date);
+
+        return t('weekRange', {
+            start: format(startDate, { month: 'short', day: 'numeric' }),
+            end: format(endDate, { month: 'short', day: 'numeric', year: 'numeric' }),
+        });
     };
 
     const handleAvailabilityChange = useCallback((driverId: string, date: string, hours: number) => {
@@ -102,9 +104,7 @@ export default function DriverAvailabilityDialog({
 
     const handleCancel = () => {
         if (hasUnsavedChanges) {
-            const confirmDiscard = window.confirm(
-                'You have unsaved changes. Are you sure you want to discard them?'
-            );
+            const confirmDiscard = window.confirm(t('confirmDiscard'));
             if (!confirmDiscard) return;
         }
 
@@ -134,10 +134,10 @@ export default function DriverAvailabilityDialog({
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                     <Typography variant="h6">
-                        Set Driver Availability
+                        {t('title')}
                     </Typography>
                     <Typography variant="subtitle2" color="text.secondary">
-                        Week of {formatWeekRange(weekStartDate)}
+                        {t('subtitle', { range: formatWeekRange(weekStartDate) })}
                     </Typography>
                 </Box>
                 <IconButton onClick={handleClose} disabled={isLoading}>
@@ -168,14 +168,14 @@ export default function DriverAvailabilityDialog({
                 ) : (
                     <Box sx={{ textAlign: 'center', py: 4 }}>
                         <Typography variant="body1" color="text.secondary">
-                            No drivers found for this week
+                            {t('noResources')}
                         </Typography>
                     </Box>
                 )}
 
                 {hasUnsavedChanges && (
                     <Alert severity="info" sx={{ mt: 2 }}>
-                        You have unsaved changes. Click "Save All" to apply them.
+                        {t('unsavedChanges')}
                     </Alert>
                 )}
             </DialogContent>
@@ -186,7 +186,7 @@ export default function DriverAvailabilityDialog({
                     disabled={isLoading}
                     color="secondary"
                 >
-                    Cancel
+                    {t('buttons.cancel')}
                 </Button>
                 <Button
                     onClick={handleSaveAll}
@@ -194,7 +194,7 @@ export default function DriverAvailabilityDialog({
                     disabled={isLoading}
                     startIcon={updateDriverAvailabilityMutation.isPending ? <CircularProgress size={20} /> : undefined}
                 >
-                    {updateDriverAvailabilityMutation.isPending ? 'Saving...' : 'Save All'}
+                    {updateDriverAvailabilityMutation.isPending ? t('buttons.saving') : t('buttons.save')}
                 </Button>
             </DialogActions>
         </Dialog>

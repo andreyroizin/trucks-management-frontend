@@ -17,6 +17,7 @@ import {
 import { Person, Schedule } from '@mui/icons-material';
 import { Driver } from '@/hooks/useDriversAndTrucks';
 import { AvailabilityStatus } from './RideAssignmentCard';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     open: boolean;
@@ -43,6 +44,7 @@ export default function AddDriverDialog({
     isLoading = false,
     driverAvailabilityStatus,
 }: Props) {
+    const t = useTranslations('planning.weekly.assignment.addDriverDialog');
     const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
     const [secondDriverHours, setSecondDriverHours] = useState<number>(totalRideHours);
     const [primaryDriverHours, setPrimaryDriverHours] = useState<number>(totalRideHours);
@@ -65,9 +67,9 @@ export default function AddDriverDialog({
     const handleSecondDriverHoursChange = (value: string) => {
         const numValue = parseFloat(value);
         if (isNaN(numValue) || numValue <= 0) {
-            setSecondDriverHoursError('Please enter a valid number of hours');
+            setSecondDriverHoursError(t('errors.invalidHours'));
         } else if (numValue > 24) {
-            setSecondDriverHoursError('Hours cannot exceed 24');
+            setSecondDriverHoursError(t('errors.maxHours'));
         } else {
             setSecondDriverHoursError('');
         }
@@ -77,9 +79,9 @@ export default function AddDriverDialog({
     const handlePrimaryDriverHoursChange = (value: string) => {
         const numValue = parseFloat(value);
         if (isNaN(numValue) || numValue <= 0) {
-            setPrimaryDriverHoursError('Please enter a valid number of hours');
+            setPrimaryDriverHoursError(t('errors.invalidHours'));
         } else if (numValue > 24) {
-            setPrimaryDriverHoursError('Hours cannot exceed 24');
+            setPrimaryDriverHoursError(t('errors.maxHours'));
         } else {
             setPrimaryDriverHoursError('');
         }
@@ -114,13 +116,13 @@ export default function AddDriverDialog({
         >
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Person />
-                Add Second Driver
+                {t('title')}
             </DialogTitle>
             
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 1 }}>
                     <Typography variant="body2" color="text.secondary">
-                        Add a second driver to this ride with their own planned hours.
+                        {t('description')}
                     </Typography>
 
                     {/* Hours Info */}
@@ -132,24 +134,30 @@ export default function AddDriverDialog({
                         borderColor: 'grey.200'
                     }}>
                         <Typography variant="subtitle2" gutterBottom>
-                            Ride Information:
+                            {t('rideInfo.title')}
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                             <Typography variant="body2">
-                                • Total ride duration: <strong>{totalRideHours}h</strong>
+                                {t.rich('rideInfo.totalDuration', {
+                                    hours: totalRideHours,
+                                    strong: (chunks) => <strong>{chunks}</strong>,
+                                })}
                             </Typography>
                             <Typography variant="body2">
-                                • Primary driver: <strong>{primaryDriverName}</strong>
+                                {t.rich('rideInfo.primaryDriver', {
+                                    name: primaryDriverName,
+                                    strong: (chunks) => <strong>{chunks}</strong>,
+                                })}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                                Note: Drivers can work together, so individual hours don't need to add up to the total ride duration.
+                                {t('rideInfo.note')}
                             </Typography>
                         </Box>
                     </Box>
 
                     {availableDrivers.length === 0 ? (
                         <Alert severity="info">
-                            No additional drivers available. All drivers may already be assigned to this ride.
+                            {t('noDrivers')}
                         </Alert>
                     ) : (
                         <>
@@ -165,8 +173,8 @@ export default function AddDriverDialog({
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
-                                            label="Select Driver"
-                                            placeholder="Choose a driver..."
+                                        label={t('fields.driver.label')}
+                                        placeholder={t('fields.driver.placeholder')}
                                             variant="outlined"
                                         />
                                     )}
@@ -215,12 +223,12 @@ export default function AddDriverDialog({
                                 <Schedule fontSize="small" color="primary" />
                                 <TextField
                                     fullWidth
-                                    label={`${primaryDriverName} Hours`}
+                                    label={t('fields.primaryHours.label', { name: primaryDriverName })}
                                     type="number"
                                     value={primaryDriverHours || ''}
                                     onChange={(e) => handlePrimaryDriverHoursChange(e.target.value)}
                                     error={!!primaryDriverHoursError}
-                                    helperText={primaryDriverHoursError || `Hours for ${primaryDriverName} on this ride`}
+                                    helperText={primaryDriverHoursError || t('fields.primaryHours.helper', { name: primaryDriverName })}
                                     inputProps={{ 
                                         min: 0.5, 
                                         max: 24, 
@@ -235,12 +243,12 @@ export default function AddDriverDialog({
                                 <Schedule fontSize="small" color="secondary" />
                                 <TextField
                                     fullWidth
-                                    label="Second Driver Hours"
+                                    label={t('fields.secondHours.label')}
                                     type="number"
                                     value={secondDriverHours || ''}
                                     onChange={(e) => handleSecondDriverHoursChange(e.target.value)}
                                     error={!!secondDriverHoursError}
-                                    helperText={secondDriverHoursError || 'Hours for the second driver on this ride'}
+                                    helperText={secondDriverHoursError || t('fields.secondHours.helper')}
                                     inputProps={{ 
                                         min: 0.5, 
                                         max: 24, 
@@ -256,7 +264,7 @@ export default function AddDriverDialog({
             
             <DialogActions>
                 <Button onClick={handleClose}>
-                    Cancel
+                    {t('buttons.cancel')}
                 </Button>
                 <Button 
                     onClick={handleAdd}
@@ -264,7 +272,7 @@ export default function AddDriverDialog({
                     disabled={!canAdd}
                     startIcon={isLoading ? undefined : <Person />}
                 >
-                    {isLoading ? 'Adding...' : 'Add Driver'}
+                    {isLoading ? t('buttons.loading') : t('buttons.confirm')}
                 </Button>
             </DialogActions>
         </Dialog>

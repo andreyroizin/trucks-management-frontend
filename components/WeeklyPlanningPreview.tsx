@@ -29,6 +29,7 @@ import { useGenerateRides, GenerateRidesInput } from '@/hooks/useGenerateRides';
 import WeekSelector from './WeekSelector';
 import ClientDayCell from './ClientDayCell';
 import WeeklyAssignmentGrid from './WeeklyAssignmentGrid';
+import { useTranslations, useLocale } from 'next-intl';
 
 type ModifiedCounts = {
     [clientId: string]: {
@@ -38,6 +39,8 @@ type ModifiedCounts = {
 
 export default function WeeklyPlanningPreview() {
     const { user } = useAuth();
+    const t = useTranslations('planning.weekly.preview');
+    const locale = useLocale();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [modifiedCounts, setModifiedCounts] = useState<ModifiedCounts>({});
     
@@ -68,6 +71,20 @@ export default function WeeklyPlanningPreview() {
     // Format date for API (YYYY-MM-DD)
     const formatDateForAPI = (date: Date): string => {
         return date.toISOString().split('T')[0];
+    };
+
+    const formatDate = (date: string | Date | null | undefined, options: Intl.DateTimeFormatOptions) => {
+        if (!date) {
+            return '';
+        }
+
+        const value = typeof date === 'string' ? new Date(date) : date;
+
+        if (Number.isNaN(value.getTime())) {
+            return '';
+        }
+
+        return new Intl.DateTimeFormat(locale, options).format(value);
     };
 
     // Get company ID based on user role
@@ -223,8 +240,8 @@ export default function WeeklyPlanningPreview() {
         });
         
         // Create summary text
-        const summaryLines = Object.entries(clientSummary).map(([clientName, count]) => 
-            `${clientName}: ${count} ride${count !== 1 ? 's' : ''}`
+        const summaryLines = Object.entries(clientSummary).map(([clientName, count]) =>
+            t('listLine', { clientName, count })
         );
         const summary = summaryLines.join('\n');
         
@@ -363,7 +380,7 @@ export default function WeeklyPlanningPreview() {
     if (isError) {
         return (
             <Alert severity="error" sx={{ mt: 2 }}>
-                Failed to load weekly preview: {error?.message}
+                {t('alerts.loadFailed', { message: error?.message ?? '' })}
             </Alert>
         );
     }
@@ -371,7 +388,7 @@ export default function WeeklyPlanningPreview() {
     if (!previewData) {
         return (
             <Alert severity="info" sx={{ mt: 2 }}>
-                No preview data available
+                {t('alerts.noData')}
             </Alert>
         );
     }
@@ -382,10 +399,10 @@ export default function WeeklyPlanningPreview() {
             <Box sx={{ mb: 3 }}>
                 <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CalendarToday />
-                    Weekly Planning Preview
+                    {t('header.title')}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                    Review and adjust truck allocation before planning rides
+                    {t('header.subtitle')}
                 </Typography>
             </Box>
 
@@ -400,7 +417,7 @@ export default function WeeklyPlanningPreview() {
                 <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                         <Typography variant="h6">
-                            Week Summary
+                            {t('summary.title')}
                         </Typography>
                             <Button
                                 variant="contained"
@@ -410,18 +427,18 @@ export default function WeeklyPlanningPreview() {
                                 disabled={getTotalTrucksForWeek() === 0 || isGenerating}
                                 sx={{ px: 3, py: 1 }}
                             >
-                                {isGenerating ? 'Planning Rides...' : 'Plan Rides for This Week'}
+                                {isGenerating ? t('summary.buttons.planning') : t('summary.buttons.plan')}
                             </Button>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 4 }}>
                         <Typography>
-                            <strong>Total Trucks:</strong> {getTotalTrucksForWeek()}
+                            <strong>{t('summary.metrics.totalTrucks')}:</strong> {getTotalTrucksForWeek()}
                         </Typography>
                         <Typography>
-                            <strong>Active Days:</strong> {previewData.days.filter(day => day.clients.length > 0).length}
+                            <strong>{t('summary.metrics.activeDays')}:</strong> {previewData.days.filter(day => day.clients.length > 0).length}
                         </Typography>
                         <Typography>
-                            <strong>Total Clients:</strong> {
+                            <strong>{t('summary.metrics.totalClients')}:</strong> {
                                 new Set(
                                     previewData.days.flatMap(day => 
                                         day.clients.map(client => client.clientId)
@@ -432,8 +449,7 @@ export default function WeeklyPlanningPreview() {
                     </Box>
                         {hasModifications() && (
                             <Alert severity="warning" sx={{ mt: 2 }}>
-                                You have made modifications to the template-based allocation. 
-                                Review your changes before planning rides.
+                                {t('summary.modificationWarning')}
                             </Alert>
                         )}
                 </CardContent>
@@ -456,14 +472,11 @@ export default function WeeklyPlanningPreview() {
                                     {day.dayName}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {new Date(day.date).toLocaleDateString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric' 
-                                    })}
+                                    {formatDate(day.date, { month: 'short', day: 'numeric' })}
                                 </Typography>
                                 <Divider sx={{ mt: 1 }} />
                                 <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
-                                    {getTotalTrucksForDay(day)} truck{getTotalTrucksForDay(day) !== 1 ? 's' : ''}
+                                    {t('dayCard.totalTrucks', { count: getTotalTrucksForDay(day) })}
                                 </Typography>
                             </Box>
 
@@ -520,7 +533,7 @@ export default function WeeklyPlanningPreview() {
                                         color="text.secondary" 
                                         sx={{ textAlign: 'center', fontStyle: 'italic', mt: 2 }}
                                     >
-                                        No trucks scheduled
+                                        {t('dayCard.noTrucks')}
                                     </Typography>
                                 )}
                             </Box>
@@ -553,22 +566,20 @@ export default function WeeklyPlanningPreview() {
 
             {getTotalTrucksForWeek() === 0 && (
                 <Alert severity="info" sx={{ mt: 2 }}>
-                    No trucks are scheduled for this week. Create capacity templates in Long-Term Planning to see truck allocation here.
+                    {t('alerts.noTrucks')}
                 </Alert>
             )}
 
             {/* Add Ride Dialog */}
             <Dialog open={addRideDialog.open} onClose={handleAddRideClose} maxWidth="sm" fullWidth>
                 <DialogTitle>
-                    Add Ride for {addRideDialog.dayName}
+                    {t('addRide.title', { day: addRideDialog.dayName })}
                 </DialogTitle>
                 <DialogContent sx={{ pt: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <Typography variant="body2" color="text.secondary">
-                            Add a manual ride for {new Date(addRideDialog.date).toLocaleDateString('en-US', { 
-                                weekday: 'long', 
-                                month: 'long', 
-                                day: 'numeric' 
+                            {t('addRide.description', { 
+                                date: formatDate(addRideDialog.date, { weekday: 'long', month: 'long', day: 'numeric' }) || t('addRide.unknownDate')
                             })}
                         </Typography>
                         
@@ -580,15 +591,15 @@ export default function WeeklyPlanningPreview() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Select Client"
+                                    label={t('addRide.clientLabel')}
                                     required
-                                    helperText="Choose from available clients (not yet scheduled for this day)"
+                                    helperText={t('addRide.clientHelper')}
                                 />
                             )}
                         />
                         
                             <TextField
-                                label="Number of Trucks"
+                                label={t('addRide.trucksLabel')}
                                 value={truckCount === 0 ? '' : truckCount.toString()}
                                 onChange={(e) => {
                                     const value = e.target.value;
@@ -609,7 +620,7 @@ export default function WeeklyPlanningPreview() {
                                     }
                                 }}
                                 required
-                                helperText="How many trucks are needed for this client"
+                                helperText={t('addRide.trucksHelper')}
                                 inputProps={{
                                     inputMode: 'numeric',
                                     pattern: '[0-9]*'
@@ -619,14 +630,14 @@ export default function WeeklyPlanningPreview() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleAddRideClose} color="secondary">
-                        Cancel
+                        {t('addRide.cancel')}
                     </Button>
                     <Button 
                         onClick={handleAddRideConfirm} 
                         variant="contained" 
                         disabled={!selectedClient || truckCount < 1}
                     >
-                        Add Rides
+                        {t('addRide.confirm')}
                     </Button>
                     </DialogActions>
                 </Dialog>
@@ -634,19 +645,22 @@ export default function WeeklyPlanningPreview() {
                 {/* Confirmation Dialog for Ride Generation */}
                 <Dialog open={confirmDialog.open} onClose={handleCancelGeneration} maxWidth="sm" fullWidth>
                     <DialogTitle>
-                        Confirm Ride Generation
+                        {t('confirm.title')}
                     </DialogTitle>
                     <DialogContent sx={{ pt: 2 }}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <Typography variant="body1">
-                                This will create <strong>{confirmDialog.totalRides} rides</strong> for the week of{' '}
-                                <strong>{new Date(weekStartDate).toLocaleDateString()}</strong>.
+                                {t.rich('confirm.body', {
+                                    count: confirmDialog.totalRides,
+                                    date: formatDate(weekStartDate, { year: 'numeric', month: 'long', day: 'numeric' }),
+                                    strong: (chunks) => <strong>{chunks}</strong>,
+                                })}
                             </Typography>
                             
                             {confirmDialog.summary && (
                                 <Box>
                                     <Typography variant="subtitle2" gutterBottom>
-                                        Breakdown by client:
+                                        {t('confirm.breakdownTitle')}
                                     </Typography>
                                     <Box sx={{ 
                                         bgcolor: 'grey.50', 
@@ -664,7 +678,7 @@ export default function WeeklyPlanningPreview() {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCancelGeneration} color="secondary">
-                            Cancel
+                            {t('confirm.cancel')}
                         </Button>
                         <Button 
                             onClick={handleConfirmGeneration} 
@@ -672,7 +686,9 @@ export default function WeeklyPlanningPreview() {
                             disabled={isGenerating}
                             startIcon={isGenerating ? <CircularProgress size={20} color="inherit" /> : undefined}
                         >
-                            {isGenerating ? 'Creating Rides...' : `Create ${confirmDialog.totalRides} Rides`}
+                            {isGenerating
+                                ? t('confirm.creating')
+                                : t('confirm.confirm', { count: confirmDialog.totalRides })}
                         </Button>
                     </DialogActions>
                 </Dialog>

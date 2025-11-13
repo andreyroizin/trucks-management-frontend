@@ -1590,7 +1590,271 @@
     },
     "weekly": {
       "title": "Weekly Planning",
-      "subtitle": "Manage and assign drivers/trucks to rides for the week"
+      "subtitle": "Manage and assign drivers/trucks to rides for the week",
+      "selector": {
+        "currentWeek": "Current Week",
+        "range": "{start} - {end}, {year}"
+      },
+      "preview": {
+        "header": {
+          "title": "Weekly Planning Preview",
+          "subtitle": "Review and adjust truck allocation before planning rides"
+        },
+        "summary": {
+          "title": "Week Summary",
+          "buttons": {
+            "plan": "Plan Rides for This Week",
+            "planning": "Planning Rides..."
+          },
+          "metrics": {
+            "totalTrucks": "Total Trucks",
+            "activeDays": "Active Days",
+            "totalClients": "Total Clients"
+          },
+          "modificationWarning": "You have made modifications to the template-based allocation. Review your changes before planning rides."
+        },
+        "alerts": {
+          "loadFailed": "Failed to load weekly preview: {message}",
+          "noData": "No preview data available",
+          "noTrucks": "No trucks are scheduled for this week. Create capacity templates in Long-Term Planning to see truck allocation here."
+        },
+        "dayCard": {
+          "totalTrucks": "{count, plural, one {# truck} other {# trucks}}",
+          "noTrucks": "No trucks scheduled"
+        },
+        "addRide": {
+          "title": "Add Ride for {day}",
+          "description": "Add a manual ride for {date}",
+          "unknownDate": "an unspecified date",
+          "clientLabel": "Select Client",
+          "clientHelper": "Choose from available clients (not yet scheduled for this day)",
+          "trucksLabel": "Number of Trucks",
+          "trucksHelper": "How many trucks are needed for this client",
+          "cancel": "Cancel",
+          "confirm": "Add Rides"
+        },
+        "confirm": {
+          "title": "Confirm Ride Generation",
+          "body": "This will create <strong>{count}</strong> rides for the week of <strong>{date}</strong>.",
+          "breakdownTitle": "Breakdown by client:",
+          "cancel": "Cancel",
+          "confirm": "Create {count} Rides",
+          "creating": "Creating Rides..."
+        },
+        "listLine": "{clientName}: {count, plural, one {# ride} other {# rides}}"
+      },
+      "clientCell": {
+        "trucks": "{count, plural, one {# truck} other {# trucks}}",
+        "templateInfo": "{count, plural, one {From 1 template} other {From # templates}}",
+        "modifiedFrom": "Modified from {count}"
+      },
+      "assignment": {
+        "header": {
+          "title": "Weekly Assignment Grid",
+          "subtitle": "Assign drivers and trucks to generated rides",
+          "filtered": "Filtered: {status}",
+          "clearFilterHint": "Click “All Rides” to clear the filter"
+        },
+        "filters": {
+          "status": {
+            "assigned": "Fully Assigned",
+            "partial": "Partially Assigned",
+            "unassigned": "Unassigned"
+          }
+        },
+        "summary": {
+          "title": "Assignment Summary",
+          "buttons": {
+            "driverAvailability": "Set Driver Availability",
+            "driverAvailabilityDone": "Driver Availability ✓",
+            "truckAvailability": "Set Truck Availability",
+            "truckAvailabilityDone": "Truck Availability ✓"
+          },
+          "chips": {
+            "all": "All Rides: {count}",
+            "assigned": "Fully Assigned: {count}",
+            "partial": "Partially Assigned: {count}",
+            "unassigned": "Unassigned: {count}"
+          },
+          "filters": {
+            "label": "Filter by:",
+            "truck": {
+              "label": "Truck",
+              "placeholder": "All trucks"
+            },
+            "driver": {
+              "label": "Driver",
+              "placeholder": "All drivers"
+            },
+            "clear": "Clear Filters"
+          }
+        },
+        "availability": {
+          "busy": "Busy",
+          "assigned": "Assigned",
+          "free": "Free",
+          "available": "Available"
+        },
+        "dayCard": {
+          "tooltip": "Click to view daily planning",
+          "ridesCount": "{count, plural, one {# ride} other {# rides}}",
+          "resourceHours": "{name}: {hours}h",
+          "noRides": "No rides scheduled"
+        },
+        "alerts": {
+          "ridesLoadFailed": "Failed to load weekly rides: {message}",
+          "resourcesLoadFailed": "Failed to load drivers and trucks: {message}",
+          "noData": "No rides data available",
+          "noRides": "No rides found for this week. Generate rides in the Weekly Planning view first."
+        },
+        "card": {
+          "tripNumber": {
+            "placeholder": "Enter trip number",
+            "add": "Add trip number"
+          },
+          "status": {
+            "unassigned": "Unassigned",
+            "partial": "Partial",
+            "assigned": "Assigned"
+          },
+          "primaryDriver": {
+            "label": "Primary Driver",
+            "placeholder": "Select primary driver...",
+            "hoursLabel": "Primary Driver Hours"
+          },
+          "secondDriver": {
+            "label": "Second Driver",
+            "placeholder": "Select second driver...",
+            "hoursLabel": "Second Driver Hours"
+          },
+          "truck": {
+            "label": "Truck",
+            "placeholder": "Select truck..."
+          },
+          "plannedHours": {
+            "label": "Planned Hours"
+          },
+          "buttons": {
+            "addSecondDriver": "Add Driver",
+            "addDetails": "Add Additional Details"
+          },
+          "details": {
+            "title": "Additional Details",
+            "unknown": "Unknown"
+          }
+        },
+        "addDriverDialog": {
+          "title": "Add Second Driver",
+          "description": "Add a second driver to this ride with their own planned hours.",
+          "rideInfo": {
+            "title": "Ride Information:",
+            "totalDuration": "• Total ride duration: <strong>{hours}h</strong>",
+            "primaryDriver": "• Primary driver: <strong>{name}</strong>",
+            "note": "Note: Drivers can work together, so individual hours don't need to add up to the total ride duration."
+          },
+          "noDrivers": "No additional drivers available. All drivers may already be assigned to this ride.",
+          "fields": {
+            "driver": {
+              "label": "Select Driver",
+              "placeholder": "Choose a driver..."
+            },
+            "primaryHours": {
+              "label": "{name} Hours",
+              "helper": "Hours for {name} on this ride"
+            },
+            "secondHours": {
+              "label": "Second Driver Hours",
+              "helper": "Hours for the second driver on this ride"
+            }
+          },
+          "errors": {
+            "invalidHours": "Please enter a valid number of hours",
+            "maxHours": "Hours cannot exceed 24"
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "confirm": "Add Driver",
+            "loading": "Adding..."
+          }
+        },
+        "overallocation": {
+          "title": "Resource Overallocation Warning",
+          "resourceTypes": {
+            "driver": "Driver",
+            "truck": "Truck"
+          },
+          "resourceLabel": {
+            "truck": "Truck {name}"
+          },
+          "warning": "This assignment would exceed the available {hours}h daily limit for this resource.",
+          "details": {
+            "currentHours": "Current scheduled hours: <strong>{hours}h</strong>",
+            "newHours": "New assignment hours: <strong>{hours}h</strong>",
+            "availableHours": "Available hours: <strong>{hours}h</strong>",
+            "totalHours": "Total hours would be: {total}h (exceeds by {exceeded}h)"
+          },
+          "explanation": "The available daily limit is {hours} hours for this {type}. You can still proceed with this assignment if needed, but please consider the workload implications.",
+          "buttons": {
+            "cancel": "Cancel",
+            "assigning": "Assigning...",
+            "assignAnyway": "Assign Anyway"
+          }
+        },
+        "driverAvailability": {
+          "title": "Set Driver Availability",
+          "subtitle": "Week of {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "You have unsaved changes. Are you sure you want to discard them?",
+          "noResources": "No drivers found for this week",
+          "unsavedChanges": "You have unsaved changes. Click \"Save All\" to apply them.",
+          "buttons": {
+            "cancel": "Cancel",
+            "save": "Save All",
+            "saving": "Saving..."
+          }
+        },
+        "truckAvailability": {
+          "title": "Set Truck Availability",
+          "subtitle": "Week of {range}",
+          "weekRange": "{start} - {end}",
+          "confirmDiscard": "You have unsaved changes. Are you sure you want to discard them?",
+          "noResources": "No trucks found for this week",
+          "unsavedChanges": "You have unsaved changes. Click \"Save All\" to apply them.",
+          "buttons": {
+            "cancel": "Cancel",
+            "save": "Save All",
+            "saving": "Saving..."
+          }
+        },
+        "availabilityGrid": {
+          "resourceType": {
+            "driver": {
+              "singular": "Driver",
+              "plural": "drivers"
+            },
+            "truck": {
+              "singular": "Truck",
+              "plural": "trucks"
+            }
+          },
+          "quickActions": {
+            "title": "Quick Actions (applies to all {resource}):",
+            "setAll": "Set All: {hours}h",
+            "weekdays": "Weekdays: {hours}h",
+            "weekend": "Weekend Off",
+            "reset": "Reset All"
+          },
+          "headers": {
+            "resource": "{resource}",
+            "actions": "Actions"
+          },
+          "tooltips": {
+            "setAll": "Set all week to {hours}h",
+            "weekend": "Weekend off",
+            "reset": "Reset to defaults"
+          }
+        }
+      }
     },
     "daily": {
       "title": "Daily Planning",
