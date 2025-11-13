@@ -12,7 +12,7 @@ import {
   Chip,
   Button,
   Divider,
-  Grid
+  Grid,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -20,18 +20,20 @@ import { useRidesPendingApproval } from '@/hooks/useRideExecutionApproval';
 import RideExecutionApprovalCard from '@/components/RideExecutionApprovalCard';
 import { useCompanies, Company } from '@/hooks/useCompanies';
 import { useDriversAndTrucks } from '@/hooks/useDriversAndTrucks';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import { RideWithExecutions } from '@/types/rideExecutionApproval';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useTranslations } from 'next-intl';
+import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
 type ExecutionStatus = 'all' | 'Pending' | 'Approved' | 'Rejected' | 'Dispute';
 
 export default function RideExecutionsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const t = useTranslations('planning.executionApprovals');
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<ExecutionStatus>('all');
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
@@ -49,8 +51,7 @@ export default function RideExecutionsPage() {
   const { 
     data: allRidesFromAPI, 
     isLoading, 
-    error, 
-    refetch 
+    error 
   } = useRidesPendingApproval(selectedCompanyId || undefined, statusFilter);
 
   // Redirect if not authenticated or not authorized
@@ -151,7 +152,7 @@ export default function RideExecutionsPage() {
     return (
       <Box p={3}>
         <Alert severity="error">
-          Failed to load ride executions: {error.message}
+          {t('alerts.loadFailed', { message: error.message })}
         </Alert>
       </Box>
     );
@@ -165,13 +166,7 @@ export default function RideExecutionsPage() {
         <Typography variant="h4" gutterBottom>
           Ride Execution Approvals
         </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={() => refetch()}
-        >
-          Refresh
-        </Button>
+        <LanguageSelectDesktop />
       </Box>
 
       {/* Filters */}
@@ -378,7 +373,7 @@ export default function RideExecutionsPage() {
       {filteredRides && filteredRides.length > 0 ? (
         <Box mb={4}>
           <Typography variant="h6" gutterBottom>
-            {statusFilter === 'all' 
+            {statusFilter === 'all'
               ? `All Ride Executions (${filteredRides.length} rides)`
               : `${statusFilter} Executions (${filteredRides.length} rides)`
             }
@@ -389,7 +384,7 @@ export default function RideExecutionsPage() {
             )}
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            {statusFilter === 'all' 
+            {statusFilter === 'all'
               ? 'Showing all rides with driver executions'
               : statusFilter === 'Pending'
                 ? 'Rides with executions that need your review and approval'
@@ -402,9 +397,9 @@ export default function RideExecutionsPage() {
             {(startDate || endDate) && (
               <Typography component="span" variant="body2" color="text.secondary">
                 {' • '}
-                {startDate && endDate 
+                {startDate && endDate
                   ? `${startDate.format('MMM D')} - ${endDate.format('MMM D, YYYY')}`
-                  : startDate 
+                  : startDate
                     ? `From ${startDate.format('MMM D, YYYY')}`
                     : `Until ${endDate?.format('MMM D, YYYY')}`
                 }
@@ -413,7 +408,7 @@ export default function RideExecutionsPage() {
             {selectedDriverIds.length > 0 && (
               <Typography component="span" variant="body2" color="text.secondary">
                 {' • '}
-                {selectedDriverIds.length === 1 
+                {selectedDriverIds.length === 1
                   ? `Driver: ${drivers.find(d => d.id === selectedDriverIds[0])?.firstName} ${drivers.find(d => d.id === selectedDriverIds[0])?.lastName}`
                   : `${selectedDriverIds.length} drivers selected`
                 }

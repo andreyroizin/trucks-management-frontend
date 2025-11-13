@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { Typography } from "@mui/material";
 
-type HomeProps = {
-    params: {
-        locale: string;
-    };
-};
-
-export default function Home({ params: { locale } }: HomeProps) {
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
     const loginHref = `/${locale}/auth/login`;
 
     return (
