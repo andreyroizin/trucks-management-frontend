@@ -49,10 +49,56 @@ import RideExecutionDisputeDialog from '@/components/RideExecutionDisputeDialog'
 const numberTransform = (value: number, originalValue: unknown) =>
   originalValue === '' || originalValue === null ? undefined : value;
 
+const timeStringTransform = (value: string | undefined, originalValue: unknown) => {
+  if (typeof originalValue === 'string' && originalValue.trim() === '') {
+    return undefined;
+  }
+  return value;
+};
+
+const normalizeTimeForInput = (value?: string | null) => {
+  if (!value) return '';
+  if (value.length === 8 && value.includes(':')) {
+    return value.slice(0, 5);
+  }
+  return value;
+};
+
+const normalizeTimeForSubmission = (value?: string | null) => {
+  if (!value) return undefined;
+  if (value.length === 5) {
+    return `${value}:00`;
+  }
+  return value;
+};
+
+const toOptionalNumber = (value?: number | null) => (value ?? undefined);
+
+const parseNumber = (value: unknown): number | undefined => {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? undefined : value;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? undefined : parsed;
+};
+
 const schema = yup.object({
   actualStartTime: yup.string().required('Start time is required'),
   actualEndTime: yup.string().required('End time is required'),
   actualRestTime: yup.string().required('Rest time is required'),
+  containerWaitingTime: yup
+    .string()
+    .transform(timeStringTransform)
+    .matches(/^(\d{2}):([0-5]\d)(:[0-5]\d)?$/, {
+      message: 'Enter waiting time in HH:mm format',
+      excludeEmptyString: true,
+    })
+    .nullable(),
   startKilometers: yup
     .number()
     .transform(numberTransform)
@@ -82,12 +128,32 @@ const schema = yup.object({
     .typeError('Total kilometers must be a number')
     .min(0, 'Total kilometers must be positive')
     .nullable(),
-  extraKilometers: yup.number().min(0, 'Extra kilometers must be positive').optional(),
-  actualCosts: yup.number().min(0, 'Costs must be positive').optional(),
+  extraKilometers: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Extra kilometers must be a number')
+    .min(0, 'Extra kilometers must be positive')
+    .nullable(),
+  actualCosts: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Costs must be a number')
+    .min(0, 'Costs must be positive')
+    .nullable(),
   costsDescription: yup.string().optional(),
-  turnover: yup.number().min(0, 'Turnover must be positive').optional(),
+  turnover: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Turnover must be a number')
+    .min(0, 'Turnover must be positive')
+    .nullable(),
   remark: yup.string().optional(),
-  variousCompensation: yup.number().min(0, 'Compensation must be positive').optional()
+  variousCompensation: yup
+    .number()
+    .transform(numberTransform)
+    .typeError('Compensation must be a number')
+    .min(0, 'Compensation must be positive')
+    .nullable()
 });
 
 interface Props {
@@ -134,15 +200,16 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       actualStartTime: execution?.actualStartTime ?? '',
       actualEndTime: execution?.actualEndTime ?? '',
       actualRestTime: execution?.actualRestTime ?? '',
-      startKilometers: execution?.startKilometers,
-      endKilometers: execution?.endKilometers,
-      actualKilometers: execution?.actualKilometers,
-      extraKilometers: execution?.extraKilometers,
-      actualCosts: execution?.actualCosts,
+      containerWaitingTime: normalizeTimeForInput(execution?.containerWaitingTime),
+      startKilometers: execution?.startKilometers ?? undefined,
+      endKilometers: execution?.endKilometers ?? undefined,
+      actualKilometers: toOptionalNumber(execution?.actualKilometers),
+      extraKilometers: toOptionalNumber(execution?.extraKilometers),
+      actualCosts: toOptionalNumber(execution?.actualCosts),
       costsDescription: execution?.costsDescription ?? '',
-      turnover: execution?.turnover,
+      turnover: toOptionalNumber(execution?.turnover),
       remark: execution?.remark ?? '',
-      variousCompensation: execution?.variousCompensation,
+      variousCompensation: toOptionalNumber(execution?.variousCompensation),
     },
   });
 
@@ -153,15 +220,16 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         actualStartTime: execution.actualStartTime || '',
         actualEndTime: execution.actualEndTime || '',
         actualRestTime: execution.actualRestTime || '',
+      containerWaitingTime: normalizeTimeForInput(execution.containerWaitingTime),
         startKilometers: execution.startKilometers ?? undefined,
         endKilometers: execution.endKilometers ?? undefined,
-        actualKilometers: execution.actualKilometers || undefined,
-        extraKilometers: execution.extraKilometers || undefined,
-        actualCosts: execution.actualCosts || undefined,
+        actualKilometers: toOptionalNumber(execution.actualKilometers),
+        extraKilometers: toOptionalNumber(execution.extraKilometers),
+        actualCosts: toOptionalNumber(execution.actualCosts),
         costsDescription: execution.costsDescription || '',
-        turnover: execution.turnover || undefined,
+        turnover: toOptionalNumber(execution.turnover),
         remark: execution.remark || '',
-        variousCompensation: execution.variousCompensation || undefined
+        variousCompensation: toOptionalNumber(execution.variousCompensation)
       });
     }
   }, [execution, reset]);
@@ -170,8 +238,11 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const endKilometers = watch('endKilometers');
 
   useEffect(() => {
-    const hasStart = startKilometers !== undefined && startKilometers !== null;
-    const hasEnd = endKilometers !== undefined && endKilometers !== null;
+    const start = parseNumber(startKilometers);
+    const end = parseNumber(endKilometers);
+
+    const hasStart = start !== undefined;
+    const hasEnd = end !== undefined;
 
     if (!hasStart || !hasEnd) {
       setValue('actualKilometers', undefined, { shouldValidate: true });
@@ -179,9 +250,6 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
       clearErrors('actualKilometers');
       return;
     }
-
-    const start = startKilometers as number;
-    const end = endKilometers as number;
 
     if (end >= start) {
       const diff = parseFloat((end - start).toFixed(2));
@@ -219,10 +287,20 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
         }))
       );
 
-      const { actualKilometers, ...rest } = data;
-      const submissionData: SubmitExecutionRequest = {
+      const { actualKilometers, containerWaitingTime, ...rest } = data;
+
+      const sanitizedData = {
         ...rest,
+        extraKilometers: rest.extraKilometers ?? undefined,
+        actualCosts: rest.actualCosts ?? undefined,
+        turnover: rest.turnover ?? undefined,
+        variousCompensation: rest.variousCompensation ?? undefined,
+      };
+
+      const submissionData: SubmitExecutionRequest = {
+        ...sanitizedData,
         actualKilometers: actualKilometers ?? undefined,
+        containerWaitingTime: normalizeTimeForSubmission(containerWaitingTime),
         files: filesData.length > 0 ? filesData : undefined,
       };
 
@@ -378,6 +456,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   helperText={errors.actualStartTime?.message}
                   InputLabelProps={{ shrink: true }}
                   disabled={isReadOnly}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -398,6 +477,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   helperText={errors.actualEndTime?.message}
                   InputLabelProps={{ shrink: true }}
                   disabled={isReadOnly}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -418,6 +498,31 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   helperText={errors.actualRestTime?.message}
                   InputLabelProps={{ shrink: true }}
                   disabled={isReadOnly}
+                  value={field.value ?? ''}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Controller
+              name="containerWaitingTime"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Container Waiting Time"
+                  type="time"
+                  fullWidth
+                  error={!!errors.containerWaitingTime}
+                  helperText={
+                    errors.containerWaitingTime?.message ??
+                    'Optional: record waiting time for container transports'
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  disabled={isReadOnly}
+                  inputProps={{ step: 60 }}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -445,6 +550,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   helperText={errors.startKilometers?.message}
                   disabled={isReadOnly}
                   inputProps={{ step: '0.1', min: 0 }}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -465,6 +571,7 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   helperText={errors.endKilometers?.message}
                   disabled={isReadOnly}
                   inputProps={{ step: '0.1', min: 0 }}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -507,6 +614,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   error={!!errors.extraKilometers}
                   helperText={errors.extraKilometers?.message}
                   disabled={isReadOnly}
+                  inputProps={{ step: '0.1', min: 0 }}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -525,7 +634,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                   error={!!errors.actualCosts}
                   helperText={errors.actualCosts?.message}
                   disabled={isReadOnly}
-                  inputProps={{ step: '0.01' }}
+                  inputProps={{ step: '0.01', min: 0 }}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -546,7 +656,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                     error={!!errors.turnover}
                     helperText={errors.turnover?.message}
                     disabled={isReadOnly}
-                  inputProps={{ step: '0.01' }}
+                  inputProps={{ step: '0.01', min: 0 }}
+                  value={field.value ?? ''}
                   />
                 )}
               />
@@ -593,7 +704,8 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
                     error={!!errors.variousCompensation}
                     helperText={errors.variousCompensation?.message}
                     disabled={isReadOnly}
-                  inputProps={{ step: '0.01' }}
+                  inputProps={{ step: '0.01', min: 0 }}
+                  value={field.value ?? ''}
                   />
                 )}
               />

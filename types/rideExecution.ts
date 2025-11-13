@@ -11,6 +11,7 @@ export interface SubmitExecutionRequest {
   actualStartTime: string;
   actualEndTime: string;
   actualRestTime: string;
+  containerWaitingTime?: string;
   startKilometers: number;
   endKilometers: number;
   actualKilometers?: number;
@@ -48,6 +49,7 @@ export interface RideDriverExecution {
   actualEndTime?: string;
   actualRestTime?: string;
   restCalculated?: string;
+  containerWaitingTime?: string;
   startKilometers?: number;
   endKilometers?: number;
   actualKilometers?: number;

@@ -66,6 +66,14 @@ import {
 } from '@/hooks/useRideExecutionDisputes';
 import { useSnack } from '@/providers/SnackProvider';
 
+const formatTimeDisplay = (value?: string | null) => {
+  if (!value) return null;
+  if (value.length === 8 && value.includes(':')) {
+    return value.slice(0, 5);
+  }
+  return value;
+};
+
 interface Props {
   ride: RideWithExecutions;
 }
@@ -691,6 +699,11 @@ function ExecutionSummaryCard({
     }
   };
 
+  const startTime = formatTimeDisplay(execution.actualStartTime) ?? '--:--';
+  const endTime = formatTimeDisplay(execution.actualEndTime) ?? '--:--';
+  const restTime = formatTimeDisplay(execution.actualRestTime);
+  const containerWaitingTime = formatTimeDisplay(execution.containerWaitingTime);
+
   return (
     <Paper 
       variant="outlined" 
@@ -780,9 +793,12 @@ function ExecutionSummaryCard({
       <Box sx={{ mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
           <TimeIcon sx={{ mr: 0.5, fontSize: 14, verticalAlign: 'middle' }} />
-          {execution.actualStartTime || '--:--'} - {execution.actualEndTime || '--:--'} 
-          {execution.actualRestTime && (
-            <span> • Rest: {execution.actualRestTime}</span>
+          {startTime} - {endTime}
+          {restTime && (
+            <span> • Rest: {restTime}</span>
+          )}
+          {containerWaitingTime && (
+            <span> • Container wait: {containerWaitingTime}</span>
           )}
         </Typography>
       </Box>
@@ -855,6 +871,10 @@ interface ExecutionDetailViewProps {
 }
 
 function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
+  const startTime = formatTimeDisplay(execution.actualStartTime) ?? '—';
+  const endTime = formatTimeDisplay(execution.actualEndTime) ?? '—';
+  const restTime = formatTimeDisplay(execution.actualRestTime) ?? '—';
+  const containerWaitingTime = formatTimeDisplay(execution.containerWaitingTime);
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
       <Typography variant="subtitle2" gutterBottom>
@@ -865,15 +885,23 @@ function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
         <TableBody>
           <TableRow>
             <TableCell sx={{ border: 'none', width: 160 }}>Start Time</TableCell>
-            <TableCell sx={{ border: 'none' }}>{execution.actualStartTime || '—'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>{startTime}</TableCell>
             <TableCell sx={{ border: 'none', width: 160 }}>End Time</TableCell>
-            <TableCell sx={{ border: 'none' }}>{execution.actualEndTime || '—'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>{endTime}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ border: 'none' }}>Rest Time</TableCell>
-            <TableCell sx={{ border: 'none' }}>{execution.actualRestTime || '—'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>{restTime}</TableCell>
             <TableCell sx={{ border: 'none' }}>Total Hours</TableCell>
             <TableCell sx={{ border: 'none' }}>{execution.decimalHours || 0}h</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ border: 'none' }}>Container Waiting Time</TableCell>
+            <TableCell sx={{ border: 'none' }}>
+              {containerWaitingTime ?? '—'}
+            </TableCell>
+            <TableCell sx={{ border: 'none' }} />
+            <TableCell sx={{ border: 'none' }} />
           </TableRow>
           <TableRow>
             <TableCell sx={{ border: 'none' }}>Start Odometer</TableCell>

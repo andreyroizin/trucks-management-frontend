@@ -26,6 +26,7 @@ export interface RideExecutionReportItem {
   saturdayHours?: number;
   sundayHolidayHours?: number;
   vacationHoursEarned?: number;
+  containerWaitingTime?: string;
 }
 
 export interface RideExecutionReportTotals {
