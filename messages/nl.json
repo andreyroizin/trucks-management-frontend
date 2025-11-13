@@ -1487,7 +1487,111 @@
   "planning": {
     "longTerm": {
       "title": "Langetermijnplanning",
-      "subtitle": "Definieer terugkerende leveringspatronen en capaciteitssjablonen voor klanten"
+      "subtitle": "Definieer terugkerende leveringspatronen en capaciteitssjablonen voor klanten",
+      "list": {
+        "title": "Capaciteitssjablonen ({count})",
+        "actions": {
+          "create": "Sjabloon aanmaken",
+          "edit": "Sjabloon bewerken",
+          "delete": "Sjabloon verwijderen"
+        },
+        "confirmDelete": "Weet je zeker dat je het capaciteitssjabloon voor {clientName} wilt verwijderen?",
+        "empty": {
+          "title": "Geen capaciteitssjablonen gevonden",
+          "description": "Maak je eerste sjabloon om terugkerende leveringspatronen voor klanten vast te leggen.",
+          "button": "Eerste sjabloon aanmaken"
+        },
+        "errors": {
+          "loadFailed": "Het laden van capaciteitssjablonen is mislukt. Probeer het opnieuw.",
+          "deleteFailed": "Verwijderen van het sjabloon is mislukt. Probeer het opnieuw."
+        },
+        "status": {
+          "active": "Actief",
+          "inactive": "Inactief"
+        },
+        "table": {
+          "headers": {
+            "client": "Klant",
+            "dateRange": "Periode",
+            "weeklyPattern": "Wekelijks patroon",
+            "totalTrucks": "Totaal aantal trucks",
+            "status": "Status",
+            "notes": "Notities",
+            "actions": "Acties"
+          }
+        },
+        "days": {
+          "short": {
+            "mon": "ma",
+            "tue": "di",
+            "wed": "wo",
+            "thu": "do",
+            "fri": "vr",
+            "sat": "za",
+            "sun": "zo"
+          }
+        }
+      },
+      "form": {
+        "titles": {
+          "create": "Capaciteitssjabloon aanmaken",
+          "edit": "Capaciteitssjabloon bewerken"
+        },
+        "fields": {
+          "company": "Bedrijf",
+          "companyAuto": "Bedrijf (automatisch geselecteerd)",
+          "client": "Klant",
+          "startDate": "Startdatum",
+          "endDate": "Einddatum",
+          "notes": "Notities",
+          "days": {
+            "monday": "Maandag",
+            "tuesday": "Dinsdag",
+            "wednesday": "Woensdag",
+            "thursday": "Donderdag",
+            "friday": "Vrijdag",
+            "saturday": "Zaterdag",
+            "sunday": "Zondag"
+          }
+        },
+        "sections": {
+          "weeklyPatternTitle": "Wekelijks truckschema",
+          "weeklyPatternDescription": "Geef aan hoeveel trucks per dag nodig zijn"
+        },
+        "summary": {
+          "totalTrucks": "Totaal aantal trucks per week: {count}",
+          "noneWarning": "Er moet minimaal op één dag een truck zijn ingepland"
+        },
+        "placeholders": {
+          "notes": "Optionele opmerkingen over dit capaciteitssjabloon..."
+        },
+        "toggles": {
+          "active": "Sjabloon is actief"
+        },
+        "actions": {
+          "cancel": "Annuleren",
+          "create": "Sjabloon aanmaken",
+          "update": "Sjabloon bijwerken",
+          "creating": "Bezig met aanmaken...",
+          "updating": "Bezig met bijwerken..."
+        },
+        "validation": {
+          "truckNumber": "Aantal trucks moet een getal zijn",
+          "truckMin": "Aantal trucks moet 0 of hoger zijn",
+          "truckRequired": "Aantal trucks is verplicht",
+          "companyRequired": "Bedrijf is verplicht",
+          "clientRequired": "Klant is verplicht",
+          "startDateRequired": "Startdatum is verplicht",
+          "endDateRequired": "Einddatum is verplicht",
+          "atLeastOne": "Plan minimaal op één dag trucks in",
+          "dateRange": "Einddatum moet na de startdatum liggen"
+        },
+        "errors": {
+          "selectCompany": "Selecteer een bedrijf.",
+          "saveFallback": "Opslaan van het sjabloon is mislukt. Probeer het opnieuw.",
+          "generic": "Fout: {message}"
+        }
+      }
     },
     "weekly": {
       "title": "Weekplanning",

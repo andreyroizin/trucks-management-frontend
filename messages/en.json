@@ -1482,7 +1482,111 @@
   "planning": {
     "longTerm": {
       "title": "Long-Term Planning",
-      "subtitle": "Define recurring delivery patterns and capacity templates for clients"
+      "subtitle": "Define recurring delivery patterns and capacity templates for clients",
+      "list": {
+        "title": "Capacity Templates ({count})",
+        "actions": {
+          "create": "Create Template",
+          "edit": "Edit Template",
+          "delete": "Delete Template"
+        },
+        "confirmDelete": "Are you sure you want to delete the capacity template for {clientName}?",
+        "empty": {
+          "title": "No capacity templates found",
+          "description": "Create your first template to define recurring delivery patterns for clients.",
+          "button": "Create First Template"
+        },
+        "errors": {
+          "loadFailed": "Failed to load capacity templates. Please try again.",
+          "deleteFailed": "Failed to delete template. Please try again."
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "table": {
+          "headers": {
+            "client": "Client",
+            "dateRange": "Date Range",
+            "weeklyPattern": "Weekly Pattern",
+            "totalTrucks": "Total Trucks",
+            "status": "Status",
+            "notes": "Notes",
+            "actions": "Actions"
+          }
+        },
+        "days": {
+          "short": {
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat",
+            "sun": "Sun"
+          }
+        }
+      },
+      "form": {
+        "titles": {
+          "create": "Create Capacity Template",
+          "edit": "Edit Capacity Template"
+        },
+        "fields": {
+          "company": "Company",
+          "companyAuto": "Company (auto-selected)",
+          "client": "Client",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "notes": "Notes",
+          "days": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+          }
+        },
+        "sections": {
+          "weeklyPatternTitle": "Weekly Truck Pattern",
+          "weeklyPatternDescription": "Define how many trucks are needed for each day of the week"
+        },
+        "summary": {
+          "totalTrucks": "Total trucks per week: {count}",
+          "noneWarning": "At least one day must have trucks assigned"
+        },
+        "placeholders": {
+          "notes": "Optional notes about this capacity template..."
+        },
+        "toggles": {
+          "active": "Template is active"
+        },
+        "actions": {
+          "cancel": "Cancel",
+          "create": "Create Template",
+          "update": "Update Template",
+          "creating": "Creating...",
+          "updating": "Updating..."
+        },
+        "validation": {
+          "truckNumber": "Truck count must be a number",
+          "truckMin": "Truck count must be 0 or greater",
+          "truckRequired": "Truck count is required",
+          "companyRequired": "Company is required",
+          "clientRequired": "Client is required",
+          "startDateRequired": "Start date is required",
+          "endDateRequired": "End date is required",
+          "atLeastOne": "At least one day must have trucks assigned",
+          "dateRange": "End date must be after start date"
+        },
+        "errors": {
+          "selectCompany": "Please select a company.",
+          "saveFallback": "Failed to save template. Please try again.",
+          "generic": "Error: {message}"
+        }
+      }
     },
     "weekly": {
       "title": "Weekly Planning",

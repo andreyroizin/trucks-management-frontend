@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import CapacityTemplatesList from '@/components/CapacityTemplatesList';
 import CapacityTemplateForm from '@/components/CapacityTemplateForm';
 import { CapacityTemplate } from '@/hooks/useCapacityTemplates';
+import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
 export default function LongTermPlanningPage() {
     const router = useRouter();
@@ -57,12 +58,17 @@ export default function LongTermPlanningPage() {
 
     return (
         <Box sx={{ py: 4 }}>
-            <Typography variant="h4" gutterBottom>
-                Long-Term Planning
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                Define recurring delivery patterns and capacity templates for clients
-            </Typography>
+            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                    <Typography variant="h4" gutterBottom>
+                        {t('title')}
+                    </Typography>
+                    <Typography variant="subtitle1" color="text.secondary">
+                        {t('subtitle')}
+                    </Typography>
+                </Box>
+                <LanguageSelectDesktop />
+            </Box>
 
             <Box sx={{ mt: 3 }}>
                 <CapacityTemplatesList

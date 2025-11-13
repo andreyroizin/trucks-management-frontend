@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -30,39 +30,13 @@ import {
 import { useClients } from '@/hooks/useClients';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     open: boolean;
     onClose: () => void;
     template?: CapacityTemplate | null;
 };
-
-const schema = yup.object({
-    companyId: yup.string().required('Company is required'),
-    clientId: yup.string().required('Client is required'),
-    startDate: yup.string().required('Start date is required'),
-    endDate: yup.string().required('End date is required'),
-    mondayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    tuesdayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    wednesdayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    thursdayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    fridayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    saturdayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    sundayTrucks: yup.number().min(0, 'Must be 0 or greater').required(),
-    notes: yup.string().optional(),
-    isActive: yup.boolean().optional(),
-}).test('at-least-one-truck', 'At least one day must have trucks assigned', function(values) {
-    const total = (values.mondayTrucks || 0) + (values.tuesdayTrucks || 0) + 
-                  (values.wednesdayTrucks || 0) + (values.thursdayTrucks || 0) + 
-                  (values.fridayTrucks || 0) + (values.saturdayTrucks || 0) + 
-                  (values.sundayTrucks || 0);
-    return total > 0;
-}).test('date-range', 'End date must be after start date', function(values) {
-    if (values.startDate && values.endDate) {
-        return new Date(values.startDate) < new Date(values.endDate);
-    }
-    return true;
-});
 
 type FormData = {
     companyId: string;
@@ -82,10 +56,65 @@ type FormData = {
 
 export default function CapacityTemplateForm({ open, onClose, template }: Props) {
     const { user } = useAuth();
+    const t = useTranslations('planning.longTerm.form');
+    
+    const schema = useMemo(() => {
+        const truckField = yup
+            .number()
+            .typeError(t('validation.truckNumber'))
+            .min(0, t('validation.truckMin'))
+            .required(t('validation.truckRequired'));
+
+        return yup
+            .object({
+                companyId: yup.string().required(t('validation.companyRequired')),
+                clientId: yup.string().required(t('validation.clientRequired')),
+                startDate: yup.string().required(t('validation.startDateRequired')),
+                endDate: yup.string().required(t('validation.endDateRequired')),
+                mondayTrucks: truckField,
+                tuesdayTrucks: truckField,
+                wednesdayTrucks: truckField,
+                thursdayTrucks: truckField,
+                fridayTrucks: truckField,
+                saturdayTrucks: truckField,
+                sundayTrucks: truckField,
+                notes: yup.string().optional(),
+                isActive: yup.boolean().optional(),
+            })
+            .test('at-least-one-truck', t('validation.atLeastOne'), function (values) {
+                const total =
+                    (values.mondayTrucks || 0) +
+                    (values.tuesdayTrucks || 0) +
+                    (values.wednesdayTrucks || 0) +
+                    (values.thursdayTrucks || 0) +
+                    (values.fridayTrucks || 0) +
+                    (values.saturdayTrucks || 0) +
+                    (values.sundayTrucks || 0);
+                return total > 0;
+            })
+            .test('date-range', t('validation.dateRange'), function (values) {
+                if (values.startDate && values.endDate) {
+                    return new Date(values.startDate) < new Date(values.endDate);
+                }
+                return true;
+            });
+    }, [t]);
+
+    const dayFields = useMemo(
+        () => [
+            { key: 'mondayTrucks', label: t('fields.days.monday') },
+            { key: 'tuesdayTrucks', label: t('fields.days.tuesday') },
+            { key: 'wednesdayTrucks', label: t('fields.days.wednesday') },
+            { key: 'thursdayTrucks', label: t('fields.days.thursday') },
+            { key: 'fridayTrucks', label: t('fields.days.friday') },
+            { key: 'saturdayTrucks', label: t('fields.days.saturday') },
+            { key: 'sundayTrucks', label: t('fields.days.sunday') },
+        ],
+        [t]
+    );
     
     // Company selection logic
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
-    const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
     
     // Fetch companies (backend automatically filters by user's access)
     const { data: companiesData, isLoading: isLoadingCompanies } = useCompanies(1, 1000);
@@ -145,8 +174,6 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                 notes: template.notes || '',
                 isActive: template.isActive,
             });
-            // Set selected company ID when editing
-            setSelectedCompanyId(template.companyId);
         } else {
             reset({
                 companyId: '',
@@ -163,8 +190,6 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                 notes: '',
                 isActive: true,
             });
-            // Reset selected company ID when creating new
-            setSelectedCompanyId('');
         }
     }, [template, reset]);
 
@@ -173,7 +198,6 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
         if (!isGlobalAdmin && companiesData?.data && companiesData.data.length > 0 && !template) {
             const firstCompany = companiesData.data[0];
             setValue('companyId', firstCompany.id);
-            setSelectedCompanyId(firstCompany.id);
         }
     }, [isGlobalAdmin, companiesData, template, setValue]);
 
@@ -198,7 +222,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
             } else {
                 // Validate company ID before sending
                 if (!data.companyId) {
-                    alert('Error: Please select a company.');
+                    alert(t('errors.selectCompany'));
                     return;
                 }
 
@@ -240,25 +264,15 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                : error.response?.data?.data || 
                                  error.response?.data?.message || 
                                  error.message || 
-                                 'Failed to save template. Please try again.';
-            alert(`Error: ${errorMessage}`);
+                                 t('errors.saveFallback');
+            alert(t('errors.generic', { message: errorMessage }));
         }
     };
-
-    const dayLabels = [
-        { key: 'mondayTrucks', label: 'Monday' },
-        { key: 'tuesdayTrucks', label: 'Tuesday' },
-        { key: 'wednesdayTrucks', label: 'Wednesday' },
-        { key: 'thursdayTrucks', label: 'Thursday' },
-        { key: 'fridayTrucks', label: 'Friday' },
-        { key: 'saturdayTrucks', label: 'Saturday' },
-        { key: 'sundayTrucks', label: 'Sunday' },
-    ];
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                {isEditing ? 'Edit Capacity Template' : 'Create Capacity Template'}
+                {isEditing ? t('titles.edit') : t('titles.create')}
             </DialogTitle>
             <DialogContent>
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
@@ -278,13 +292,12 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                             disabled={isEditing || !isGlobalAdmin} // Cannot change company when editing, or if not global admin
                                             onChange={(_, newValue) => {
                                                 field.onChange(newValue?.id || '');
-                                                setSelectedCompanyId(newValue?.id || '');
                                             }}
                                             value={companiesData?.data.find((company) => company.id === field.value) || null}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label={isGlobalAdmin ? "Company" : "Company (Auto-selected)"}
+                                                    label={isGlobalAdmin ? t('fields.company') : t('fields.companyAuto')}
                                                     error={!!errors.companyId}
                                                     helperText={errors.companyId?.message}
                                                     InputProps={{
@@ -321,7 +334,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                label="Client"
+                                                label={t('fields.client')}
                                                 error={!!errors.clientId}
                                                 helperText={errors.clientId?.message}
                                                 InputProps={{
@@ -348,7 +361,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Start Date"
+                                        label={t('fields.startDate')}
                                         type="date"
                                         fullWidth
                                         InputLabelProps={{ shrink: true }}
@@ -365,7 +378,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="End Date"
+                                        label={t('fields.endDate')}
                                         type="date"
                                         fullWidth
                                         InputLabelProps={{ shrink: true }}
@@ -379,14 +392,14 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                         {/* Weekly Pattern */}
                         <Grid item xs={12}>
                             <Typography variant="h6" gutterBottom>
-                                Weekly Truck Pattern
+                                {t('sections.weeklyPatternTitle')}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                Define how many trucks are needed for each day of the week
+                                {t('sections.weeklyPatternDescription')}
                             </Typography>
                         </Grid>
 
-                        {dayLabels.map(({ key, label }) => (
+                        {dayFields.map(({ key, label }) => (
                             <Grid item xs={12} sm={6} md={3} key={key}>
                                 <Controller
                                     name={key as keyof FormData}
@@ -409,8 +422,10 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                         {/* Total Display */}
                         <Grid item xs={12}>
                             <Alert severity={totalTrucks > 0 ? 'success' : 'warning'}>
-                                Total trucks per week: <strong>{totalTrucks}</strong>
-                                {totalTrucks === 0 && ' - At least one day must have trucks assigned'}
+                                {t('summary.totalTrucks', { count: totalTrucks })}
+                                {totalTrucks === 0 && (
+                                    <span> - {t('summary.noneWarning')}</span>
+                                )}
                             </Alert>
                         </Grid>
 
@@ -422,11 +437,11 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
-                                        label="Notes"
+                                        label={t('fields.notes')}
                                         multiline
                                         rows={3}
                                         fullWidth
-                                        placeholder="Optional notes about this capacity template..."
+                                        placeholder={t('placeholders.notes')}
                                     />
                                 )}
                             />
@@ -446,7 +461,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                                     onChange={field.onChange}
                                                 />
                                             }
-                                            label="Template is active"
+                                            label={t('toggles.active')}
                                         />
                                     )}
                                 />
@@ -457,7 +472,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={isSubmitting}>
-                    Cancel
+                    {t('actions.cancel')}
                 </Button>
                 <Button
                     onClick={handleSubmit(onSubmit)}
@@ -467,10 +482,10 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                     {isSubmitting ? (
                         <>
                             <CircularProgress size={20} sx={{ mr: 1 }} />
-                            {isEditing ? 'Updating...' : 'Creating...'}
+                            {isEditing ? t('actions.updating') : t('actions.creating')}
                         </>
                     ) : (
-                        isEditing ? 'Update Template' : 'Create Template'
+                        isEditing ? t('actions.update') : t('actions.create')
                     )}
                 </Button>
             </DialogActions>

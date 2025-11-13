@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     Box,
     Typography,
@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/DeleteRounded';
 import AddIcon from '@mui/icons-material/AddRounded';
 import { useCapacityTemplates, useDeleteCapacityTemplate, CapacityTemplate } from '@/hooks/useCapacityTemplates';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     onCreateNew: () => void;
@@ -31,18 +32,19 @@ type Props = {
 
 export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
     const { user } = useAuth();
+    const t = useTranslations('planning.longTerm.list');
     const { data: templates, isLoading, error } = useCapacityTemplates(user?.companyId);
     const { mutateAsync: deleteTemplate, isPending: isDeleting } = useDeleteCapacityTemplate();
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleDelete = async (id: string, clientName: string) => {
-        if (window.confirm(`Are you sure you want to delete the capacity template for ${clientName}?`)) {
+        if (window.confirm(t('confirmDelete', { clientName }))) {
             try {
                 setDeletingId(id);
                 await deleteTemplate(id);
             } catch (error) {
                 console.error('Failed to delete template:', error);
-                alert('Failed to delete template. Please try again.');
+                alert(t('errors.deleteFailed'));
             } finally {
                 setDeletingId(null);
             }
@@ -58,14 +60,26 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
                template.thursdayTrucks + template.fridayTrucks + template.saturdayTrucks + template.sundayTrucks;
     };
 
+    const dayLabels = useMemo(
+        () => [
+            t('days.short.mon'),
+            t('days.short.tue'),
+            t('days.short.wed'),
+            t('days.short.thu'),
+            t('days.short.fri'),
+            t('days.short.sat'),
+            t('days.short.sun'),
+        ],
+        [t]
+    );
+
     const getWeeklyPattern = (template: CapacityTemplate) => {
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const trucks = [
             template.mondayTrucks, template.tuesdayTrucks, template.wednesdayTrucks,
             template.thursdayTrucks, template.fridayTrucks, template.saturdayTrucks, template.sundayTrucks
         ];
         
-        return days
+        return dayLabels
             .map((day, index) => trucks[index] > 0 ? `${day}: ${trucks[index]}` : null)
             .filter(Boolean)
             .join(', ');
@@ -82,7 +96,7 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
     if (error) {
         return (
             <Alert severity="error">
-                Failed to load capacity templates. Please try again.
+                {t('errors.loadFailed')}
             </Alert>
         );
     }
@@ -91,27 +105,27 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
         <Box>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h6">
-                    Capacity Templates ({templates?.length || 0})
+                    {t('title', { count: templates?.length || 0 })}
                 </Typography>
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={onCreateNew}
                 >
-                    Create Template
+                    {t('actions.create')}
                 </Button>
             </Box>
 
             {templates?.length === 0 ? (
                 <Paper sx={{ p: 4, textAlign: 'center' }}>
                     <Typography variant="body1" color="text.secondary" gutterBottom>
-                        No capacity templates found
+                        {t('empty.title')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" mb={2}>
-                        Create your first template to define recurring delivery patterns for clients.
+                        {t('empty.description')}
                     </Typography>
                     <Button variant="outlined" startIcon={<AddIcon />} onClick={onCreateNew}>
-                        Create First Template
+                        {t('empty.button')}
                     </Button>
                 </Paper>
             ) : (
@@ -119,13 +133,13 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Client</TableCell>
-                                <TableCell>Date Range</TableCell>
-                                <TableCell>Weekly Pattern</TableCell>
-                                <TableCell align="center">Total Trucks</TableCell>
-                                <TableCell align="center">Status</TableCell>
-                                <TableCell>Notes</TableCell>
-                                <TableCell align="center">Actions</TableCell>
+                                <TableCell>{t('table.headers.client')}</TableCell>
+                                <TableCell>{t('table.headers.dateRange')}</TableCell>
+                                <TableCell>{t('table.headers.weeklyPattern')}</TableCell>
+                                <TableCell align="center">{t('table.headers.totalTrucks')}</TableCell>
+                                <TableCell align="center">{t('table.headers.status')}</TableCell>
+                                <TableCell>{t('table.headers.notes')}</TableCell>
+                                <TableCell align="center">{t('table.headers.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -161,7 +175,7 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
                                     </TableCell>
                                     <TableCell align="center">
                                         <Chip
-                                            label={template.isActive ? 'Active' : 'Inactive'}
+                                            label={template.isActive ? t('status.active') : t('status.inactive')}
                                             size="small"
                                             color={template.isActive ? 'success' : 'default'}
                                             variant={template.isActive ? 'filled' : 'outlined'}
@@ -173,7 +187,7 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="center">
-                                        <Tooltip title="Edit Template">
+                                        <Tooltip title={t('actions.edit')}>
                                             <IconButton
                                                 size="small"
                                                 onClick={() => onEdit(template)}
@@ -182,7 +196,7 @@ export default function CapacityTemplatesList({ onCreateNew, onEdit }: Props) {
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title="Delete Template">
+                                        <Tooltip title={t('actions.delete')}>
                                             <IconButton
                                                 size="small"
                                                 onClick={() => handleDelete(template.id, template.client.name)}
