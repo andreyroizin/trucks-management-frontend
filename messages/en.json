@@ -1693,7 +1693,12 @@
           "busy": "Busy",
           "assigned": "Assigned",
           "free": "Free",
-          "available": "Available"
+          "available": "Available",
+          "summary": "{used}h / {total}h scheduled"
+        },
+        "resource": {
+          "unknownTruck": "Selected truck",
+          "unknownDriver": "Selected driver"
         },
         "dayCard": {
           "tooltip": "Click to view daily planning",
@@ -1746,6 +1751,8 @@
         "addDriverDialog": {
           "title": "Add Second Driver",
           "description": "Add a second driver to this ride with their own planned hours.",
+          "primaryFallback": "Primary driver",
+          "secondFallback": "Second driver",
           "rideInfo": {
             "title": "Ride Information:",
             "totalDuration": "• Total ride duration: <strong>{hours}h</strong>",
@@ -1858,7 +1865,31 @@
     },
     "daily": {
       "title": "Daily Planning",
-      "subtitle": "Fine-tune ride details and assignments for a specific day"
+      "subtitle": "Fine-tune ride details and assignments for a specific day",
+      "header": {
+        "title": "Daily Planning",
+        "subtitle": "Fine-tune ride details and assignments for a specific day",
+        "back": "Back to Weekly"
+      },
+      "dateSelector": {
+        "label": "Select Date",
+        "refresh": "Refresh",
+        "unknownDate": "an unspecified date"
+      },
+      "alerts": {
+        "loadFailed": "Failed to load daily planning data: {message}",
+        "noFilters": "No rides match the current filters",
+        "noFiltersHelper": "Try adjusting your filters or clear them to see all rides.",
+        "noRides": "No rides planned for {date}",
+        "noRidesHelper": "Select a different date or generate rides from the weekly planning view."
+      },
+      "resource": {
+        "truckFilter": "Filter by Truck",
+        "driverFilter": "Filter by Driver",
+        "clear": "Clear Filters",
+        "unknownTruck": "Selected truck",
+        "unknownDriver": "Selected driver"
+      }
     }
   },
   "auth": {

@@ -1698,7 +1698,12 @@
           "busy": "Bezet",
           "assigned": "Toegewezen",
           "free": "Vrij",
-          "available": "Beschikbaar"
+          "available": "Beschikbaar",
+          "summary": "{used}u / {total}u ingepland"
+        },
+        "resource": {
+          "unknownTruck": "Geselecteerde truck",
+          "unknownDriver": "Geselecteerde chauffeur"
         },
         "dayCard": {
           "tooltip": "Klik om de dagplanning te bekijken",
@@ -1752,6 +1757,8 @@
         "addDriverDialog": {
           "title": "Tweede chauffeur toevoegen",
           "description": "Voeg een tweede chauffeur toe aan deze rit met eigen geplande uren.",
+          "primaryFallback": "Hoofdchauffeur",
+          "secondFallback": "Tweede chauffeur",
           "rideInfo": {
             "title": "Ritinformatie:",
             "totalDuration": "• Totale ritduur: <strong>{hours}u</strong>",
@@ -1864,7 +1871,31 @@
     },
     "daily": {
       "title": "Dagplanning",
-      "subtitle": "Verfijn ritdetails en toewijzingen voor een specifieke dag"
+      "subtitle": "Verfijn ritdetails en toewijzingen voor een specifieke dag",
+      "header": {
+        "title": "Dagplanning",
+        "subtitle": "Verfijn ritdetails en toewijzingen voor een specifieke dag",
+        "back": "Terug naar weekplanning"
+      },
+      "dateSelector": {
+        "label": "Selecteer datum",
+        "refresh": "Vernieuwen",
+        "unknownDate": "een onbekende datum"
+      },
+      "alerts": {
+        "loadFailed": "Dagplanning kan niet worden geladen: {message}",
+        "noFilters": "Geen ritten voldoen aan de huidige filters",
+        "noFiltersHelper": "Pas je filters aan of wis ze om alle ritten te bekijken.",
+        "noRides": "Geen ritten gepland voor {date}",
+        "noRidesHelper": "Selecteer een andere datum of genereer ritten via de weekplanning."
+      },
+      "resource": {
+        "truckFilter": "Filter op truck",
+        "driverFilter": "Filter op chauffeur",
+        "clear": "Filters wissen",
+        "unknownTruck": "Geselecteerde truck",
+        "unknownDriver": "Geselecteerde chauffeur"
+      }
     }
   },
   "auth": {

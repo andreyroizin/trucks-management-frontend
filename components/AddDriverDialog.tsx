@@ -39,12 +39,13 @@ export default function AddDriverDialog({
     drivers, 
     excludeDriverIds,
     totalRideHours = 8,
-    primaryDriverName = "Primary driver",
+    primaryDriverName,
     currentPrimaryDriverHours = 8,
     isLoading = false,
     driverAvailabilityStatus,
 }: Props) {
     const t = useTranslations('planning.weekly.assignment.addDriverDialog');
+    const resolvedPrimaryDriverName = primaryDriverName || t('primaryFallback');
     const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
     const [secondDriverHours, setSecondDriverHours] = useState<number>(totalRideHours);
     const [primaryDriverHours, setPrimaryDriverHours] = useState<number>(totalRideHours);
@@ -145,7 +146,7 @@ export default function AddDriverDialog({
                             </Typography>
                             <Typography variant="body2">
                                 {t.rich('rideInfo.primaryDriver', {
-                                    name: primaryDriverName,
+                                    name: resolvedPrimaryDriverName,
                                     strong: (chunks) => <strong>{chunks}</strong>,
                                 })}
                             </Typography>
@@ -223,12 +224,12 @@ export default function AddDriverDialog({
                                 <Schedule fontSize="small" color="primary" />
                                 <TextField
                                     fullWidth
-                                    label={t('fields.primaryHours.label', { name: primaryDriverName })}
+                                    label={t('fields.primaryHours.label', { name: resolvedPrimaryDriverName })}
                                     type="number"
                                     value={primaryDriverHours || ''}
                                     onChange={(e) => handlePrimaryDriverHoursChange(e.target.value)}
                                     error={!!primaryDriverHoursError}
-                                    helperText={primaryDriverHoursError || t('fields.primaryHours.helper', { name: primaryDriverName })}
+                                    helperText={primaryDriverHoursError || t('fields.primaryHours.helper', { name: resolvedPrimaryDriverName })}
                                     inputProps={{ 
                                         min: 0.5, 
                                         max: 24, 

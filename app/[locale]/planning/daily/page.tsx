@@ -39,11 +39,16 @@ import { AvailabilityStatus } from '@/components/RideAssignmentCard';
 import type { Driver, Truck } from '@/hooks/useDriversAndTrucks';
 import type { WeeklyRide } from '@/hooks/useWeeklyRides';
 import OverallocationWarningDialog from '@/components/OverallocationWarningDialog';
+import { useTranslations, useLocale } from 'next-intl';
+import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
 export default function DailyPlanningPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const t = useTranslations('planning.daily');
+    const assignmentT = useTranslations('planning.weekly.assignment');
+    const locale = useLocale();
     
     // Access control - only Customer Admin and Employer roles
     useEffect(() => {
@@ -122,27 +127,75 @@ export default function DailyPlanningPage() {
     const isLoading = isLoadingRides || isLoadingResources || isLoadingDates;
     const error = ridesError || resourcesError;
 
+    const formatDate = React.useCallback(
+        (date: string | Date | null | undefined, options: Intl.DateTimeFormatOptions) => {
+            if (!date) return '';
+            const value = typeof date === 'string' ? new Date(date) : date;
+            if (Number.isNaN(value.getTime())) return '';
+            return new Intl.DateTimeFormat(locale, options).format(value);
+        },
+        [locale]
+    );
+
+    const formatDateForDisplay = React.useCallback(
+        (dateString: string) =>
+            formatDate(dateString, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }) || t('dateSelector.unknownDate'),
+        [formatDate, t]
+    );
+
+    const formatHoursValue = React.useCallback((value: number) => {
+        const rounded = Number.isFinite(value) ? Number(value) : 0;
+        return Number.isInteger(rounded) ? `${rounded}` : `${rounded.toFixed(1)}`;
+    }, []);
+
+    const formatHoursSummary = React.useCallback(
+        (used: number, total: number) =>
+            assignmentT('availability.summary', {
+                used: formatHoursValue(used),
+                total: formatHoursValue(total),
+            }),
+        [assignmentT, formatHoursValue]
+    );
+
+    const availabilityLabels = React.useMemo(
+        () => ({
+            busy: assignmentT('availability.busy'),
+            assigned: assignmentT('availability.assigned'),
+            free: assignmentT('availability.free'),
+            available: assignmentT('availability.available'),
+        }),
+        [assignmentT]
+    );
+
+    const driverAvailabilitySet =
+        availabilityData?.drivers.some((d) =>
+            Object.values(d.availability).some((a) => a.isCustom),
+        ) ?? false;
+
+    const truckAvailabilitySet =
+        availabilityData?.trucks.some((t) =>
+            Object.values(t.availability).some((a) => a.isCustom),
+        ) ?? false;
+
     // Convert daily rides data to weekly format for conflict detection
     const weeklyRidesDataForConflict = useMemo(() => {
         if (!ridesData) return null;
         return {
             weekStartDate: selectedDate,
-            days: [{
-                date: selectedDate,
-                dayName: new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long' }),
-                clients: ridesData.clients,
-            }],
+            days: [
+                {
+                    date: selectedDate,
+                    dayName: formatDate(selectedDate, { weekday: 'long' }) || selectedDate,
+                    clients: ridesData.clients,
+                },
+            ],
         };
-    }, [ridesData, selectedDate]);
-
-    const formatHoursValue = React.useCallback((value: number) => {
-        const rounded = Number.isFinite(value) ? Number(value) : 0;
-        return Number.isInteger(rounded) ? `${rounded}h` : `${rounded.toFixed(1)}h`;
-    }, []);
-
-    const formatHoursSummary = React.useCallback((used: number, total: number) => {
-        return `${formatHoursValue(used)} / ${formatHoursValue(total)} scheduled`;
-    }, [formatHoursValue]);
+    }, [ridesData, selectedDate, formatDate]);
 
     const findRideById = React.useCallback((rideId: string | null) => {
         if (!rideId || !ridesData) return null;
@@ -234,7 +287,7 @@ export default function DailyPlanningPage() {
         if (conflict) {
             return {
                 level: 'busy',
-                label: 'Busy',
+                label: availabilityLabels.busy,
                 message: formatHoursSummary(displayHours, availableHours),
             };
         }
@@ -245,7 +298,11 @@ export default function DailyPlanningPage() {
 
         return {
             level: 'available',
-            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            label: isCurrentSelection
+                ? availabilityLabels.assigned
+                : projectedHours === 0
+                    ? availabilityLabels.free
+                    : availabilityLabels.available,
             message: formatHoursSummary(displayHours, availableHours),
         };
     },
@@ -257,6 +314,7 @@ export default function DailyPlanningPage() {
             formatHoursSummary,
             getPrimaryDriverDefaultHours,
             getSecondDriverDefaultHours,
+            availabilityLabels,
         ]
     );
 
@@ -289,14 +347,18 @@ export default function DailyPlanningPage() {
         if (conflict) {
             return {
                 level: 'busy',
-                label: 'Busy',
+                label: availabilityLabels.busy,
                 message: formatHoursSummary(displayHours, availableHours),
             };
         }
 
         return {
             level: 'available',
-            label: isCurrentSelection ? 'Assigned' : (projectedHours === 0 ? 'Free' : 'Available'),
+            label: isCurrentSelection
+                ? availabilityLabels.assigned
+                : projectedHours === 0
+                    ? availabilityLabels.free
+                    : availabilityLabels.available,
             message: formatHoursSummary(displayHours, availableHours),
         };
     },
@@ -306,6 +368,7 @@ export default function DailyPlanningPage() {
             selectedDate,
             calculateTruckDayHours,
             formatHoursSummary,
+            availabilityLabels,
         ]
     );
 
@@ -331,7 +394,7 @@ export default function DailyPlanningPage() {
     }, [addDriverRide, drivers, getDriverAvailabilityStatus]);
 
     const addDriverRideTotalHours = addDriverRide?.plannedHours ?? 8;
-    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? 'Primary driver';
+    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? assignmentT('addDriverDialog.primaryFallback');
     const addDriverPrimaryHours =
         addDriverRide?.assignedDriver?.plannedHours ?? addDriverRide?.plannedHours ?? 8;
 
@@ -374,7 +437,7 @@ export default function DailyPlanningPage() {
         // Check for driver conflict using custom availability
         if (weeklyRidesDataForConflict) {
             const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
-            const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+            const driverName = drivers?.find(d => d.id === driverId)?.fullName || assignmentT('resource.unknownDriver');
             const conflict = checkDriverConflict(weeklyRidesDataForConflict, rideId, driverId, driverHours, driverName, availabilityData);
 
         if (conflict) {
@@ -459,7 +522,7 @@ export default function DailyPlanningPage() {
         // Check for truck conflict using custom availability
         if (weeklyRidesDataForConflict) {
             const truckHours = currentRide.plannedHours;
-            const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
+            const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || assignmentT('resource.unknownTruck');
             const conflict = checkTruckConflict(weeklyRidesDataForConflict, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
 
         if (conflict) {
@@ -543,7 +606,7 @@ export default function DailyPlanningPage() {
 
         // Check for truck conflict when changing total ride hours
         if (currentRide.assignedTruck) {
-            const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck?.id)?.licensePlate || 'Unknown Truck';
+            const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck?.id)?.licensePlate || assignmentT('resource.unknownTruck');
             const truckConflict = checkTruckConflict(weeklyRidesDataForConflict, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate, availabilityData);
 
         if (truckConflict) {
@@ -558,7 +621,7 @@ export default function DailyPlanningPage() {
 
         // Check for primary driver conflict when changing total ride hours (if no second driver)
         if (currentRide.assignedDriver && !currentRide.secondDriver) {
-            const driverName = drivers?.find(d => d.id === currentRide.assignedDriver?.id)?.fullName || 'Unknown Driver';
+            const driverName = drivers?.find(d => d.id === currentRide.assignedDriver?.id)?.fullName || assignmentT('resource.unknownDriver');
             
             console.log('Primary driver hours conflict check (total hours change):', {
                 driverId: currentRide.assignedDriver.id,
@@ -631,7 +694,7 @@ export default function DailyPlanningPage() {
 
         // Check for driver conflict when changing individual driver hours
         if (weeklyRidesDataForConflict) {
-            const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+            const driverName = drivers?.find(d => d.id === driverId)?.fullName || assignmentT('resource.unknownDriver');
             
             // Debug logging
             console.log('Driver hours conflict check:', {
@@ -723,8 +786,8 @@ export default function DailyPlanningPage() {
 
         // Check for conflicts for both primary and second driver
         if (weeklyRidesDataForConflict) {
-            const primaryDriverName = currentRide.assignedDriver?.fullName || 'Primary Driver';
-            const secondDriverName = drivers?.find(d => d.id === driverId)?.fullName || 'Second Driver';
+            const primaryDriverName = currentRide.assignedDriver?.fullName || assignmentT('addDriverDialog.primaryFallback');
+            const secondDriverName = drivers?.find(d => d.id === driverId)?.fullName || assignmentT('addDriverDialog.secondFallback');
 
             // Check primary driver conflict (if hours are changing)
             if (currentRide.assignedDriver && primaryDriverHours !== currentRide.assignedDriver.plannedHours) {
@@ -903,11 +966,11 @@ export default function DailyPlanningPage() {
     const getSelectedResourceName = () => {
         if (selectedTruckFilter) {
             const truck = trucks?.find(t => t.id === selectedTruckFilter);
-            return truck ? `Truck ${truck.licensePlate}` : 'Selected Truck';
+            return truck ? truck.licensePlate : t('resource.unknownTruck');
         }
         if (selectedDriverFilter) {
             const driver = drivers?.find(d => d.id === selectedDriverFilter);
-            return driver ? driver.fullName : 'Selected Driver';
+            return driver ? driver.fullName : t('resource.unknownDriver');
         }
         return '';
     };
@@ -930,21 +993,10 @@ export default function DailyPlanningPage() {
     const resourceHours = getResourceHoursForDate();
     const resourceName = getSelectedResourceName();
 
-    // Format date for display
-    const formatDateForDisplay = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-
     if (authLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <Typography>Loading...</Typography>
+                <CircularProgress />
             </Box>
         );
     }
@@ -961,7 +1013,7 @@ export default function DailyPlanningPage() {
         return (
             <Box sx={{ p: 3 }}>
                 <Alert severity="error">
-                    Failed to load daily planning data: {error.message}
+                    {t('alerts.loadFailed', { message: error?.message ?? '' })}
                 </Alert>
             </Box>
         );
@@ -970,23 +1022,35 @@ export default function DailyPlanningPage() {
     return (
         <Box sx={{ p: 3 }}>
             {/* Header */}
-            <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Button
-                        startIcon={<ArrowBack />}
-                        onClick={() => router.push('/planning/weekly')}
-                        variant="outlined"
-                        size="small"
-                    >
-                        Back to Weekly
-                    </Button>
-                    <Typography variant="h4">
-                        Daily Planning
+            <Box
+                sx={{
+                    mb: 4,
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    alignItems: { xs: 'flex-start', md: 'center' },
+                    justifyContent: 'space-between',
+                    gap: 2,
+                }}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                        <Button
+                            startIcon={<ArrowBack />}
+                            onClick={() => router.push('/planning/weekly')}
+                            variant="outlined"
+                            size="small"
+                        >
+                            {t('header.back')}
+                        </Button>
+                        <Typography variant="h4">
+                            {t('header.title')}
+                        </Typography>
+                    </Box>
+                    <Typography variant="subtitle1" color="text.secondary">
+                        {t('header.subtitle')}
                     </Typography>
                 </Box>
-                <Typography variant="subtitle1" color="text.secondary">
-                    Manage ride assignments and details for a specific day
-                </Typography>
+                <LanguageSelectDesktop />
             </Box>
 
             {/* Date Selector and Stats */}
@@ -1009,7 +1073,7 @@ export default function DailyPlanningPage() {
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Select Date"
+                                    label={t('dateSelector.label')}
                                         variant="outlined"
                                     />
                                 )}
@@ -1028,9 +1092,9 @@ export default function DailyPlanningPage() {
                                 onClick={() => setDriverAvailabilityDialog(true)}
                                 disabled={isLoadingAvailability}
                             >
-                                {availabilityData?.drivers.some(d => 
-                                    Object.values(d.availability).some(a => a.isCustom)
-                                ) ? 'Driver Availability ✓' : 'Set Driver Availability'}
+                                {driverAvailabilitySet
+                                    ? assignmentT('summary.buttons.driverAvailabilityDone')
+                                    : assignmentT('summary.buttons.driverAvailability')}
                             </Button>
                             <Button
                                 variant="outlined"
@@ -1039,9 +1103,9 @@ export default function DailyPlanningPage() {
                                 onClick={() => setTruckAvailabilityDialog(true)}
                                 disabled={isLoadingAvailability}
                             >
-                                {availabilityData?.trucks.some(t => 
-                                    Object.values(t.availability).some(a => a.isCustom)
-                                ) ? 'Truck Availability ✓' : 'Set Truck Availability'}
+                                {truckAvailabilitySet
+                                    ? assignmentT('summary.buttons.truckAvailabilityDone')
+                                    : assignmentT('summary.buttons.truckAvailability')}
                             </Button>
                             <Button
                                 startIcon={<Refresh />}
@@ -1049,14 +1113,14 @@ export default function DailyPlanningPage() {
                                 variant="outlined"
                                 size="small"
                             >
-                                Refresh
+                                {t('dateSelector.refresh')}
                             </Button>
                         </Box>
                         
                         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                             <Chip
                                 icon={<Assignment />}
-                                label={`All Rides: ${stats.total}`}
+                                label={assignmentT('summary.chips.all', { count: stats.total })}
                                 color="primary"
                                 variant={activeFilter === 'all' ? 'filled' : 'outlined'}
                                 onClick={() => setActiveFilter('all')}
@@ -1064,7 +1128,7 @@ export default function DailyPlanningPage() {
                             />
                             <Chip
                                 icon={<Person />}
-                                label={`Fully Assigned: ${stats.assigned}`}
+                                label={assignmentT('summary.chips.assigned', { count: stats.assigned })}
                                 color="success"
                                 variant={activeFilter === 'assigned' ? 'filled' : 'outlined'}
                                 onClick={() => setActiveFilter('assigned')}
@@ -1072,7 +1136,7 @@ export default function DailyPlanningPage() {
                             />
                             <Chip
                                 icon={<LocalShipping />}
-                                label={`Partially Assigned: ${stats.partial}`}
+                                label={assignmentT('summary.chips.partial', { count: stats.partial })}
                                 color="warning"
                                 variant={activeFilter === 'partial' ? 'filled' : 'outlined'}
                                 onClick={() => setActiveFilter('partial')}
@@ -1080,7 +1144,7 @@ export default function DailyPlanningPage() {
                             />
                             <Chip
                                 icon={<Assignment />}
-                                label={`Unassigned: ${stats.unassigned}`}
+                                label={assignmentT('summary.chips.unassigned', { count: stats.unassigned })}
                                 color="error"
                                 variant={activeFilter === 'unassigned' ? 'filled' : 'outlined'}
                                 onClick={() => setActiveFilter('unassigned')}
@@ -1111,7 +1175,7 @@ export default function DailyPlanningPage() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Filter by Truck"
+                                    label={t('resource.truckFilter')}
                                     variant="outlined"
                                 />
                             )}
@@ -1133,7 +1197,7 @@ export default function DailyPlanningPage() {
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Filter by Driver"
+                                    label={t('resource.driverFilter')}
                                     variant="outlined"
                                 />
                             )}
@@ -1149,7 +1213,7 @@ export default function DailyPlanningPage() {
                                     setSelectedDriverFilter(null);
                                 }}
                             >
-                                Clear Filters
+                                {t('resource.clear')}
                             </Button>
                         )}
 
@@ -1173,7 +1237,10 @@ export default function DailyPlanningPage() {
                                             fontWeight: 'bold'
                                         }}
                                     >
-                                        {resourceName}: {resourceHours}h
+                                            {assignmentT('dayCard.resourceHours', {
+                                                name: resourceName,
+                                                hours: formatHoursValue(resourceHours),
+                                            })}
                                     </Typography>
                                 </Box>
                             );
@@ -1190,7 +1257,10 @@ export default function DailyPlanningPage() {
                             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Assignment color="primary" />
                                 {client.clientName}
-                                <Chip size="small" label={`${client.rides.length} ride${client.rides.length !== 1 ? 's' : ''}`} />
+                                <Chip
+                                    size="small"
+                                    label={assignmentT('dayCard.ridesCount', { count: client.rides.length })}
+                                />
                             </Typography>
                             
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -1231,19 +1301,19 @@ export default function DailyPlanningPage() {
                     {ridesData && ridesData.clients.length > 0 ? (
                         <>
                             <Typography variant="h6" color="text.secondary" gutterBottom>
-                                No rides match the current filters
+                                {t('alerts.noFilters')}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Try adjusting your filters or clear them to see all rides.
+                                {t('alerts.noFiltersHelper')}
                             </Typography>
                         </>
                     ) : (
                         <>
                             <Typography variant="h6" color="text.secondary" gutterBottom>
-                                No rides planned for {formatDateForDisplay(selectedDate)}
+                                {t('alerts.noRides', { date: formatDateForDisplay(selectedDate) })}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Select a different date or generate rides from the weekly planning view.
+                                {t('alerts.noRidesHelper')}
                             </Typography>
                         </>
                     )}

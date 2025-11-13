@@ -140,12 +140,17 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
     const formatHoursValue = React.useCallback((value: number) => {
         const rounded = Number.isFinite(value) ? Number(value) : 0;
-        return Number.isInteger(rounded) ? `${rounded}h` : `${rounded.toFixed(1)}h`;
+        return Number.isInteger(rounded) ? `${rounded}` : `${rounded.toFixed(1)}`;
     }, []);
 
-    const formatHoursSummary = React.useCallback((used: number, total: number) => {
-        return `${formatHoursValue(used)} / ${formatHoursValue(total)} scheduled`;
-    }, [formatHoursValue]);
+    const formatHoursSummary = React.useCallback(
+        (used: number, total: number) =>
+            t('availability.summary', {
+                used: formatHoursValue(used),
+                total: formatHoursValue(total),
+            }),
+        [t, formatHoursValue]
+    );
 
     const filterStatusLabels = React.useMemo(
         () => ({
@@ -323,7 +328,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     }, [addDriverRide, drivers, getDriverAvailabilityStatus]);
 
     const addDriverRideTotalHours = addDriverRide?.plannedHours ?? 8;
-    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? 'Primary driver';
+    const addDriverPrimaryName = addDriverRide?.assignedDriver?.fullName ?? t('addDriverDialog.primaryFallback');
     const addDriverPrimaryHours =
         addDriverRide?.assignedDriver?.plannedHours ?? addDriverRide?.plannedHours ?? 8;
     
@@ -354,7 +359,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         // Check for driver conflict
         const driverHours = currentRide.secondDriver ? currentRide.assignedDriver?.plannedHours || 8 : currentRide.plannedHours;
-        const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+        const driverName = drivers?.find(d => d.id === driverId)?.fullName || t('resource.unknownDriver');
         const conflict = checkDriverConflict(ridesData, rideId, driverId, driverHours, driverName, availabilityData);
 
         if (conflict) {
@@ -475,7 +480,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         // Check for truck conflict
         const truckHours = currentRide.plannedHours;
-        const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || 'Unknown Truck';
+        const truckLicensePlate = trucks?.find(t => t.id === truckId)?.licensePlate || t('resource.unknownTruck');
         const conflict = checkTruckConflict(ridesData, rideId, truckId, truckHours, truckLicensePlate, availabilityData);
 
         if (conflict) {
@@ -586,7 +591,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
         if (!currentRide || !ridesData) return;
 
         // Check for driver hours conflict
-        const driverName = drivers?.find(d => d.id === driverId)?.fullName || 'Unknown Driver';
+        const driverName = drivers?.find(d => d.id === driverId)?.fullName || t('resource.unknownDriver');
         const conflict = checkDriverHoursConflict(ridesData, rideId, driverId, hours, driverName);
 
         if (conflict) {
@@ -660,7 +665,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
 
         // Check for truck conflict if truck is assigned (truck hours = planned hours)
         if (currentRide.assignedTruck) {
-            const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck!.id)?.licensePlate || 'Unknown Truck';
+        const truckLicensePlate = trucks?.find(t => t.id === currentRide.assignedTruck!.id)?.licensePlate || t('resource.unknownTruck');
             const conflict = checkTruckConflict(ridesData, rideId, currentRide.assignedTruck.id, hours, truckLicensePlate);
 
             if (conflict) {
@@ -1050,11 +1055,11 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
     const getSelectedResourceName = () => {
         if (selectedTruckFilter) {
             const truck = trucks?.find(t => t.id === selectedTruckFilter);
-            return truck ? `Truck ${truck.licensePlate}` : 'Selected Truck';
+            return truck ? truck.licensePlate : t('resource.unknownTruck');
         }
         if (selectedDriverFilter) {
             const driver = drivers?.find(d => d.id === selectedDriverFilter);
-            return driver ? driver.fullName : 'Selected Driver';
+            return driver ? driver.fullName : t('resource.unknownDriver');
         }
         return '';
     };
@@ -1554,7 +1559,7 @@ export default function WeeklyAssignmentGrid({ selectedDate, onDateChange }: Pro
                                                     fontWeight: 'medium'
                                                 }}
                                             >
-                                                {t('dayCard.resourceHours', { name: resourceName, hours: resourceHours })}
+                                        {t('dayCard.resourceHours', { name: resourceName, hours: formatHoursValue(resourceHours) })}
                                             </Typography>
                                         );
                                     }
