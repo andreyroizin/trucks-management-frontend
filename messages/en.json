@@ -1188,6 +1188,12 @@
         "hourlyWage100Percent": {
           "label": "Hourly Wage (100%)"
         },
+        "caoHourlyWage": {
+          "label": "CAO Hourly Wage"
+        },
+        "hourlyWage": {
+          "label": "Hourly Wage"
+        },
         "deviatingWage": {
           "label": "Deviating Wage"
         },
@@ -1413,6 +1419,12 @@
         },
         "hourlyWage100Percent": {
           "label": "Hourly Wage (100%)"
+        },
+        "caoHourlyWage": {
+          "label": "CAO Hourly Wage"
+        },
+        "hourlyWage": {
+          "label": "Hourly Wage"
         },
         "deviatingWage": {
           "label": "Deviating Wage"

@@ -60,6 +60,7 @@ type FormInputs = {
     WorkingHours?: string;                  // Optional - backend: WorkingHours
     PayScale?: string;                      // Optional - backend: PayScale
     PayScaleStep?: number;                  // Optional - backend: PayScaleStep
+    HourlyWage?: number;                    // Optional - backend: hourlyWage (editable, prefilled from CAO)
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: KilometersAllowanceAllowed
     ATV?: number;                           // Optional - backend: Atv (default 3.5)
@@ -141,6 +142,7 @@ export default function CreateDriverPage() {
         WorkingHours: yup.string().optional(),
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        HourlyWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         KilometersAllowanceAllowed: yup.boolean().optional(),
         ATV: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -192,6 +194,7 @@ export default function CreateDriverPage() {
             WorkingHours: '',
             PayScale: 'D',
             PayScaleStep: 5,
+            HourlyWage: undefined, // Will be auto-filled from CAO hourly wage
             CommuteKilometers: undefined,
             KilometersAllowanceAllowed: false,
             ATV: 3.5,
@@ -210,8 +213,16 @@ export default function CreateDriverPage() {
     // Watch pay scale and step to calculate hourly wage
     const payScale = watch('PayScale');
     const payScaleStep = watch('PayScaleStep');
-    const hourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
+    const caoHourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
     const availableSteps = getAvailableSteps(payScale || '');
+    const hourlyWage = watch('HourlyWage');
+
+    // Auto-fill HourlyWage when CAO hourly wage is calculated
+    useEffect(() => {
+        if (caoHourlyWage && !hourlyWage) {
+            setValue('HourlyWage', caoHourlyWage);
+        }
+    }, [caoHourlyWage, hourlyWage, setValue]);
 
     // Watch permanent contract to show/hide duration field
     const watchedPermanentContract = watch('PermanentContract');
@@ -266,10 +277,15 @@ export default function CreateDriverPage() {
                 cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
             }
 
-            // Add calculated hourly wage
-            if (cleanedData.PayScale && cleanedData.PayScaleStep) {
+            // Use editable hourly wage if provided, otherwise calculate from CAO
+            if (cleanedData.HourlyWage !== undefined) {
+                // User has edited the hourly wage, use that value
+                cleanedData.HourlyWage100Percent = Number(cleanedData.HourlyWage);
+            } else if (cleanedData.PayScale && cleanedData.PayScaleStep) {
+                // No user input, calculate from CAO
                 cleanedData.HourlyWage100Percent = getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep);
             }
+            delete cleanedData.HourlyWage; // Remove the form field name
 
             // Add ATV if provided
             if (cleanedData.ATV !== undefined) {
@@ -957,11 +973,11 @@ export default function CreateDriverPage() {
                                 />
                             </Grid>
 
-                            {/* Hourly Wage (Calculated) */}
+                            {/* CAO Hourly Wage (Calculated) */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label={t('drivers.create.fields.hourlyWage100Percent.label')}
-                                    value={hourlyWage ? `€${hourlyWage.toFixed(2)}` : ''}
+                                    label={t('drivers.create.fields.caoHourlyWage.label')}
+                                    value={caoHourlyWage ? `€${caoHourlyWage.toFixed(2)}` : ''}
                                     fullWidth
                                     margin="normal"
                                     variant="outlined"
@@ -973,6 +989,28 @@ export default function CreateDriverPage() {
                                             backgroundColor: 'grey.50',
                                         },
                                     }}
+                                />
+                            </Grid>
+
+                            {/* Hourly Wage (Editable) */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="HourlyWage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label={t('drivers.create.fields.hourlyWage.label')}
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            value={field.value ?? ''}
+                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                            error={!!errors.HourlyWage}
+                                            helperText={errors.HourlyWage?.message}
+                                        />
+                                    )}
                                 />
                             </Grid>
                         </Grid>

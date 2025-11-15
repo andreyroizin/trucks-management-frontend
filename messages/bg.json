@@ -1193,6 +1193,12 @@
         "hourlyWage100Percent": {
           "label": "Почасова заплата (100%)"
         },
+        "caoHourlyWage": {
+          "label": "CAO Почасова заплата"
+        },
+        "hourlyWage": {
+          "label": "Почасова заплата"
+        },
         "deviatingWage": {
           "label": "Отклоняваща се заплата"
         },
@@ -1418,6 +1424,12 @@
         },
         "hourlyWage100Percent": {
           "label": "Часова ставка (100%)"
+        },
+        "caoHourlyWage": {
+          "label": "CAO Почасова заплата"
+        },
+        "hourlyWage": {
+          "label": "Почасова заплата"
         },
         "deviatingWage": {
           "label": "Отклоняваща се заплата"

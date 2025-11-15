@@ -63,6 +63,7 @@ type FormInputs = {
     WorkingHours?: string;                  // Optional - backend: workingHours
     PayScale?: string;                      // Optional - backend: payScale
     PayScaleStep?: number;                  // Optional - backend: payScaleStep
+    HourlyWage?: number;                    // Optional - backend: hourlyWage (editable, prefilled from CAO)
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: kilometersAllowanceAllowed
     ATV?: number;                           // Optional - backend: atv (default 3.5)
@@ -169,6 +170,7 @@ export default function EditDriverPage() {
         WorkingHours: yup.string().optional(),
         PayScale: yup.string().optional(),
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        HourlyWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         KilometersAllowanceAllowed: yup.boolean().optional(),
         ATV: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
@@ -230,8 +232,25 @@ export default function EditDriverPage() {
     // Watch pay scale and step to calculate hourly wage
     const payScale = watch('PayScale');
     const payScaleStep = watch('PayScaleStep');
-    const hourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
+    const caoHourlyWage = getHourlyWage(payScale || '', payScaleStep || 0);
     const availableSteps = getAvailableSteps(payScale || '');
+    const hourlyWage = watch('HourlyWage');
+
+    // Auto-fill HourlyWage when CAO hourly wage is calculated (only if not already set from driverData)
+    // This should only run after driverData is loaded and form is reset
+    useEffect(() => {
+        // Only auto-fill if:
+        // 1. Driver data is loaded
+        // 2. Form has been reset (we can check if hourlyWage is still undefined after reset)
+        // 3. Driver doesn't have a saved hourlyWage
+        if (driverData && caoHourlyWage) {
+            const savedHourlyWage = driverData.hourlyWage100Percent;
+            // Only auto-fill if there's no saved hourlyWage100Percent and form field is empty
+            if ((savedHourlyWage === undefined || savedHourlyWage === null) && hourlyWage === undefined) {
+                setValue('HourlyWage', caoHourlyWage);
+            }
+        }
+    }, [driverData, caoHourlyWage, hourlyWage, setValue]);
 
     // Watch permanent contract to show/hide duration field
     const watchedPermanentContract = watch('PermanentContract');
@@ -331,6 +350,7 @@ export default function EditDriverPage() {
                 WorkingHours: driverData.workingHours || '',
                 PayScale: driverData.payScale || '',
                 PayScaleStep: driverData.payScaleStep ? Number(driverData.payScaleStep) : undefined,
+                HourlyWage: driverData.hourlyWage100Percent !== undefined ? Number(driverData.hourlyWage100Percent) : undefined,
                 CommuteKilometers: driverData.commuteKilometers ? Number(driverData.commuteKilometers) : undefined,
                 KilometersAllowanceAllowed: (driverData as any).kilometersAllowanceAllowed || false,
                 ATV: (driverData as any).atv !== undefined ? Number((driverData as any).atv) : 3.5,
@@ -409,7 +429,10 @@ export default function EditDriverPage() {
                 workingHours: cleanedData.WorkingHours,
                 payScale: cleanedData.PayScale,
                 payScaleStep: cleanedData.PayScaleStep,
-                hourlyWage100Percent: cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined,
+                // Use editable hourly wage if provided, otherwise calculate from CAO
+                hourlyWage100Percent: cleanedData.HourlyWage !== undefined 
+                    ? Number(cleanedData.HourlyWage) 
+                    : (cleanedData.PayScale && cleanedData.PayScaleStep ? getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep) || undefined : undefined),
                 commuteKilometers: cleanedData.CommuteKilometers,
                 kilometersAllowanceAllowed: cleanedData.KilometersAllowanceAllowed,
                 atv: cleanedData.ATV !== undefined ? Number(cleanedData.ATV) : undefined,
@@ -1068,11 +1091,11 @@ export default function EditDriverPage() {
                                 />
                             </Grid>
 
-                            {/* Hourly Wage (Calculated) */}
+                            {/* CAO Hourly Wage (Calculated) */}
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                    label={t('drivers.edit.fields.hourlyWage100Percent.label')}
-                                    value={hourlyWage ? `€${hourlyWage.toFixed(2)}` : ''}
+                                    label={t('drivers.edit.fields.caoHourlyWage.label')}
+                                    value={caoHourlyWage ? `€${caoHourlyWage.toFixed(2)}` : ''}
                                     fullWidth
                                     margin="normal"
                                     variant="outlined"
@@ -1084,6 +1107,28 @@ export default function EditDriverPage() {
                                             backgroundColor: 'grey.50',
                                         },
                                     }}
+                                />
+                            </Grid>
+
+                            {/* Hourly Wage (Editable) */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="HourlyWage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label={t('drivers.edit.fields.hourlyWage.label')}
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            value={field.value ?? ''}
+                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                            error={!!errors.HourlyWage}
+                                            helperText={errors.HourlyWage?.message}
+                                        />
+                                    )}
                                 />
                             </Grid>
                         </Grid>

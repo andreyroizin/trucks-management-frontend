@@ -1193,6 +1193,12 @@
         "hourlyWage100Percent": {
           "label": "Uurloon (100%)"
         },
+        "caoHourlyWage": {
+          "label": "CAO Uurloon"
+        },
+        "hourlyWage": {
+          "label": "Uurloon"
+        },
         "deviatingWage": {
           "label": "Afwijkend loon"
         },
@@ -1418,6 +1424,12 @@
         },
         "hourlyWage100Percent": {
           "label": "Uurloon (100%)"
+        },
+        "caoHourlyWage": {
+          "label": "CAO Uurloon"
+        },
+        "hourlyWage": {
+          "label": "Uurloon"
         },
         "deviatingWage": {
           "label": "Afwijkend Loon"
