@@ -1091,25 +1091,30 @@
           "required": "Last name is required"
         },
         "dateOfBirth": {
-          "label": "Date of Birth"
+          "label": "Date of Birth",
+          "required": "Date of birth is required"
         },
         "phoneNumber": {
           "label": "Phone Number"
         },
         "address": {
-          "label": "Address"
+          "label": "Address",
+          "required": "Address is required"
         },
         "postcode": {
-          "label": "Postcode"
+          "label": "Postcode",
+          "required": "Postcode is required"
         },
         "city": {
-          "label": "City"
+          "label": "City",
+          "required": "City is required"
         },
         "country": {
           "label": "Country"
         },
         "bsn": {
-          "label": "BSN"
+          "label": "BSN",
+          "required": "BSN is required"
         },
         "iban": {
           "label": "IBAN"
@@ -1136,7 +1141,8 @@
           "required": "Last working day is required"
         },
         "probationPeriod": {
-          "label": "Probation Period"
+          "label": "Probation Period",
+          "required": "Probation period is required"
         },
         "probationPeriodOptions": {
           "0": "0 month",
@@ -1151,7 +1157,8 @@
           "6": "6 month"
         },
         "noticePeriod": {
-          "label": "Notice Period"
+          "label": "Notice Period",
+          "required": "Notice period is required"
         },
         "function": {
           "label": "Function",
@@ -1173,20 +1180,24 @@
         },
         "weeklySchedule": {
           "label": "Weekly Schedule",
-          "placeholder": "Monday-Friday"
+          "placeholder": "Monday-Friday",
+          "required": "Weekly schedule is required"
         },
         "workingHours": {
           "label": "Working Hours",
-          "placeholder": "09:00-18:00"
+          "placeholder": "09:00-18:00",
+          "required": "Working hours is required"
         },
         "compensationPerMonthExclBtw": {
           "label": "Monthly Compensation (Excl. VAT)"
         },
         "payScale": {
-          "label": "Pay Scale"
+          "label": "Pay Scale",
+          "required": "Pay scale is required"
         },
         "payScaleStep": {
-          "label": "Pay Scale Step"
+          "label": "Pay Scale Step",
+          "required": "Pay scale step is required"
         },
         "hourlyWage100Percent": {
           "label": "Hourly Wage (100%)"
@@ -1219,7 +1230,8 @@
           "label": "Vacation Days"
         },
         "atv": {
-          "label": "ATV (%)"
+          "label": "ATV (%)",
+          "required": "ATV is required"
         },
         "vacationAllowance": {
           "label": "Vacation Allowance",

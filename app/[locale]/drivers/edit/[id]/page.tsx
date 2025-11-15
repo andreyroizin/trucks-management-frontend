@@ -43,31 +43,31 @@ type FormInputs = {
     Email: string;                          // Required - backend: email
     FirstName: string;                      // Required - backend: firstName
     LastName: string;                       // Required - backend: lastName
-    DateOfBirth?: string;                   // Optional - backend: dateOfBirth
+    DateOfBirth: string;                    // Required - backend: dateOfBirth
     PhoneNumber?: string;                   // Optional - backend: phoneNumber
-    Address?: string;                       // Optional - backend: address
-    Postcode?: string;                      // Optional - backend: postcode
-    City?: string;                          // Optional - backend: city
+    Address: string;                        // Required - backend: address
+    Postcode: string;                       // Required - backend: postcode
+    City: string;                           // Required - backend: city
     Country?: string;                       // Optional - backend: country
-    BSN?: string;                           // Optional - backend: bsn
+    BSN: string;                            // Required - backend: bsn
     IBAN?: string;                          // Optional - backend: iban
     EmploymentStartDate: string;            // Required - backend: employmentStartDate
     PermanentContract?: boolean;            // Optional - backend: permanentContract
     ContractDuration?: number;              // Optional - backend: contractDuration (in months)
     LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
-    ProbationPeriod?: string;               // Optional - backend: probationPeriod
-    NoticePeriod?: string;                  // Optional - backend: noticePeriod
+    ProbationPeriod: string;                // Required - backend: probationPeriod
+    NoticePeriod: string;                   // Required - backend: noticePeriod
     Function: string;                       // Required - backend: function
     WorkweekDuration: number;               // Required - backend: workweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: workweekDurationPercentage
-    WeeklySchedule?: string;                // Optional - backend: weeklySchedule
-    WorkingHours?: string;                  // Optional - backend: workingHours
-    PayScale?: string;                      // Optional - backend: payScale
-    PayScaleStep?: number;                  // Optional - backend: payScaleStep
+    WeeklySchedule: string;                 // Required - backend: weeklySchedule
+    WorkingHours: string;                   // Required - backend: workingHours
+    PayScale: string;                       // Required - backend: payScale
+    PayScaleStep: number;                   // Required - backend: payScaleStep
     HourlyWage?: number;                    // Optional - backend: hourlyWage (editable, prefilled from CAO)
     CommuteKilometers?: number;             // Optional - backend: commuteKilometers
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: kilometersAllowanceAllowed
-    ATV?: number;                           // Optional - backend: atv (default 3.5)
+    ATV: number;                            // Required - backend: atv (default 3.5)
     Remark?: string;                        // Optional - backend: remark
 };
 
@@ -152,30 +152,30 @@ export default function EditDriverPage() {
         Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
         FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
         LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
-        DateOfBirth: yup.string().optional(),
+        DateOfBirth: yup.string().required(t('drivers.create.fields.dateOfBirth.required')),
         PhoneNumber: yup.string().optional(),
-        Address: yup.string().optional(),
-        Postcode: yup.string().optional(),
-        City: yup.string().optional(),
+        Address: yup.string().required(t('drivers.create.fields.address.required')),
+        Postcode: yup.string().required(t('drivers.create.fields.postcode.required')),
+        City: yup.string().required(t('drivers.create.fields.city.required')),
         Country: yup.string().optional(),
-        BSN: yup.string().optional(),
+        BSN: yup.string().required(t('drivers.create.fields.bsn.required')),
         IBAN: yup.string().optional(),
         EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
         LastWorkingDay: yup.string().optional(),
-        ProbationPeriod: yup.string().optional(),
-        NoticePeriod: yup.string().optional(),
+        ProbationPeriod: yup.string().required(t('drivers.create.fields.probationPeriod.required')),
+        NoticePeriod: yup.string().required(t('drivers.create.fields.noticePeriod.required')),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
-        WeeklySchedule: yup.string().optional(),
-        WorkingHours: yup.string().optional(),
-        PayScale: yup.string().optional(),
-        PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        WeeklySchedule: yup.string().required(t('drivers.create.fields.weeklySchedule.required')),
+        WorkingHours: yup.string().required(t('drivers.create.fields.workingHours.required')),
+        PayScale: yup.string().required(t('drivers.create.fields.payScale.required')),
+        PayScaleStep: yup.number().required(t('drivers.create.fields.payScaleStep.required')).min(0, t('drivers.create.validation.positiveNumber')),
         HourlyWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         KilometersAllowanceAllowed: yup.boolean().optional(),
-        ATV: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        ATV: yup.number().required(t('drivers.create.fields.atv.required')).min(0, t('drivers.create.validation.positiveNumber')),
         Remark: yup.string().optional(),
     });
 
@@ -206,10 +206,10 @@ export default function EditDriverPage() {
             Address: '',
             Postcode: '',
             City: '',
-                Country: '',
-                BSN: '',
+            Country: '',
+            BSN: '',
                 IBAN: '',
-                EmploymentStartDate: '',
+            EmploymentStartDate: '',
             PermanentContract: false,
             ContractDuration: undefined,
             ProbationPeriod: '',
@@ -650,11 +650,12 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Date of Birth"
+                                            label={t('drivers.edit.fields.dateOfBirth.label')}
                                             type="date"
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.DateOfBirth}
                                             helperText={errors.DateOfBirth?.message}
                                             InputLabelProps={{
@@ -671,10 +672,11 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Address"
+                                            label={t('drivers.edit.fields.address.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.Address}
                                             helperText={errors.Address?.message}
                                         />
@@ -690,10 +692,11 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="PostCode"
+                                            label={t('drivers.edit.fields.postcode.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.Postcode}
                                             helperText={errors.Postcode?.message}
                                         />
@@ -707,10 +710,11 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="City"
+                                            label={t('drivers.edit.fields.city.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.City}
                                             helperText={errors.City?.message}
                                         />
@@ -726,7 +730,7 @@ export default function EditDriverPage() {
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="Country"
+                                            label={t('drivers.edit.fields.country.label')}
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
@@ -747,6 +751,7 @@ export default function EditDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.BSN}
                                             helperText={errors.BSN?.message}
                                         />
@@ -823,19 +828,19 @@ export default function EditDriverPage() {
                             </Grid>
                             {!watchedPermanentContract && (
                                 <>
-                                    <Grid item xs={12} sm={6}>
-                                        <Controller
-                                            name="ContractDuration"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    label={t('drivers.edit.fields.contractDuration.label')}
-                                                    type="number"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    variant="outlined"
-                                                    error={!!errors.ContractDuration}
-                                                    helperText={errors.ContractDuration?.message}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="ContractDuration"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                label={t('drivers.edit.fields.contractDuration.label')}
+                                                type="number"
+                                                fullWidth
+                                                margin="normal"
+                                                variant="outlined"
+                                                error={!!errors.ContractDuration}
+                                                helperText={errors.ContractDuration?.message}
                                                     value={contractDurationDisplay}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
@@ -858,14 +863,14 @@ export default function EditDriverPage() {
                                                             field.onChange(undefined);
                                                         }
                                                     }}
-                                                    inputProps={{
-                                                        min: "1",
-                                                        step: "1"
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
+                                                inputProps={{
+                                                    min: "1",
+                                                    step: "1"
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <Controller
                                             name="LastWorkingDay"
@@ -914,6 +919,7 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.ProbationPeriod}
                                                     helperText={errors.ProbationPeriod?.message}
                                                 />
@@ -942,6 +948,7 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.NoticePeriod}
                                                     helperText={errors.NoticePeriod?.message}
                                                 />
@@ -973,15 +980,15 @@ export default function EditDriverPage() {
                                             getOptionLabel={(option) => option.label}
                                             onChange={(_, value) => field.onChange(value?.value || '')}
                                             renderInput={(params) => (
-                                                <TextField
+                                        <TextField
                                                     {...params}
-                                                    label={t('drivers.edit.fields.function.label')}
-                                                    variant="outlined"
+                                            label={t('drivers.edit.fields.function.label')}
+                                            variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    error={!!errors.Function}
-                                                    helperText={errors.Function?.message}
-                                                    required
+                                            error={!!errors.Function}
+                                            helperText={errors.Function?.message}
+                                            required
                                                 />
                                             )}
                                             value={
@@ -1050,6 +1057,7 @@ export default function EditDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.WeeklySchedule}
                                             helperText={errors.WeeklySchedule?.message}
                                         />
@@ -1068,6 +1076,7 @@ export default function EditDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.WorkingHours}
                                             helperText={errors.WorkingHours?.message}
                                         />
@@ -1100,6 +1109,7 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.PayScale}
                                                     helperText={errors.PayScale?.message}
                                                 />
@@ -1126,6 +1136,7 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.PayScaleStep}
                                                     helperText={errors.PayScaleStep?.message || (!payScale ? 'Select Pay Scale first' : '')}
                                                 />
@@ -1243,6 +1254,7 @@ export default function EditDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                                             error={!!errors.ATV}

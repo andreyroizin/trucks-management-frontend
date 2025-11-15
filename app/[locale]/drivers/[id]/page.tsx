@@ -190,13 +190,6 @@ export default function DriverDetailPage() {
             
             // Refresh contract data
             await refetchContract();
-            
-            // Optionally offer immediate download
-            setTimeout(() => {
-                if (response.contractVersionId) {
-                    handleDownloadContract(response.contractVersionId);
-                }
-            }, 1000);
         } catch (error: any) {
             console.error('Regenerate error:', error);
             
@@ -516,31 +509,6 @@ export default function DriverDetailPage() {
                                     t('drivers.detail.fields.noCarAssigned')
                                 )}
                             </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-
-                <Divider sx={{ my: 3 }} />
-
-                {/* Contract Status */}
-                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                    {t('drivers.detail.sections.contractStatus')}
-                </Typography>
-                <Table size="small">
-                    <TableBody>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none', width: 180}}>
-                                {t('drivers.detail.fields.status')}
-                            </TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.contractStatus || t('drivers.detail.notAvailable')}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.signedDate')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{formatDate(driver.signedAt)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.accessCode')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{driver.accessCode || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

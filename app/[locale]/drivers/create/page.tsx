@@ -44,31 +44,31 @@ type FormInputs = {
     Password: string;                       // Required - backend: Password
     FirstName: string;                      // Required - backend: FirstName
     LastName: string;                       // Required - backend: LastName
-    DateOfBirth?: string;                   // Optional - backend: DateOfBirth
+    DateOfBirth: string;                    // Required - backend: DateOfBirth
     PhoneNumber?: string;                   // Optional - backend: PhoneNumber
-    Address?: string;                       // Optional - backend: Address
-    Postcode?: string;                      // Optional - backend: Postcode
-    City?: string;                          // Optional - backend: City
+    Address: string;                        // Required - backend: Address
+    Postcode: string;                       // Required - backend: Postcode
+    City: string;                           // Required - backend: City
     Country?: string;                       // Optional - backend: Country
-    BSN?: string;                           // Optional - backend: BSN
+    BSN: string;                            // Required - backend: BSN
     IBAN?: string;                          // Optional - backend: IBAN
     EmploymentStartDate: string;            // Required - form field, converts to DateOfEmployment for backend
     PermanentContract?: boolean;            // Optional - backend: PermanentContract
     ContractDuration?: number;              // Optional - backend: ContractDuration (in months)
     LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
-    ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
-    NoticePeriod?: string;                  // Optional - backend: NoticePeriod
+    ProbationPeriod: string;                // Required - backend: ProbationPeriod
+    NoticePeriod: string;                   // Required - backend: NoticePeriod
     Function: string;                       // Required - backend: Function
     WorkweekDuration: number;               // Required - backend: WorkweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: WorkweekDurationPercentage
-    WeeklySchedule?: string;                // Optional - backend: WeeklySchedule
-    WorkingHours?: string;                  // Optional - backend: WorkingHours
-    PayScale?: string;                      // Optional - backend: PayScale
-    PayScaleStep?: number;                  // Optional - backend: PayScaleStep
+    WeeklySchedule: string;                 // Required - backend: WeeklySchedule
+    WorkingHours: string;                   // Required - backend: WorkingHours
+    PayScale: string;                       // Required - backend: PayScale
+    PayScaleStep: number;                   // Required - backend: PayScaleStep
     HourlyWage?: number;                    // Optional - backend: hourlyWage (editable, prefilled from CAO)
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: KilometersAllowanceAllowed
-    ATV?: number;                           // Optional - backend: Atv (default 3.5)
+    ATV: number;                            // Required - backend: Atv (default 3.5)
     Remark?: string;                        // Optional - backend: Remark
 };
 
@@ -128,30 +128,30 @@ export default function CreateDriverPage() {
             .matches(/[^a-zA-Z0-9]/, t('drivers.create.validation.passwordSpecialChar')),
         FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
         LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
-        DateOfBirth: yup.string().optional(),
+        DateOfBirth: yup.string().required(t('drivers.create.fields.dateOfBirth.required')),
         PhoneNumber: yup.string().optional(),
-        Address: yup.string().optional(),
-        Postcode: yup.string().optional(),
-        City: yup.string().optional(),
+        Address: yup.string().required(t('drivers.create.fields.address.required')),
+        Postcode: yup.string().required(t('drivers.create.fields.postcode.required')),
+        City: yup.string().required(t('drivers.create.fields.city.required')),
         Country: yup.string().optional(),
-        BSN: yup.string().optional(),
+        BSN: yup.string().required(t('drivers.create.fields.bsn.required')),
         IBAN: yup.string().optional(),
         EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
         LastWorkingDay: yup.string().optional(),
-        ProbationPeriod: yup.string().optional(),
-        NoticePeriod: yup.string().optional(),
+        ProbationPeriod: yup.string().required(t('drivers.create.fields.probationPeriod.required')),
+        NoticePeriod: yup.string().required(t('drivers.create.fields.noticePeriod.required')),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
-        WeeklySchedule: yup.string().optional(),
-        WorkingHours: yup.string().optional(),
-        PayScale: yup.string().optional(),
-        PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        WeeklySchedule: yup.string().required(t('drivers.create.fields.weeklySchedule.required')),
+        WorkingHours: yup.string().required(t('drivers.create.fields.workingHours.required')),
+        PayScale: yup.string().required(t('drivers.create.fields.payScale.required')),
+        PayScaleStep: yup.number().required(t('drivers.create.fields.payScaleStep.required')).min(0, t('drivers.create.validation.positiveNumber')),
         HourlyWage: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         KilometersAllowanceAllowed: yup.boolean().optional(),
-        ATV: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
+        ATV: yup.number().required(t('drivers.create.fields.atv.required')).min(0, t('drivers.create.validation.positiveNumber')),
         Remark: yup.string().optional(),
     });
 
@@ -530,6 +530,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.DateOfBirth}
                                             helperText={errors.DateOfBirth?.message}
                                             InputLabelProps={{
@@ -569,6 +570,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.Address}
                                             helperText={errors.Address?.message}
                                         />
@@ -586,6 +588,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.Postcode}
                                             helperText={errors.Postcode?.message}
                                         />
@@ -605,6 +608,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.City}
                                             helperText={errors.City?.message}
                                         />
@@ -641,6 +645,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.BSN}
                                             helperText={errors.BSN?.message}
                                         />
@@ -808,6 +813,7 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.ProbationPeriod}
                                                     helperText={errors.ProbationPeriod?.message}
                                                 />
@@ -836,6 +842,7 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.NoticePeriod}
                                                     helperText={errors.NoticePeriod?.message}
                                                 />
@@ -944,6 +951,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.WeeklySchedule}
                                             helperText={errors.WeeklySchedule?.message}
                                         />
@@ -962,6 +970,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             error={!!errors.WorkingHours}
                                             helperText={errors.WorkingHours?.message}
                                         />
@@ -996,6 +1005,7 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.PayScale}
                                                     helperText={errors.PayScale?.message}
                                                 />
@@ -1022,6 +1032,7 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
+                                                    required
                                                     error={!!errors.PayScaleStep}
                                                     helperText={errors.PayScaleStep?.message || (!payScale ? 'Select Pay Scale first' : '')}
                                                 />
@@ -1143,6 +1154,7 @@ export default function CreateDriverPage() {
                                             fullWidth
                                             margin="normal"
                                             variant="outlined"
+                                            required
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                                             error={!!errors.ATV}

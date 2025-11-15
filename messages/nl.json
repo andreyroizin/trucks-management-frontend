@@ -1096,25 +1096,30 @@
           "required": "Achternaam is verplicht"
         },
         "dateOfBirth": {
-          "label": "Geboortedatum"
+          "label": "Geboortedatum",
+          "required": "Geboortedatum is verplicht"
         },
         "phoneNumber": {
           "label": "Telefoonnummer"
         },
         "address": {
-          "label": "Adres"
+          "label": "Adres",
+          "required": "Adres is verplicht"
         },
         "postcode": {
-          "label": "Postcode"
+          "label": "Postcode",
+          "required": "Postcode is verplicht"
         },
         "city": {
-          "label": "Stad"
+          "label": "Stad",
+          "required": "Stad is verplicht"
         },
         "country": {
           "label": "Land"
         },
         "bsn": {
-          "label": "BSN"
+          "label": "BSN",
+          "required": "BSN is verplicht"
         },
         "iban": {
           "label": "IBAN"
@@ -1141,7 +1146,8 @@
           "required": "Laatste werkdag is verplicht"
         },
         "probationPeriod": {
-          "label": "Proeftijd"
+          "label": "Proeftijd",
+          "required": "Proeftijd is verplicht"
         },
         "probationPeriodOptions": {
           "0": "0 maand",
@@ -1156,7 +1162,8 @@
           "6": "6 maand"
         },
         "noticePeriod": {
-          "label": "Opzegtermijn"
+          "label": "Opzegtermijn",
+          "required": "Opzegtermijn is verplicht"
         },
         "function": {
           "label": "Functie",
@@ -1178,20 +1185,24 @@
         },
         "weeklySchedule": {
           "label": "Wekelijkse planning",
-          "placeholder": "Maandag-Vrijdag"
+          "placeholder": "Maandag-Vrijdag",
+          "required": "Wekelijkse planning is verplicht"
         },
         "workingHours": {
           "label": "Werkuren",
-          "placeholder": "09:00-18:00"
+          "placeholder": "09:00-18:00",
+          "required": "Werkuren is verplicht"
         },
         "compensationPerMonthExclBtw": {
           "label": "Maandelijkse vergoeding (Excl. BTW)"
         },
         "payScale": {
-          "label": "Salarisschaal"
+          "label": "Salarisschaal",
+          "required": "Salarisschaal is verplicht"
         },
         "payScaleStep": {
-          "label": "Salarisschaal Stap"
+          "label": "Salarisschaal Stap",
+          "required": "Salarisschaal stap is verplicht"
         },
         "hourlyWage100Percent": {
           "label": "Uurloon (100%)"
@@ -1224,7 +1235,8 @@
           "label": "Vakantiedagen"
         },
         "atv": {
-          "label": "ATV (%)"
+          "label": "ATV (%)",
+          "required": "ATV is verplicht"
         },
         "vacationAllowance": {
           "label": "Vakantietoeslag",
