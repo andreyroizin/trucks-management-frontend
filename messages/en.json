@@ -1123,7 +1123,10 @@
           "label": "Permanent Contract"
         },
         "contractDuration": {
-          "label": "Contract Duration (months)"
+          "label": "Contract Duration (month)"
+        },
+        "contractEndDate": {
+          "label": "Contract End Date"
         },
         "lastWorkingDay": {
           "label": "Last Working Day",
@@ -1132,6 +1135,18 @@
         "probationPeriod": {
           "label": "Probation Period"
         },
+        "probationPeriodOptions": {
+          "0": "0 month",
+          "1": "1 month"
+        },
+        "noticePeriodOptions": {
+          "1": "1 month",
+          "2": "2 month",
+          "3": "3 month",
+          "4": "4 month",
+          "5": "5 month",
+          "6": "6 month"
+        },
         "noticePeriod": {
           "label": "Notice Period"
         },
@@ -1139,6 +1154,14 @@
           "label": "Function",
           "required": "Function is required",
           "maxLength": "Function must be less than 100 characters"
+        },
+        "functionOptions": {
+          "chauffeur": "Driver",
+          "administrativeMedewerker": "Administrative employee",
+          "vervoermanager": "Transport manager",
+          "planner": "Planner",
+          "supportMedewerker": "Support employee",
+          "transportManager": "Transport manager"
         },
         "workweekDuration": {
           "label": "Workweek Duration (hours)",
@@ -1187,7 +1210,7 @@
           "label": "Vacation Days"
         },
         "atv": {
-          "label": "ATV (Reduced Working Hours)"
+          "label": "ATV (%)"
         },
         "vacationAllowance": {
           "label": "Vacation Allowance",
@@ -1262,7 +1285,7 @@
         "deviatingWage": "Deviating Wage",
         "commuteKilometers": "Commute Kilometers",
         "kilometersAllowanceAllowed": "Kilometers Allowance Allowed",
-        "atv": "ATV (Reduced Working Hours)",
+        "atv": "ATV (%)",
         "assignedCar": "Assigned Car",
         "noCarAssigned": "No car assigned",
         "status": "Status",
@@ -1348,7 +1371,10 @@
           "label": "Permanent Contract"
         },
         "contractDuration": {
-          "label": "Contract Duration (months)"
+          "label": "Contract Duration (month)"
+        },
+        "contractEndDate": {
+          "label": "Contract End Date"
         },
         "lastWorkingDay": {
           "label": "Last Working Day"
@@ -1410,7 +1436,7 @@
           "label": "Vacation Days"
         },
         "atv": {
-          "label": "ATV (Reduced Working Hours)"
+          "label": "ATV (%)"
         },
         "vacationAllowance": {
           "label": "Vacation Allowance"

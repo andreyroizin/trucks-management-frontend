@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import {
     Box,
@@ -23,6 +23,14 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateDriver } from '@/hooks/useCreateDriver';
 import FileUploadBox from '@/components/FileUploadBox';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const AMSTERDAM_TZ = 'Europe/Amsterdam';
 
 // Schema will be defined inside the component to access translations
 
@@ -42,6 +50,7 @@ type FormInputs = {
     EmploymentStartDate: string;            // Required - form field, converts to DateOfEmployment for backend
     PermanentContract?: boolean;            // Optional - backend: PermanentContract
     ContractDuration?: number;              // Optional - backend: ContractDuration (in months)
+    LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
     ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
     NoticePeriod?: string;                  // Optional - backend: NoticePeriod
     Function: string;                       // Required - backend: Function
@@ -53,6 +62,7 @@ type FormInputs = {
     PayScaleStep?: number;                  // Optional - backend: PayScaleStep
     CommuteKilometers?: number;             // Optional - backend: CommuteKilometers
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: KilometersAllowanceAllowed
+    ATV?: number;                           // Optional - backend: Atv (default 3.5)
     Remark?: string;                        // Optional - backend: Remark
 };
 
@@ -66,8 +76,26 @@ const getPeriodOptions = (t: any) => [
 ];
 
 const getProbationPeriodOptions = (t: any) => [
-    { value: '0', label: '0 months' },
-    { value: '1', label: '1 month' },
+    { value: '0', label: t('drivers.create.fields.probationPeriodOptions.0') },
+    { value: '1', label: t('drivers.create.fields.probationPeriodOptions.1') },
+];
+
+const getNoticePeriodOptions = (t: any) => [
+    { value: '1', label: t('drivers.create.fields.noticePeriodOptions.1') },
+    { value: '2', label: t('drivers.create.fields.noticePeriodOptions.2') },
+    { value: '3', label: t('drivers.create.fields.noticePeriodOptions.3') },
+    { value: '4', label: t('drivers.create.fields.noticePeriodOptions.4') },
+    { value: '5', label: t('drivers.create.fields.noticePeriodOptions.5') },
+    { value: '6', label: t('drivers.create.fields.noticePeriodOptions.6') },
+];
+
+const getFunctionOptions = (t: any) => [
+    { value: t('drivers.create.fields.functionOptions.chauffeur'), label: t('drivers.create.fields.functionOptions.chauffeur') },
+    { value: t('drivers.create.fields.functionOptions.administrativeMedewerker'), label: t('drivers.create.fields.functionOptions.administrativeMedewerker') },
+    { value: t('drivers.create.fields.functionOptions.vervoermanager'), label: t('drivers.create.fields.functionOptions.vervoermanager') },
+    { value: t('drivers.create.fields.functionOptions.planner'), label: t('drivers.create.fields.functionOptions.planner') },
+    { value: t('drivers.create.fields.functionOptions.supportMedewerker'), label: t('drivers.create.fields.functionOptions.supportMedewerker') },
+    { value: t('drivers.create.fields.functionOptions.transportManager'), label: t('drivers.create.fields.functionOptions.transportManager') },
 ];
 
 export default function CreateDriverPage() {
@@ -79,6 +107,11 @@ export default function CreateDriverPage() {
     
     const periodOptions = getPeriodOptions(t);
     const probationPeriodOptions = getProbationPeriodOptions(t);
+    const noticePeriodOptions = getNoticePeriodOptions(t);
+    const functionOptions = getFunctionOptions(t);
+    
+    // Set default function value (Chauffeur)
+    const defaultFunctionValue = functionOptions[0]?.value || '';
     
     const schema = yup.object().shape({
         CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
@@ -99,6 +132,7 @@ export default function CreateDriverPage() {
         EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
+        LastWorkingDay: yup.string().optional(),
         ProbationPeriod: yup.string().optional(),
         NoticePeriod: yup.string().optional(),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
@@ -109,11 +143,15 @@ export default function CreateDriverPage() {
         PayScaleStep: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         CommuteKilometers: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         KilometersAllowanceAllowed: yup.boolean().optional(),
+        ATV: yup.number().optional().min(0, t('drivers.create.validation.positiveNumber')),
         Remark: yup.string().optional(),
     });
 
     // File upload state
     const [tempFiles, setTempFiles] = useState<{ fileId: string; originalFileName: string }[]>([]);
+    
+    // Local display value for contract duration (to handle empty states during editing)
+    const [contractDurationDisplay, setContractDurationDisplay] = useState<string>('7');
 
     // Handle file upload changes with useCallback to prevent re-renders
     const handleFilesChange = useCallback((files: { fileId: string; originalFileName: string }[]) => {
@@ -125,6 +163,7 @@ export default function CreateDriverPage() {
         control,
         reset,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
@@ -141,19 +180,21 @@ export default function CreateDriverPage() {
             City: '',
             Country: '',
             BSN: '',
-            EmploymentStartDate: '',
+            EmploymentStartDate: dayjs().tz(AMSTERDAM_TZ).format('YYYY-MM-DD'),
             PermanentContract: false,
-            ContractDuration: undefined,
-            ProbationPeriod: '',
-            NoticePeriod: '',
-            Function: '',
+            ContractDuration: 7,
+            LastWorkingDay: dayjs().tz(AMSTERDAM_TZ).add(7, 'month').format('YYYY-MM-DD'),
+            ProbationPeriod: '1',
+            NoticePeriod: '1',
+            Function: defaultFunctionValue,
             WorkweekDuration: undefined,
             WeeklySchedule: '',
             WorkingHours: '',
-            PayScale: '',
-            PayScaleStep: undefined,
+            PayScale: 'D',
+            PayScaleStep: 5,
             CommuteKilometers: undefined,
             KilometersAllowanceAllowed: false,
+            ATV: 3.5,
             Remark: '',
         },
     });
@@ -180,26 +221,19 @@ export default function CreateDriverPage() {
     // Calculate contract end date if duration is specified
     const calculateContractEndDate = (startDate: string, durationMonths: number): string => {
         if (!startDate || !durationMonths) return '';
-        const start = new Date(startDate);
-        const end = new Date(start);
-        end.setMonth(end.getMonth() + durationMonths);
-        return end.toISOString();
+        return dayjs.tz(startDate, AMSTERDAM_TZ).add(durationMonths, 'month').format('YYYY-MM-DD');
     };
 
-    // Calculate ATV based on workweek duration
-    const calculateATV = (workweekDuration: number): number => {
-        if (!workweekDuration || workweekDuration <= 0) return 0;
-        if (workweekDuration >= 40) return 104;
-        // Proportional calculation: (workweekDuration / 40) * 104
-        return Math.round((workweekDuration / 40) * 104);
-    };
 
-    // Watch workweek duration to calculate ATV
-    const watchedWorkweekDuration = watch('WorkweekDuration');
-    const calculatedATV = useMemo(() => {
-        return calculateATV(watchedWorkweekDuration || 0);
-    }, [watchedWorkweekDuration]);
-
+    // Auto-calculate last working day when EmploymentStartDate or ContractDuration changes
+    useEffect(() => {
+        if (!watchedPermanentContract && watchedEmploymentStartDate && watchedContractDuration) {
+            const calculated = calculateContractEndDate(watchedEmploymentStartDate, watchedContractDuration);
+            setValue('LastWorkingDay', calculated);
+        } else if (watchedPermanentContract) {
+            setValue('LastWorkingDay', '');
+        }
+    }, [watchedEmploymentStartDate, watchedContractDuration, watchedPermanentContract, setValue]);
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
@@ -227,10 +261,9 @@ export default function CreateDriverPage() {
                 delete cleanedData.EmploymentStartDate; // Remove the temporary field name
             }
 
-            // Calculate contract end date if not permanent contract
-            if (!cleanedData.PermanentContract && cleanedData.ContractDuration && cleanedData.EmploymentStartDate) {
-                const contractEndDate = calculateContractEndDate(cleanedData.EmploymentStartDate, cleanedData.ContractDuration);
-                cleanedData.LastWorkingDay = contractEndDate; // Update LastWorkingDay with the calculated end date
+            // Format last working day to ISO 8601 format if it exists
+            if (cleanedData.LastWorkingDay) {
+                cleanedData.LastWorkingDay = new Date(cleanedData.LastWorkingDay).toISOString();
             }
 
             // Add calculated hourly wage
@@ -238,8 +271,11 @@ export default function CreateDriverPage() {
                 cleanedData.HourlyWage100Percent = getHourlyWage(cleanedData.PayScale, cleanedData.PayScaleStep);
             }
 
-            // Add calculated ATV
-            cleanedData.Atv = calculateATV(cleanedData.WorkweekDuration || 0);
+            // Add ATV if provided
+            if (cleanedData.ATV !== undefined) {
+                cleanedData.Atv = Number(cleanedData.ATV);
+                delete cleanedData.ATV; // Remove the form field name, use backend field name
+            }
 
             // Add uploaded files to the request
             cleanedData.NewUploads = tempFiles;
@@ -606,29 +642,72 @@ export default function CreateDriverPage() {
                                 />
                             </Grid>
                             {!watchedPermanentContract && (
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
-                                        name="ContractDuration"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label={t('drivers.create.fields.contractDuration.label')}
-                                                type="number"
-                                                fullWidth
-                                                margin="normal"
-                                                variant="outlined"
-                                                error={!!errors.ContractDuration}
-                                                helperText={errors.ContractDuration?.message}
-                                                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                                                inputProps={{
-                                                    min: "1",
-                                                    step: "1"
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
+                                <>
+                                    <Grid item xs={12} sm={6}>
+                                        <Controller
+                                            name="ContractDuration"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    label={t('drivers.create.fields.contractDuration.label')}
+                                                    type="number"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                    error={!!errors.ContractDuration}
+                                                    helperText={errors.ContractDuration?.message}
+                                                    value={contractDurationDisplay}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setContractDurationDisplay(value);
+                                                        
+                                                        // Allow empty string for clearing
+                                                        if (value === '') {
+                                                            field.onChange(undefined);
+                                                            return;
+                                                        }
+                                                        
+                                                        const numValue = Number(value);
+                                                        if (!isNaN(numValue) && numValue >= 1) {
+                                                            field.onChange(numValue);
+                                                        }
+                                                    }}
+                                                    onBlur={() => {
+                                                        // If field is empty on blur, keep it empty
+                                                        if (contractDurationDisplay === '') {
+                                                            field.onChange(undefined);
+                                                        }
+                                                    }}
+                                                    inputProps={{
+                                                        min: "1",
+                                                        step: "1"
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Controller
+                                            name="LastWorkingDay"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <TextField
+                                                    {...field}
+                                                    label={t('drivers.create.fields.lastWorkingDay.label')}
+                                                    type="date"
+                                                    fullWidth
+                                                    margin="normal"
+                                                    variant="outlined"
+                                                    error={!!errors.LastWorkingDay}
+                                                    helperText={errors.LastWorkingDay?.message}
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                </>
                             )}
                         </Grid>
                     </Box>
@@ -673,7 +752,7 @@ export default function CreateDriverPage() {
                                     control={control}
                                     render={({ field }) => (
                                         <Autocomplete
-                                            options={periodOptions}
+                                            options={noticePeriodOptions}
                                             getOptionLabel={(option) => option.label}
                                             onChange={(_, value) => field.onChange(value?.value || '')}
                                             renderInput={(params) => (
@@ -688,7 +767,7 @@ export default function CreateDriverPage() {
                                                 />
                                             )}
                                             value={
-                                                periodOptions.find(option => option.value === field.value) || null
+                                                noticePeriodOptions.find(option => option.value === field.value) || null
                                             }
                                             isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
@@ -709,15 +788,26 @@ export default function CreateDriverPage() {
                                     name="Function"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.function.label')}
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.Function}
-                                            helperText={errors.Function?.message}
-                                            required
+                                        <Autocomplete
+                                            options={functionOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.create.fields.function.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.Function}
+                                                    helperText={errors.Function?.message}
+                                                    required
+                                                />
+                                            )}
+                                            value={
+                                                functionOptions.find(option => option.value === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
                                     )}
                                 />
@@ -946,21 +1036,23 @@ export default function CreateDriverPage() {
                         </Typography>
                         <Grid container columnSpacing={2} rowSpacing={0}>
                             <Grid item xs={12}>
-                                <TextField
-                                    label={t('drivers.create.fields.atv.label')}
-                                    type="number"
-                                    fullWidth
-                                    margin="normal"
-                                    variant="outlined"
-                                    value={calculatedATV}
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                    sx={{
-                                        '& .MuiInputBase-input': {
-                                            backgroundColor: '#f5f5f5',
-                                        },
-                                    }}
+                                <Controller
+                                    name="ATV"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label={t('drivers.create.fields.atv.label')}
+                                            type="number"
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            value={field.value ?? ''}
+                                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                                            error={!!errors.ATV}
+                                            helperText={errors.ATV?.message}
+                                        />
+                                    )}
                                 />
                             </Grid>
                         </Grid>

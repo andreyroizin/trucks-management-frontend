@@ -1128,7 +1128,10 @@
           "label": "Постоянен договор"
         },
         "contractDuration": {
-          "label": "Продължителност на договора (месеци)"
+          "label": "Продължителност на договора (месец)"
+        },
+        "contractEndDate": {
+          "label": "Крайна дата на договора"
         },
         "lastWorkingDay": {
           "label": "Последен работен ден",
@@ -1137,6 +1140,18 @@
         "probationPeriod": {
           "label": "Пробен период"
         },
+        "probationPeriodOptions": {
+          "0": "0 месец",
+          "1": "1 месец"
+        },
+        "noticePeriodOptions": {
+          "1": "1 месец",
+          "2": "2 месец",
+          "3": "3 месец",
+          "4": "4 месец",
+          "5": "5 месец",
+          "6": "6 месец"
+        },
         "noticePeriod": {
           "label": "Период на предизвестие"
         },
@@ -1144,6 +1159,14 @@
           "label": "Функция",
           "required": "Функцията е задължителна",
           "maxLength": "Функцията трябва да бъде по-малко от 100 символа"
+        },
+        "functionOptions": {
+          "chauffeur": "Шофьор",
+          "administrativeMedewerker": "Административен служител",
+          "vervoermanager": "Мениджър транспорт",
+          "planner": "Планер",
+          "supportMedewerker": "Служител поддръжка",
+          "transportManager": "Транспортен мениджър"
         },
         "workweekDuration": {
           "label": "Продължителност на работната седмица (часове)",
@@ -1192,7 +1215,7 @@
           "label": "Дни отпуск"
         },
         "atv": {
-          "label": "ATV (Намалени работни часове)"
+          "label": "ATV (%)"
         },
         "vacationAllowance": {
           "label": "Надбавка за отпуск",
@@ -1353,7 +1376,10 @@
           "label": "Постоянен договор"
         },
         "contractDuration": {
-          "label": "Продължителност на договора (месеци)"
+          "label": "Продължителност на договора (месец)"
+        },
+        "contractEndDate": {
+          "label": "Крайна дата на договора"
         },
         "lastWorkingDay": {
           "label": "Последен работен ден"
@@ -2366,7 +2392,7 @@
         "dateOfEmployment": "Дата на назначаване",
         "employmentStartDate": "Начална дата на трудовия договор",
         "permanentContract": "Постоянен договор",
-        "contractDuration": "Продължителност на договора (месеци)",
+        "contractDuration": "Продължителност на договора (месец)",
         "lastWorkingDay": "Последен работен ден",
         "probationPeriod": "Изпитателен Срок",
         "probationPeriodHelp": "напр. '2 месеца' (по избор)",

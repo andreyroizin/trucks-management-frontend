@@ -1128,7 +1128,10 @@
           "label": "Vast contract"
         },
         "contractDuration": {
-          "label": "Contractduur (maanden)"
+          "label": "Contractduur (maand)"
+        },
+        "contractEndDate": {
+          "label": "Contract einddatum"
         },
         "lastWorkingDay": {
           "label": "Laatste werkdag",
@@ -1137,6 +1140,18 @@
         "probationPeriod": {
           "label": "Proeftijd"
         },
+        "probationPeriodOptions": {
+          "0": "0 maand",
+          "1": "1 maand"
+        },
+        "noticePeriodOptions": {
+          "1": "1 maand",
+          "2": "2 maand",
+          "3": "3 maand",
+          "4": "4 maand",
+          "5": "5 maand",
+          "6": "6 maand"
+        },
         "noticePeriod": {
           "label": "Opzegtermijn"
         },
@@ -1144,6 +1159,14 @@
           "label": "Functie",
           "required": "Functie is verplicht",
           "maxLength": "Functie moet minder dan 100 tekens zijn"
+        },
+        "functionOptions": {
+          "chauffeur": "Chauffeur",
+          "administrativeMedewerker": "Administratieve medewerker",
+          "vervoermanager": "Vervoermanager",
+          "planner": "Planner",
+          "supportMedewerker": "Support medewerker",
+          "transportManager": "Transport manager"
         },
         "workweekDuration": {
           "label": "Werkweekduur (uren)",
@@ -1192,7 +1215,7 @@
           "label": "Vakantiedagen"
         },
         "atv": {
-          "label": "ATV (Verkorte werkuren)"
+          "label": "ATV (%)"
         },
         "vacationAllowance": {
           "label": "Vakantietoeslag",
@@ -1353,7 +1376,10 @@
           "label": "Vast contract"
         },
         "contractDuration": {
-          "label": "Contractduur (maanden)"
+          "label": "Contractduur (maand)"
+        },
+        "contractEndDate": {
+          "label": "Contract einddatum"
         },
         "lastWorkingDay": {
           "label": "Laatste werkdag"
