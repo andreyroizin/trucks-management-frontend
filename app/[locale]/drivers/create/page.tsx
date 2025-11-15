@@ -13,7 +13,11 @@ import {
     Grid,
     Checkbox,
     FormControlLabel,
+    Dialog,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -156,6 +160,11 @@ export default function CreateDriverPage() {
     
     // Local display value for contract duration (to handle empty states during editing)
     const [contractDurationDisplay, setContractDurationDisplay] = useState<string>('7');
+    
+    // Success dialog state
+    const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+    const [createdDriverId, setCreatedDriverId] = useState<string | null>(null);
+    const [contractVersionId, setContractVersionId] = useState<string | null>(null);
 
     // Handle file upload changes with useCallback to prevent re-renders
     const handleFilesChange = useCallback((files: { fileId: string; originalFileName: string }[]) => {
@@ -300,10 +309,18 @@ export default function CreateDriverPage() {
             // Add uploaded files to the request
             cleanedData.NewUploads = tempFiles;
 
-            await mutateAsync(cleanedData);
+            const response = await mutateAsync(cleanedData);
+            
+            // Store driver ID and contract version ID for success dialog
+            setCreatedDriverId(response.DriverId);
+            setContractVersionId(response.contractVersionId || null);
+            
+            // Reset form
             reset();
             setTempFiles([]); // Clear uploaded files
-            router.push('/drivers');
+            
+            // Show success dialog
+            setSuccessDialogOpen(true);
         } catch (error: any) {
             console.error('Driver creation error:', error);
             // Check if error is related to BSN duplication
@@ -1195,6 +1212,57 @@ export default function CreateDriverPage() {
                     </Box>
                 </form>
             </Box>
+            
+            {/* Success Dialog */}
+            <Dialog 
+                open={successDialogOpen} 
+                onClose={() => {
+                    setSuccessDialogOpen(false);
+                    router.push('/drivers');
+                }}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogContent sx={{ textAlign: 'center', pt: 4, pb: 2 }}>
+                    <Box display="flex" justifyContent="center" mb={2}>
+                        <CheckCircleIcon
+                            sx={{
+                                fontSize: 64,
+                                color: 'success.main',
+                            }}
+                        />
+                    </Box>
+                    <Typography variant="h5" fontWeight={500} gutterBottom>
+                        {contractVersionId
+                            ? t('drivers.create.success.contractGenerated')
+                            : t('drivers.create.success.contractGenerationFailed')}
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center', pb: 3, px: 3 }}>
+                    {contractVersionId && createdDriverId && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                setSuccessDialogOpen(false);
+                                router.push(`/drivers/${createdDriverId}`);
+                            }}
+                            sx={{ mr: 2 }}
+                        >
+                            {t('drivers.create.success.viewContract')}
+                        </Button>
+                    )}
+                    <Button
+                        variant="outlined"
+                        onClick={() => {
+                            setSuccessDialogOpen(false);
+                            router.push('/drivers');
+                        }}
+                    >
+                        {t('drivers.create.success.close')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 } 

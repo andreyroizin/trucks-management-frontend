@@ -16,15 +16,36 @@ import {
     TableRow,
     IconButton,
     Stack,
+    Button,
+    Chip,
+    Dialog,
+    DialogContent,
+    DialogActions,
+    DialogTitle,
+    TableHead,
+    TableContainer,
+    Collapse,
 } from '@mui/material';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DownloadIcon from '@mui/icons-material/Download';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import InfoIcon from '@mui/icons-material/Info';
 import { useDriverWithContract } from '@/hooks/useDriverWithContract';
 import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
+import { useDriverLatestContract, useDriverContractVersions } from '@/hooks/useDriverContracts';
+import { useDownloadContractPdf } from '@/hooks/useDownloadContractPdf';
+import { useRegenerateContract } from '@/hooks/useRegenerateContract';
 import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
+import ContractVersionDetailsModal from '@/components/ContractVersionDetailsModal';
 import { useAuth } from '@/hooks/useAuth';
+import { useSnack } from '@/providers/SnackProvider';
+import dayjs from 'dayjs';
 
 export default function DriverDetailPage() {
     const { id } = useParams();
@@ -35,12 +56,26 @@ export default function DriverDetailPage() {
     const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     const downloadFile = useDownloadDriverFile();
     
+    // Contract hooks
+    const { data: latestContract, isLoading: isLoadingContract, refetch: refetchContract } = useDriverLatestContract(id as string);
+    const { data: contractVersions, isLoading: isLoadingVersions } = useDriverContractVersions(id as string, false);
+    const { mutateAsync: downloadContractPdf, isPending: isDownloading } = useDownloadContractPdf();
+    const { mutateAsync: regenerateContract, isPending: isRegenerating } = useRegenerateContract();
+    const showSnack = useSnack();
+    
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    const isAdmin = isCustomerAdmin || isGlobalAdmin;
 
     // Confirm modal state for delete
     const [openModal, setOpenModal] = useState(false);
     const [deleteErrorMsg, setDeleteErrorMsg] = useState<string | null>(null);
+    
+    // Contract state
+    const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false);
+    const [historyExpanded, setHistoryExpanded] = useState(false);
+    const [versionDetailsOpen, setVersionDetailsOpen] = useState(false);
+    const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
     
     // Check roles
     useEffect(() => {
@@ -78,6 +113,115 @@ export default function DriverDetailPage() {
     const formatCurrency = (amount?: number | null) => {
         if (!amount) return 'N/A';
         return `€${amount.toFixed(2)}`;
+    };
+
+    // Format file size helper
+    const formatFileSize = (bytes?: number | null) => {
+        if (!bytes) return 'N/A';
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    };
+
+    // Handle contract download
+    const handleDownloadContract = async (versionId?: string) => {
+        if (!id) return;
+        const targetVersionId = versionId || latestContract?.id;
+        if (!targetVersionId) {
+            showSnack({ text: t('drivers.detail.contracts.noContract'), severity: 'error' });
+            return;
+        }
+
+        try {
+            const driverName = `${driver?.firstName || ''}_${driver?.lastName || ''}`.trim() || 'driver';
+            const versionNumber = versionId 
+                ? contractVersions?.find(v => v.id === versionId)?.versionNumber || '1'
+                : latestContract?.versionNumber || '1';
+            const fileName = `contract_v${versionNumber}_${driverName}.pdf`;
+
+            await downloadContractPdf({
+                driverId: id as string,
+                versionId: targetVersionId,
+                fileName,
+            });
+            
+            showSnack({ 
+                text: t('drivers.detail.contracts.downloadSuccess'), 
+                severity: 'success' 
+            });
+        } catch (error: any) {
+            console.error('Download error:', error);
+            const errorMessage = error?.message || t('drivers.detail.contracts.downloadError');
+            
+            // Check if error suggests file is missing (404) and offer regenerate option
+            const isFileNotFound = errorMessage.toLowerCase().includes('not found') || 
+                                  errorMessage.toLowerCase().includes('file not found');
+            
+            showSnack({ 
+                text: errorMessage, 
+                severity: 'error' 
+            });
+            
+            // If file is missing and user is admin, they can regenerate
+            if (isFileNotFound && isAdmin) {
+                // Optionally show a separate message suggesting regeneration
+                setTimeout(() => {
+                    showSnack({
+                        text: t('drivers.detail.contracts.fileMissingSuggestRegenerate'),
+                        severity: 'info',
+                    });
+                }, 2000);
+            }
+        }
+    };
+
+    // Handle contract regeneration
+    const handleRegenerateContract = async () => {
+        if (!id) return;
+        
+        try {
+            setRegenerateConfirmOpen(false);
+            const response = await regenerateContract(id as string);
+            
+            showSnack({ 
+                text: t('drivers.detail.contracts.regenerateSuccess', { version: response.versionNumber }), 
+                severity: 'success' 
+            });
+            
+            // Refresh contract data
+            await refetchContract();
+            
+            // Optionally offer immediate download
+            setTimeout(() => {
+                if (response.contractVersionId) {
+                    handleDownloadContract(response.contractVersionId);
+                }
+            }, 1000);
+        } catch (error: any) {
+            console.error('Regenerate error:', error);
+            
+            // Extract error message and check for specific error types
+            const errorMessage = error?.message || t('drivers.detail.contracts.regenerateError');
+            const isUnauthorized = errorMessage.toLowerCase().includes('permission') || 
+                                  errorMessage.toLowerCase().includes('unauthorized') ||
+                                  errorMessage.toLowerCase().includes('403');
+            const isServerError = errorMessage.toLowerCase().includes('server error') || 
+                                errorMessage.toLowerCase().includes('500') ||
+                                errorMessage.toLowerCase().includes('internal server');
+            
+            let displayMessage = errorMessage;
+            
+            if (isUnauthorized) {
+                displayMessage = t('drivers.detail.contracts.regenerateUnauthorized');
+            } else if (isServerError) {
+                displayMessage = t('drivers.detail.contracts.regenerateServerError');
+            }
+            
+            showSnack({ 
+                text: displayMessage, 
+                severity: 'error' 
+            });
+        }
     };
 
     if (authLoading || isLoading) {
@@ -403,6 +547,221 @@ export default function DriverDetailPage() {
 
                 <Divider sx={{ my: 3 }} />
 
+                {/* Contract Section */}
+                <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                    {t('drivers.detail.contracts.title')}
+                </Typography>
+                
+                {isLoadingContract ? (
+                    <Box display="flex" justifyContent="center" py={2}>
+                        <CircularProgress size={24} />
+                    </Box>
+                ) : latestContract ? (
+                    <Box>
+                        <Table size="small" sx={{mb: 2}}>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>
+                                        {t('drivers.detail.contracts.version')}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        <Chip 
+                                            label={`v${latestContract.versionNumber}`} 
+                                            size="small" 
+                                            color={latestContract.isLatestVersion ? 'primary' : 'default'}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>
+                                        {t('drivers.detail.contracts.status')}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        <Chip 
+                                            label={latestContract.status === 'Generated' 
+                                                ? t('drivers.detail.contracts.statusGenerated')
+                                                : t('drivers.detail.contracts.statusSuperseded')} 
+                                            size="small" 
+                                            color={latestContract.status === 'Generated' ? 'success' : 'default'}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>
+                                        {t('drivers.detail.contracts.generatedAt')}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {latestContract.generatedAt 
+                                            ? dayjs(latestContract.generatedAt).format('DD MMM YYYY, HH:mm')
+                                            : t('drivers.detail.notAvailable')}
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>
+                                        {t('drivers.detail.contracts.generatedBy')}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {latestContract.generatedByUserName || t('drivers.detail.notAvailable')}
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>
+                                        {t('drivers.detail.contracts.fileSize')}
+                                    </TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {formatFileSize(latestContract.fileSize)}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                        
+                        <Stack direction="row" spacing={2} sx={{mt: 2}}>
+                            <Button
+                                variant="contained"
+                                startIcon={<PictureAsPdfIcon />}
+                                onClick={() => handleDownloadContract()}
+                                disabled={isDownloading}
+                            >
+                                {isDownloading ? (
+                                    <>
+                                        <CircularProgress size={16} sx={{mr: 1}} />
+                                        {t('drivers.detail.contracts.loadingContract')}
+                                    </>
+                                ) : (
+                                    t('drivers.detail.contracts.download')
+                                )}
+                            </Button>
+                            
+                            {isAdmin && (
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<RefreshIcon />}
+                                    onClick={() => setRegenerateConfirmOpen(true)}
+                                    disabled={isRegenerating}
+                                >
+                                    {t('drivers.detail.contracts.regenerate')}
+                                </Button>
+                            )}
+                        </Stack>
+                    </Box>
+                ) : (
+                    <Box>
+                        <Alert severity="info" sx={{mb: 2}}>
+                            <Typography variant="body2" sx={{mb: 1}}>
+                                {t('drivers.detail.contracts.noContractMessage')}
+                            </Typography>
+                            {isAdmin && (
+                                <Typography variant="body2" color="text.secondary">
+                                    {t('drivers.detail.contracts.noContractAdminHint')}
+                                </Typography>
+                            )}
+                        </Alert>
+                        {isAdmin && (
+                            <Button
+                                variant="contained"
+                                startIcon={<RefreshIcon />}
+                                onClick={() => setRegenerateConfirmOpen(true)}
+                                disabled={isRegenerating}
+                                sx={{mt: 1}}
+                            >
+                                {isRegenerating ? (
+                                    <>
+                                        <CircularProgress size={16} sx={{mr: 1}} />
+                                        {t('drivers.detail.contracts.loadingContract')}
+                                    </>
+                                ) : (
+                                    t('drivers.detail.contracts.generateContract')
+                                )}
+                            </Button>
+                        )}
+                    </Box>
+                )}
+
+                {/* Contract History */}
+                {latestContract && contractVersions && contractVersions.length > 1 && (
+                    <Box sx={{mt: 3}}>
+                        <Button
+                            onClick={() => setHistoryExpanded(!historyExpanded)}
+                            endIcon={historyExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            sx={{mb: 1}}
+                        >
+                            {t('drivers.detail.contracts.history')}
+                        </Button>
+                        
+                        <Collapse in={historyExpanded}>
+                            <TableContainer component={Paper} variant="outlined">
+                                <Table size="small">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>{t('drivers.detail.contracts.version')}</TableCell>
+                                            <TableCell>{t('drivers.detail.contracts.generatedAt')}</TableCell>
+                                            <TableCell>{t('drivers.detail.contracts.status')}</TableCell>
+                                            <TableCell>{t('drivers.detail.contracts.generatedBy')}</TableCell>
+                                            <TableCell>{t('drivers.detail.contracts.fileSize')}</TableCell>
+                                            <TableCell align="right">Actions</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {contractVersions.map((version) => (
+                                            <TableRow 
+                                                key={version.id}
+                                                sx={{
+                                                    bgcolor: version.isLatestVersion ? 'action.selected' : 'transparent',
+                                                    '&:hover': { bgcolor: 'action.hover' }
+                                                }}
+                                            >
+                                                <TableCell>
+                                                    <Chip 
+                                                        label={`v${version.versionNumber}`} 
+                                                        size="small"
+                                                        color={version.isLatestVersion ? 'primary' : 'default'}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    {version.generatedAt 
+                                                        ? dayjs(version.generatedAt).format('DD MMM YYYY, HH:mm')
+                                                        : t('drivers.detail.notAvailable')}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip 
+                                                        label={version.status === 'Generated' 
+                                                            ? t('drivers.detail.contracts.statusGenerated')
+                                                            : t('drivers.detail.contracts.statusSuperseded')} 
+                                                        size="small" 
+                                                        color={version.status === 'Generated' ? 'success' : 'default'}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>{version.generatedByUserName || t('drivers.detail.notAvailable')}</TableCell>
+                                                <TableCell>{formatFileSize(version.fileSize)}</TableCell>
+                                                <TableCell align="right">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDownloadContract(version.id)}
+                                                        disabled={isDownloading}
+                                                    >
+                                                        <DownloadIcon fontSize="small" />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => {
+                                                            setSelectedVersionId(version.id);
+                                                            setVersionDetailsOpen(true);
+                                                        }}
+                                                    >
+                                                        <InfoIcon fontSize="small" />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Collapse>
+                    </Box>
+                )}
+
+                <Divider sx={{ my: 3 }} />
+
                 {/* Driver Documents */}
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     {t('drivers.detail.sections.documents')}
@@ -443,6 +802,68 @@ export default function DriverDetailPage() {
                 onClose={() => !isDeleting && setOpenModal(false)}
                 onConfirm={handleDelete}
             />
+
+            {/* Regenerate Contract Confirmation Dialog */}
+            <Dialog 
+                open={regenerateConfirmOpen} 
+                onClose={() => !isRegenerating && setRegenerateConfirmOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>{t('drivers.detail.contracts.regenerateConfirm')}</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1" gutterBottom>
+                        {t('drivers.detail.contracts.regenerateMessage')}
+                    </Typography>
+                    {latestContract && (
+                        <Box sx={{mt: 2}}>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('drivers.detail.contracts.currentVersion')}: {latestContract.versionNumber}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('drivers.detail.contracts.newVersion')}: {latestContract.versionNumber + 1}
+                            </Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                        onClick={() => setRegenerateConfirmOpen(false)} 
+                        disabled={isRegenerating}
+                    >
+                        {t('common.buttons.cancel')}
+                    </Button>
+                    <Button 
+                        onClick={handleRegenerateContract} 
+                        variant="contained" 
+                        color="primary"
+                        disabled={isRegenerating}
+                    >
+                        {isRegenerating ? (
+                            <>
+                                <CircularProgress size={16} sx={{mr: 1}} />
+                                {t('drivers.detail.contracts.loadingContract')}
+                            </>
+                        ) : (
+                            t('drivers.detail.contracts.regenerate')
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Contract Version Details Modal */}
+            {id && driver && (
+                <ContractVersionDetailsModal
+                    open={versionDetailsOpen}
+                    onClose={() => {
+                        setVersionDetailsOpen(false);
+                        setSelectedVersionId(null);
+                    }}
+                    versionId={selectedVersionId}
+                    driverId={id as string}
+                    driverName={`${driver.firstName}_${driver.lastName}`}
+                />
+            )}
         </Box>
     );
 }

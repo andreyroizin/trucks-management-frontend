@@ -79,6 +79,7 @@ export type CreateDriverResponse = {
     DateOfEmployment: string;
     Function: string;
     WorkweekDuration: number;
+    contractVersionId?: string; // ID of the generated contract PDF version
 };
 
 // --- API CALL ---

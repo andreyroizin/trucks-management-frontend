@@ -39,6 +39,7 @@ export default function DriversPage() {
     // Delete confirmation modal state
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [driverToDelete, setDriverToDelete] = useState<string | null>(null);
+    const [driverToDeleteName, setDriverToDeleteName] = useState<{ firstName: string; lastName: string } | null>(null);
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin'];
@@ -58,7 +59,9 @@ export default function DriversPage() {
     };
 
     const handleDelete = (driverId: string) => {
+        const driver = drivers?.find(d => d.id === driverId);
         setDriverToDelete(driverId);
+        setDriverToDeleteName(driver ? { firstName: driver.user.firstName, lastName: driver.user.lastName } : null);
         setOpenDeleteModal(true);
     };
 
@@ -152,11 +155,18 @@ export default function DriversPage() {
             <ConfirmModal
                 open={openDeleteModal}
                 title={t('drivers.detail.deleteConfirm.title')}
-                message={t('drivers.detail.deleteConfirm.message')}
+                message={driverToDeleteName 
+                    ? t('drivers.detail.deleteConfirm.message', { 
+                        firstName: driverToDeleteName.firstName, 
+                        lastName: driverToDeleteName.lastName 
+                    })
+                    : t('drivers.detail.deleteConfirm.message', { firstName: '', lastName: '' })
+                }
                 onClose={() => {
                     if (!isDeleting) {
                         setOpenDeleteModal(false);
                         setDriverToDelete(null);
+                        setDriverToDeleteName(null);
                     }
                 }}
                 onConfirm={confirmDelete}
