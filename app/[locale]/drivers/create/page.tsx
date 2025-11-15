@@ -47,6 +47,7 @@ type FormInputs = {
     City?: string;                          // Optional - backend: City
     Country?: string;                       // Optional - backend: Country
     BSN?: string;                           // Optional - backend: BSN
+    IBAN?: string;                          // Optional - backend: IBAN
     EmploymentStartDate: string;            // Required - form field, converts to DateOfEmployment for backend
     PermanentContract?: boolean;            // Optional - backend: PermanentContract
     ContractDuration?: number;              // Optional - backend: ContractDuration (in months)
@@ -130,6 +131,7 @@ export default function CreateDriverPage() {
         City: yup.string().optional(),
         Country: yup.string().optional(),
         BSN: yup.string().optional(),
+        IBAN: yup.string().optional(),
         EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
@@ -182,6 +184,7 @@ export default function CreateDriverPage() {
             City: '',
             Country: '',
             BSN: '',
+            IBAN: '',
             EmploymentStartDate: dayjs().tz(AMSTERDAM_TZ).format('YYYY-MM-DD'),
             PermanentContract: false,
             ContractDuration: 7,
@@ -604,6 +607,25 @@ export default function CreateDriverPage() {
                                             variant="outlined"
                                             error={!!errors.BSN}
                                             helperText={errors.BSN?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            
+                            {/* IBAN */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="IBAN"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label={t('drivers.create.fields.iban.label')}
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.IBAN}
+                                            helperText={errors.IBAN?.message}
                                         />
                                     )}
                                 />

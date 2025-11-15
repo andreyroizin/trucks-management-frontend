@@ -30,6 +30,7 @@ export interface UpdateDriverInput {
     payScale?: string;
     payScaleStep?: number;
     bsn?: string;
+    iban?: string;
     lastWorkingDay?: string;
     
     // Additional Contract Fields

@@ -50,6 +50,7 @@ type FormInputs = {
     City?: string;                          // Optional - backend: city
     Country?: string;                       // Optional - backend: country
     BSN?: string;                           // Optional - backend: bsn
+    IBAN?: string;                          // Optional - backend: iban
     EmploymentStartDate: string;            // Required - backend: employmentStartDate
     PermanentContract?: boolean;            // Optional - backend: permanentContract
     ContractDuration?: number;              // Optional - backend: contractDuration (in months)
@@ -158,6 +159,7 @@ export default function EditDriverPage() {
         City: yup.string().optional(),
         Country: yup.string().optional(),
         BSN: yup.string().optional(),
+        IBAN: yup.string().optional(),
         EmploymentStartDate: yup.string().required(t('drivers.create.fields.employmentStartDate.required')),
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
@@ -203,9 +205,10 @@ export default function EditDriverPage() {
             Address: '',
             Postcode: '',
             City: '',
-            Country: '',
-            BSN: '',
-            EmploymentStartDate: '',
+                Country: '',
+                BSN: '',
+                IBAN: '',
+                EmploymentStartDate: '',
             PermanentContract: false,
             ContractDuration: undefined,
             ProbationPeriod: '',
@@ -310,6 +313,7 @@ export default function EditDriverPage() {
                 City: driverData.city || '',
                 Country: driverData.country || '',
                 BSN: driverData.bsn || '',
+                IBAN: (driverData as any).iban || '',
                 EmploymentStartDate: driverData.dateOfEmployment ? dayjs(driverData.dateOfEmployment).format('YYYY-MM-DD') : '',
                 PermanentContract: (driverData as any).permanentContract || false,
                 ContractDuration: !(driverData as any).permanentContract && driverData.dateOfEmployment && driverData.lastWorkingDay ? 
@@ -337,6 +341,7 @@ export default function EditDriverPage() {
                 City: driverData.city || '',
                 Country: driverData.country || '',
                 BSN: driverData.bsn || '',
+                IBAN: (driverData as any).iban || '',
                 EmploymentStartDate: driverData.dateOfEmployment ? dayjs(driverData.dateOfEmployment).format('YYYY-MM-DD') : '',
                 PermanentContract: (driverData as any).permanentContract || false,
                 ContractDuration: duration,
@@ -416,6 +421,7 @@ export default function EditDriverPage() {
                 city: cleanedData.City,
                 country: cleanedData.Country,
                 bsn: cleanedData.BSN,
+                iban: cleanedData.IBAN,
                 dateOfEmployment: cleanedData.EmploymentStartDate ? new Date(cleanedData.EmploymentStartDate).toISOString() : undefined,
                 permanentContract: cleanedData.PermanentContract,
                 contractDuration: cleanedData.ContractDuration,
@@ -724,6 +730,25 @@ export default function EditDriverPage() {
                                             variant="outlined"
                                             error={!!errors.BSN}
                                             helperText={errors.BSN?.message}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            
+                            {/* IBAN */}
+                            <Grid item xs={12} sm={6}>
+                                <Controller
+                                    name="IBAN"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label={t('drivers.edit.fields.iban.label')}
+                                            fullWidth
+                                            margin="normal"
+                                            variant="outlined"
+                                            error={!!errors.IBAN}
+                                            helperText={errors.IBAN?.message}
                                         />
                                     )}
                                 />

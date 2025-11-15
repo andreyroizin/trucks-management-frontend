@@ -1116,6 +1116,9 @@
         "bsn": {
           "label": "BSN"
         },
+        "iban": {
+          "label": "IBAN"
+        },
         "dateOfEmployment": {
           "label": "Datum van indiensttreding",
           "required": "Datum van indiensttreding is verplicht"
@@ -1281,6 +1284,7 @@
         "dateOfBirth": "Geboortedatum",
         "address": "Adres",
         "bsn": "BSN",
+        "iban": "IBAN",
         "function": "Functie",
         "employmentDate": "Datum van indiensttreding",
         "contractEndDate": "Contract einddatum",
@@ -1370,6 +1374,9 @@
         },
         "bsn": {
           "label": "BSN"
+        },
+        "iban": {
+          "label": "IBAN"
         },
         "dateOfEmployment": {
           "label": "Datum van indiensttreding"
@@ -2400,6 +2407,7 @@
         "dateOfBirth": "Geboortedatum",
         "dateOfBirthHelp": "DD-MM-JJJJ",
         "bsn": "BSN",
+        "iban": "IBAN",
         "bsnHelp": "Burgerservicenummer (optioneel)",
         "dateOfEmployment": "Datum indiensttreding",
         "dateOfEmploymentHelp": "DD-MM-JJJJ",

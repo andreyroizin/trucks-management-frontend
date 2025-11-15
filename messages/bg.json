@@ -1116,6 +1116,9 @@
         "bsn": {
           "label": "BSN"
         },
+        "iban": {
+          "label": "IBAN"
+        },
         "dateOfEmployment": {
           "label": "Дата на назначаване",
           "required": "Дата на назначаване е задължителна"
@@ -1281,6 +1284,7 @@
         "dateOfBirth": "Дата на раждане",
         "address": "Адрес",
         "bsn": "BSN",
+        "iban": "IBAN",
         "function": "Функция",
         "employmentDate": "Дата на наемане",
         "contractEndDate": "Дата на край на договора",

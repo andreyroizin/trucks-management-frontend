@@ -27,6 +27,7 @@ export type CreateDriverInput = {
     Country?: string;
     DateOfBirth?: string;
     BSN?: string;
+    IBAN?: string;
     Remark?: string;
     
     // Group 3: Employment Details (Optional fields)

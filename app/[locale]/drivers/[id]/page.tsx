@@ -210,6 +210,10 @@ export default function DriverDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.bsn')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{driver.bsn || t('drivers.detail.notAvailable')}</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.iban')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{(driver as any).iban || t('drivers.detail.notAvailable')}</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 

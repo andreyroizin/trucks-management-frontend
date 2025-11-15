@@ -13,6 +13,7 @@ export type DriverWithContract = {
     phoneNumber?: string;
     dateOfBirth?: string;
     bsn?: string;
+    iban?: string;
     address?: string;
     postcode?: string;
     city?: string;

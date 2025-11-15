@@ -1111,6 +1111,9 @@
         "bsn": {
           "label": "BSN"
         },
+        "iban": {
+          "label": "IBAN"
+        },
         "dateOfEmployment": {
           "label": "Date of Employment",
           "required": "Date of employment is required"
@@ -1276,6 +1279,7 @@
         "dateOfBirth": "Date of Birth",
         "address": "Address",
         "bsn": "BSN",
+        "iban": "IBAN",
         "function": "Function",
         "employmentDate": "Employment Date",
         "contractEndDate": "Contract End Date",
@@ -1365,6 +1369,9 @@
         },
         "bsn": {
           "label": "BSN"
+        },
+        "iban": {
+          "label": "IBAN"
         },
         "dateOfEmployment": {
           "label": "Date of Employment"
@@ -2342,6 +2349,7 @@
         "employeeCity": "Employee City",
         "dateOfBirth": "Date of Birth",
         "bsn": "BSN",
+        "iban": "IBAN",
         "dateOfEmployment": "Date of Employment",
         "lastWorkingDay": "Last Working Day",
         "function": "Function",
@@ -2411,6 +2419,7 @@
         "dateOfBirth": "Date of Birth",
         "dateOfBirthHelp": "DD-MM-YYYY",
         "bsn": "BSN",
+        "iban": "IBAN",
         "bsnHelp": "Citizen service number (optional)",
         "dateOfEmployment": "Date of Employment",
         "dateOfEmploymentHelp": "DD-MM-YYYY",
