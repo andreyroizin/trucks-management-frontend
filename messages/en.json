@@ -1254,6 +1254,7 @@
       },
       "errors": {
         "createFailed": "Failed to create driver.",
+        "bsnAlreadyExists": "A driver with this BSN already exists.",
         "noPermission": "You don't have permission to access this page."
       }
     },
@@ -1471,6 +1472,7 @@
       "errors": {
         "loadFailed": "Failed to load driver details. Please try again later.",
         "updateFailed": "Failed to update driver.",
+        "bsnAlreadyExists": "A driver with this BSN already exists.",
         "noPermission": "You don't have permission to access this page."
       },
       "documents": {

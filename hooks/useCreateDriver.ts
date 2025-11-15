@@ -109,6 +109,12 @@ const createDriver = async (driver: CreateDriverInput): Promise<CreateDriverResp
                     message: error.message,
                 }
             );
+            // Extract error message from axios error response
+            const errorMessage = error.response?.data?.errors?.[0] || 
+                                error.response?.data?.message || 
+                                error.message || 
+                                'Failed to create driver';
+            throw new Error(errorMessage);
         } else {
             console.error('[useCreateDriver] Unexpected error while creating driver', error);
         }

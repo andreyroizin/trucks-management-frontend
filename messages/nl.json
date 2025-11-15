@@ -1259,6 +1259,7 @@
       },
       "errors": {
         "createFailed": "Chauffeur aanmaken mislukt.",
+        "bsnAlreadyExists": "Er bestaat al een chauffeur met dit BSN.",
         "noPermission": "U heeft geen toestemming om deze pagina te bekijken."
       }
     },
@@ -1476,6 +1477,7 @@
       "errors": {
         "loadFailed": "Chauffeurdetails laden mislukt. Probeer het later opnieuw.",
         "updateFailed": "Chauffeur bijwerken mislukt.",
+        "bsnAlreadyExists": "Er bestaat al een chauffeur met dit BSN.",
         "noPermission": "U heeft geen toestemming om deze pagina te bekijken."
       },
       "documents": {

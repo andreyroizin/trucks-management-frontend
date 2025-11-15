@@ -168,6 +168,7 @@ export default function CreateDriverPage() {
         reset,
         watch,
         setValue,
+        setError,
         formState: { errors },
     } = useForm<FormInputs>({
         resolver: yupResolver(schema),
@@ -303,8 +304,26 @@ export default function CreateDriverPage() {
             reset();
             setTempFiles([]); // Clear uploaded files
             router.push('/drivers');
-        } catch {
-            /* Error handled by isError & error */
+        } catch (error: any) {
+            console.error('Driver creation error:', error);
+            // Check if error is related to BSN duplication
+            // Check multiple possible error message locations
+            const errorMessage = error?.message || 
+                                error?.response?.data?.errors?.[0] || 
+                                error?.response?.data?.message ||
+                                error?.response?.data?.error ||
+                                '';
+            console.error('Extracted error message:', errorMessage);
+            
+            if (errorMessage && typeof errorMessage === 'string' && 
+                errorMessage.toLowerCase().includes('bsn') && 
+                errorMessage.toLowerCase().includes('already exists')) {
+                setError('BSN', {
+                    type: 'manual',
+                    message: t('drivers.create.errors.bsnAlreadyExists')
+                });
+            }
+            // Error will also be shown in the Alert component via isError & error
         }
     };
 
