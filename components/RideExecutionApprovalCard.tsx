@@ -835,7 +835,7 @@ function ExecutionSummaryCard({
                 <Box component="span" fontWeight={600}>€{additionalCompensation.toFixed(2)}</Box>
               </Typography>
             </Box>
-            {execution.exceedingContainerWaitingTime > 0 && (
+            {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
               <Box sx={{ mt: 1, p: 1, bgcolor: 'warning.100', borderRadius: 1 }}>
                 <Typography variant="caption" color="warning.dark" fontWeight={600}>
                   ⚠️ Container Overtime: {execution.exceedingContainerWaitingTime.toFixed(2)}h
@@ -1005,7 +1005,7 @@ function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
               <Chip label={execution.status} size="small" />
             </TableCell>
           </TableRow>
-          {execution.exceedingContainerWaitingTime > 0 && (
+          {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
             <TableRow>
               <TableCell sx={{ border: 'none' }}>Container Overtime</TableCell>
               <TableCell sx={{ border: 'none', color: 'warning.main', fontWeight: 600 }}>
