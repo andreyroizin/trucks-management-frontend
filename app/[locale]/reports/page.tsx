@@ -363,7 +363,7 @@ export default function ReportsPage() {
                                     <TableCell>{t('reports.table.columns.actions')}</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
+                                                         <TableBody>
                                 {(() => {
                                     const baseWeek = (selectedPeriod.value.periodNr - 1) * 4 + 1;
                                     return [baseWeek, baseWeek + 1, baseWeek + 2, baseWeek + 3];
@@ -373,14 +373,14 @@ export default function ReportsPage() {
                                         weekNumber={weekNumber}
                                         driverId={selectedDriver.id}
                                         driverName={
-                                            selectedDriver?.user?.firstName && selectedDriver?.user?.lastName
+                                            selectedDriver?.user?.firstName && selectedDriver?.user?.lastName 
                                                 ? `${selectedDriver.user.firstName} ${selectedDriver.user.lastName}`
                                                 : 'Unknown Driver'
                                         }
                                         year={selectedPeriod.value.year}
                                     />
                                 ))}
-                            </TableBody>
+                             </TableBody>
                         </Table>
                     </TableContainer>
 

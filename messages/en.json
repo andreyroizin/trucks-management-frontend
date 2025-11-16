@@ -2582,7 +2582,51 @@
       "remark": "Remark"
     },
     "noRolesAssigned": "No roles assigned",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "telegram": {
+      "title": "Telegram Notifications",
+      "description": "Receive instant notifications about changes to your rides. You'll be notified when:",
+      "descriptionPoints": {
+        "assigned": "You are assigned to a ride",
+        "secondDriver": "A second driver is added or removed from your ride",
+        "rideUpdated": "Ride details are updated (route, times, trip number)",
+        "rideDeleted": "Your ride is deleted"
+      },
+      "onlyToday": "Note: You'll only receive notifications for changes happening to rides on the same day as the scheduled ride date.",
+      "status": {
+        "active": "Active",
+        "inactive": "Not Active"
+      },
+      "registeredAt": "Registered on",
+      "actions": {
+        "enable": "Enable Telegram Notifications",
+        "disable": "Disable Notifications",
+        "generateLink": "Generate Registration Link",
+        "connecting": "Connecting...",
+        "disabling": "Disabling..."
+      },
+      "registration": {
+        "title": "Activate Telegram Notifications",
+        "instructions": "Instructions:",
+        "step1": "Click on the link below",
+        "step2": "This will open Telegram (install the app if you don't have it yet)",
+        "step3": "Press 'START' in the chat with the bot",
+        "step4": "You'll receive a confirmation message",
+        "step5": "Done! You'll now receive notifications about changes to your rides on their scheduled day",
+        "linkLabel": "Registration Link:",
+        "expiresIn": "This link expires in",
+        "linkExpired": "This link has expired. Please generate a new one."
+      },
+      "errors": {
+        "generateFailed": "Failed to generate registration link",
+        "disableFailed": "Failed to disable notifications",
+        "loadFailed": "Failed to load Telegram status"
+      },
+      "success": {
+        "linkGenerated": "Registration link generated successfully",
+        "disabled": "Telegram notifications disabled successfully"
+      }
+    }
   },
   "rates": {
     "overview": {

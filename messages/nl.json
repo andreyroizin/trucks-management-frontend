@@ -2538,7 +2538,51 @@
       "remark": "Opmerking"
     },
     "noRolesAssigned": "Geen rollen toegewezen",
-    "notAvailable": "N.v.t."
+    "notAvailable": "N.v.t.",
+    "telegram": {
+      "title": "Telegram Notificaties",
+      "description": "Ontvang directe meldingen over wijzigingen in je ritten. Je ontvangt meldingen wanneer:",
+      "descriptionPoints": {
+        "assigned": "Je wordt toegewezen aan een rit",
+        "secondDriver": "Er een tweede chauffeur wordt toegevoegd of verwijderd uit je rit",
+        "rideUpdated": "Ritdetails worden bijgewerkt (route, tijden, ritnummer)",
+        "rideDeleted": "Je rit wordt geannuleerd"
+      },
+      "onlyToday": "Let op: Je ontvangt alleen meldingen voor wijzigingen die plaatsvinden voor ritten op dezelfde dag als de geplande ritdatum.",
+      "status": {
+        "active": "Actief",
+        "inactive": "Niet actief"
+      },
+      "registeredAt": "Geregistreerd op",
+      "actions": {
+        "enable": "Telegram Notificaties Activeren",
+        "disable": "Notificaties Uitschakelen",
+        "generateLink": "Registratielink Genereren",
+        "connecting": "Verbinden...",
+        "disabling": "Uitschakelen..."
+      },
+      "registration": {
+        "title": "Telegram Notificaties Activeren",
+        "instructions": "Instructies:",
+        "step1": "Klik op de onderstaande link",
+        "step2": "Dit opent Telegram (installeer de app als je deze nog niet hebt)",
+        "step3": "Druk op 'START' in de chat met de bot",
+        "step4": "Je ontvangt een bevestigingsbericht",
+        "step5": "Klaar! Je ontvangt nu meldingen over wijzigingen in je ritten op hun geplande dag",
+        "linkLabel": "Registratielink:",
+        "expiresIn": "Deze link verloopt over",
+        "linkExpired": "Deze link is verlopen. Genereer een nieuwe link."
+      },
+      "errors": {
+        "generateFailed": "Registratielink genereren mislukt",
+        "disableFailed": "Notificaties uitschakelen mislukt",
+        "loadFailed": "Telegram status laden mislukt"
+      },
+      "success": {
+        "linkGenerated": "Registratielink succesvol gegenereerd",
+        "disabled": "Telegram notificaties succesvol uitgeschakeld"
+      }
+    }
   },
   "rates": {
     "overview": {

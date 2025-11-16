@@ -150,16 +150,16 @@ export default function DisputesPage() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ p: 3 }}>
-        {/* Header */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" gutterBottom>
-            🚨 Execution Disputes
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Manage driver execution disputes and resolutions
-          </Typography>
-        </Box>
+    <Box sx={{ p: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          🚨 Execution Disputes
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Manage driver execution disputes and resolutions
+        </Typography>
+      </Box>
 
       {/* Filters */}
       <Paper sx={{ p: 3, mb: 3 }}>
@@ -292,7 +292,7 @@ export default function DisputesPage() {
           )}
         </>
       )}
-      </Box>
+    </Box>
     </LocalizationProvider>
   );
 }

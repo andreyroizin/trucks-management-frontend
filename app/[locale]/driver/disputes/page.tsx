@@ -94,7 +94,7 @@ export default function DriverDisputesPage() {
       case 'Rejected': return 'error';
       default: return 'default';
     }
-  };
+    };
 
   const getStatusText = (status: string) => {
     switch (status) {
@@ -113,7 +113,7 @@ export default function DriverDisputesPage() {
           </Alert>
             </Box>
       </LocalizationProvider>
-    );
+        );
   }
 
     return (
@@ -308,7 +308,7 @@ export default function DriverDisputesPage() {
                               color="warning"
                               size="small"
                               onClick={() => openDisputeDialog(ride)}
-                            >
+                >
                               🚨 Create Dispute
                 </Button>
                           </Grid>

@@ -91,15 +91,15 @@ const createDriver = async (driver: CreateDriverInput): Promise<CreateDriverResp
     console.log('[useCreateDriver] Submitting create driver request', safePayload);
 
     try {
-        const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
+    const response = await api.post<ApiResponse<CreateDriverResponse>>('/drivers/create-with-contract', driver);
         console.log('[useCreateDriver] Received create driver response', response.data);
 
-        if (response.data.isSuccess) {
-            return response.data.data;
-        }
+    if (response.data.isSuccess) {
+        return response.data.data;
+    }
 
         console.error('[useCreateDriver] Create driver failed with response', response.data);
-        throw new Error(response.data.errors?.[0] || 'Failed to create driver');
+    throw new Error(response.data.errors?.[0] || 'Failed to create driver');
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error(

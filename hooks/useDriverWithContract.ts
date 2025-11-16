@@ -71,6 +71,11 @@ export type DriverWithContract = {
     isApproved?: boolean;
     remark?: string;
     
+    // Telegram Notifications
+    telegramNotificationsEnabled?: boolean;
+    telegramChatId?: number | null;
+    telegramRegisteredAt?: string | null;
+    
     // Files
     files?: ApplicationFile[];
 };

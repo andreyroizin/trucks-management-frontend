@@ -11,7 +11,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 <Link href={loginHref} style={{ textDecoration: "none", color: "inherit" }}>
                     <Typography variant={"h4"} gutterBottom sx={{ cursor: "pointer" }}>
                         Welcome to VervoerManager
-                    </Typography>
+                </Typography>
                 </Link>
             </div>
         </div>
