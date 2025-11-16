@@ -30,10 +30,10 @@ type Execution = {
     actualEndTime: string;
     actualRestTime: string;
     totalHours: number;
-    compensation: number; // Total compensation
-    hourlyCompensation?: number; // Base wage
-    additionalCompensation?: number; // Allowances, etc.
-    exceedingContainerWaitingTime?: number; // Container overtime hours
+    compensation: number; // Total compensation (hourly + additional)
+    hourlyCompensation: number; // Base wage (hours × hourly rate)
+    additionalCompensation: number; // All allowances (NOT including hourly)
+    exceedingContainerWaitingTime: number; // Container overtime hours (0 if none)
 };
 
 type WeekSummaryProps = {
@@ -106,7 +106,8 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>Client</TableCell>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>Time</TableCell>
                         <TableCell sx={{ fontWeight: 500, py: 2 }}>Hours</TableCell>
-                        <TableCell sx={{ fontWeight: 500, py: 2 }}>Compensation</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>Hourly Compensation</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>Additional Compensation</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -121,30 +122,28 @@ const WeekSummary: React.FC<WeekSummaryProps> = ({
                                     Rest: {execution.actualRestTime}
                                 </Typography>
                             </TableCell>
-                            <TableCell sx={{ py: 2 }}>{(execution.totalHours || 0).toFixed(1)}h</TableCell>
+                            <TableCell sx={{ py: 2 }}>{execution.totalHours.toFixed(1)}h</TableCell>
                             <TableCell sx={{ py: 2 }}>
-                                <Box>
-                                    <Typography variant="body2" fontWeight={600}>
-                                        €{(execution.compensation || 0).toFixed(2)}
-                                    </Typography>
-                                    {execution.hourlyCompensation !== undefined && (
-                                        <Typography variant="caption" color="text.secondary" display="block">
-                                            €{execution.hourlyCompensation.toFixed(2)} wage + €{(execution.additionalCompensation || 0).toFixed(2)} extra
-                                        </Typography>
-                                    )}
-                                    {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
-                                        <Typography variant="caption" color="warning.dark" display="block">
-                                            ⚠️ +{execution.exceedingContainerWaitingTime.toFixed(1)}h overtime
-                                        </Typography>
-                                    )}
-                                </Box>
+                                <Typography variant="body2" fontWeight={600}>
+                                    €{execution.hourlyCompensation.toFixed(2)}
+                                </Typography>
+                            </TableCell>
+                            <TableCell sx={{ py: 2 }}>
+                                <Typography variant="body2" fontWeight={600}>
+                                    €{execution.additionalCompensation.toFixed(2)}
+                                </Typography>
                             </TableCell>
                         </TableRow>
                     ))}
                     <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                         <TableCell sx={{ fontWeight: 500, py: 2 }} colSpan={3}>Total</TableCell>
-                        <TableCell sx={{ fontWeight: 500, py: 2 }}>{(totalHours || 0).toFixed(1)}h</TableCell>
-                        <TableCell sx={{ fontWeight: 500, py: 2 }}>€{(totalCompensation || 0).toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>{totalHours.toFixed(1)}h</TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>
+                            €{executions.reduce((sum, exec) => sum + exec.hourlyCompensation, 0).toFixed(2)}
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 500, py: 2 }}>
+                            €{executions.reduce((sum, exec) => sum + exec.additionalCompensation, 0).toFixed(2)}
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

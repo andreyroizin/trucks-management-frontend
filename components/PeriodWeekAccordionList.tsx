@@ -76,7 +76,8 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                 <TableCell sx={{ fontWeight: 500 }}>Client</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>Time</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.hours')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Compensation</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Hourly Compensation</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>Additional Compensation</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -106,24 +107,17 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            {(execution.totalHours || 0).toFixed(1)}h
+                                                            {execution.totalHours.toFixed(1)}h
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            <Box>
-                                                                <Typography variant="body2" fontWeight={600}>
-                                                                    €{(execution.compensation || 0).toFixed(2)}
-                                                                </Typography>
-                                                                {execution.hourlyCompensation !== undefined && (
-                                                                    <Typography variant="caption" color="text.secondary" display="block">
-                                                                        €{execution.hourlyCompensation.toFixed(2)} wage + €{(execution.additionalCompensation || 0).toFixed(2)} extra
-                                                                    </Typography>
-                                                                )}
-                                                                {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
-                                                                    <Typography variant="caption" color="warning.dark" display="block">
-                                                                        ⚠️ +{execution.exceedingContainerWaitingTime.toFixed(1)}h overtime
-                                                                    </Typography>
-                                                                )}
-                                                            </Box>
+                                                            <Typography variant="body2" fontWeight={600}>
+                                                                €{execution.hourlyCompensation.toFixed(2)}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
+                                                            <Typography variant="body2" fontWeight={600}>
+                                                                €{execution.additionalCompensation.toFixed(2)}
+                                                            </Typography>
                                                         </TableCell>
                                                     </TableRow>
                                                 );

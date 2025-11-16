@@ -16,10 +16,10 @@ export type RideExecution = {
     actualEndTime: string;
     actualRestTime: string;
     totalHours: number;
-    compensation: number; // Full total (from backend)
-    hourlyCompensation?: number; // Base wage
-    additionalCompensation?: number; // Sum of all allowances (calculated or from backend)
-    exceedingContainerWaitingTime?: number; // Container overtime hours (for display only)
+    compensation: number; // Full total (hourly + additional)
+    hourlyCompensation: number; // Base wage (hours × hourly rate)
+    additionalCompensation: number; // All allowances (NOT including hourly) - from backend
+    exceedingContainerWaitingTime: number; // Container overtime hours (0 if none)
 };
 
 export type WeekInPeriod = {
@@ -122,6 +122,9 @@ const fetchDriverPeriodDetail = async (periodKey: string): Promise<DriverPeriodD
             actualRestTime: exec.actualRestTime,
             totalHours: exec.totalHours,
             compensation: exec.compensation,
+            hourlyCompensation: exec.hourlyCompensation,
+            additionalCompensation: exec.additionalCompensation,
+            exceedingContainerWaitingTime: exec.exceedingContainerWaitingTime,
         }));
         
         return {

@@ -13,7 +13,10 @@ export type WeekExecution = {
     actualEndTime: string;   // "16:30"
     actualRestTime: string;  // "00:30"
     totalHours: number;
-    compensation: number;
+    compensation: number;   // Total compensation (hourly + additional)
+    hourlyCompensation: number;        // Base wage (hours × hourly rate)
+    additionalCompensation: number;    // All allowances (NOT including hourly)
+    exceedingContainerWaitingTime: number; // Container overtime for this ride (0 if none)
 };
 
 export type DriverWeekDetails = {
