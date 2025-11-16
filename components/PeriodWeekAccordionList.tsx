@@ -109,7 +109,21 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                             {(execution.totalHours || 0).toFixed(1)}h
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
-                                                            €{(execution.compensation || 0).toFixed(2)}
+                                                            <Box>
+                                                                <Typography variant="body2" fontWeight={600}>
+                                                                    €{(execution.compensation || 0).toFixed(2)}
+                                                                </Typography>
+                                                                {execution.hourlyCompensation !== undefined && (
+                                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                                        €{execution.hourlyCompensation.toFixed(2)} wage + €{(execution.additionalCompensation || 0).toFixed(2)} extra
+                                                                    </Typography>
+                                                                )}
+                                                                {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
+                                                                    <Typography variant="caption" color="warning.dark" display="block">
+                                                                        ⚠️ +{execution.exceedingContainerWaitingTime.toFixed(1)}h overtime
+                                                                    </Typography>
+                                                                )}
+                                                            </Box>
                                                         </TableCell>
                                                     </TableRow>
                                                 );

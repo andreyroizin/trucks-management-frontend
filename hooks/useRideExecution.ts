@@ -15,16 +15,35 @@ export const useSubmitExecution = () => {
       rideId: string;
       data: SubmitExecutionRequest;
     }) => {
+      console.log('📤 [useSubmitExecution] Submitting execution for ride:', rideId);
+      console.log('📤 [useSubmitExecution] Submission data:', data);
+      
       const response = await api.put<ApiResponse<RideDriverExecution>>(
         `/rides/${rideId}/my-execution`,
         data
       );
 
+      console.log('📥 [useSubmitExecution] Raw response:', response.data);
+      console.log('📥 [useSubmitExecution] Response data object:', response.data.data);
+
       if (!response.data.isSuccess) {
         throw new Error(response.data.errors?.[0] || 'Failed to submit execution');
       }
 
-      return response.data.data;
+      const executionData = response.data.data;
+      console.log('✅ [useSubmitExecution] Success! Returned execution data:', executionData);
+      console.log('💰 [useSubmitExecution] Compensation fields in response:', {
+        hourlyCompensation: executionData?.hourlyCompensation,
+        totalCompensation: executionData?.totalCompensation,
+        exceedingContainerWaitingTime: executionData?.exceedingContainerWaitingTime,
+        nightAllowance: executionData?.nightAllowance,
+        kilometerReimbursement: executionData?.kilometerReimbursement,
+        consignmentFee: executionData?.consignmentFee,
+        taxFreeCompensation: executionData?.taxFreeCompensation,
+        variousCompensation: executionData?.variousCompensation,
+      });
+
+      return executionData;
     },
     onSuccess: (data, variables) => {
       // Invalidate relevant queries
@@ -47,20 +66,38 @@ export const useMyExecution = (rideId: string) => {
     queryKey: ['rideExecution', rideId],
     queryFn: async () => {
       try {
+        console.log('🔍 [useMyExecution] Fetching execution for ride:', rideId);
         const response = await api.get<ApiResponse<RideDriverExecution>>(
           `/rides/${rideId}/my-execution`
         );
 
+        console.log('📥 [useMyExecution] Raw response:', response.data);
+        console.log('📥 [useMyExecution] Response data object:', response.data.data);
+
         if (response.data.isSuccess) {
-          return response.data.data;
+          const executionData = response.data.data;
+          console.log('✅ [useMyExecution] Success! Execution data:', executionData);
+          console.log('💰 [useMyExecution] Compensation fields:', {
+            hourlyCompensation: executionData?.hourlyCompensation,
+            totalCompensation: executionData?.totalCompensation,
+            exceedingContainerWaitingTime: executionData?.exceedingContainerWaitingTime,
+            nightAllowance: executionData?.nightAllowance,
+            kilometerReimbursement: executionData?.kilometerReimbursement,
+            consignmentFee: executionData?.consignmentFee,
+            taxFreeCompensation: executionData?.taxFreeCompensation,
+            variousCompensation: executionData?.variousCompensation,
+          });
+          return executionData;
         }
 
         throw new Error(response.data.errors?.[0] || 'Failed to fetch execution');
       } catch (error: any) {
         // Return null if execution doesn't exist yet (404)
         if (error.response?.status === 404) {
+          console.log('ℹ️ [useMyExecution] No execution found (404) - this is expected for new rides');
           return null;
         }
+        console.error('❌ [useMyExecution] Error fetching execution:', error);
         throw error;
       }
     },

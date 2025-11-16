@@ -82,33 +82,91 @@ export interface DriverWithContractResponse {
 }
 
 const updateDriverWithContract = async (driverId: string, data: UpdateDriverInput): Promise<DriverWithContractResponse> => {
+    const url = `/drivers/${driverId}/with-contract`;
+    const baseURL = api.defaults.baseURL || 'NOT SET';
+    const fullURL = baseURL + url;
+    
+    console.log('📡 [useUpdateDriver] Submitting update driver request');
+    console.log('  Driver ID:', driverId);
+    console.log('  Method: PUT');
+    console.log('  Endpoint:', url);
+    console.log('  Base URL:', baseURL);
+    console.log('  Full URL:', fullURL);
+    console.log('  Payload:', JSON.stringify(data, null, 2));
+    
     try {
-        const response = await api.put<ApiResponse<DriverWithContractResponse>>(`/drivers/${driverId}/with-contract`, data);
+        const response = await api.put<ApiResponse<DriverWithContractResponse>>(url, data);
+        
+        console.log('✅ [useUpdateDriver] Received update driver response');
+        console.log('  Status:', response.status);
+        console.log('  Status Text:', response.statusText);
+        console.log('  Response Data:', JSON.stringify(response.data, null, 2));
         
         if (response.data.isSuccess) {
+            console.log('✅ [useUpdateDriver] Driver updated successfully');
             return response.data.data;
         }
         
-        console.error('[useUpdateDriver] Update driver failed with response', response.data);
+        console.error('❌ [useUpdateDriver] Update driver failed - API returned isSuccess: false');
+        console.error('  Response Data:', JSON.stringify(response.data, null, 2));
+        console.error('  Errors:', response.data.errors);
         throw new Error(response.data.errors?.[0] || 'Failed to update driver');
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error(
-                '[useUpdateDriver] Axios error while updating driver',
-                {
-                    status: error.response?.status,
-                    data: error.response?.data,
-                    message: error.message,
+            console.error('❌ [useUpdateDriver] Axios error while updating driver');
+            console.error('  Status:', error.response?.status);
+            console.error('  Status Text:', error.response?.statusText);
+            console.error('  Error Message:', error.message);
+            console.error('  Request URL:', error.config?.url);
+            console.error('  Request Method:', error.config?.method?.toUpperCase());
+            
+            // Log full response data
+            if (error.response?.data) {
+                console.error('  Response Data (full):', JSON.stringify(error.response.data, null, 2));
+                console.error('  Response Data (object):', error.response.data);
+                
+                // Log specific error fields
+                if (error.response.data.errors) {
+                    console.error('  Errors Array:', error.response.data.errors);
+                    console.error('  First Error:', error.response.data.errors[0]);
                 }
-            );
+                if (error.response.data.message) {
+                    console.error('  Error Message:', error.response.data.message);
+                }
+                if (error.response.data.error) {
+                    console.error('  Error Field:', error.response.data.error);
+                }
+                if (error.response.data.stackTrace) {
+                    console.error('  Stack Trace:', error.response.data.stackTrace);
+                }
+            } else if (error.request) {
+                console.error('  No Response Received');
+                console.error('  Request:', error.request);
+            }
+            
+            // Log request payload
+            if (error.config?.data) {
+                try {
+                    const requestData = JSON.parse(error.config.data);
+                    console.error('  Request Payload:', JSON.stringify(requestData, null, 2));
+                } catch (e) {
+                    console.error('  Request Payload (raw):', error.config.data);
+                }
+            }
+            
             // Extract error message from axios error response
             const errorMessage = error.response?.data?.errors?.[0] || 
-                                error.response?.data?.message || 
+                                error.response?.data?.message ||
+                                error.response?.data?.error ||
                                 error.message || 
                                 'Failed to update driver';
+            
+            console.error('  Extracted Error Message:', errorMessage);
             throw new Error(errorMessage);
         } else {
-            console.error('[useUpdateDriver] Unexpected error while updating driver', error);
+            console.error('❌ [useUpdateDriver] Unexpected error while updating driver');
+            console.error('  Error Type:', typeof error);
+            console.error('  Error:', error);
         }
         throw error instanceof Error ? error : new Error('Failed to update driver');
     }

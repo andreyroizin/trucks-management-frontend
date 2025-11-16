@@ -59,6 +59,7 @@ export interface RideDriverExecution {
   turnover?: number;
   remark?: string;
   correctionTotalHours: number;
+  totalCompensation?: number; // Full total (hourly + all allowances)
 
   // Calculated
   decimalHours?: number;
@@ -68,6 +69,8 @@ export interface RideDriverExecution {
   weekNumber?: number;
 
   // Compensations
+  hourlyCompensation?: number; // Base wage (hours × hourly rate)
+  exceedingContainerWaitingTime?: number; // Container time over 2 hours
   nightAllowance?: number;
   kilometerReimbursement?: number;
   consignmentFee?: number;

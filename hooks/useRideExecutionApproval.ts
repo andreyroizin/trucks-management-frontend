@@ -31,7 +31,7 @@ export const useRidesPendingApproval = (companyId?: string, statusFilter?: strin
         
         const response = await api.get<ApiResponse<RideWithExecutions[]>>(endpoint);
 
-        console.log('Rides API Response:', response.data);
+        console.log('🔍 [useRidesPendingApproval] Raw API Response:', response.data);
 
                 // Check isSuccess field
                 if (!response.data.isSuccess) {
@@ -40,7 +40,35 @@ export const useRidesPendingApproval = (companyId?: string, statusFilter?: strin
                   throw new Error(errorMessage);
                 }
 
-        return response.data.data || [];
+        const rides = response.data.data || [];
+        console.log('✅ [useRidesPendingApproval] Total rides with executions:', rides.length);
+        
+        // Log detailed execution data for first ride (for debugging)
+        if (rides.length > 0 && rides[0].executions.length > 0) {
+          console.log('📊 [useRidesPendingApproval] Sample ride execution data:');
+          console.log('  Ride ID:', rides[0].rideId);
+          console.log('  Trip Number:', rides[0].tripNumber);
+          console.log('  Number of executions:', rides[0].executions.length);
+          
+          rides[0].executions.forEach((exec, idx) => {
+            console.log(`  📝 Execution ${idx + 1}:`, {
+              driverId: exec.driverId,
+              driverName: `${exec.driverFirstName} ${exec.driverLastName}`,
+              status: exec.status,
+              decimalHours: exec.decimalHours,
+              totalCompensation: exec.totalCompensation,
+              hourlyCompensation: exec.hourlyCompensation,
+              exceedingContainerWaitingTime: exec.exceedingContainerWaitingTime,
+              nightAllowance: exec.nightAllowance,
+              kilometerReimbursement: exec.kilometerReimbursement,
+              consignmentFee: exec.consignmentFee,
+              taxFreeCompensation: exec.taxFreeCompensation,
+              variousCompensation: exec.variousCompensation,
+            });
+          });
+        }
+
+        return rides;
       } catch (apiError: any) {
         console.error('API call failed:', apiError);
         console.error('Error response:', apiError.response?.data);

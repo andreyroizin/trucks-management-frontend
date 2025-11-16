@@ -16,7 +16,10 @@ export type RideExecution = {
     actualEndTime: string;
     actualRestTime: string;
     totalHours: number;
-    compensation: number;
+    compensation: number; // Full total (from backend)
+    hourlyCompensation?: number; // Base wage
+    additionalCompensation?: number; // Sum of all allowances (calculated or from backend)
+    exceedingContainerWaitingTime?: number; // Container overtime hours (for display only)
 };
 
 export type WeekInPeriod = {

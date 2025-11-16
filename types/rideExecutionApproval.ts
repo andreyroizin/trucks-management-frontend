@@ -9,7 +9,7 @@ export interface RideExecution {
   status: 'Pending' | 'Approved' | 'Rejected' | 'Dispute';
   decimalHours: number;
   submittedAt: string;
-  totalCompensation: number;
+  totalCompensation: number; // Full total (hourly + all allowances)
   
   // Time & Work Details
   actualStartTime?: string;
@@ -32,6 +32,8 @@ export interface RideExecution {
   hoursOptionName?: string;
   
   // Compensation Breakdown
+  hourlyCompensation?: number; // Base wage (hours × hourly rate)
+  exceedingContainerWaitingTime?: number; // Container time over 2 hours
   nightAllowance?: number;
   kilometerReimbursement?: number;
   consignmentFee?: number;

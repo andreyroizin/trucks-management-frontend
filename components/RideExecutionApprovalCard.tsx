@@ -92,6 +92,28 @@ export default function RideExecutionApprovalCard({ ride }: Props) {
   // Ref for comments container to handle scrolling
   const commentsContainerRef = React.useRef<HTMLDivElement>(null);
 
+  // DEBUG: Log ride execution data to see what admin view receives
+  React.useEffect(() => {
+    console.log('🔍 [RideExecutionApprovalCard] Ride data:', ride);
+    console.log('📊 [RideExecutionApprovalCard] Number of executions:', ride.executions.length);
+    ride.executions.forEach((exec, idx) => {
+      console.log(`💰 [RideExecutionApprovalCard] Execution ${idx + 1} compensation fields:`, {
+        executionId: exec.executionId,
+        driverName: `${exec.driverFirstName} ${exec.driverLastName}`,
+        status: exec.status,
+        decimalHours: exec.decimalHours,
+        totalCompensation: exec.totalCompensation,
+        hourlyCompensation: exec.hourlyCompensation,
+        exceedingContainerWaitingTime: exec.exceedingContainerWaitingTime,
+        nightAllowance: exec.nightAllowance,
+        kilometerReimbursement: exec.kilometerReimbursement,
+        consignmentFee: exec.consignmentFee,
+        taxFreeCompensation: exec.taxFreeCompensation,
+        variousCompensation: exec.variousCompensation,
+      });
+    });
+  }, [ride]);
+
   // Mutations
   const approveMutation = useApproveExecution();
   const bulkApproveMutation = useBulkApproveExecutions();
@@ -758,7 +780,7 @@ function ExecutionSummaryCard({
               €{execution.totalCompensation?.toFixed(2) || '0.00'}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Compensation
+              Total Compensation
             </Typography>
           </Box>
         </Grid>
@@ -788,6 +810,41 @@ function ExecutionSummaryCard({
           </Box>
         </Grid>
       </Grid>
+
+      {/* Compensation Breakdown */}
+      {(() => {
+        // Calculate Additional Compensation from individual allowances
+        const additionalCompensation = (
+          (execution.nightAllowance || 0) +
+          (execution.kilometerReimbursement || 0) +
+          (execution.consignmentFee || 0) +
+          (execution.taxFreeCompensation || 0) +
+          (execution.variousCompensation || 0) +
+          (execution.standOver || 0)
+        );
+
+        return (
+          <Box sx={{ mb: 2, p: 1.5, bgcolor: 'success.50', borderRadius: 1 }}>
+            <Box display="flex" flexDirection="column" gap={0.5}>
+              <Typography variant="caption">
+                <Box component="span" color="text.secondary">Hourly Wage: </Box>
+                <Box component="span" fontWeight={600}>€{execution.hourlyCompensation?.toFixed(2) || '0.00'}</Box>
+              </Typography>
+              <Typography variant="caption">
+                <Box component="span" color="text.secondary">Additional: </Box>
+                <Box component="span" fontWeight={600}>€{additionalCompensation.toFixed(2)}</Box>
+              </Typography>
+            </Box>
+            {execution.exceedingContainerWaitingTime > 0 && (
+              <Box sx={{ mt: 1, p: 1, bgcolor: 'warning.100', borderRadius: 1 }}>
+                <Typography variant="caption" color="warning.dark" fontWeight={600}>
+                  ⚠️ Container Overtime: {execution.exceedingContainerWaitingTime.toFixed(2)}h
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        );
+      })()}
 
       {/* Time Details */}
       <Box sx={{ mb: 2 }}>
@@ -928,13 +985,39 @@ function ExecutionDetailView({ execution }: ExecutionDetailViewProps) {
             <TableCell sx={{ border: 'none' }}>{execution.costsDescription || '—'}</TableCell>
           </TableRow>
           <TableRow>
+            <TableCell sx={{ border: 'none' }}>Hourly Wage</TableCell>
+            <TableCell sx={{ border: 'none' }}>€{execution.hourlyCompensation?.toFixed(2) || '0.00'}</TableCell>
+            <TableCell sx={{ border: 'none' }}>Additional Compensation</TableCell>
+            <TableCell sx={{ border: 'none' }}>€{((
+              (execution.nightAllowance || 0) +
+              (execution.kilometerReimbursement || 0) +
+              (execution.consignmentFee || 0) +
+              (execution.taxFreeCompensation || 0) +
+              (execution.variousCompensation || 0) +
+              (execution.standOver || 0)
+            )).toFixed(2)}</TableCell>
+          </TableRow>
+          <TableRow>
             <TableCell sx={{ border: 'none' }}>Total Compensation</TableCell>
-            <TableCell sx={{ border: 'none' }}>€{execution.totalCompensation?.toFixed(2) || '0.00'}</TableCell>
+            <TableCell sx={{ border: 'none', fontWeight: 600 }}>€{execution.totalCompensation?.toFixed(2) || '0.00'}</TableCell>
             <TableCell sx={{ border: 'none' }}>Status</TableCell>
             <TableCell sx={{ border: 'none' }}>
               <Chip label={execution.status} size="small" />
             </TableCell>
           </TableRow>
+          {execution.exceedingContainerWaitingTime > 0 && (
+            <TableRow>
+              <TableCell sx={{ border: 'none' }}>Container Overtime</TableCell>
+              <TableCell sx={{ border: 'none', color: 'warning.main', fontWeight: 600 }}>
+                ⚠️ {execution.exceedingContainerWaitingTime.toFixed(2)}h
+              </TableCell>
+              <TableCell sx={{ border: 'none' }} colSpan={2}>
+                <Typography variant="caption" color="warning.dark">
+                  (Time over 2 hours limit)
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </Paper>

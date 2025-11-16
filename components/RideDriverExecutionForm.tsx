@@ -430,8 +430,90 @@ export default function RideDriverExecutionForm({ rideId, execution, onSuccess }
   const canDelete = !!execution && (execution.status === 0 || execution.status === 2); // Pending or Rejected
   const isReadOnly = execution?.status === 1; // Approved
 
+  // DEBUG: Log execution data to see what backend is sending
+  useEffect(() => {
+    if (execution) {
+      console.log('🔍 [RideDriverExecutionForm] Full execution object:', execution);
+      console.log('💰 [RideDriverExecutionForm] Compensation fields:', {
+        hourlyCompensation: execution.hourlyCompensation,
+        totalCompensation: execution.totalCompensation,
+        exceedingContainerWaitingTime: execution.exceedingContainerWaitingTime,
+        nightAllowance: execution.nightAllowance,
+        kilometerReimbursement: execution.kilometerReimbursement,
+        consignmentFee: execution.consignmentFee,
+        taxFreeCompensation: execution.taxFreeCompensation,
+        variousCompensation: execution.variousCompensation,
+        standOver: execution.standOver,
+        saturdayHours: execution.saturdayHours,
+        sundayHolidayHours: execution.sundayHolidayHours,
+        vacationHoursEarned: execution.vacationHoursEarned,
+      });
+    }
+  }, [execution]);
+
   return (
     <Box>
+      {/* Compensation Display - Show for existing executions */}
+      {execution && (() => {
+        // Calculate Additional Compensation from individual allowances
+        const additionalCompensation = (
+          (execution.nightAllowance || 0) +
+          (execution.kilometerReimbursement || 0) +
+          (execution.consignmentFee || 0) +
+          (execution.taxFreeCompensation || 0) +
+          (execution.variousCompensation || 0) +
+          (execution.standOver || 0)
+        );
+
+        // Total is either from backend's totalCompensation, or calculated
+        const totalCompensation = execution.totalCompensation || 
+          ((execution.hourlyCompensation || 0) + additionalCompensation);
+
+        return (
+          <Box sx={{ mb: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom color="success.dark">
+              💰 Compensation Summary
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Hourly Wage
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  €{execution.hourlyCompensation?.toFixed(2) || '0.00'}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={4}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Additional Compensation
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  €{additionalCompensation.toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Total Compensation
+                </Typography>
+                <Typography variant="h6" fontWeight={700} color="success.dark">
+                  €{totalCompensation.toFixed(2)}
+                </Typography>
+              </Grid>
+            </Grid>
+            {execution.exceedingContainerWaitingTime && execution.exceedingContainerWaitingTime > 0 && (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                <Typography variant="body2" fontWeight={600}>
+                  ⚠️ Container Overtime: {execution.exceedingContainerWaitingTime.toFixed(2)} hours
+                </Typography>
+                <Typography variant="caption">
+                  Container waiting time exceeded the 2-hour limit
+                </Typography>
+              </Alert>
+            )}
+          </Box>
+        );
+      })()}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
           {/* Time Fields */}
