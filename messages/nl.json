@@ -155,7 +155,52 @@
       "signed": {
         "title": "Week {week}",
         "notSigned": "Deze week is nog niet ondertekend.",
-        "goToCurrent": "Ga naar de huidige periode"
+        "goToCurrent": "Ga naar de huidige periode",
+        "generateInvoice": "Factuur Genereren",
+        "loadError": "Kan week niet laden"
+      },
+      "invoice": {
+        "title": "Factuur Genereren",
+        "subtitle": "Week {week}, {year}",
+        "info": "Controleer en wijzig de onderstaande waarden indien nodig. Deze wijzigingen zijn alleen voor de factuur en worden niet opgeslagen in het systeem.",
+        "sections": {
+          "editable": "Bewerkbare Waarden",
+          "readonly": "Factuurinformatie"
+        },
+        "fields": {
+          "hoursWorked": {
+            "label": "Gewerkte Uren",
+            "helper": "Totaal uren voor deze week"
+          },
+          "hourlyCompensation": {
+            "label": "Uurloon",
+            "helper": "Basisvergoeding"
+          },
+          "additionalCompensation": {
+            "label": "Aanvullende Vergoeding",
+            "helper": "Toeslagen"
+          },
+          "weekNumber": "Week",
+          "year": "Jaar",
+          "containerOvertime": "Container Wachttijd",
+          "totalAmount": "Totaalbedrag"
+        },
+        "weekLabel": "Week {week}",
+        "actions": {
+          "generate": "Factuur Genereren",
+          "generating": "Genereren...",
+          "cancel": "Annuleren",
+          "back": "Terug"
+        },
+        "success": {
+          "generated": "Factuur succesvol gegenereerd"
+        },
+        "errors": {
+          "noDriver": "Chauffeursinformatie niet gevonden",
+          "loadFailed": "Kan week niet laden",
+          "generateFailed": "Kan factuur niet genereren",
+          "notSigned": "Deze week moet eerst worden ondertekend voordat u een factuur kunt genereren"
+        }
       },
       "sign": {
         "success": {

@@ -149,8 +149,53 @@
       },
       "signed": {
         "title": "Week {week}",
-        "notSigned": "This week hasn’t been signed yet.",
-        "goToCurrent": "Go to current period"
+        "notSigned": "This week hasn't been signed yet.",
+        "goToCurrent": "Go to current period",
+        "generateInvoice": "Generate Invoice",
+        "loadError": "Failed to load week details"
+      },
+      "invoice": {
+        "title": "Generate Invoice",
+        "subtitle": "Week {week}, {year}",
+        "info": "Review and modify the values below if needed. These changes are only for the invoice and will not be saved to the system.",
+        "sections": {
+          "editable": "Editable Values",
+          "readonly": "Invoice Information"
+        },
+        "fields": {
+          "hoursWorked": {
+            "label": "Hours Worked",
+            "helper": "Total hours for this week"
+          },
+          "hourlyCompensation": {
+            "label": "Hourly Compensation",
+            "helper": "Base wage"
+          },
+          "additionalCompensation": {
+            "label": "Additional Compensation",
+            "helper": "Allowances"
+          },
+          "weekNumber": "Week",
+          "year": "Year",
+          "containerOvertime": "Container Overtime",
+          "totalAmount": "Total Amount"
+        },
+        "weekLabel": "Week {week}",
+        "actions": {
+          "generate": "Generate Invoice",
+          "generating": "Generating...",
+          "cancel": "Cancel",
+          "back": "Back"
+        },
+        "success": {
+          "generated": "Invoice generated successfully"
+        },
+        "errors": {
+          "noDriver": "Driver information not found",
+          "loadFailed": "Failed to load week details",
+          "generateFailed": "Failed to generate invoice",
+          "notSigned": "This week must be signed before you can generate an invoice"
+        }
       },
       "sign": {
         "success": {
