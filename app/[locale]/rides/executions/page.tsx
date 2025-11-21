@@ -404,7 +404,9 @@ export default function RideExecutionsPage() {
                     })
                   : startDate
                     ? t('sections.dateRange.from', { startDate: startDate.format('MMM D, YYYY') })
-                    : t('sections.dateRange.until', { endDate: endDate?.format('MMM D, YYYY') })
+                    : endDate
+                      ? t('sections.dateRange.until', { endDate: endDate.format('MMM D, YYYY') })
+                      : ''
                 }
               </Typography>
             )}
