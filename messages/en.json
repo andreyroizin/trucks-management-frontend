@@ -1367,7 +1367,7 @@
           "required": "Last working day is required"
         },
         "probationPeriod": {
-          "label": "Probation Period",
+          "label": "Probation Period (months)",
           "required": "Probation period is required"
         },
         "probationPeriodOptions": {
@@ -1383,7 +1383,7 @@
           "6": "6 month"
         },
         "noticePeriod": {
-          "label": "Notice Period",
+          "label": "Notice Period (months)",
           "required": "Notice period is required"
         },
         "function": {

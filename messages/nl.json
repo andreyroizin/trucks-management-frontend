@@ -1372,7 +1372,7 @@
           "required": "Laatste werkdag is verplicht"
         },
         "probationPeriod": {
-          "label": "Proeftijd",
+          "label": "Proeftijd (maanden)",
           "required": "Proeftijd is verplicht"
         },
         "probationPeriodOptions": {
@@ -1388,7 +1388,7 @@
           "6": "6 maand"
         },
         "noticePeriod": {
-          "label": "Opzegtermijn",
+          "label": "Opzegtermijn (maanden)",
           "required": "Opzegtermijn is verplicht"
         },
         "function": {

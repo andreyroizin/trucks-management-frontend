@@ -81,27 +81,30 @@ const getPeriodOptions = (t: any) => [
     { value: '6', label: t('drivers.create.periodOptions.6') },
 ];
 
-const getProbationPeriodOptions = (t: any) => [
-    { value: '0', label: t('drivers.create.fields.probationPeriodOptions.0') },
-    { value: '1', label: t('drivers.create.fields.probationPeriodOptions.1') },
+// Probation period options - numbers only (unit is in label)
+const getProbationPeriodOptions = () => [
+    { value: '0', label: '0' },
+    { value: '1', label: '1' },
 ];
 
-const getNoticePeriodOptions = (t: any) => [
-    { value: '1', label: t('drivers.create.fields.noticePeriodOptions.1') },
-    { value: '2', label: t('drivers.create.fields.noticePeriodOptions.2') },
-    { value: '3', label: t('drivers.create.fields.noticePeriodOptions.3') },
-    { value: '4', label: t('drivers.create.fields.noticePeriodOptions.4') },
-    { value: '5', label: t('drivers.create.fields.noticePeriodOptions.5') },
-    { value: '6', label: t('drivers.create.fields.noticePeriodOptions.6') },
+// Notice period options - numbers only (unit is in label)
+const getNoticePeriodOptions = () => [
+    { value: '1', label: '1' },
+    { value: '2', label: '2' },
+    { value: '3', label: '3' },
+    { value: '4', label: '4' },
+    { value: '5', label: '5' },
+    { value: '6', label: '6' },
 ];
 
-const getFunctionOptions = (t: any) => [
-    { value: t('drivers.create.fields.functionOptions.chauffeur'), label: t('drivers.create.fields.functionOptions.chauffeur') },
-    { value: t('drivers.create.fields.functionOptions.administrativeMedewerker'), label: t('drivers.create.fields.functionOptions.administrativeMedewerker') },
-    { value: t('drivers.create.fields.functionOptions.vervoermanager'), label: t('drivers.create.fields.functionOptions.vervoermanager') },
-    { value: t('drivers.create.fields.functionOptions.planner'), label: t('drivers.create.fields.functionOptions.planner') },
-    { value: t('drivers.create.fields.functionOptions.supportMedewerker'), label: t('drivers.create.fields.functionOptions.supportMedewerker') },
-    { value: t('drivers.create.fields.functionOptions.transportManager'), label: t('drivers.create.fields.functionOptions.transportManager') },
+// Function options - Dutch only (stored in database as-is)
+const getFunctionOptions = () => [
+    { value: 'Chauffeur', label: 'Chauffeur' },
+    { value: 'Administratieve Medewerker', label: 'Administratieve Medewerker' },
+    { value: 'Vervoermanager', label: 'Vervoermanager' },
+    { value: 'Planner', label: 'Planner' },
+    { value: 'Support Medewerker', label: 'Support Medewerker' },
+    { value: 'Transport Manager', label: 'Transport Manager' },
 ];
 
 export default function CreateDriverPage() {
@@ -112,9 +115,9 @@ export default function CreateDriverPage() {
     const t = useTranslations();
     
     const periodOptions = getPeriodOptions(t);
-    const probationPeriodOptions = getProbationPeriodOptions(t);
-    const noticePeriodOptions = getNoticePeriodOptions(t);
-    const functionOptions = getFunctionOptions(t);
+    const probationPeriodOptions = getProbationPeriodOptions();
+    const noticePeriodOptions = getNoticePeriodOptions();
+    const functionOptions = getFunctionOptions();
     
     // Set default function value (Chauffeur)
     const defaultFunctionValue = functionOptions[0]?.value || '';
@@ -206,8 +209,8 @@ export default function CreateDriverPage() {
             NoticePeriod: '1',
             Function: defaultFunctionValue,
             WorkweekDuration: 40,
-            WeeklySchedule: '',
-            WorkingHours: '',
+            WeeklySchedule: 'Maandag - Vrijdag',
+            WorkingHours: '09:00 - 18:00',
             PayScale: 'D',
             PayScaleStep: 5,
             HourlyWage: undefined, // Will be auto-filled from CAO hourly wage
