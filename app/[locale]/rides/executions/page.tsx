@@ -164,7 +164,7 @@ export default function RideExecutionsPage() {
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4" gutterBottom>
-          Ride Execution Approvals
+          {t('title')}
         </Typography>
         <LanguageSelectDesktop />
       </Box>
@@ -185,7 +185,7 @@ export default function RideExecutionsPage() {
                       value={companies.find(c => c.id === selectedCompanyId) || null}
                       onChange={(_, newValue) => setSelectedCompanyId(newValue?.id || '')}
                       renderInput={(params) => (
-                        <TextField {...params} label="Company" variant="outlined" size="small" />
+                        <TextField {...params} label={t('filters.company')} variant="outlined" size="small" />
                       )}
                     />
                   </Grid>
@@ -194,7 +194,7 @@ export default function RideExecutionsPage() {
                 {/* Date Range Filters */}
                 <Grid item xs={12} sm={6} md={3}>
                   <DatePicker
-                    label="Start Date"
+                    label={t('filters.startDate')}
                     value={startDate}
                     onChange={(newValue) => setStartDate(newValue)}
                     slotProps={{ 
@@ -209,7 +209,7 @@ export default function RideExecutionsPage() {
                 
                 <Grid item xs={12} sm={6} md={3}>
                   <DatePicker
-                    label="End Date"
+                    label={t('filters.endDate')}
                     value={endDate}
                     onChange={(newValue) => setEndDate(newValue)}
                     minDate={startDate || undefined}
@@ -235,10 +235,10 @@ export default function RideExecutionsPage() {
                     renderInput={(params) => (
                       <TextField 
                         {...params} 
-                        label="Drivers" 
+                        label={t('filters.drivers')} 
                         variant="outlined" 
                         size="small"
-                        placeholder={isLoadingDrivers ? "Loading drivers..." : "Select drivers"}
+                        placeholder={isLoadingDrivers ? t('filters.loadingDrivers') : t('filters.driversPlaceholder')}
                       />
                     )}
                     renderTags={(value, getTagProps) =>
@@ -252,7 +252,7 @@ export default function RideExecutionsPage() {
                         />
                       ))
                     }
-                    noOptionsText={isLoadingDrivers ? "Loading drivers..." : "No drivers found"}
+                    noOptionsText={isLoadingDrivers ? t('filters.loadingDrivers') : t('filters.noDrivers')}
                   />
                 </Grid>
               </Grid>
@@ -262,7 +262,7 @@ export default function RideExecutionsPage() {
             <Grid item xs={12} md={4}>
               <Box display="flex" gap={1} flexWrap="wrap" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
                 <Chip 
-                  label={`All (${executionStats.all})`}
+                  label={`${t('status.all')} (${executionStats.all})`}
                   color="primary"
                   variant={statusFilter === 'all' ? 'filled' : 'outlined'}
                   onClick={() => setStatusFilter('all')}
@@ -276,7 +276,7 @@ export default function RideExecutionsPage() {
                   size="small"
                 />
                 <Chip 
-                  label={`Pending (${executionStats.Pending})`}
+                  label={`${t('status.pending')} (${executionStats.Pending})`}
                   color="warning"
                   variant={statusFilter === 'Pending' ? 'filled' : 'outlined'}
                   onClick={() => setStatusFilter('Pending')}
@@ -293,7 +293,7 @@ export default function RideExecutionsPage() {
                   size="small"
                 />
                 <Chip 
-                  label={`Approved (${executionStats.Approved})`}
+                  label={`${t('status.approved')} (${executionStats.Approved})`}
                   color="success"
                   variant={statusFilter === 'Approved' ? 'filled' : 'outlined'}
                   onClick={() => setStatusFilter('Approved')}
@@ -310,7 +310,7 @@ export default function RideExecutionsPage() {
                   size="small"
                 />
                 <Chip 
-                  label={`Rejected (${executionStats.Rejected})`}
+                  label={`${t('status.rejected')} (${executionStats.Rejected})`}
                   color="error"
                   variant={statusFilter === 'Rejected' ? 'filled' : 'outlined'}
                   onClick={() => setStatusFilter('Rejected')}
@@ -327,7 +327,7 @@ export default function RideExecutionsPage() {
                   size="small"
                 />
                 <Chip 
-                  label={`Dispute (${executionStats.Dispute})`}
+                  label={`${t('status.dispute')} (${executionStats.Dispute})`}
                   color="secondary"
                   variant={statusFilter === 'Dispute' ? 'filled' : 'outlined'}
                   onClick={() => setStatusFilter('Dispute')}
@@ -362,7 +362,7 @@ export default function RideExecutionsPage() {
                   }
                 }}
               >
-                Clear Filters
+                {t('filters.clearFilters')}
               </Button>
             </Box>
           )}
@@ -374,34 +374,37 @@ export default function RideExecutionsPage() {
         <Box mb={4}>
           <Typography variant="h6" gutterBottom>
             {statusFilter === 'all'
-              ? `All Ride Executions (${filteredRides.length} rides)`
-              : `${statusFilter} Executions (${filteredRides.length} rides)`
+              ? t('sections.title.all', { count: filteredRides.length })
+              : t('sections.title.filtered', { status: statusFilter, count: filteredRides.length })
             }
             {(startDate || endDate || selectedDriverIds.length > 0) && (
               <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                • Filtered
+                {t('sections.filtered')}
               </Typography>
             )}
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={2}>
             {statusFilter === 'all'
-              ? 'Showing all rides with driver executions'
+              ? t('sections.subtitle.all')
               : statusFilter === 'Pending'
-                ? 'Rides with executions that need your review and approval'
+                ? t('sections.subtitle.pending')
                 : statusFilter === 'Approved'
-                  ? 'Rides with approved executions'
+                  ? t('sections.subtitle.approved')
                   : statusFilter === 'Rejected'
-                    ? 'Rides with rejected executions'
-                    : 'Rides with disputed executions'
+                    ? t('sections.subtitle.rejected')
+                    : t('sections.subtitle.dispute')
             }
             {(startDate || endDate) && (
               <Typography component="span" variant="body2" color="text.secondary">
                 {' • '}
                 {startDate && endDate
-                  ? `${startDate.format('MMM D')} - ${endDate.format('MMM D, YYYY')}`
+                  ? t('sections.dateRange.both', { 
+                      startDate: startDate.format('MMM D'),
+                      endDate: endDate.format('MMM D, YYYY')
+                    })
                   : startDate
-                    ? `From ${startDate.format('MMM D, YYYY')}`
-                    : `Until ${endDate?.format('MMM D, YYYY')}`
+                    ? t('sections.dateRange.from', { startDate: startDate.format('MMM D, YYYY') })
+                    : t('sections.dateRange.until', { endDate: endDate?.format('MMM D, YYYY') })
                 }
               </Typography>
             )}
@@ -409,8 +412,10 @@ export default function RideExecutionsPage() {
               <Typography component="span" variant="body2" color="text.secondary">
                 {' • '}
                 {selectedDriverIds.length === 1
-                  ? `Driver: ${drivers.find(d => d.id === selectedDriverIds[0])?.firstName} ${drivers.find(d => d.id === selectedDriverIds[0])?.lastName}`
-                  : `${selectedDriverIds.length} drivers selected`
+                  ? t('sections.driverSelection.single', { 
+                      name: `${drivers.find(d => d.id === selectedDriverIds[0])?.firstName} ${drivers.find(d => d.id === selectedDriverIds[0])?.lastName}`
+                    })
+                  : t('sections.driverSelection.multiple', { count: selectedDriverIds.length })
                 }
               </Typography>
             )}
@@ -424,16 +429,24 @@ export default function RideExecutionsPage() {
         <Box textAlign="center" py={8}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
             {statusFilter === 'all' 
-              ? 'No ride executions found'
-              : `No ${statusFilter.toLowerCase()} executions found`
+              ? t('empty.title.all')
+              : t('empty.title.status', { status: statusFilter.toLowerCase() })
             }
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {!allRidesFromAPI || allRidesFromAPI.length === 0
               ? selectedCompanyId 
-                ? `No ${statusFilter === 'all' ? 'executions' : statusFilter.toLowerCase() + ' executions'} found for the selected company`
-                : `No ${statusFilter === 'all' ? 'executions' : statusFilter.toLowerCase() + ' executions'} found across all companies`
-              : 'No rides match the selected filters'
+                ? t('empty.description.noData', { 
+                    executions: statusFilter === 'all' 
+                      ? t('empty.executionTypes.all')
+                      : t(`empty.executionTypes.${statusFilter.toLowerCase()}`)
+                  })
+                : t('empty.description.noDataAll', { 
+                    executions: statusFilter === 'all' 
+                      ? t('empty.executionTypes.all')
+                      : t(`empty.executionTypes.${statusFilter.toLowerCase()}`)
+                  })
+              : t('empty.description.filtered')
             }
           </Typography>
           {(startDate || endDate || selectedDriverIds.length > 0) && (
@@ -446,7 +459,7 @@ export default function RideExecutionsPage() {
               }}
               sx={{ mt: 2 }}
             >
-              Clear Date & Driver Filters
+              {t('empty.actions.clearDateDriver')}
             </Button>
           )}
           {statusFilter !== 'all' && (
@@ -455,7 +468,7 @@ export default function RideExecutionsPage() {
               onClick={() => setStatusFilter('all')} 
               sx={{ mt: 2, ml: 1 }}
             >
-              Show All Statuses
+              {t('empty.actions.showAll')}
             </Button>
           )}
         </Box>

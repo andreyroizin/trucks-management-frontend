@@ -12,6 +12,7 @@ import {
     Divider,
 } from '@mui/material';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { UserDetails } from "@/hooks/useUser";
 
 type DriverDetailsProps = {
@@ -19,16 +20,19 @@ type DriverDetailsProps = {
 };
 
 const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
+    const t = useTranslations('drivers.details');
+    const tNotAvailable = useTranslations('drivers.detail');
+
     return (
         <Card sx={{ maxWidth: 800, margin: 'auto', mt: 2 }}>
             <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                     <Typography variant="h5">
-                        Driver Details
+                        {t('title')}
                     </Typography>
                     <Link href={`/users/edit?id=${driver.id}`} passHref>
                         <Button variant="contained" color="primary" size="small">
-                            Edit User
+                            {t('buttons.editUser')}
                         </Button>
                     </Link>
                 </Box>
@@ -36,7 +40,7 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
                 <Box display="flex" flexDirection="row" flexWrap="wrap" gap={1}>
                     <Box width={{ xs: '100%', sm: '50%' }}>
                         <Typography variant="subtitle2" color="textSecondary">
-                            Name:
+                            {t('fields.name')}
                         </Typography>
                         <Typography variant="body1">
                             {driver.firstName} {driver.lastName}
@@ -44,7 +48,7 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
                     </Box>
                     <Box width={{ xs: '100%', sm: '50%' }}>
                         <Typography variant="subtitle2" color="textSecondary">
-                            Email:
+                            {t('fields.email')}
                         </Typography>
                         <Typography variant="body1">
                             {driver.email}
@@ -52,25 +56,25 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
                     </Box>
                     <Box width={{ xs: '100%', sm: '50%' }}>
                         <Typography variant="subtitle2" color="textSecondary">
-                            Phone Number:
+                            {t('fields.phoneNumber')}
                         </Typography>
                         <Typography variant="body1">
-                            {driver.phoneNumber || 'N/A'}
+                            {driver.phoneNumber || tNotAvailable('notAvailable')}
                         </Typography>
                     </Box>
                     <Box width={{ xs: '100%', sm: '50%' }}>
                         <Typography variant="subtitle2" color="textSecondary">
-                            Address:
+                            {t('fields.address')}
                         </Typography>
                         <Typography variant="body1">
-                            {driver.address || 'N/A'}, {driver.city || 'N/A'}, {driver.postcode || 'N/A'}, {driver.country || 'N/A'}
+                            {driver.address || tNotAvailable('notAvailable')}, {driver.city || tNotAvailable('notAvailable')}, {driver.postcode || tNotAvailable('notAvailable')}, {driver.country || tNotAvailable('notAvailable')}
                         </Typography>
                     </Box>
                     {driver.driverInfo && (
                         <>
                             <Box width={{ xs: '100%', sm: '50%' }}>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                    Company ID:
+                                    {t('fields.companyId')}
                                 </Typography>
                                 <Typography variant="body1">
                                     {driver.driverInfo.companyId}
@@ -78,7 +82,7 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
                             </Box>
                             <Box width={{ xs: '100%', sm: '50%' }}>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                    Company Name:
+                                    {t('fields.companyName')}
                                 </Typography>
                                 <Typography variant="body1">
                                     {driver.driverInfo.companyName}

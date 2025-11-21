@@ -12,6 +12,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {Driver} from "@/hooks/useDrivers";
 
 type DriversTableProps = {
@@ -20,6 +21,7 @@ type DriversTableProps = {
 
 const DriversTable: React.FC<DriversTableProps> = ({ drivers }) => {
     const router = useRouter();
+    const t = useTranslations('drivers.table');
 
     const handleRowClick = (driverId: string) => {
         // Navigate to driver details page (adjust the route as needed)
@@ -31,9 +33,9 @@ const DriversTable: React.FC<DriversTableProps> = ({ drivers }) => {
             <Table aria-label="drivers table">
                 <TableHead>
                     <TableRow>
-                        <TableCell><Typography variant="subtitle1">Driver Name</Typography></TableCell>
-                        <TableCell><Typography variant="subtitle1">Email</Typography></TableCell>
-                        <TableCell><Typography variant="subtitle1">Company</Typography></TableCell>
+                        <TableCell><Typography variant="subtitle1">{t('headers.driverName')}</Typography></TableCell>
+                        <TableCell><Typography variant="subtitle1">{t('headers.email')}</Typography></TableCell>
+                        <TableCell><Typography variant="subtitle1">{t('headers.company')}</Typography></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

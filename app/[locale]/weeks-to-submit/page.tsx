@@ -459,36 +459,43 @@ export default function WeeksToSubmitPage() {
                 {selectedWeek && (
                   <Box>
                     <Typography variant="h5" gutterBottom>
-                      Week {selectedWeek.weekNumber} ({selectedWeek.year}) - {selectedWeek.driver.firstName} {selectedWeek.driver.lastName}
+                      {t('weekOverviewDialog.title', {
+                        week: selectedWeek.weekNumber,
+                        year: selectedWeek.year,
+                        driverName: `${selectedWeek.driver.firstName} ${selectedWeek.driver.lastName}`
+                      })}
                     </Typography>
                     
                     <Box sx={{ mb: 3, display: 'flex', gap: 3 }}>
                       <Box>
-                        <Typography variant="body2" color="text.secondary">Executions</Typography>
+                        <Typography variant="body2" color="text.secondary">{t('weekOverviewDialog.fields.executions')}</Typography>
                         <Typography variant="h6">{selectedWeek.executionCount}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" color="text.secondary">Total Hours</Typography>
+                        <Typography variant="body2" color="text.secondary">{t('weekOverviewDialog.fields.totalHours')}</Typography>
                         <Typography variant="h6">{selectedWeek.totalHours.toFixed(1)}h</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" color="text.secondary">Total Compensation</Typography>
+                        <Typography variant="body2" color="text.secondary">{t('weekOverviewDialog.fields.totalCompensation')}</Typography>
                         <Typography variant="h6">€{selectedWeek.totalCompensation.toFixed(2)}</Typography>
                       </Box>
                       <Box>
-                        <Typography variant="body2" color="text.secondary">Status</Typography>
+                        <Typography variant="body2" color="text.secondary">{t('weekOverviewDialog.fields.status')}</Typography>
                         <Typography variant="h6">{selectedWeek.summaryStatus}</Typography>
                       </Box>
                     </Box>
 
                     <Typography variant="body2" color="text.secondary">
-                      Week period: {selectedWeek.weekStartDate} (Period {selectedWeek.periodNumber})
+                      {t('weekOverviewDialog.fields.weekPeriod', {
+                        startDate: selectedWeek.weekStartDate,
+                        periodNumber: selectedWeek.periodNumber
+                      })}
                     </Typography>
                   </Box>
                 )}
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setWeekDetailsOpen(false)}>Close</Button>
+                <Button onClick={() => setWeekDetailsOpen(false)}>{t('weekOverviewDialog.buttons.close')}</Button>
               </DialogActions>
             </Dialog>
         </Box>

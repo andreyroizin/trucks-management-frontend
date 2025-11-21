@@ -29,6 +29,7 @@ import {
   RideExecutionDispute 
 } from '@/hooks/useRideExecutionDisputes';
 import { useSnack } from '@/providers/SnackProvider';
+import { useTranslations } from 'next-intl';
 
 type Props = {
   open: boolean;
@@ -42,13 +43,6 @@ type Props = {
   };
 };
 
-const schema = yup.object({
-  reason: yup
-    .string()
-    .required('Please explain why you are disputing this rejection')
-    .min(10, 'Please provide at least 10 characters explaining the issue')
-});
-
 export default function RideExecutionDisputeDialog({ 
   open, 
   onClose, 
@@ -56,6 +50,8 @@ export default function RideExecutionDisputeDialog({
   executionStatus,
   rideInfo 
 }: Props) {
+  const t = useTranslations('disputes.execution.dialog');
+  const tValidation = useTranslations('disputes.execution.validation');
   const showSnack = useSnack();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showComments, setShowComments] = useState(false);
@@ -71,6 +67,14 @@ export default function RideExecutionDisputeDialog({
   // Check if there's already an open dispute
   const existingDispute = disputes?.find(d => d.status === 'Open');
   const hasOpenDispute = !!existingDispute;
+
+  // Schema with translations
+  const schema = yup.object({
+    reason: yup
+      .string()
+      .required(tValidation('reasonRequired'))
+      .min(10, tValidation('reasonMinLength'))
+  });
 
   /* RHF setup */
   const {
@@ -101,14 +105,14 @@ export default function RideExecutionDisputeDialog({
       });
       
       showSnack({
-        text: 'Dispute created successfully. Your execution status is now "Dispute".',
+        text: t('success.created'),
         severity: 'success',
       });
       reset();
       onClose();
     } catch (e: any) {
       console.error(e);
-      setSubmitError(e.message || 'Failed to create dispute');
+      setSubmitError(e.message || t('errors.createFailed'));
       setTimeout(() => {
         errorRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -124,10 +128,10 @@ export default function RideExecutionDisputeDialog({
         request: { body: commentText }
       });
       
-      showSnack({ text: 'Comment added successfully', severity: 'success' });
+      showSnack({ text: t('success.commentAdded'), severity: 'success' });
       setCommentText('');
     } catch (e: any) {
-      showSnack({ text: e.message || 'Failed to add comment', severity: 'error' });
+      showSnack({ text: e.message || t('errors.commentFailed'), severity: 'error' });
     }
   };
 
@@ -148,11 +152,17 @@ export default function RideExecutionDisputeDialog({
     >
       <DialogTitle>
         <Typography variant="h5" fontWeight={500}>
-          🚨 Execution Dispute
+          {t('title')}
         </Typography>
         {rideInfo && (
           <Typography variant="body2" color="text.secondary">
-            {rideInfo.tripNumber || `Ride ${rideId.slice(0, 8)}`} • {dayjs(rideInfo.plannedDate).format('dddd, MMMM D, YYYY')}
+            {rideInfo.tripNumber 
+              ? `${rideInfo.tripNumber} • ${dayjs(rideInfo.plannedDate).format('dddd, MMMM D, YYYY')}`
+              : t('rideInfo', { 
+                  id: rideId.slice(0, 8), 
+                  date: dayjs(rideInfo.plannedDate).format('dddd, MMMM D, YYYY')
+                })
+            }
           </Typography>
         )}
       </DialogTitle>
@@ -167,7 +177,7 @@ export default function RideExecutionDisputeDialog({
             {/* Current Status */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" gutterBottom>
-                Current Status:
+                {t('currentStatus')}
               </Typography>
               <Chip 
                 label={executionStatus} 
@@ -180,10 +190,10 @@ export default function RideExecutionDisputeDialog({
             {existingDispute && (
               <Paper sx={{ p: 2, mb: 3, bgcolor: 'warning.50', border: '1px solid', borderColor: 'warning.200' }}>
                 <Typography variant="subtitle2" gutterBottom>
-                  📋 Active Dispute (Created {dayjs(existingDispute.createdAtUtc).format('MMM D, YYYY HH:mm')})
+                  {t('activeDispute.title', { date: dayjs(existingDispute.createdAtUtc).format('MMM D, YYYY HH:mm') })}
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 2 }}>
-                  <strong>Reason:</strong> {existingDispute.reason}
+                  <strong>{t('activeDispute.reason')}</strong> {existingDispute.reason}
                 </Typography>
                 
                 {existingDispute.comments.length > 0 && (
@@ -193,7 +203,7 @@ export default function RideExecutionDisputeDialog({
                       onClick={() => setShowComments(!showComments)}
                       sx={{ mb: 1 }}
                     >
-                      {showComments ? 'Hide' : 'Show'} Comments ({existingDispute.comments.length})
+                      {showComments ? t('comments.hide') : t('comments.show')} {t('comments.count', { count: existingDispute.comments.length })}
                     </Button>
                     
                     {showComments && (
@@ -220,7 +230,7 @@ export default function RideExecutionDisputeDialog({
                     size="small"
                     multiline
                     rows={2}
-                    placeholder="Add a comment to your dispute..."
+                    placeholder={t('addComment.placeholder')}
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     sx={{ mb: 1 }}
@@ -232,7 +242,7 @@ export default function RideExecutionDisputeDialog({
                     disabled={!commentText.trim() || addCommentMutation.isPending}
                     startIcon={addCommentMutation.isPending ? <CircularProgress size={16} /> : null}
                   >
-                    Add Comment
+                    {t('addComment.button')}
                   </Button>
                 </Box>
               </Paper>
@@ -243,10 +253,10 @@ export default function RideExecutionDisputeDialog({
               <>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="h6" gutterBottom>
-                  Create New Dispute
+                  {t('createNew.title')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Your execution was rejected. If you believe this rejection is incorrect, please explain why below.
+                  {t('createNew.description')}
                 </Typography>
 
                 <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -256,14 +266,14 @@ export default function RideExecutionDisputeDialog({
                     render={({ field }) => (
                       <TextField
                         {...field}
-                        label="Explain why you are disputing this rejection *"
+                        label={t('form.label')}
                         multiline
                         rows={4}
                         fullWidth
                         margin="normal"
                         error={!!errors.reason}
-                        helperText={errors.reason?.message || 'Please provide detailed information about why the rejection is incorrect'}
-                        placeholder="Example: I arrived on time and completed all required work. The rejection reason stating I was late is incorrect..."
+                        helperText={errors.reason?.message || t('form.helper')}
+                        placeholder={t('form.placeholder')}
                       />
                     )}
                   />
@@ -275,13 +285,13 @@ export default function RideExecutionDisputeDialog({
             {/* Cannot Dispute Messages */}
             {executionStatus !== 'Rejected' && (
               <Alert severity="info" sx={{ mt: 2 }}>
-                You can only dispute rejected executions. Your current status is "{executionStatus}".
+                {t('messages.cannotDispute', { status: executionStatus })}
               </Alert>
             )}
 
             {executionStatus === 'Rejected' && hasOpenDispute && (
               <Alert severity="warning" sx={{ mt: 2 }}>
-                You already have an open dispute for this execution. You can add comments above to provide additional information.
+                {t('messages.alreadyHasDispute')}
               </Alert>
             )}
 
@@ -305,7 +315,7 @@ export default function RideExecutionDisputeDialog({
             disabled={createDisputeMutation.isPending}
             sx={{ flex: 1 }}
           >
-            {createDisputeMutation.isPending ? <CircularProgress size={20} /> : 'Create Dispute'}
+            {createDisputeMutation.isPending ? <CircularProgress size={20} /> : t('buttons.createDispute')}
           </Button>
         )}
         <Button
@@ -313,7 +323,7 @@ export default function RideExecutionDisputeDialog({
           onClick={onClose}
           sx={{ flex: canCreateDispute ? 1 : 'auto' }}
         >
-          {canCreateDispute ? 'Cancel' : 'Close'}
+          {canCreateDispute ? t('buttons.cancel') : t('buttons.close')}
         </Button>
       </DialogActions>
     </Dialog>

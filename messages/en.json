@@ -67,9 +67,14 @@
         "noRecords": "No records for this week.",
         "table": {
           "date": "Date",
+          "client": "Client",
+          "time": "Time",
           "hours": "Hours",
+          "hourlyCompensation": "Hourly Compensation",
+          "additionalCompensation": "Additional Compensation",
           "status": "Status",
-          "hoursCode": "Hours code"
+          "hoursCode": "Hours code",
+          "restLabel": "Rest:"
         },
         "signButton": "Sign Work Week",
         "viewSignedButton": "View Signed Week",
@@ -133,6 +138,181 @@
           "description": "Your comment for {key} has been successfully sent to the Transport Admin.\n\nYou will get a notification if the admin approved your comment or not.",
           "goBack": "Go to Dispute"
         }
+      }
+    },
+    "execution": {
+      "dialog": {
+        "title": "Execution Dispute",
+        "rideInfo": "Ride {id} • {date}",
+        "currentStatus": "Current Status:",
+        "activeDispute": {
+          "title": "Active Dispute (Created {date})",
+          "reason": "Reason:"
+        },
+        "comments": {
+          "show": "Show",
+          "hide": "Hide",
+          "count": "Comments ({count})"
+        },
+        "addComment": {
+          "placeholder": "Add a comment to your dispute...",
+          "button": "Add Comment"
+        },
+        "createNew": {
+          "title": "Create New Dispute",
+          "description": "Your execution was rejected. If you believe this rejection is incorrect, please explain why below."
+        },
+        "form": {
+          "label": "Explain why you are disputing this rejection *",
+          "helper": "Please provide detailed information about why the rejection is incorrect",
+          "placeholder": "Example: I arrived on time and completed all required work. The rejection reason stating I was late is incorrect...",
+          "required": "Please explain why you are disputing this rejection"
+        },
+        "messages": {
+          "cannotDispute": "You can only dispute rejected executions. Your current status is \"{status}\".",
+          "alreadyHasDispute": "You already have an open dispute for this execution. You can add comments above to provide additional information."
+        },
+        "buttons": {
+          "createDispute": "Create Dispute",
+          "cancel": "Cancel",
+          "close": "Close"
+        },
+        "success": {
+          "created": "Dispute created successfully. Your execution status is now \"Dispute\".",
+          "commentAdded": "Comment added successfully"
+        },
+        "errors": {
+          "createFailed": "Failed to create dispute",
+          "commentFailed": "Failed to add comment"
+        }
+      },
+      "validation": {
+        "reasonRequired": "Please explain why you are disputing this rejection",
+        "reasonMinLength": "Please provide at least 10 characters explaining the issue"
+      }
+    }
+  },
+  "driver": {
+    "rides": {
+      "title": "My Rides",
+      "filters": {
+        "startDate": "Start Date",
+        "endDate": "End Date"
+      },
+      "status": {
+        "all": "All Rides",
+        "notSubmitted": "Not Submitted",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "dispute": "Dispute",
+        "notSubmittedLabel": "Not Submitted:",
+        "pendingLabel": "Pending:",
+        "approvedLabel": "Approved:",
+        "rejectedLabel": "Rejected:",
+        "disputeLabel": "Dispute:"
+      },
+      "sections": {
+        "all": "All Rides",
+        "needsExecution": "Needs Execution Submission",
+        "pendingApproval": "Pending Approval",
+        "approved": "Approved",
+        "rejectedRevision": "Rejected - Needs Revision",
+        "inDispute": "In Dispute"
+      },
+      "fields": {
+        "route": "Route",
+        "client": "Client",
+        "truck": "Truck",
+        "myRole": "My Role",
+        "date": "Date",
+        "plannedTime": "Planned Time",
+        "primaryDriver": "Primary Driver",
+        "secondDriver": "Second Driver"
+      },
+      "placeholders": {
+        "notSpecified": "Not specified",
+        "notAssigned": "Not assigned"
+      },
+      "statusText": {
+        "submitted": "submitted",
+        "notSubmitted": "not submitted"
+      },
+      "other": {
+        "ride": "Ride {id}",
+        "driverPlanned": "Driver ({hours}h planned)",
+        "submittedOn": "Submitted: {hours}h on {date}",
+        "otherDrivers": "Other drivers: {list}"
+      },
+      "empty": {
+        "noRides": "No rides found for the selected period",
+        "noFilteredRides": "No {status} rides found",
+        "adjustRange": "Try adjusting the date range or contact your administrator",
+        "clickAllRides": "Click \"All Rides\" to see all your rides"
+      },
+      "errors": {
+        "loadFailed": "Failed to load your rides: {message}"
+      }
+    },
+    "disputes": {
+      "title": "My Execution Disputes",
+      "subtitle": "View and manage your disputed ride executions",
+      "filters": {
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "clearFilters": "Clear Filters"
+      },
+      "chips": {
+        "activeDisputes": "Active Disputes: {count}",
+        "canDispute": "Can Dispute: {count}"
+      },
+      "sections": {
+        "activeDisputes": "Active Disputes ({count})",
+        "rejectedExecutions": "Rejected Executions ({count})",
+        "descriptionActive": "These executions are currently under dispute review",
+        "descriptionRejected": "These executions were rejected. You can create a dispute if you disagree."
+      },
+      "status": {
+        "underDispute": "Under Dispute",
+        "rejected": "Rejected"
+      },
+      "buttons": {
+        "viewDispute": "View Dispute",
+        "createDispute": "Create Dispute"
+      },
+      "empty": {
+        "noDisputes": "No Disputes or Rejections",
+        "noResults": "No Results Found",
+        "allApproved": "All your executions are approved or pending. Great job!",
+        "adjustFilters": "Try adjusting your filters to see more results."
+      },
+      "errors": {
+        "loadFailed": "Failed to load your rides: {message}"
+      }
+    },
+    "rideDetail": {
+      "backButton": "Back to My Rides",
+      "title": "Ride Information",
+      "fields": {
+        "date": "Date",
+        "plannedTime": "Planned Time",
+        "route": "Route",
+        "client": "Client",
+        "truck": "Truck",
+        "myRole": "My Role",
+        "primaryDriver": "Primary",
+        "secondDriver": "Second",
+        "otherDrivers": "Other Drivers"
+      },
+      "placeholders": {
+        "notSpecified": "Not specified"
+      },
+      "status": {
+        "notSubmitted": "Not Submitted"
+      },
+      "errors": {
+        "loadFailed": "Failed to load execution data: {message}",
+        "rideNotFound": "Ride not found or you are not assigned to this ride."
       }
     }
   },
@@ -211,7 +391,8 @@
         "alreadySigned": "This week has already been signed. You can view it below.",
         "viewSigned": "View Signed Week",
         "errorLoad": "Failed to load week details",
-        "errorSign": "Failed to sign the week"
+        "errorSign": "Failed to sign the week",
+        "errorApprovalIdNotFound": "Week approval ID not found"
       }
     }
   },
@@ -1416,8 +1597,10 @@
         "regenerateServerError": "Server error while regenerating contract. Please try again later.",
         "loadingContract": "Loading...",
         "fileSize": "File Size",
+        "fileName": "File Name",
         "viewDetails": "View Details",
-        "contractSnapshot": "Contract Snapshot"
+        "contractSnapshot": "Contract Snapshot",
+        "actions": "Actions"
       }
     },
     "edit": {
@@ -1594,6 +1777,27 @@
       "loading": "Loading...",
       "notAvailable": "N/A",
       "hours": "hours"
+    },
+    "table": {
+      "headers": {
+        "driverName": "Driver Name",
+        "email": "Email",
+        "company": "Company"
+      }
+    },
+    "details": {
+      "title": "Driver Details",
+      "fields": {
+        "name": "Name:",
+        "email": "Email:",
+        "phoneNumber": "Phone Number:",
+        "address": "Address:",
+        "companyId": "Company ID:",
+        "companyName": "Company Name:"
+      },
+      "buttons": {
+        "editUser": "Edit User"
+      }
     }
   },
   "common": {
@@ -1890,7 +2094,8 @@
           },
           "details": {
             "title": "Additional Details",
-            "unknown": "Unknown"
+            "unknown": "Unknown",
+            "add": "Add"
           }
         },
         "addDriverDialog": {
@@ -2034,6 +2239,74 @@
         "clear": "Clear Filters",
         "unknownTruck": "Selected truck",
         "unknownDriver": "Selected driver"
+      }
+    },
+    "executionApprovals": {
+      "title": "Ride Execution Approvals",
+      "filters": {
+        "company": "Company",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "drivers": "Drivers",
+        "driversPlaceholder": "Select drivers",
+        "loadingDrivers": "Loading drivers...",
+        "noDrivers": "No drivers found",
+        "clearFilters": "Clear Filters"
+      },
+      "status": {
+        "all": "All",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "dispute": "Dispute"
+      },
+      "sections": {
+        "title": {
+          "all": "All Ride Executions ({count} rides)",
+          "filtered": "{status} Executions ({count} rides)"
+        },
+        "subtitle": {
+          "all": "Showing all rides with driver executions",
+          "pending": "Rides with executions that need your review and approval",
+          "approved": "Rides with approved executions",
+          "rejected": "Rides with rejected executions",
+          "dispute": "Rides with disputed executions"
+        },
+        "filtered": "• Filtered",
+        "dateRange": {
+          "both": "{startDate} - {endDate}",
+          "from": "From {startDate}",
+          "until": "Until {endDate}"
+        },
+        "driverSelection": {
+          "single": "Driver: {name}",
+          "multiple": "{count} drivers selected"
+        }
+      },
+      "empty": {
+        "title": {
+          "all": "No ride executions found",
+          "status": "No {status} executions found"
+        },
+        "description": {
+          "noData": "No {executions} found for the selected company",
+          "noDataAll": "No {executions} found across all companies",
+          "filtered": "No rides match the selected filters"
+        },
+        "executionTypes": {
+          "all": "executions",
+          "pending": "pending executions",
+          "approved": "approved executions",
+          "rejected": "rejected executions",
+          "dispute": "disputed executions"
+        },
+        "actions": {
+          "clearDateDriver": "Clear Date & Driver Filters",
+          "showAll": "Show All Statuses"
+        }
+      },
+      "alerts": {
+        "loadFailed": "Failed to load ride executions: {message}"
       }
     }
   },
@@ -3203,6 +3476,19 @@
     },
     "error": {
       "submitFailed": "Failed to submit weeks"
+    },
+    "weekOverviewDialog": {
+      "title": "Week {week} ({year}) - {driverName}",
+      "fields": {
+        "executions": "Executions",
+        "totalHours": "Total Hours",
+        "totalCompensation": "Total Compensation",
+        "status": "Status",
+        "weekPeriod": "Week period: {startDate} (Period {periodNumber})"
+      },
+      "buttons": {
+        "close": "Close"
+      }
     }
   }
 }

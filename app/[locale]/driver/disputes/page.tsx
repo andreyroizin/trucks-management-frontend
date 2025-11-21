@@ -98,8 +98,8 @@ export default function DriverDisputesPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'Dispute': return 'Under Dispute';
-      case 'Rejected': return 'Rejected';
+      case 'Dispute': return t('driver.disputes.status.underDispute');
+      case 'Rejected': return t('driver.disputes.status.rejected');
       default: return status;
     }
   };
@@ -109,7 +109,7 @@ export default function DriverDisputesPage() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ p: 3 }}>
           <Alert severity="error">
-            Failed to load your rides: {error.message}
+            {t('driver.disputes.errors.loadFailed', { message: error.message })}
           </Alert>
             </Box>
       </LocalizationProvider>
@@ -126,10 +126,10 @@ export default function DriverDisputesPage() {
           </IconButton>
           <Box>
             <Typography variant="h4" gutterBottom>
-              🚨 My Execution Disputes
+              {t('driver.disputes.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              View and manage your disputed ride executions
+              {t('driver.disputes.subtitle')}
             </Typography>
           </Box>
         </Box>
@@ -141,7 +141,7 @@ export default function DriverDisputesPage() {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <DatePicker
-                    label="Start Date"
+                    label={t('driver.disputes.filters.startDate')}
                     value={startDate}
                     onChange={setStartDate}
                     slotProps={{
@@ -154,7 +154,7 @@ export default function DriverDisputesPage() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <DatePicker
-                    label="End Date"
+                    label={t('driver.disputes.filters.endDate')}
                     value={endDate}
                     onChange={setEndDate}
                     slotProps={{
@@ -171,13 +171,13 @@ export default function DriverDisputesPage() {
             <Grid item xs={12} md={4}>
               <Box display="flex" alignItems="center" justifyContent="flex-end" gap={1}>
                 <Chip 
-                  label={`Active Disputes: ${activeDisputes.length}`}
+                  label={t('driver.disputes.chips.activeDisputes', { count: activeDisputes.length })}
                   color="warning"
                   variant="filled"
                   size="small"
                 />
                 <Chip 
-                  label={`Can Dispute: ${rejectedExecutions.length}`}
+                  label={t('driver.disputes.chips.canDispute', { count: rejectedExecutions.length })}
                   color="error"
                   variant="outlined"
                   size="small"
@@ -190,7 +190,7 @@ export default function DriverDisputesPage() {
           {(startDate || endDate) && (
             <Box sx={{ mt: 2 }}>
               <Button variant="outlined" size="small" onClick={clearFilters}>
-                Clear Filters
+                {t('driver.disputes.filters.clearFilters')}
               </Button>
             </Box>
           )}
@@ -210,10 +210,10 @@ export default function DriverDisputesPage() {
             {activeDisputes.length > 0 && (
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" gutterBottom sx={{ color: 'warning.main', fontWeight: 600 }}>
-                  🚨 Active Disputes ({activeDisputes.length})
+                  {t('driver.disputes.sections.activeDisputes', { count: activeDisputes.length })}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  These executions are currently under dispute review
+                  {t('driver.disputes.sections.descriptionActive')}
                 </Typography>
                 <Stack spacing={2}>
                   {activeDisputes.map((ride) => (
@@ -252,7 +252,7 @@ export default function DriverDisputesPage() {
                               size="small"
                               onClick={() => openDisputeDialog(ride)}
                             >
-                              View Dispute
+                              {t('driver.disputes.buttons.viewDispute')}
                             </Button>
                           </Grid>
                         </Grid>
@@ -267,10 +267,10 @@ export default function DriverDisputesPage() {
             {rejectedExecutions.length > 0 && (
               <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" gutterBottom sx={{ color: 'error.main', fontWeight: 600 }}>
-                  ❌ Rejected Executions ({rejectedExecutions.length})
+                  {t('driver.disputes.sections.rejectedExecutions', { count: rejectedExecutions.length })}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  These executions were rejected. You can create a dispute if you disagree.
+                  {t('driver.disputes.sections.descriptionRejected')}
                 </Typography>
                 <Stack spacing={2}>
                   {rejectedExecutions.map((ride) => (
@@ -309,7 +309,7 @@ export default function DriverDisputesPage() {
                               size="small"
                               onClick={() => openDisputeDialog(ride)}
                 >
-                              🚨 Create Dispute
+                              {t('driver.disputes.buttons.createDispute')}
                 </Button>
                           </Grid>
                         </Grid>
@@ -325,19 +325,19 @@ export default function DriverDisputesPage() {
               <Paper sx={{ p: 4, textAlign: 'center' }}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   {disputeableRides.length === 0 
-                    ? '✅ No Disputes or Rejections'
-                    : '🔍 No Results Found'
+                    ? t('driver.disputes.empty.noDisputes')
+                    : t('driver.disputes.empty.noResults')
                   }
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {disputeableRides.length === 0
-                    ? 'All your executions are approved or pending. Great job!'
-                    : 'Try adjusting your filters to see more results.'
+                    ? t('driver.disputes.empty.allApproved')
+                    : t('driver.disputes.empty.adjustFilters')
                   }
                 </Typography>
                 {(startDate || endDate) && (
                   <Button variant="outlined" onClick={clearFilters} sx={{ mt: 2 }}>
-                    Clear Filters
+                    {t('driver.disputes.filters.clearFilters')}
                   </Button>
                 )}
               </Paper>

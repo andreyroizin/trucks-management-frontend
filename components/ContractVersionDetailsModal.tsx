@@ -50,7 +50,7 @@ export default function ContractVersionDetailsModal({
     const showSnack = useSnack();
 
     const formatFileSize = (bytes?: number | null) => {
-        if (!bytes) return 'N/A';
+        if (!bytes) return t('drivers.detail.notAvailable');
         if (bytes < 1024) return `${bytes} B`;
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
         return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
@@ -150,7 +150,7 @@ export default function ContractVersionDetailsModal({
                                 </TableRow>
                                 <TableRow>
                                     <TableCell sx={{pl: 0, border: 'none'}}>
-                                        File Name
+                                        {t('drivers.detail.contracts.fileName')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
                                         {versionDetail.fileName || t('drivers.detail.notAvailable')}

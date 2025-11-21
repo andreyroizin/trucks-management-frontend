@@ -72,9 +72,14 @@
         "noRecords": "Geen registraties voor deze week.",
         "table": {
           "date": "Datum",
+          "client": "Klant",
+          "time": "Tijd",
           "hours": "Uren",
+          "hourlyCompensation": "Uurloon",
+          "additionalCompensation": "Extra Vergoeding",
           "status": "Status",
-          "hoursCode": "Urencode"
+          "hoursCode": "Urencode",
+          "restLabel": "Rust:"
         },
         "signButton": "Week ondertekenen",
         "viewSignedButton": "Ondertekende week bekijken",
@@ -138,6 +143,181 @@
           "description": "Je opmerking voor {key} is succesvol verzonden naar de Transportbeheerder.\n\nJe ontvangt een melding of de beheerder je opmerking heeft goedgekeurd of niet.",
           "goBack": "Ga naar Geschil"
         }
+      }
+    },
+    "execution": {
+      "dialog": {
+        "title": "Uitvoering Geschil",
+        "rideInfo": "Rit {id} • {date}",
+        "currentStatus": "Huidige Status:",
+        "activeDispute": {
+          "title": "Actief Geschil (Aangemaakt {date})",
+          "reason": "Reden:"
+        },
+        "comments": {
+          "show": "Tonen",
+          "hide": "Verbergen",
+          "count": "Opmerkingen ({count})"
+        },
+        "addComment": {
+          "placeholder": "Voeg een opmerking toe aan uw geschil...",
+          "button": "Opmerking Toevoegen"
+        },
+        "createNew": {
+          "title": "Nieuw Geschil Aanmaken",
+          "description": "Uw uitvoering is afgewezen. Als u denkt dat deze afwijzing onjuist is, leg dan hieronder uit waarom."
+        },
+        "form": {
+          "label": "Leg uit waarom u deze afwijzing betwist *",
+          "helper": "Geef gedetailleerde informatie over waarom de afwijzing onjuist is",
+          "placeholder": "Voorbeeld: Ik ben op tijd aangekomen en heb al het vereiste werk voltooid. De afwijzingsreden waarin staat dat ik te laat was, is onjuist...",
+          "required": "Leg uit waarom u deze afwijzing betwist"
+        },
+        "messages": {
+          "cannotDispute": "U kunt alleen afgewezen uitvoeringen betwisten. Uw huidige status is \"{status}\".",
+          "alreadyHasDispute": "U heeft al een open geschil voor deze uitvoering. U kunt hierboven opmerkingen toevoegen om aanvullende informatie te verstrekken."
+        },
+        "buttons": {
+          "createDispute": "Geschil Aanmaken",
+          "cancel": "Annuleren",
+          "close": "Sluiten"
+        },
+        "success": {
+          "created": "Geschil succesvol aangemaakt. Uw uitvoeringsstatus is nu \"Geschil\".",
+          "commentAdded": "Opmerking succesvol toegevoegd"
+        },
+        "errors": {
+          "createFailed": "Geschil aanmaken mislukt",
+          "commentFailed": "Opmerking toevoegen mislukt"
+        }
+      },
+      "validation": {
+        "reasonRequired": "Leg uit waarom u deze afwijzing betwist",
+        "reasonMinLength": "Geef minstens 10 tekens op die het probleem uitleggen"
+      }
+    }
+  },
+  "driver": {
+    "rides": {
+      "title": "Mijn Ritten",
+      "filters": {
+        "startDate": "Startdatum",
+        "endDate": "Einddatum"
+      },
+      "status": {
+        "all": "Alle Ritten",
+        "notSubmitted": "Niet Ingediend",
+        "pending": "In Behandeling",
+        "approved": "Goedgekeurd",
+        "rejected": "Afgewezen",
+        "dispute": "Geschil",
+        "notSubmittedLabel": "Niet Ingediend:",
+        "pendingLabel": "In Behandeling:",
+        "approvedLabel": "Goedgekeurd:",
+        "rejectedLabel": "Afgewezen:",
+        "disputeLabel": "Geschil:"
+      },
+      "sections": {
+        "all": "Alle Ritten",
+        "needsExecution": "Uitvoering Nodig",
+        "pendingApproval": "In Afwachting van Goedkeuring",
+        "approved": "Goedgekeurd",
+        "rejectedRevision": "Afgewezen - Revisie Nodig",
+        "inDispute": "In Geschil"
+      },
+      "fields": {
+        "route": "Route",
+        "client": "Klant",
+        "truck": "Truck",
+        "myRole": "Mijn Rol",
+        "date": "Datum",
+        "plannedTime": "Geplande Tijd",
+        "primaryDriver": "Primaire Chauffeur",
+        "secondDriver": "Tweede Chauffeur"
+      },
+      "placeholders": {
+        "notSpecified": "Niet opgegeven",
+        "notAssigned": "Niet toegewezen"
+      },
+      "statusText": {
+        "submitted": "ingediend",
+        "notSubmitted": "niet ingediend"
+      },
+      "other": {
+        "ride": "Rit {id}",
+        "driverPlanned": "Chauffeur ({hours}u gepland)",
+        "submittedOn": "Ingediend: {hours}u op {date}",
+        "otherDrivers": "Andere chauffeurs: {list}"
+      },
+      "empty": {
+        "noRides": "Geen ritten gevonden voor de geselecteerde periode",
+        "noFilteredRides": "Geen {status} ritten gevonden",
+        "adjustRange": "Pas het datumbereik aan of neem contact op met uw beheerder",
+        "clickAllRides": "Klik op \"Alle Ritten\" om al uw ritten te zien"
+      },
+      "errors": {
+        "loadFailed": "Kan uw ritten niet laden: {message}"
+      }
+    },
+    "disputes": {
+      "title": "Mijn Uitvoeringsgeschillen",
+      "subtitle": "Bekijk en beheer uw betwiste rit uitvoeringen",
+      "filters": {
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "clearFilters": "Filters Wissen"
+      },
+      "chips": {
+        "activeDisputes": "Actieve Geschillen: {count}",
+        "canDispute": "Kan Betwisten: {count}"
+      },
+      "sections": {
+        "activeDisputes": "Actieve Geschillen ({count})",
+        "rejectedExecutions": "Afgewezen Uitvoeringen ({count})",
+        "descriptionActive": "Deze uitvoeringen worden momenteel beoordeeld in geschil",
+        "descriptionRejected": "Deze uitvoeringen zijn afgewezen. U kunt een geschil indienen als u het niet eens bent."
+      },
+      "status": {
+        "underDispute": "In Geschil",
+        "rejected": "Afgewezen"
+      },
+      "buttons": {
+        "viewDispute": "Geschil Bekijken",
+        "createDispute": "Geschil Indienen"
+      },
+      "empty": {
+        "noDisputes": "Geen Geschillen of Afwijzingen",
+        "noResults": "Geen Resultaten Gevonden",
+        "allApproved": "Al uw uitvoeringen zijn goedgekeurd of in behandeling. Goed gedaan!",
+        "adjustFilters": "Pas uw filters aan om meer resultaten te zien."
+      },
+      "errors": {
+        "loadFailed": "Kan uw ritten niet laden: {message}"
+      }
+    },
+    "rideDetail": {
+      "backButton": "Terug naar Mijn Ritten",
+      "title": "Rit Informatie",
+      "fields": {
+        "date": "Datum",
+        "plannedTime": "Geplande Tijd",
+        "route": "Route",
+        "client": "Klant",
+        "truck": "Truck",
+        "myRole": "Mijn Rol",
+        "primaryDriver": "Primair",
+        "secondDriver": "Tweede",
+        "otherDrivers": "Andere Chauffeurs"
+      },
+      "placeholders": {
+        "notSpecified": "Niet opgegeven"
+      },
+      "status": {
+        "notSubmitted": "Niet Ingediend"
+      },
+      "errors": {
+        "loadFailed": "Kan uitvoeringsgegevens niet laden: {message}",
+        "rideNotFound": "Rit niet gevonden of u bent niet toegewezen aan deze rit."
       }
     }
   },
@@ -216,7 +396,8 @@
         "alreadySigned": "Deze week is al ondertekend. Je kunt het hieronder bekijken.",
         "viewSigned": "Bekijk ondertekende week",
         "errorLoad": "Kon weekdetails niet laden",
-        "errorSign": "Kon de week niet ondertekenen"
+        "errorSign": "Kon de week niet ondertekenen",
+        "errorApprovalIdNotFound": "Week goedkeurings-ID niet gevonden"
       }
     }
   },
@@ -1417,8 +1598,10 @@
         "regenerateServerError": "Serverfout bij het regenereren van het contract. Probeer het later opnieuw.",
         "loadingContract": "Laden...",
         "fileSize": "Bestandsgrootte",
+        "fileName": "Bestandsnaam",
         "viewDetails": "Details Bekijken",
-        "contractSnapshot": "Contract Momentopname"
+        "contractSnapshot": "Contract Momentopname",
+        "actions": "Acties"
       },
       "permanent": "Permanent",
       "yes": "Ja",
@@ -1599,6 +1782,27 @@
       "loading": "Laden...",
       "notAvailable": "N/B",
       "hours": "uur"
+    },
+    "table": {
+      "headers": {
+        "driverName": "Chauffeur Naam",
+        "email": "E-mail",
+        "company": "Bedrijf"
+      }
+    },
+    "details": {
+      "title": "Chauffeur Details",
+      "fields": {
+        "name": "Naam:",
+        "email": "E-mail:",
+        "phoneNumber": "Telefoonnummer:",
+        "address": "Adres:",
+        "companyId": "Bedrijfs-ID:",
+        "companyName": "Bedrijfsnaam:"
+      },
+      "buttons": {
+        "editUser": "Gebruiker Bewerken"
+      }
     }
   },
   "common": {
@@ -2040,6 +2244,74 @@
         "clear": "Filters wissen",
         "unknownTruck": "Geselecteerde truck",
         "unknownDriver": "Geselecteerde chauffeur"
+      }
+    },
+    "executionApprovals": {
+      "title": "Goedkeuringen Rituitvoeringen",
+      "filters": {
+        "company": "Bedrijf",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "drivers": "Chauffeurs",
+        "driversPlaceholder": "Selecteer chauffeurs",
+        "loadingDrivers": "Chauffeurs laden...",
+        "noDrivers": "Geen chauffeurs gevonden",
+        "clearFilters": "Filters wissen"
+      },
+      "status": {
+        "all": "Alle",
+        "pending": "In behandeling",
+        "approved": "Goedgekeurd",
+        "rejected": "Afgewezen",
+        "dispute": "Geschil"
+      },
+      "sections": {
+        "title": {
+          "all": "Alle Rituitvoeringen ({count} ritten)",
+          "filtered": "{status} Uitvoeringen ({count} ritten)"
+        },
+        "subtitle": {
+          "all": "Alle ritten met chauffeur uitvoeringen worden getoond",
+          "pending": "Ritten met uitvoeringen die jouw beoordeling en goedkeuring nodig hebben",
+          "approved": "Ritten met goedgekeurde uitvoeringen",
+          "rejected": "Ritten met afgewezen uitvoeringen",
+          "dispute": "Ritten met geschillen"
+        },
+        "filtered": "• Gefilterd",
+        "dateRange": {
+          "both": "{startDate} - {endDate}",
+          "from": "Vanaf {startDate}",
+          "until": "Tot {endDate}"
+        },
+        "driverSelection": {
+          "single": "Chauffeur: {name}",
+          "multiple": "{count} chauffeurs geselecteerd"
+        }
+      },
+      "empty": {
+        "title": {
+          "all": "Geen rituitvoeringen gevonden",
+          "status": "Geen {status} uitvoeringen gevonden"
+        },
+        "description": {
+          "noData": "Geen {executions} gevonden voor het geselecteerde bedrijf",
+          "noDataAll": "Geen {executions} gevonden over alle bedrijven",
+          "filtered": "Geen ritten voldoen aan de geselecteerde filters"
+        },
+        "executionTypes": {
+          "all": "uitvoeringen",
+          "pending": "openstaande uitvoeringen",
+          "approved": "goedgekeurde uitvoeringen",
+          "rejected": "afgewezen uitvoeringen",
+          "dispute": "geschil uitvoeringen"
+        },
+        "actions": {
+          "clearDateDriver": "Datum & Chauffeur Filters Wissen",
+          "showAll": "Alle Statussen Tonen"
+        }
+      },
+      "alerts": {
+        "loadFailed": "Kan rituitvoeringen niet laden: {message}"
       }
     }
   },
@@ -3159,6 +3431,19 @@
     },
     "error": {
       "submitFailed": "Indienen van weken mislukt"
+    },
+    "weekOverviewDialog": {
+      "title": "Week {week} ({year}) - {driverName}",
+      "fields": {
+        "executions": "Uitvoeringen",
+        "totalHours": "Totaal Uren",
+        "totalCompensation": "Totale Vergoeding",
+        "status": "Status",
+        "weekPeriod": "Week periode: {startDate} (Periode {periodNumber})"
+      },
+      "buttons": {
+        "close": "Sluiten"
+      }
     }
   }
 }

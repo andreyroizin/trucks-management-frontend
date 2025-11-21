@@ -101,23 +101,23 @@ export default function DriverDetailPage() {
 
     // Format date helper
     const formatDate = (dateString?: string | null) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return t('drivers.detail.notAvailable');
         try {
             return new Date(dateString).toLocaleDateString();
         } catch {
-            return 'N/A';
+            return t('drivers.detail.notAvailable');
         }
     };
 
     // Format currency helper
     const formatCurrency = (amount?: number | null) => {
-        if (!amount) return 'N/A';
+        if (!amount) return t('drivers.detail.notAvailable');
         return `€${amount.toFixed(2)}`;
     };
 
     // Format file size helper
     const formatFileSize = (bytes?: number | null) => {
-        if (!bytes) return 'N/A';
+        if (!bytes) return t('drivers.detail.notAvailable');
         if (bytes < 1024) return `${bytes} B`;
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
         return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
@@ -666,7 +666,7 @@ export default function DriverDetailPage() {
                                             <TableCell>{t('drivers.detail.contracts.status')}</TableCell>
                                             <TableCell>{t('drivers.detail.contracts.generatedBy')}</TableCell>
                                             <TableCell>{t('drivers.detail.contracts.fileSize')}</TableCell>
-                                            <TableCell align="right">Actions</TableCell>
+                                            <TableCell align="right">{t('drivers.detail.contracts.actions')}</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>

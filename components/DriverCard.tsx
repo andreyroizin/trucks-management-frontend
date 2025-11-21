@@ -68,11 +68,11 @@ export default function DriverCard({
 
     // Format contract end date
     const formatDate = (dateString?: string | null) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return t('drivers.card.notAvailable');
         try {
             return new Date(dateString).toLocaleDateString();
         } catch {
-            return 'N/A';
+            return t('drivers.card.notAvailable');
         }
     };
 

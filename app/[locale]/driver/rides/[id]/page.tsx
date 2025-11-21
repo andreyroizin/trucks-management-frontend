@@ -53,7 +53,7 @@ export default function RideDetailPage() {
     return (
       <Box p={3}>
         <Alert severity="error">
-          Failed to load execution data: {executionError.message}
+          {t('driver.rideDetail.errors.loadFailed', { message: executionError.message })}
         </Alert>
       </Box>
     );
@@ -63,14 +63,14 @@ export default function RideDetailPage() {
     return (
       <Box p={3}>
         <Alert severity="warning">
-          Ride not found or you are not assigned to this ride.
+          {t('driver.rideDetail.errors.rideNotFound')}
         </Alert>
         <Button 
           startIcon={<ArrowBack />} 
           onClick={() => router.push('/driver/rides')}
           sx={{ mt: 2 }}
         >
-          Back to My Rides
+          {t('driver.rideDetail.backButton')}
         </Button>
       </Box>
     );
@@ -100,10 +100,10 @@ export default function RideDetailPage() {
           onClick={() => router.push('/driver/rides')}
           sx={{ mr: 2 }}
         >
-          Back to My Rides
+          {t('driver.rideDetail.backButton')}
         </Button>
         <Typography variant="h4">
-          {ride.tripNumber || `Ride ${ride.rideId.slice(0, 8)}`}
+          {ride.tripNumber || t('driver.rides.other.ride', { id: ride.rideId.slice(0, 8) })}
         </Typography>
       </Box>
 
@@ -112,61 +112,61 @@ export default function RideDetailPage() {
         <CardContent>
           <Box display="flex" justifyContent="between" alignItems="flex-start" mb={2}>
             <Typography variant="h6" gutterBottom>
-              Ride Information
+              {t('driver.rideDetail.title')}
             </Typography>
             <Chip 
-              label={ride.myExecutionStatus.hasSubmitted ? ride.myExecutionStatus.status : 'Not Submitted'}
+              label={ride.myExecutionStatus.hasSubmitted ? ride.myExecutionStatus.status : t('driver.rideDetail.status.notSubmitted')}
               color={getStatusColor(ride.myExecutionStatus.status)}
             />
           </Box>
 
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">Date</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.date')}</Typography>
               <Typography variant="body1">
                 {dayjs(ride.plannedDate).format('dddd, MMMM D, YYYY')}
               </Typography>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">Planned Time</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.plannedTime')}</Typography>
               <Typography variant="body1">
-                {ride.plannedStartTime || 'Not specified'} - {ride.plannedEndTime || 'Not specified'}
+                {ride.plannedStartTime || t('driver.rideDetail.placeholders.notSpecified')} - {ride.plannedEndTime || t('driver.rideDetail.placeholders.notSpecified')}
               </Typography>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">Route</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.route')}</Typography>
               <Typography variant="body1">
-                {ride.routeFromName || 'Not specified'} → {ride.routeToName || 'Not specified'}
+                {ride.routeFromName || t('driver.rideDetail.placeholders.notSpecified')} → {ride.routeToName || t('driver.rideDetail.placeholders.notSpecified')}
               </Typography>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">Client</Typography>
-              <Typography variant="body1">{ride.clientName || 'Not specified'}</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.client')}</Typography>
+              <Typography variant="body1">{ride.clientName || t('driver.rideDetail.placeholders.notSpecified')}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">Truck</Typography>
-              <Typography variant="body1">{ride.truckLicensePlate || 'Not assigned'}</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.truck')}</Typography>
+              <Typography variant="body1">{ride.truckLicensePlate || t('driver.rides.placeholders.notAssigned')}</Typography>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" color="text.secondary">My Assignment</Typography>
+              <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.myRole')}</Typography>
               <Typography variant="body1">
-                {ride.myRole} Driver ({ride.myPlannedHours}h planned)
+                {ride.myRole} {t('driver.rides.other.driverPlanned', { hours: ride.myPlannedHours })}
               </Typography>
             </Grid>
 
             {ride.otherDrivers.length > 0 && (
               <Grid item xs={12}>
-                <Typography variant="body2" color="text.secondary">Other Drivers</Typography>
+                <Typography variant="body2" color="text.secondary">{t('driver.rideDetail.fields.otherDrivers')}</Typography>
                 <Box display="flex" gap={1} mt={1}>
                   {ride.otherDrivers.map((driver, index) => (
                     <Chip 
                       key={index}
-                      label={`${driver.firstName} ${driver.lastName} (${driver.isPrimary ? 'Primary' : 'Second'})`}
+                      label={`${driver.firstName} ${driver.lastName} (${driver.isPrimary ? t('driver.rideDetail.fields.primaryDriver') : t('driver.rideDetail.fields.secondDriver')})`}
                       variant="outlined"
                       color={driver.hasSubmittedExecution ? 'success' : 'default'}
                       size="small"

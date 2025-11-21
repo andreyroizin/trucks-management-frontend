@@ -45,7 +45,7 @@ export default function SignWorkWeekPage() {
         setSignError(null);
         
         if (!data?.weekApprovalId) {
-            setSignError('Week approval ID not found');
+            setSignError(t('errorApprovalIdNotFound'));
             return;
         }
         

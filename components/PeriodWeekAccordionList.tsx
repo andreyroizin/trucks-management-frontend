@@ -73,11 +73,11 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.date')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Client</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Time</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.client')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.time')}</TableCell>
                                                 <TableCell sx={{ fontWeight: 500 }}>{t('table.hours')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Hourly Compensation</TableCell>
-                                                <TableCell sx={{ fontWeight: 500 }}>Additional Compensation</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.hourlyCompensation')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 500 }}>{t('table.additionalCompensation')}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -103,7 +103,7 @@ export default function PeriodWeekAccordionList({ weeks, year }: { weeks: WeekIn
                                                             {execution.actualStartTime} - {execution.actualEndTime}
                                                             <br />
                                                             <Typography variant="caption" color="text.secondary">
-                                                                Rest: {execution.actualRestTime}
+                                                                {t('table.restLabel')} {execution.actualRestTime}
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell sx={{ py: 2, ...(isLast ? { borderBottom: 'none' } : {}) }}>
