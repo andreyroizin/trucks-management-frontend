@@ -108,18 +108,18 @@ const createDriver = async (driver: CreateDriverInput): Promise<CreateDriverResp
         console.log('  Status Text:', response.statusText);
         console.log('  Response Data:', JSON.stringify(response.data, null, 2));
 
-        if (response.data.isSuccess) {
+    if (response.data.isSuccess) {
             console.log('✅ [useCreateDriver] Driver created successfully');
             console.log('  Driver ID:', response.data.data?.DriverId);
             console.log('  User ID:', response.data.data?.UserId);
             console.log('  Contract Version ID:', response.data.data?.contractVersionId);
-            return response.data.data;
-        }
+        return response.data.data;
+    }
 
         console.error('❌ [useCreateDriver] Create driver failed - API returned isSuccess: false');
         console.error('  Response Data:', JSON.stringify(response.data, null, 2));
         console.error('  Errors:', response.data.errors);
-        throw new Error(response.data.errors?.[0] || 'Failed to create driver');
+    throw new Error(response.data.errors?.[0] || 'Failed to create driver');
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error('❌ [useCreateDriver] Axios error while creating driver');

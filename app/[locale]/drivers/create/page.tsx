@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
     Box,
     Typography,
@@ -28,6 +28,15 @@ import { useCreateDriver } from '@/hooks/useCreateDriver';
 import FileUploadBox from '@/components/FileUploadBox';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 import dayjs from 'dayjs';
+import countries from 'i18n-iso-countries';
+import en from 'i18n-iso-countries/langs/en.json';
+import nl from 'i18n-iso-countries/langs/nl.json';
+import bg from 'i18n-iso-countries/langs/bg.json';
+
+// Register country data for multiple languages
+countries.registerLocale(en);
+countries.registerLocale(nl);
+countries.registerLocale(bg);
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
@@ -107,17 +116,27 @@ const getFunctionOptions = () => [
     { value: 'Transport Manager', label: 'Transport Manager' },
 ];
 
+// Country options - uses i18n-iso-countries library
+const getCountryOptions = (locale: string = 'en') => {
+    const countryObj = countries.getNames(locale, { select: 'official' });
+    return Object.entries(countryObj)
+        .map(([code, name]) => ({ value: name, label: name, code }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+};
+
 export default function CreateDriverPage() {
     const router = useRouter();
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateDriver();
     const t = useTranslations();
+    const locale = useLocale();
     
     const periodOptions = getPeriodOptions(t);
     const probationPeriodOptions = getProbationPeriodOptions();
     const noticePeriodOptions = getNoticePeriodOptions();
     const functionOptions = getFunctionOptions();
+    const countryOptions = getCountryOptions(locale);
     
     // Set default function value (Chauffeur)
     const defaultFunctionValue = functionOptions[0]?.value || '';
@@ -626,14 +645,25 @@ export default function CreateDriverPage() {
                                     name="Country"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.create.fields.country.label')}
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.Country}
-                                            helperText={errors.Country?.message}
+                                        <Autocomplete
+                                            options={countryOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.create.fields.country.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.Country}
+                                                    helperText={errors.Country?.message}
+                                                />
+                                            )}
+                                            value={
+                                                countryOptions.find(option => option.value === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
                                     )}
                                 />
@@ -728,19 +758,19 @@ export default function CreateDriverPage() {
                             </Grid>
                             {!watchedPermanentContract && (
                                 <>
-                                    <Grid item xs={12} sm={6}>
-                                        <Controller
-                                            name="ContractDuration"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    label={t('drivers.create.fields.contractDuration.label')}
-                                                    type="number"
-                                                    fullWidth
-                                                    margin="normal"
-                                                    variant="outlined"
-                                                    error={!!errors.ContractDuration}
-                                                    helperText={errors.ContractDuration?.message}
+                                <Grid item xs={12} sm={6}>
+                                    <Controller
+                                        name="ContractDuration"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <TextField
+                                                label={t('drivers.create.fields.contractDuration.label')}
+                                                type="number"
+                                                fullWidth
+                                                margin="normal"
+                                                variant="outlined"
+                                                error={!!errors.ContractDuration}
+                                                helperText={errors.ContractDuration?.message}
                                                     value={contractDurationDisplay}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
@@ -763,14 +793,14 @@ export default function CreateDriverPage() {
                                                             field.onChange(undefined);
                                                         }
                                                     }}
-                                                    inputProps={{
-                                                        min: "1",
-                                                        step: "1"
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
+                                                inputProps={{
+                                                    min: "1",
+                                                    step: "1"
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <Controller
                                             name="LastWorkingDay"
@@ -880,15 +910,15 @@ export default function CreateDriverPage() {
                                             getOptionLabel={(option) => option.label}
                                             onChange={(_, value) => field.onChange(value?.value || '')}
                                             renderInput={(params) => (
-                                                <TextField
+                                        <TextField
                                                     {...params}
-                                                    label={t('drivers.create.fields.function.label')}
-                                                    variant="outlined"
+                                            label={t('drivers.create.fields.function.label')}
+                                            variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    error={!!errors.Function}
-                                                    helperText={errors.Function?.message}
-                                                    required
+                                            error={!!errors.Function}
+                                            helperText={errors.Function?.message}
+                                            required
                                                 />
                                             )}
                                             value={
@@ -1177,13 +1207,13 @@ export default function CreateDriverPage() {
                                     name="ATV"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
+                                <TextField
                                             {...field}
-                                            label={t('drivers.create.fields.atv.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
+                                    label={t('drivers.create.fields.atv.label')}
+                                    type="number"
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
                                             required
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}

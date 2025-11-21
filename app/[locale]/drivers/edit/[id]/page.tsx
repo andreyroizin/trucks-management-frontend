@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
     Box,
     Typography,
@@ -28,6 +28,15 @@ import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import { ApplicationFile } from '@/types/file';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 import dayjs from 'dayjs';
+import countries from 'i18n-iso-countries';
+import en from 'i18n-iso-countries/langs/en.json';
+import nl from 'i18n-iso-countries/langs/nl.json';
+import bg from 'i18n-iso-countries/langs/bg.json';
+
+// Register country data for multiple languages
+countries.registerLocale(en);
+countries.registerLocale(nl);
+countries.registerLocale(bg);
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
@@ -106,6 +115,14 @@ const getFunctionOptions = () => [
     { value: 'Transport Manager', label: 'Transport Manager' },
 ];
 
+// Country options - uses i18n-iso-countries library
+const getCountryOptions = (locale: string = 'en') => {
+    const countryObj = countries.getNames(locale, { select: 'official' });
+    return Object.entries(countryObj)
+        .map(([code, name]) => ({ value: name, label: name, code }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+};
+
 // Map old camelCase or translated values to new Dutch labels for backward compatibility
 const mapOldFunctionValue = (value: string | undefined, functionOptions: Array<{value: string, label: string}>): string => {
     if (!value) return '';
@@ -138,11 +155,13 @@ export default function EditDriverPage() {
     const router = useRouter();
     const driverId = id as string;
     const t = useTranslations();
+    const locale = useLocale();
     
     const periodOptions = getPeriodOptions(t);
     const probationPeriodOptions = getProbationPeriodOptions();
     const noticePeriodOptions = getNoticePeriodOptions();
     const functionOptions = getFunctionOptions();
+    const countryOptions = getCountryOptions(locale);
     
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const {
@@ -737,14 +756,25 @@ export default function EditDriverPage() {
                                     name="Country"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label={t('drivers.edit.fields.country.label')}
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
-                                            error={!!errors.Country}
-                                            helperText={errors.Country?.message}
+                                        <Autocomplete
+                                            options={countryOptions}
+                                            getOptionLabel={(option) => option.label}
+                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.edit.fields.country.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.Country}
+                                                    helperText={errors.Country?.message}
+                                                />
+                                            )}
+                                            value={
+                                                countryOptions.find(option => option.value === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.value === val.value}
                                         />
                                     )}
                                 />
@@ -1256,13 +1286,13 @@ export default function EditDriverPage() {
                                     name="ATV"
                                     control={control}
                                     render={({ field }) => (
-                                        <TextField
+                                <TextField
                                             {...field}
-                                            label={t('drivers.edit.fields.atv.label')}
-                                            type="number"
-                                            fullWidth
-                                            margin="normal"
-                                            variant="outlined"
+                                    label={t('drivers.edit.fields.atv.label')}
+                                    type="number"
+                                    fullWidth
+                                    margin="normal"
+                                    variant="outlined"
                                             required
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}

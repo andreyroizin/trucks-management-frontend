@@ -51,7 +51,7 @@ export default function SignWorkWeekPage() {
                 </Box>
             ) : (
                 <>
-                    <WeekSummary
+                <WeekSummary
                         week={data.weekNumber}
                         year={data.year}
                         executions={data.executions}

@@ -527,9 +527,9 @@ export default function DriverDetailPage() {
                 ) : latestContract ? (
                     <Box>
                         <Table size="small" sx={{mb: 2}}>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 180}}>
                                         {t('drivers.detail.contracts.version')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
@@ -562,26 +562,26 @@ export default function DriverDetailPage() {
                                         {latestContract.generatedAt 
                                             ? dayjs(latestContract.generatedAt).format('DD MMM YYYY, HH:mm')
                                             : t('drivers.detail.notAvailable')}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
                                     <TableCell sx={{pl: 0, border: 'none'}}>
                                         {t('drivers.detail.contracts.generatedBy')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
                                         {latestContract.generatedByUserName || t('drivers.detail.notAvailable')}
                                     </TableCell>
-                                </TableRow>
-                                <TableRow>
+                        </TableRow>
+                        <TableRow>
                                     <TableCell sx={{pl: 0, border: 'none'}}>
                                         {t('drivers.detail.contracts.fileSize')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
                                         {formatFileSize(latestContract.fileSize)}
                                     </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+                        </TableRow>
+                    </TableBody>
+                </Table>
                         
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <Button
