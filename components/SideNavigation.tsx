@@ -18,6 +18,7 @@ import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
 import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
@@ -235,6 +236,14 @@ export default function SideNavigation() {
                     <ListItemIcon><BusinessIcon/></ListItemIcon>
                     <ListItemText primary={t('navigation.companies')}/>
                 </NavItem>
+
+                {/* Admins - Only for globalAdmin */}
+                {user?.roles?.includes('globalAdmin') && (
+                    <NavItem active={isActive('/admins')} main onClick={() => go('/admins')}>
+                        <ListItemIcon><AdminPanelSettingsIcon/></ListItemIcon>
+                        <ListItemText primary={t('navigation.admins')}/>
+                    </NavItem>
+                )}
 
                 {/* Reports */}
                 <NavItem active={isActive('/reports')} main onClick={() => go('/reports')}>

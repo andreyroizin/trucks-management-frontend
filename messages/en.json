@@ -1818,6 +1818,7 @@
     "vehicles": "Vehicles",
     "clients": "Clients",
     "companies": "Companies",
+    "admins": "Admins",
     "reports": "Reports",
     "settings": "Settings",
     "profile": {
@@ -3488,6 +3489,150 @@
       },
       "buttons": {
         "close": "Close"
+      }
+    }
+  },
+  "admins": {
+    "title": "Customer Admins",
+    "overview": {
+      "title": "Manage Customer Admins",
+      "buttons": {
+        "create": "Create Customer Admin"
+      },
+      "search": {
+        "placeholder": "Search by email or name..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load customer admins",
+        "noPermission": "You do not have permission to access this page"
+      }
+    },
+    "card": {
+      "fields": {
+        "email": "Email",
+        "phoneNumber": "Phone Number",
+        "companies": "Companies"
+      },
+      "notAvailable": "N/A",
+      "noCompanies": "No companies",
+      "menu": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "detail": {
+      "title": "Customer Admin Details",
+      "sections": {
+        "general": "General Information",
+        "companies": "Associated Companies",
+        "clients": "Associated Clients",
+        "remark": "Remark"
+      },
+      "fields": {
+        "email": "Email",
+        "phoneNumber": "Phone Number",
+        "address": "Address",
+        "postcode": "Postcode",
+        "city": "City",
+        "country": "Country"
+      },
+      "notAvailable": "N/A",
+      "noCompanies": "No companies associated",
+      "noClients": "No clients associated",
+      "noRemark": "No remark",
+      "buttons": {
+        "assignDriver": "Assign Driver"
+      },
+      "deleteConfirm": {
+        "title": "Delete Customer Admin?",
+        "message": "Are you sure you want to delete this customer admin? This action cannot be undone."
+      },
+      "errors": {
+        "loadFailed": "Failed to load customer admin details",
+        "deleteFailed": "Failed to delete customer admin"
+      }
+    },
+    "create": {
+      "title": "Create Customer Admin",
+      "subtitle": "Add a new customer admin user",
+      "sections": {
+        "general": "General Information",
+        "associations": "Company & Client Associations",
+        "remark": "Additional Notes"
+      },
+      "fields": {
+        "firstName": {
+          "label": "First Name",
+          "required": "First name is required"
+        },
+        "lastName": {
+          "label": "Last Name",
+          "required": "Last name is required"
+        },
+        "email": {
+          "label": "Email Address",
+          "required": "Email is required",
+          "invalid": "Email is invalid"
+        },
+        "password": {
+          "label": "Password",
+          "required": "Password is required",
+          "minLength": "Password must be at least 6 characters",
+          "lowercase": "Password must contain at least one lowercase letter",
+          "specialChar": "Password must contain at least one special character (!@#$%^&*)",
+          "hint": "Min 6 characters, one lowercase letter, one special character"
+        },
+        "confirmPassword": {
+          "label": "Confirm Password",
+          "required": "Please confirm your password",
+          "mustMatch": "Passwords must match"
+        },
+        "phoneNumber": {
+          "label": "Phone Number"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "City"
+        },
+        "country": {
+          "label": "Country"
+        },
+        "companies": {
+          "label": "Associated Companies"
+        },
+        "clients": {
+          "label": "Associated Clients"
+        },
+        "remark": {
+          "label": "Remark",
+          "placeholder": "Enter any additional notes..."
+        }
+      },
+      "buttons": {
+        "submit": "Create Customer Admin",
+        "submitting": "Creating..."
+      },
+      "errors": {
+        "createFailed": "Failed to create customer admin",
+        "noPermission": "You do not have permission to create customer admins",
+        "validationFailed": "Please fix the following errors:"
+      }
+    },
+    "edit": {
+      "title": "Edit Customer Admin",
+      "subtitle": "Update customer admin information",
+      "buttons": {
+        "submit": "Update Customer Admin",
+        "submitting": "Updating..."
+      },
+      "errors": {
+        "loadFailed": "Failed to load customer admin data",
+        "updateFailed": "Failed to update customer admin"
       }
     }
   }

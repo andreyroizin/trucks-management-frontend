@@ -1823,6 +1823,7 @@
     "vehicles": "Voertuigen",
     "clients": "Klanten",
     "companies": "Bedrijven",
+    "admins": "Beheerders",
     "reports": "Rapporten",
     "settings": "Instellingen",
     "profile": {
@@ -3443,6 +3444,150 @@
       },
       "buttons": {
         "close": "Sluiten"
+      }
+    }
+  },
+  "admins": {
+    "title": "Klantbeheerders",
+    "overview": {
+      "title": "Beheer Klantbeheerders",
+      "buttons": {
+        "create": "Klantbeheerder Aanmaken"
+      },
+      "search": {
+        "placeholder": "Zoek op e-mail of naam..."
+      },
+      "errors": {
+        "loadFailed": "Laden van klantbeheerders mislukt",
+        "noPermission": "U heeft geen toegang tot deze pagina"
+      }
+    },
+    "card": {
+      "fields": {
+        "email": "E-mail",
+        "phoneNumber": "Telefoonnummer",
+        "companies": "Bedrijven"
+      },
+      "notAvailable": "N.v.t.",
+      "noCompanies": "Geen bedrijven",
+      "menu": {
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+      }
+    },
+    "detail": {
+      "title": "Klantbeheerder Details",
+      "sections": {
+        "general": "Algemene Informatie",
+        "companies": "Gekoppelde Bedrijven",
+        "clients": "Gekoppelde Klanten",
+        "remark": "Opmerking"
+      },
+      "fields": {
+        "email": "E-mail",
+        "phoneNumber": "Telefoonnummer",
+        "address": "Adres",
+        "postcode": "Postcode",
+        "city": "Stad",
+        "country": "Land"
+      },
+      "notAvailable": "N.v.t.",
+      "noCompanies": "Geen bedrijven gekoppeld",
+      "noClients": "Geen klanten gekoppeld",
+      "noRemark": "Geen opmerking",
+      "buttons": {
+        "assignDriver": "Chauffeur Toewijzen"
+      },
+      "deleteConfirm": {
+        "title": "Klantbeheerder Verwijderen?",
+        "message": "Weet u zeker dat u deze klantbeheerder wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+      },
+      "errors": {
+        "loadFailed": "Laden van klantbeheerder details mislukt",
+        "deleteFailed": "Verwijderen van klantbeheerder mislukt"
+      }
+    },
+    "create": {
+      "title": "Klantbeheerder Aanmaken",
+      "subtitle": "Nieuwe klantbeheerder gebruiker toevoegen",
+      "sections": {
+        "general": "Algemene Informatie",
+        "associations": "Bedrijfs- & Klantkoppelingen",
+        "remark": "Aanvullende Opmerkingen"
+      },
+      "fields": {
+        "firstName": {
+          "label": "Voornaam",
+          "required": "Voornaam is verplicht"
+        },
+        "lastName": {
+          "label": "Achternaam",
+          "required": "Achternaam is verplicht"
+        },
+        "email": {
+          "label": "E-mailadres",
+          "required": "E-mail is verplicht",
+          "invalid": "E-mail is ongeldig"
+        },
+        "password": {
+          "label": "Wachtwoord",
+          "required": "Wachtwoord is verplicht",
+          "minLength": "Wachtwoord moet minimaal 6 tekens bevatten",
+          "lowercase": "Wachtwoord moet minimaal één kleine letter bevatten",
+          "specialChar": "Wachtwoord moet minimaal één speciaal teken bevatten (!@#$%^&*)",
+          "hint": "Min 6 tekens, één kleine letter, één speciaal teken"
+        },
+        "confirmPassword": {
+          "label": "Bevestig Wachtwoord",
+          "required": "Bevestig uw wachtwoord",
+          "mustMatch": "Wachtwoorden moeten overeenkomen"
+        },
+        "phoneNumber": {
+          "label": "Telefoonnummer"
+        },
+        "address": {
+          "label": "Adres"
+        },
+        "postcode": {
+          "label": "Postcode"
+        },
+        "city": {
+          "label": "Stad"
+        },
+        "country": {
+          "label": "Land"
+        },
+        "companies": {
+          "label": "Gekoppelde Bedrijven"
+        },
+        "clients": {
+          "label": "Gekoppelde Klanten"
+        },
+        "remark": {
+          "label": "Opmerking",
+          "placeholder": "Voer eventuele aanvullende opmerkingen in..."
+        }
+      },
+      "buttons": {
+        "submit": "Klantbeheerder Aanmaken",
+        "submitting": "Aanmaken..."
+      },
+      "errors": {
+        "createFailed": "Aanmaken van klantbeheerder mislukt",
+        "noPermission": "U heeft geen toegang om klantbeheerders aan te maken",
+        "validationFailed": "Los de volgende fouten op:"
+      }
+    },
+    "edit": {
+      "title": "Klantbeheerder Bewerken",
+      "subtitle": "Klantbeheerder informatie bijwerken",
+      "buttons": {
+        "submit": "Klantbeheerder Bijwerken",
+        "submitting": "Bijwerken..."
+      },
+      "errors": {
+        "loadFailed": "Laden van klantbeheerder gegevens mislukt",
+        "updateFailed": "Bijwerken van klantbeheerder mislukt"
       }
     }
   }
