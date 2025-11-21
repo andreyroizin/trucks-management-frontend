@@ -161,6 +161,9 @@ export default function CreateDriverPage() {
     // Local display value for contract duration (to handle empty states during editing)
     const [contractDurationDisplay, setContractDurationDisplay] = useState<string>('7');
     
+    // Local display value for workweek duration (to handle empty states during editing)
+    const [workweekDurationDisplay, setWorkweekDurationDisplay] = useState<string>('40');
+    
     // Success dialog state
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
     const [createdDriverId, setCreatedDriverId] = useState<string | null>(null);
@@ -202,7 +205,7 @@ export default function CreateDriverPage() {
             ProbationPeriod: '1',
             NoticePeriod: '1',
             Function: defaultFunctionValue,
-            WorkweekDuration: undefined,
+            WorkweekDuration: 40,
             WeeklySchedule: '',
             WorkingHours: '',
             PayScale: 'D',
@@ -908,7 +911,6 @@ export default function CreateDriverPage() {
                                     control={control}
                                     render={({ field }) => (
                                         <TextField
-                                            {...field}
                                             label={t('drivers.create.fields.workweekDuration.label')}
                                             type="number"
                                             fullWidth
@@ -917,7 +919,32 @@ export default function CreateDriverPage() {
                                             error={!!errors.WorkweekDuration}
                                             helperText={errors.WorkweekDuration?.message}
                                             required
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                            value={workweekDurationDisplay}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setWorkweekDurationDisplay(value);
+                                                
+                                                // Allow empty string for clearing
+                                                if (value === '') {
+                                                    field.onChange(undefined);
+                                                    return;
+                                                }
+                                                
+                                                const numValue = Number(value);
+                                                if (!isNaN(numValue) && numValue >= 0) {
+                                                    field.onChange(numValue);
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                // If field is empty on blur, keep it empty
+                                                if (workweekDurationDisplay === '') {
+                                                    field.onChange(undefined);
+                                                }
+                                            }}
+                                            inputProps={{
+                                                min: "0",
+                                                step: "1"
+                                            }}
                                         />
                                     )}
                                 />
