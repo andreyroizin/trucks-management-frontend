@@ -73,6 +73,38 @@ export default function VehicleDetailPage() {
     // Car assignment mutation
     const { mutateAsync: assignCar, isPending: isAssigning, isError: isAssignError, error: assignError } = useAssignCarToDriver();
     
+    // Debug: Log car data when it changes
+    useEffect(() => {
+        if (car) {
+            console.log('🚗 [CAR DETAIL] Car data loaded:', {
+                id: car.id,
+                licensePlate: car.licensePlate,
+                companyId: car.company?.id,
+                companyName: car.company?.name,
+                currentDriverId: car.driverId,
+                currentDriverName: car.driverFirstName && car.driverLastName 
+                    ? `${car.driverFirstName} ${car.driverLastName}` 
+                    : 'No driver assigned',
+            });
+        }
+    }, [car]);
+    
+    // Debug: Log company data when it changes
+    useEffect(() => {
+        if (companyData) {
+            console.log('🏢 [COMPANY DATA] Company details loaded:', {
+                companyId: companyData.id,
+                companyName: companyData.name,
+                driversCount: companyData.drivers?.length || 0,
+                drivers: companyData.drivers?.map(d => ({
+                    id: (d as any).id || d.driverId,
+                    name: `${d.user?.firstName} ${d.user?.lastName}`,
+                    aspNetUserId: d.aspNetUserId,
+                })),
+            });
+        }
+    }, [companyData]);
+    
     // Check roles
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin', 'employer', 'customer', 'customerAccountant'];
@@ -97,26 +129,54 @@ export default function VehicleDetailPage() {
 
     // Handle Driver Assignment
     const handleAssignDriver = async () => {
-        if (!selectedDriverId || !car) return;
+        console.log('🚗 [CAR ASSIGNMENT] Starting assignment process...');
+        console.log('📋 [CAR ASSIGNMENT] Selected Driver ID:', selectedDriverId);
+        console.log('📋 [CAR ASSIGNMENT] Car:', car);
+        
+        if (!selectedDriverId || !car) {
+            console.error('❌ [CAR ASSIGNMENT] Missing selectedDriverId or car');
+            return;
+        }
         
         setAssignmentError(null);
         
         // Find the selected driver to get their user ID
+        console.log('🔍 [CAR ASSIGNMENT] Searching for driver in company data...');
+        console.log('📋 [CAR ASSIGNMENT] Company Drivers:', companyData?.drivers);
+        
         const selectedDriver = companyData?.drivers?.find(d => {
             const driverId = (d as any).id || d.driverId;
             return driverId === selectedDriverId;
         });
+        
+        console.log('👤 [CAR ASSIGNMENT] Found Driver:', selectedDriver);
+        
         if (!selectedDriver?.aspNetUserId) {
+            console.error('❌ [CAR ASSIGNMENT] Driver user ID not found');
             setAssignmentError('Driver user ID not found');
             return;
         }
         
+        const payload = {
+            userId: selectedDriver.aspNetUserId,
+            carId: car.id,
+            companyId: car.company.id,
+        };
+        
+        console.log('📤 [CAR ASSIGNMENT] Sending payload to backend:', payload);
+        console.log('📤 [CAR ASSIGNMENT] Payload details:', {
+            userId: payload.userId,
+            userIdType: typeof payload.userId,
+            carId: payload.carId,
+            carIdType: typeof payload.carId,
+            companyId: payload.companyId,
+            companyIdType: typeof payload.companyId,
+        });
+        
         try {
-            await assignCar({
-                userId: selectedDriver.aspNetUserId,
-                carId: car.id,
-                companyId: car.company.id,
-            });
+            console.log('⏳ [CAR ASSIGNMENT] Calling assignCar mutation...');
+            const result = await assignCar(payload);
+            console.log('✅ [CAR ASSIGNMENT] Assignment successful!', result);
             
             // Success - close modal and reset state
             setOpenDriverModal(false);
@@ -124,7 +184,22 @@ export default function VehicleDetailPage() {
             setAssignmentError(null);
             
         } catch (err: any) {
-            setAssignmentError(err.message || t('cars.detail.errors.assignmentFailed'));
+            console.error('❌ [CAR ASSIGNMENT] Assignment failed:', err);
+            console.error('❌ [CAR ASSIGNMENT] Error details:', {
+                message: err.message,
+                response: err.response,
+                data: err.response?.data,
+                status: err.response?.status,
+            });
+            
+            // 🔍 Display backend error message if available
+            const backendErrors = err.response?.data?.errors;
+            if (backendErrors && backendErrors.length > 0) {
+                console.error('🚨 [CAR ASSIGNMENT] Backend error messages:', backendErrors);
+                setAssignmentError(backendErrors[0]); // Show first error to user
+            } else {
+                setAssignmentError(err.message || t('cars.detail.errors.assignmentFailed'));
+            }
         }
     };
 
@@ -195,6 +270,14 @@ export default function VehicleDetailPage() {
                             {/* Assign Driver Button */}
                             <Button
                                 onClick={() => {
+                                    console.log('🔘 [ASSIGN BUTTON] Clicked - Opening driver modal');
+                                    console.log('🔘 [ASSIGN BUTTON] Current car:', car);
+                                    console.log('🔘 [ASSIGN BUTTON] Current driver:', {
+                                        driverId: car.driverId,
+                                        driverName: car.driverFirstName && car.driverLastName 
+                                            ? `${car.driverFirstName} ${car.driverLastName}` 
+                                            : 'None',
+                                    });
                                     setSelectedDriverId(null); // Reset selection
                                     setAssignmentError(null); // Reset errors
                                     setOpenDriverModal(true);
