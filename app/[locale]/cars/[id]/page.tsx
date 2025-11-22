@@ -144,6 +144,20 @@ export default function VehicleDetailPage() {
         );
     }
 
+    // Format date helper (dd-mm-yyyy format)
+    const formatDate = (dateString?: string | null) => {
+        if (!dateString) return t('cars.detail.notAvailable');
+        try {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        } catch {
+            return t('cars.detail.notAvailable');
+        }
+    };
+
     return (
         <Box sx={{py: 4}}>
             {/* Header Section */}
@@ -256,7 +270,15 @@ export default function VehicleDetailPage() {
                         </TableRow>
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.registrationDate')}</TableCell>
-                            <TableCell sx={{border: 'none'}}>{car.registrationDate || t('cars.detail.notAvailable')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{formatDate(car.registrationDate)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.leasingStartDate')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{formatDate(car.leasingStartDate)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.leasingEndDate')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{formatDate(car.leasingEndDate)}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

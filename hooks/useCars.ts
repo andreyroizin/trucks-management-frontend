@@ -10,6 +10,8 @@ export type Car = {
     companyId: string;
     vehicleYear?: string;
     registrationDate?: string;
+    leasingStartDate?: string;
+    leasingEndDate?: string;
     driverId?: string | null;
     driverFirstName?: string | null;
     driverLastName?: string | null;

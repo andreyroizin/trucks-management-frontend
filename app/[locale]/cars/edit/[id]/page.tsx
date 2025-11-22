@@ -31,6 +31,8 @@ type FormInputs = {
     licensePlate: string;
     vehicleYear?: string;
     registrationDate?: string;
+    leasingStartDate?: string;
+    leasingEndDate?: string;
     remark?: string;
     newUploads?: {
         fileId: string;
@@ -48,6 +50,8 @@ export default function EditVehiclePage() {
         licensePlate: yup.string().required(t('cars.create.fields.licensePlate.required')),
         vehicleYear: yup.string().optional(),
         registrationDate: yup.string().optional(),
+        leasingStartDate: yup.string().optional(),
+        leasingEndDate: yup.string().optional(),
         remark: yup.string().optional(),
         newUploads: yup.array().of(
             yup.object({
@@ -91,6 +95,8 @@ export default function EditVehiclePage() {
             licensePlate: '',
             vehicleYear: '',
             registrationDate: '',
+            leasingStartDate: '',
+            leasingEndDate: '',
             remark: '',
             newUploads: [],
             fileIdsToDelete: [],
@@ -113,6 +119,8 @@ export default function EditVehiclePage() {
                 licensePlate: carData?.licensePlate,
                 vehicleYear: carData?.vehicleYear || '',
                 registrationDate: carData?.registrationDate || '',
+                leasingStartDate: carData?.leasingStartDate || '',
+                leasingEndDate: carData?.leasingEndDate || '',
                 remark: carData?.remark || '',
             });
         }
@@ -144,6 +152,8 @@ export default function EditVehiclePage() {
                 // Only include optional fields if they have values
                 ...(data.vehicleYear && data.vehicleYear !== '' && { vehicleYear: data.vehicleYear }),
                 ...(data.registrationDate && data.registrationDate !== '' && { registrationDate: data.registrationDate }),
+                ...(data.leasingStartDate && data.leasingStartDate !== '' && { leasingStartDate: data.leasingStartDate }),
+                ...(data.leasingEndDate && data.leasingEndDate !== '' && { leasingEndDate: data.leasingEndDate }),
                 ...(data.remark && data.remark !== '' && { remark: data.remark }),
                 // Include file operations
                 newUploads: newUploads,
@@ -285,6 +295,52 @@ export default function EditVehiclePage() {
                                         variant="outlined"
                                         error={!!errors.registrationDate}
                                         helperText={errors.registrationDate?.message}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Leasing Start Date */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="leasingStartDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('cars.create.fields.leasingStartDate.label')}
+                                        type="date"
+                                        placeholder={t('cars.create.fields.leasingStartDate.placeholder')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.leasingStartDate}
+                                        helperText={errors.leasingStartDate?.message}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Leasing End Date */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="leasingEndDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('cars.create.fields.leasingEndDate.label')}
+                                        type="date"
+                                        placeholder={t('cars.create.fields.leasingEndDate.placeholder')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.leasingEndDate}
+                                        helperText={errors.leasingEndDate?.message}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}

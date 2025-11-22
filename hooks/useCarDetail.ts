@@ -9,6 +9,8 @@ export type CarDetail = {
     remark: string;
     vehicleYear?: string;
     registrationDate?: string;
+    leasingStartDate?: string;
+    leasingEndDate?: string;
     company: {
         id: string;
         name: string;

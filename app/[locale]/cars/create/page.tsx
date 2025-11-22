@@ -26,6 +26,8 @@ type FormInputs = {
     licensePlate: string;       // Required
     vehicleYear?: string;       // Optional
     registrationDate?: string;  // Optional
+    leasingStartDate?: string;  // Optional
+    leasingEndDate?: string;    // Optional
     remark?: string;            // Optional
     newUploads?: {              // Optional - file uploads
         fileId: string;
@@ -41,6 +43,8 @@ export default function CreateVehiclePage() {
         licensePlate: yup.string().required(t('cars.create.fields.licensePlate.required')),
         vehicleYear: yup.string().optional(),
         registrationDate: yup.string().optional(),
+        leasingStartDate: yup.string().optional(),
+        leasingEndDate: yup.string().optional(),
         remark: yup.string().optional(),
     });
     const router = useRouter();
@@ -70,6 +74,8 @@ export default function CreateVehiclePage() {
             licensePlate: '',
             vehicleYear: '',
             registrationDate: '',
+            leasingStartDate: '',
+            leasingEndDate: '',
             remark: '',
         },
     });
@@ -240,6 +246,52 @@ export default function CreateVehiclePage() {
                                         variant="outlined"
                                         error={!!errors.registrationDate}
                                         helperText={errors.registrationDate?.message}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Leasing Start Date */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="leasingStartDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('cars.create.fields.leasingStartDate.label')}
+                                        type="date"
+                                        placeholder={t('cars.create.fields.leasingStartDate.placeholder')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.leasingStartDate}
+                                        helperText={errors.leasingStartDate?.message}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Leasing End Date */}
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="leasingEndDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('cars.create.fields.leasingEndDate.label')}
+                                        type="date"
+                                        placeholder={t('cars.create.fields.leasingEndDate.placeholder')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.leasingEndDate}
+                                        helperText={errors.leasingEndDate?.message}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}

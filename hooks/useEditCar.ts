@@ -7,6 +7,8 @@ export type UpdateCarInput = {
     licensePlate: string;
     vehicleYear?: string;
     registrationDate?: string;
+    leasingStartDate?: string;
+    leasingEndDate?: string;
     remark?: string;
     companyId: string;
     newUploads?: {

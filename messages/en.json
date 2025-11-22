@@ -1174,6 +1174,14 @@
           "label": "Registration Date",
           "placeholder": "When the vehicle was registered?"
         },
+        "leasingStartDate": {
+          "label": "Leasing Start Date",
+          "placeholder": "When does the lease start?"
+        },
+        "leasingEndDate": {
+          "label": "Leasing End Date",
+          "placeholder": "When does the lease end?"
+        },
         "remark": {
           "label": "Remark",
           "placeholder": "Enter any additional remarks or comments about the vehicle..."
@@ -1202,7 +1210,9 @@
         "company": "Company",
         "assignedDriver": "Assigned Driver",
         "vehicleYear": "Vehicle Year",
-        "registrationDate": "Registration Date"
+        "registrationDate": "Registration Date",
+        "leasingStartDate": "Leasing Start Date",
+        "leasingEndDate": "Leasing End Date"
       },
       "noRemark": "No remark provided",
       "noDocuments": "No documents uploaded.",

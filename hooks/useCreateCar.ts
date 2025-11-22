@@ -8,6 +8,8 @@ export type CarInput = {
     licensePlate: string;
     vehicleYear?: string;
     registrationDate?: string;
+    leasingStartDate?: string;
+    leasingEndDate?: string;
     remark?: string;
     newUploads?: {
         fileId: string;

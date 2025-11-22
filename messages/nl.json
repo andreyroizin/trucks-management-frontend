@@ -1179,6 +1179,14 @@
           "label": "Registratiedatum",
           "placeholder": "Wanneer is het voertuig geregistreerd?"
         },
+        "leasingStartDate": {
+          "label": "Leasing Startdatum",
+          "placeholder": "Wanneer begint de lease?"
+        },
+        "leasingEndDate": {
+          "label": "Leasing Einddatum",
+          "placeholder": "Wanneer eindigt de lease?"
+        },
         "remark": {
           "label": "Opmerking",
           "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over het voertuig in..."
@@ -1207,7 +1215,9 @@
         "company": "Bedrijf",
         "assignedDriver": "Toegewezen Chauffeur",
         "vehicleYear": "Voertuigjaar",
-        "registrationDate": "Registratiedatum"
+        "registrationDate": "Registratiedatum",
+        "leasingStartDate": "Leasing Startdatum",
+        "leasingEndDate": "Leasing Einddatum"
       },
       "noRemark": "Geen opmerking opgegeven",
       "noDocuments": "Geen documenten geüpload.",
