@@ -27,6 +27,7 @@ import {
     ListItemText,
     Radio,
     Chip,
+    TextField,
 } from '@mui/material';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -66,6 +67,7 @@ export default function VehicleDetailPage() {
     const [openDriverModal, setOpenDriverModal] = useState(false);
     const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
     const [assignmentError, setAssignmentError] = useState<string | null>(null);
+    const [driverSearch, setDriverSearch] = useState('');
     
     // Fetch company details to get drivers
     const { data: companyData, isLoading: isCompanyLoading } = useCompanyDetails(car?.company?.id || '');
@@ -280,6 +282,7 @@ export default function VehicleDetailPage() {
                                     });
                                     setSelectedDriverId(null); // Reset selection
                                     setAssignmentError(null); // Reset errors
+                                    setDriverSearch(''); // Reset search
                                     setOpenDriverModal(true);
                                 }}
                                 disabled={isPending || isCompanyLoading}
@@ -469,44 +472,83 @@ export default function VehicleDetailPage() {
                             </Typography>
                         </Box>
                     ) : (
-                        <List sx={{ width: '100%' }}>
-                            {companyData.drivers.map((driver) => {
-                                const driverId = (driver as any).id || driver.driverId;
-                                return (
-                                    <ListItem key={driverId} disablePadding>
-                                        <ListItemButton 
-                                            onClick={() => {
-                                                setSelectedDriverId(driverId);
-                                            }}
-                                            sx={{ borderRadius: 1 }}
-                                            disabled={isAssigning}
-                                        >
-                                            <Radio
-                                                checked={selectedDriverId === driverId}
-                                                value={driverId}
-                                                sx={{ mr: 1 }}
-                                            />
-                                            <ListItemText 
-                                                primary={
-                                                    <Typography variant="body1">
-                                                        {driver.user?.firstName} {driver.user?.lastName}
-                                                    </Typography>
-                                                }
-                                                secondary={driver.user?.email}
-                                            />
-                                            {selectedDriverId === driverId && (
-                                                <Chip 
-                                                    label={t('cars.detail.assignmentModal.selected')} 
-                                                    size="small" 
-                                                    color="primary" 
-                                                    sx={{ ml: 1 }}
-                                                />
-                                            )}
-                                        </ListItemButton>
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
+                        <>
+                            {/* Search Input */}
+                            <TextField
+                                fullWidth
+                                size="small"
+                                placeholder={t('cars.detail.assignmentModal.searchPlaceholder')}
+                                value={driverSearch}
+                                onChange={(e) => setDriverSearch(e.target.value)}
+                                sx={{ mb: 2 }}
+                            />
+                            
+                            {/* Driver List */}
+                            <List sx={{ width: '100%', maxHeight: 400, overflow: 'auto' }}>
+                                {(() => {
+                                    // Filter drivers based on search
+                                    const filteredDrivers = companyData.drivers.filter((driver) => {
+                                        if (!driverSearch) return true;
+                                        
+                                        const searchLower = driverSearch.toLowerCase();
+                                        const firstName = driver.user?.firstName?.toLowerCase() || '';
+                                        const lastName = driver.user?.lastName?.toLowerCase() || '';
+                                        const fullName = `${firstName} ${lastName}`;
+                                        
+                                        return firstName.includes(searchLower) || 
+                                               lastName.includes(searchLower) || 
+                                               fullName.includes(searchLower);
+                                    });
+                                    
+                                    if (filteredDrivers.length === 0) {
+                                        return (
+                                            <Box textAlign="center" py={4}>
+                                                <Typography color="text.secondary">
+                                                    {t('cars.detail.assignmentModal.noResults')}
+                                                </Typography>
+                                            </Box>
+                                        );
+                                    }
+                                    
+                                    return filteredDrivers.map((driver) => {
+                                        const driverId = (driver as any).id || driver.driverId;
+                                        return (
+                                            <ListItem key={driverId} disablePadding>
+                                                <ListItemButton 
+                                                    onClick={() => {
+                                                        setSelectedDriverId(driverId);
+                                                    }}
+                                                    sx={{ borderRadius: 1 }}
+                                                    disabled={isAssigning}
+                                                >
+                                                    <Radio
+                                                        checked={selectedDriverId === driverId}
+                                                        value={driverId}
+                                                        sx={{ mr: 1 }}
+                                                    />
+                                                    <ListItemText 
+                                                        primary={
+                                                            <Typography variant="body1">
+                                                                {driver.user?.firstName} {driver.user?.lastName}
+                                                            </Typography>
+                                                        }
+                                                        secondary={driver.user?.email}
+                                                    />
+                                                    {selectedDriverId === driverId && (
+                                                        <Chip 
+                                                            label={t('cars.detail.assignmentModal.selected')} 
+                                                            size="small" 
+                                                            color="primary" 
+                                                            sx={{ ml: 1 }}
+                                                        />
+                                                    )}
+                                                </ListItemButton>
+                                            </ListItem>
+                                        );
+                                    });
+                                })()}
+                            </List>
+                        </>
                     )}
                 </DialogContent>
                 

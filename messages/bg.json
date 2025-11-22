@@ -1248,7 +1248,9 @@
         "title": "Назначаване на шофьор за {licensePlate}",
         "subtitle": "Изберете шофьор от {companyName}",
         "noDrivers": "Няма налични шофьори за тази компания.",
-        "selected": "Избран"
+        "selected": "Избран",
+        "searchPlaceholder": "Търсене на шофьори по име...",
+        "noResults": "Не са намерени шофьори, отговарящи на вашето търсене"
       },
       "notAvailable": "Н/Д"
     },

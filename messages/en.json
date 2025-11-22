@@ -1243,7 +1243,9 @@
         "title": "Assign Driver to {licensePlate}",
         "subtitle": "Select a driver from {companyName}",
         "noDrivers": "No drivers available for this company.",
-        "selected": "Selected"
+        "selected": "Selected",
+        "searchPlaceholder": "Search drivers by name...",
+        "noResults": "No drivers found matching your search"
       },
       "notAvailable": "N/A"
     },

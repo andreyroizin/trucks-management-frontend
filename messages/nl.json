@@ -1248,7 +1248,9 @@
         "title": "Chauffeur Toewijzen aan {licensePlate}",
         "subtitle": "Selecteer een chauffeur van {companyName}",
         "noDrivers": "Geen chauffeurs beschikbaar voor dit bedrijf.",
-        "selected": "Geselecteerd"
+        "selected": "Geselecteerd",
+        "searchPlaceholder": "Zoek chauffeurs op naam...",
+        "noResults": "Geen chauffeurs gevonden die overeenkomen met uw zoekopdracht"
       },
       "notAvailable": "N/B"
     },
