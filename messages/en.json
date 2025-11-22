@@ -920,6 +920,12 @@
         "email": {
           "label": "Email"
         },
+        "kvk": {
+          "label": "KVK Number"
+        },
+        "btw": {
+          "label": "BTW Number"
+        },
         "remark": {
           "label": "Remark",
           "placeholder": "Enter any additional remarks or comments about the company..."
@@ -950,7 +956,9 @@
         "city": "City",
         "country": "Country",
         "phone": "Phone Number",
-        "email": "Email"
+        "email": "Email",
+        "kvk": "KVK Number",
+        "btw": "BTW Number"
       },
       "driversTable": {
         "columns": {
@@ -1056,6 +1064,12 @@
         "email": {
           "label": "Email"
         },
+        "kvk": {
+          "label": "KVK Number"
+        },
+        "btw": {
+          "label": "BTW Number"
+        },
         "remark": {
           "label": "Remark",
           "placeholder": "Enter any additional remarks or comments about the client..."
@@ -1087,7 +1101,9 @@
         "city": "City",
         "country": "Country",
         "phone": "Phone Number",
-        "email": "Email"
+        "email": "Email",
+        "kvk": "KVK Number",
+        "btw": "BTW Number"
       },
       "noRemark": "No remark provided",
       "buttons": {

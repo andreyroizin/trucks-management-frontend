@@ -31,6 +31,8 @@ type FormInputs = {
     phoneNumber?: string;       // Optional
     email?: string;             // Optional
     remark?: string;            // Optional
+    kvk?: string;               // Optional
+    btw?: string;               // Optional
 };
 
 export default function CreateClientPage() {
@@ -48,6 +50,8 @@ export default function CreateClientPage() {
         phoneNumber: yup.string().optional(),
         email: yup.string().optional(),
         remark: yup.string().optional(),
+        kvk: yup.string().optional(),
+        btw: yup.string().optional(),
     });
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
@@ -178,6 +182,40 @@ export default function CreateClientPage() {
                                         variant="outlined"
                                         error={!!errors.tav}
                                         helperText={errors.tav?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="kvk"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('clients.create.fields.kvk.label')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.kvk}
+                                        helperText={errors.kvk?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="btw"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('clients.create.fields.btw.label')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.btw}
+                                        helperText={errors.btw?.message}
                                     />
                                 )}
                             />

@@ -36,6 +36,8 @@ type FormInputs = {
     email?: string;
     remark?: string;
     companyId: string;
+    kvk?: string;
+    btw?: string;
 };
 
 export default function EditClientPage() {
@@ -55,6 +57,8 @@ export default function EditClientPage() {
         email:       yup.string().optional(),
         remark:      yup.string().optional(),
         companyId:   yup.string().required(t('clients.create.fields.company.required')),
+        kvk:         yup.string().optional(),
+        btw:         yup.string().optional(),
     });
     const searchParams = useSearchParams();
     const clientId = searchParams.get('id') || '';
@@ -90,6 +94,8 @@ export default function EditClientPage() {
             email: '',
             remark: '',
             companyId: '',
+            kvk: '',
+            btw: '',
         },
     });
 
@@ -115,6 +121,8 @@ export default function EditClientPage() {
                 email:     clientData.email || '',
                 remark:    clientData.remark || '',
                 companyId: clientData.company.id,
+                kvk:       clientData.kvk || '',
+                btw:       clientData.btw || '',
             });
         }
     }, [clientData, reset]);
@@ -233,6 +241,40 @@ export default function EditClientPage() {
                                         variant="outlined"
                                         error={!!errors.tav}
                                         helperText={errors.tav?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="kvk"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('clients.create.fields.kvk.label')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.kvk}
+                                        helperText={errors.kvk?.message}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Controller
+                                name="btw"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label={t('clients.create.fields.btw.label')}
+                                        fullWidth
+                                        margin="normal"
+                                        variant="outlined"
+                                        error={!!errors.btw}
+                                        helperText={errors.btw?.message}
                                     />
                                 )}
                             />

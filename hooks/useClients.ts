@@ -15,6 +15,8 @@ export type Client = {
     phoneNumber: string;
     email: string;
     remark: string;
+    kvk: string;
+    btw: string;
     company: Company;
     lastWorkday: string;
     lastDriver: {

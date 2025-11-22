@@ -34,6 +34,15 @@ export default function CompanyDetailPage() {
     const {data: company, isLoading, isError, error} = useCompanyDetails(id as string);
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
+    
+    // Debug logging
+    React.useEffect(() => {
+        if (company) {
+            console.log('🏢 [CompanyDetailPage] Company data received:', company);
+            console.log('📋 [CompanyDetailPage] KVK value:', company.kvk);
+            console.log('📋 [CompanyDetailPage] BTW value:', company.btw);
+        }
+    }, [company]);
     // Delete Company Hook
     const {
         mutateAsync: deleteCompany,
@@ -184,6 +193,18 @@ export default function CompanyDetailPage() {
                                  {t('companies.detail.fields.drivers')}
                             </TableCell>
                             <TableCell sx={{border: 'none'}}>{company.drivers?.length || 0}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                 {t('companies.detail.fields.kvk')}
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.kvk || t('companies.detail.notAvailable')}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', width: 160}}>
+                                 {t('companies.detail.fields.btw')}
+                            </TableCell>
+                            <TableCell sx={{border: 'none'}}>{company.btw || t('companies.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

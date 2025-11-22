@@ -13,6 +13,8 @@ type EditCompany = {
     phoneNumber?: string;
     email?: string;
     remark?: string;
+    kvk?: string;
+    btw?: string;
 };
 
 type EditCompanyResponse = {
@@ -25,6 +27,8 @@ type EditCompanyResponse = {
     phoneNumber?: string;
     email?: string;
     remark?: string;
+    kvk?: string;
+    btw?: string;
     isApproved?: boolean;
     drivers?: any[];
 };
@@ -34,11 +38,18 @@ const editCompany = async (companyData: EditCompany): Promise<EditCompanyRespons
     // Remove ID from payload since it's in the URL and companies DTO doesn't accept it
     const { id, ...payloadData } = companyData;
     
+    console.log('📤 [useUpdateCompany] Updating company ID:', id);
+    console.log('📤 [useUpdateCompany] Payload data:', payloadData);
+    console.log('📋 [useUpdateCompany] KVK being sent:', payloadData.kvk);
+    console.log('📋 [useUpdateCompany] BTW being sent:', payloadData.btw);
+    
     const response = await api.put<ApiResponse<EditCompanyResponse>>(
         `/companies/${companyData.id}`,
         payloadData
     );
+    console.log('📥 [useUpdateCompany] Response:', response.data);
     if (response.data.isSuccess) {
+        console.log('✅ [useUpdateCompany] Updated company:', response.data.data);
         return response.data.data;
     }
     throw new Error(response.data.errors?.[0] || 'Failed to edit company');

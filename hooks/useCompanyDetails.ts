@@ -12,6 +12,8 @@ export type Company = {
     phoneNumber?: string;
     email?: string;
     remark?: string;
+    kvk?: string;
+    btw?: string;
     isApproved: boolean;
     drivers?: {
         driverId: string;
@@ -27,7 +29,11 @@ export type Company = {
 
 const fetchCompany = async (id: string): Promise<Company> => {
     const response = await api.get<ApiResponse<Company>>(`/companies/${id}`);
+    console.log('🔍 [useCompanyDetails] Raw response:', response.data);
     if (response.data.isSuccess) {
+        console.log('✅ [useCompanyDetails] Company data:', response.data.data);
+        console.log('📋 [useCompanyDetails] KVK:', response.data.data.kvk);
+        console.log('📋 [useCompanyDetails] BTW:', response.data.data.btw);
         return response.data.data;
     }
     throw new Error(response.data.errors?.[0] || 'Failed to fetch company details');

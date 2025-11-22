@@ -31,6 +31,8 @@ export type Company = {
     phoneNumber: string | null;
     email: string | null;
     remark: string | null;
+    kvk: string | null;
+    btw: string | null;
     isApproved: boolean;
     drivers: Driver[];
 };

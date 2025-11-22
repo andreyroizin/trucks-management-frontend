@@ -35,6 +35,15 @@ export default function ClientDetailPage() {
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isCustomer = user?.roles.includes('customer');
     const isCustomerAccountant = user?.roles.includes('customerAccountant');
+    
+    // Debug logging
+    React.useEffect(() => {
+        if (client) {
+            console.log('👤 [ClientDetailPage] Client data received:', client);
+            console.log('📋 [ClientDetailPage] KVK value:', client?.kvk);
+            console.log('📋 [ClientDetailPage] BTW value:', client?.btw);
+        }
+    }, [client]);
     // Delete Client Hook
     const {
         mutateAsync: deleteClient,
@@ -193,6 +202,14 @@ export default function ClientDetailPage() {
                         <TableRow>
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.company')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{client?.company?.name}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.kvk')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.kvk || t('clients.detail.notAvailable')}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none'}}>{t('clients.detail.fields.btw')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>{client?.btw || t('clients.detail.notAvailable')}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

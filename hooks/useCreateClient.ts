@@ -16,6 +16,8 @@ type NewClient = {
     phoneNumber?: string;       // Optional
     email?: string;             // Optional
     remark?: string;            // Optional
+    kvk?: string;               // Optional
+    btw?: string;               // Optional
 };
 
 type CreateClientResponse = {
@@ -30,15 +32,22 @@ type CreateClientResponse = {
     phoneNumber?: string;
     email?: string;
     remark?: string;
+    kvk?: string;
+    btw?: string;
 };
 
 // --- FETCH FUNCTION ---
 const createClient = async (newClient: NewClient): Promise<CreateClientResponse> => {
+    console.log('📤 [useCreateClient] Sending client data:', newClient);
+    console.log('📋 [useCreateClient] KVK being sent:', newClient.kvk);
+    console.log('📋 [useCreateClient] BTW being sent:', newClient.btw);
     const response = await api.post<ApiResponse<CreateClientResponse>>(
         '/clients',
         newClient
     );
+    console.log('📥 [useCreateClient] Response:', response.data);
     if (response.data.isSuccess) {
+        console.log('✅ [useCreateClient] Created client:', response.data.data);
         return response.data.data;
     }
     throw new Error(response.data.errors?.[0] || 'Failed to create client');

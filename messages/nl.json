@@ -925,6 +925,12 @@
         "email": {
           "label": "E-mail"
         },
+        "kvk": {
+          "label": "KVK-nummer"
+        },
+        "btw": {
+          "label": "BTW-nummer"
+        },
         "remark": {
           "label": "Opmerking",
           "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over het bedrijf in..."
@@ -955,7 +961,9 @@
         "city": "Stad",
         "country": "Land",
         "phone": "Telefoonnummer",
-        "email": "E-mail"
+        "email": "E-mail",
+        "kvk": "KVK-nummer",
+        "btw": "BTW-nummer"
       },
       "driversTable": {
         "columns": {
@@ -1061,6 +1069,12 @@
         "email": {
           "label": "E-mail"
         },
+        "kvk": {
+          "label": "KVK-nummer"
+        },
+        "btw": {
+          "label": "BTW-nummer"
+        },
         "remark": {
           "label": "Opmerking",
           "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over de klant in..."
@@ -1092,7 +1106,9 @@
         "city": "Stad",
         "country": "Land",
         "phone": "Telefoonnummer",
-        "email": "E-mail"
+        "email": "E-mail",
+        "kvk": "KVK-nummer",
+        "btw": "BTW-nummer"
       },
       "noRemark": "Geen opmerking beschikbaar",
       "buttons": {
