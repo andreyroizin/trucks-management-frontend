@@ -251,13 +251,13 @@ export default function SideNavigation() {
                     <ListItemText primary={t('navigation.reports')}/>
                 </NavItem>
 
-                <Divider sx={{my: 3}}/>
+                {/* <Divider sx={{my: 3}}/> */}
 
                 {/* Settings */}
-                <NavItem active={isActive('/settings')} main onClick={() => go('/')}>
+                {/* <NavItem active={isActive('/settings')} main onClick={() => go('/')}>
                     <ListItemIcon><SettingsIcon/></ListItemIcon>
                     <ListItemText primary={t('navigation.settings')}/>
-                </NavItem>
+                </NavItem> */}
             </List>
 
             {/* ───────── Bottom Actions ───────── */}
