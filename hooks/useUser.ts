@@ -30,10 +30,16 @@ type ClientCompany = {
     clientName?: string
 }
 
+type CompanySimple = {
+    id: string;
+    name: string;
+};
+
 type DriverInfo = {
     driverId: string,
     companyId: string,
-    companyName: string
+    companyName: string,
+    usedByCompanies: CompanySimple[]
 }
 
 export type UpdateUserDriverInput = {
