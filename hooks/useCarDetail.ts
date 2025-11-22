@@ -3,6 +3,11 @@ import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 
 // --- TYPES ---
+export type CompanySimple = {
+    id: string;
+    name: string;
+};
+
 export type CarDetail = {
     id: string;
     licensePlate: string;
@@ -19,6 +24,7 @@ export type CarDetail = {
     driverFirstName?: string | null;
     driverLastName?: string | null;
     driverEmail?: string | null;
+    usedByCompanies: CompanySimple[];
     files?: {
         id: string;
         originalFileName?: string;

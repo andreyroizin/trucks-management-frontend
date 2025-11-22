@@ -1182,6 +1182,10 @@
           "label": "Leasing End Date",
           "placeholder": "When does the lease end?"
         },
+        "usedByCompanies": {
+          "label": "Used By (Companies)",
+          "helperText": "Select companies that can use this vehicle (normally owned by holding, used by daughter companies)"
+        },
         "remark": {
           "label": "Remark",
           "placeholder": "Enter any additional remarks or comments about the vehicle..."
@@ -1212,11 +1216,13 @@
         "vehicleYear": "Vehicle Year",
         "registrationDate": "Registration Date",
         "leasingStartDate": "Leasing Start Date",
-        "leasingEndDate": "Leasing End Date"
+        "leasingEndDate": "Leasing End Date",
+        "usedByCompanies": "Used By Companies"
       },
       "noRemark": "No remark provided",
       "noDocuments": "No documents uploaded.",
       "notAssigned": "Not assigned",
+      "noUsedByCompanies": "No companies assigned",
       "buttons": {
         "assignDriver": "Assign Driver",
         "assigning": "Assigning...",

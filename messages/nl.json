@@ -1187,6 +1187,10 @@
           "label": "Leasing Einddatum",
           "placeholder": "Wanneer eindigt de lease?"
         },
+        "usedByCompanies": {
+          "label": "Gebruikt Door (Bedrijven)",
+          "helperText": "Selecteer bedrijven die dit voertuig kunnen gebruiken (normaal eigendom van holding, gebruikt door dochterbedrijven)"
+        },
         "remark": {
           "label": "Opmerking",
           "placeholder": "Voer eventuele aanvullende opmerkingen of commentaar over het voertuig in..."
@@ -1217,11 +1221,13 @@
         "vehicleYear": "Voertuigjaar",
         "registrationDate": "Registratiedatum",
         "leasingStartDate": "Leasing Startdatum",
-        "leasingEndDate": "Leasing Einddatum"
+        "leasingEndDate": "Leasing Einddatum",
+        "usedByCompanies": "Gebruikt Door Bedrijven"
       },
       "noRemark": "Geen opmerking opgegeven",
       "noDocuments": "Geen documenten geüpload.",
       "notAssigned": "Niet toegewezen",
+      "noUsedByCompanies": "Geen bedrijven toegewezen",
       "buttons": {
         "assignDriver": "Chauffeur Toewijzen",
         "assigning": "Toewijzen...",

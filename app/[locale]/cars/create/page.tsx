@@ -28,6 +28,7 @@ type FormInputs = {
     registrationDate?: string;  // Optional
     leasingStartDate?: string;  // Optional
     leasingEndDate?: string;    // Optional
+    usedByCompanyIds?: string[]; // Optional - companies that can use this car
     remark?: string;            // Optional
     newUploads?: {              // Optional - file uploads
         fileId: string;
@@ -45,6 +46,7 @@ export default function CreateVehiclePage() {
         registrationDate: yup.string().optional(),
         leasingStartDate: yup.string().optional(),
         leasingEndDate: yup.string().optional(),
+        usedByCompanyIds: yup.array().of(yup.string().required()).optional(),
         remark: yup.string().optional(),
     });
     const router = useRouter();
@@ -76,6 +78,7 @@ export default function CreateVehiclePage() {
             registrationDate: '',
             leasingStartDate: '',
             leasingEndDate: '',
+            usedByCompanyIds: [],
             remark: '',
         },
     });
@@ -108,6 +111,9 @@ export default function CreateVehiclePage() {
             
             // Add uploaded files to the request
             cleanedData.newUploads = tempFiles;
+            
+            // Add usedByCompanyIds to the request (can be empty array)
+            cleanedData.usedByCompanyIds = data.usedByCompanyIds || [];
             
             await mutateAsync(cleanedData);
             reset();
@@ -180,7 +186,7 @@ export default function CreateVehiclePage() {
                                 )}
                             />
                         </Grid>
-                        {/* Company Selection */}
+                        {/* Company Selection (Owner) */}
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 name="companyId"
@@ -205,6 +211,39 @@ export default function CreateVehiclePage() {
                                         loading={isCompaniesLoading}
                                         value={
                                             companiesData?.data.find(c => c.id === field.value) || null
+                                        }
+                                        isOptionEqualToValue={(option, val) => option.id === val.id}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Used By Companies (Multi-select) */}
+                        <Grid item xs={12}>
+                            <Controller
+                                name="usedByCompanyIds"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        multiple
+                                        options={companiesData?.data || []}
+                                        getOptionLabel={(option) => option.name}
+                                        onChange={(_, value) => field.onChange(value.map(v => v.id))}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('cars.create.fields.usedByCompanies.label')}
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={!!errors.usedByCompanyIds}
+                                                helperText={errors.usedByCompanyIds?.message || t('cars.create.fields.usedByCompanies.helperText')}
+                                            />
+                                        )}
+                                        loading={isCompaniesLoading}
+                                        value={
+                                            companiesData?.data.filter(c => 
+                                                field.value?.includes(c.id)
+                                            ) || []
                                         }
                                         isOptionEqualToValue={(option, val) => option.id === val.id}
                                     />

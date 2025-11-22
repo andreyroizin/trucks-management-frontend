@@ -280,6 +280,24 @@ export default function VehicleDetailPage() {
                             <TableCell sx={{pl: 0, border: 'none'}}>{t('cars.detail.fields.leasingEndDate')}</TableCell>
                             <TableCell sx={{border: 'none'}}>{formatDate(car.leasingEndDate)}</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell sx={{pl: 0, border: 'none', verticalAlign: 'top'}}>{t('cars.detail.fields.usedByCompanies')}</TableCell>
+                            <TableCell sx={{border: 'none'}}>
+                                {car.usedByCompanies && car.usedByCompanies.length > 0 ? (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                        {car.usedByCompanies.map((company) => (
+                                            <Typography key={company.id} variant="body2">
+                                                • {company.name}
+                                            </Typography>
+                                        ))}
+                                    </Box>
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary">
+                                        {t('cars.detail.noUsedByCompanies')}
+                                    </Typography>
+                                )}
+                            </TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 

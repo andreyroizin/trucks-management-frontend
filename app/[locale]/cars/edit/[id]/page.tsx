@@ -33,6 +33,7 @@ type FormInputs = {
     registrationDate?: string;
     leasingStartDate?: string;
     leasingEndDate?: string;
+    usedByCompanyIds?: string[];
     remark?: string;
     newUploads?: {
         fileId: string;
@@ -52,6 +53,7 @@ export default function EditVehiclePage() {
         registrationDate: yup.string().optional(),
         leasingStartDate: yup.string().optional(),
         leasingEndDate: yup.string().optional(),
+        usedByCompanyIds: yup.array().of(yup.string().required()).optional(),
         remark: yup.string().optional(),
         newUploads: yup.array().of(
             yup.object({
@@ -97,6 +99,7 @@ export default function EditVehiclePage() {
             registrationDate: '',
             leasingStartDate: '',
             leasingEndDate: '',
+            usedByCompanyIds: [],
             remark: '',
             newUploads: [],
             fileIdsToDelete: [],
@@ -121,6 +124,7 @@ export default function EditVehiclePage() {
                 registrationDate: carData?.registrationDate || '',
                 leasingStartDate: carData?.leasingStartDate || '',
                 leasingEndDate: carData?.leasingEndDate || '',
+                usedByCompanyIds: carData?.usedByCompanies?.map(c => c.id) || [],
                 remark: carData?.remark || '',
             });
         }
@@ -155,6 +159,8 @@ export default function EditVehiclePage() {
                 ...(data.leasingStartDate && data.leasingStartDate !== '' && { leasingStartDate: data.leasingStartDate }),
                 ...(data.leasingEndDate && data.leasingEndDate !== '' && { leasingEndDate: data.leasingEndDate }),
                 ...(data.remark && data.remark !== '' && { remark: data.remark }),
+                // Include usedByCompanyIds (can be empty array to clear all)
+                usedByCompanyIds: data.usedByCompanyIds || [],
                 // Include file operations
                 newUploads: newUploads,
                 fileIdsToDelete: fileIdsToDelete,
@@ -229,7 +235,7 @@ export default function EditVehiclePage() {
                                 )}
                             />
                         </Grid>
-                        {/* Company Selection */}
+                        {/* Company Selection (Owner) */}
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 name="companyId"
@@ -254,6 +260,39 @@ export default function EditVehiclePage() {
                                         loading={isCompaniesLoading}
                                         value={
                                             companiesData?.data.find(c => c.id === field.value) || null
+                                        }
+                                        isOptionEqualToValue={(option, val) => option.id === val.id}
+                                    />
+                                )}
+                            />
+                        </Grid>
+                        {/* Used By Companies (Multi-select) */}
+                        <Grid item xs={12}>
+                            <Controller
+                                name="usedByCompanyIds"
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        multiple
+                                        options={companiesData?.data || []}
+                                        getOptionLabel={(option) => option.name}
+                                        onChange={(_, value) => field.onChange(value.map(v => v.id))}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('cars.create.fields.usedByCompanies.label')}
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={!!errors.usedByCompanyIds}
+                                                helperText={errors.usedByCompanyIds?.message || t('cars.create.fields.usedByCompanies.helperText')}
+                                            />
+                                        )}
+                                        loading={isCompaniesLoading}
+                                        value={
+                                            companiesData?.data.filter(c => 
+                                                field.value?.includes(c.id)
+                                            ) || []
                                         }
                                         isOptionEqualToValue={(option, val) => option.id === val.id}
                                     />

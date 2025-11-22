@@ -11,6 +11,7 @@ export type UpdateCarInput = {
     leasingEndDate?: string;
     remark?: string;
     companyId: string;
+    usedByCompanyIds?: string[];
     newUploads?: {
         fileId: string;
         originalFileName: string;
