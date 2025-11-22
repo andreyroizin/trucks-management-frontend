@@ -66,11 +66,15 @@ export default function DriverCard({
         handleClose();
     };
 
-    // Format contract end date
+    // Format contract end date (dd-mm-yyyy format)
     const formatDate = (dateString?: string | null) => {
         if (!dateString) return t('drivers.card.notAvailable');
         try {
-            return new Date(dateString).toLocaleDateString();
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
         } catch {
             return t('drivers.card.notAvailable');
         }
