@@ -36,6 +36,11 @@ export default function DriversPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(12);
     
+    // Reset to page 1 when search changes
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedSearch]);
+    
     // Delete confirmation modal state
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [driverToDelete, setDriverToDelete] = useState<string | null>(null);
@@ -93,6 +98,21 @@ export default function DriversPage() {
         );
     }
 
+    // Filter drivers based on search term (first name and last name)
+    const filteredDrivers = (drivers || []).filter((driver) => {
+        if (!debouncedSearch) return true;
+        
+        const searchLower = debouncedSearch.toLowerCase();
+        const firstNameMatch = driver.user.firstName.toLowerCase().includes(searchLower);
+        const lastNameMatch = driver.user.lastName.toLowerCase().includes(searchLower);
+        const fullNameMatch = `${driver.user.firstName} ${driver.user.lastName}`.toLowerCase().includes(searchLower);
+        
+        return firstNameMatch || lastNameMatch || fullNameMatch;
+    });
+
+    // Paginate filtered drivers
+    const paginatedDrivers = filteredDrivers.slice((page - 1) * pageSize, page * pageSize);
+
     return (
         <Box sx={{py: 4}}>
             <Box sx={{mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -124,7 +144,7 @@ export default function DriversPage() {
             <DebouncedSearchInput value={debouncedSearch} onDebouncedChange={setDebouncedSearch} placeholder={t('drivers.overview.search.placeholder')} size={"small"} sx={{ mb: 4, maxWidth: 260 }} />
 
             <Grid container spacing={2}>
-                {(drivers || []).map((driver) => (
+                {paginatedDrivers.map((driver) => (
                     <Grid item xs={12} sm={6} md={4} key={driver.id}>
                         <DriverCard
                             id={driver.id}
@@ -140,7 +160,7 @@ export default function DriversPage() {
             <TablePagination
                 sx={{mt: 4}}
                 component="div"
-                count={drivers?.length || 0}
+                count={filteredDrivers.length}
                 page={page - 1}
                 onPageChange={(event, newPage) => setPage(newPage + 1)}
                 rowsPerPage={pageSize}
