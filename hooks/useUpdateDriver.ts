@@ -67,6 +67,9 @@ export interface UpdateDriverInput {
     // Car Assignment
     carId?: string;
     
+    // Used By Companies
+    usedByCompanyIds?: string[];
+    
     // File Operations
     newUploads?: {
         fileId: string;
@@ -93,6 +96,9 @@ const updateDriverWithContract = async (driverId: string, data: UpdateDriverInpu
     console.log('  Base URL:', baseURL);
     console.log('  Full URL:', fullURL);
     console.log('  Payload:', JSON.stringify(data, null, 2));
+    console.log('  🔍 usedByCompanyIds in payload:', data.usedByCompanyIds);
+    console.log('  🔍 usedByCompanyIds type:', typeof data.usedByCompanyIds);
+    console.log('  🔍 usedByCompanyIds is Array:', Array.isArray(data.usedByCompanyIds));
     
     try {
         const response = await api.put<ApiResponse<DriverWithContractResponse>>(url, data);

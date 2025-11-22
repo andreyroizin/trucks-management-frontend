@@ -1338,6 +1338,10 @@
           "label": "Bedrijf",
           "required": "Bedrijf is verplicht"
         },
+        "usedByCompanies": {
+          "label": "Gebruikt Door Bedrijven",
+          "helperText": "Selecteer bedrijven die deze chauffeur kunnen gebruiken"
+        },
         "email": {
           "label": "E-mail",
           "required": "E-mail is verplicht",
@@ -1558,6 +1562,7 @@
       },
       "fields": {
         "company": "Bedrijf",
+        "usedByCompanies": "Gebruikt Door Bedrijven",
         "email": "E-mail",
         "phone": "Telefoon",
         "dateOfBirth": "Geboortedatum",
@@ -1660,6 +1665,10 @@
       "fields": {
         "company": {
           "label": "Bedrijf"
+        },
+        "usedByCompanies": {
+          "label": "Gebruikt Door Bedrijven",
+          "helperText": "Selecteer bedrijven die deze chauffeur kunnen gebruiken"
         },
         "email": {
           "label": "E-mail"

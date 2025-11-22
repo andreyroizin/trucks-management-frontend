@@ -88,6 +88,20 @@ const DriverDetails: React.FC<DriverDetailsProps> = ({ driver }) => {
                                     {driver.driverInfo.companyName}
                                 </Typography>
                             </Box>
+                            {driver.driverInfo.usedByCompanies && driver.driverInfo.usedByCompanies.length > 0 && (
+                                <Box width={{ xs: '100%' }}>
+                                    <Typography variant="subtitle2" color="textSecondary">
+                                        {t('fields.usedByCompanies')}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 0.5 }}>
+                                        {driver.driverInfo.usedByCompanies.map((company: any) => (
+                                            <Typography key={company.id} variant="body1">
+                                                • {company.name}
+                                            </Typography>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
                         </>
                     )}
                 </Box>

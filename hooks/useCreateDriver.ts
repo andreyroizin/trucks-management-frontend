@@ -66,6 +66,9 @@ export type CreateDriverInput = {
         fileId: string;
         originalFileName: string;
     }[];
+    
+    // Group 9: Used By Companies
+    UsedByCompanyIds?: string[];
 };
 
 export type CreateDriverResponse = {

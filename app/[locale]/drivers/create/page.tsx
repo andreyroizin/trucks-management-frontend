@@ -49,6 +49,7 @@ const AMSTERDAM_TZ = 'Europe/Amsterdam';
 
 type FormInputs = {
     CompanyId: string;                      // Required - backend: CompanyId
+    UsedByCompanyIds?: string[];            // Optional - backend: UsedByCompanyIds
     Email: string;                          // Required - backend: Email
     Password: string;                       // Required - backend: Password
     FirstName: string;                      // Required - backend: FirstName
@@ -143,6 +144,7 @@ export default function CreateDriverPage() {
     
     const schema = yup.object().shape({
         CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
+        UsedByCompanyIds: yup.array().of(yup.string().required()).optional(),
         Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
         Password: yup
             .string()
@@ -208,6 +210,7 @@ export default function CreateDriverPage() {
         resolver: yupResolver(schema),
         defaultValues: {
             CompanyId: '',
+            UsedByCompanyIds: [],
             Email: '',
             Password: '',
             FirstName: '',
@@ -333,6 +336,9 @@ export default function CreateDriverPage() {
 
             // Add uploaded files to the request
             cleanedData.NewUploads = tempFiles;
+            
+            // Always include UsedByCompanyIds (even if empty array)
+            cleanedData.UsedByCompanyIds = data.UsedByCompanyIds || [];
 
             const response = await mutateAsync(cleanedData);
             
@@ -449,6 +455,39 @@ export default function CreateDriverPage() {
                                             loading={isCompaniesLoading}
                                             value={
                                                 companiesData?.data.find(c => c.id === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.id === val.id}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            {/* Used By Companies (Multi-select) */}
+                            <Grid item xs={12}>
+                                <Controller
+                                    name="UsedByCompanyIds"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            multiple
+                                            options={companiesData?.data || []}
+                                            getOptionLabel={(option) => option.name}
+                                            onChange={(_, value) => field.onChange(value.map(v => v.id))}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.create.fields.usedByCompanies.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.UsedByCompanyIds}
+                                                    helperText={errors.UsedByCompanyIds?.message || t('drivers.create.fields.usedByCompanies.helperText')}
+                                                />
+                                            )}
+                                            loading={isCompaniesLoading}
+                                            value={
+                                                companiesData?.data.filter(c => 
+                                                    field.value?.includes(c.id)
+                                                ) || []
                                             }
                                             isOptionEqualToValue={(option, val) => option.id === val.id}
                                         />

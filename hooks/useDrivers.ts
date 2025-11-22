@@ -9,11 +9,17 @@ export type User = {
     lastName: string;
 };
 
+export type CompanySimple = {
+    id: string;
+    name: string;
+};
+
 export type Driver = {
     id: string;
     companyId: string;
     companyName: string;
     user: User;
+    usedByCompanies: CompanySimple[];
 };
 
 export type DriversData = {

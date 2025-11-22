@@ -49,6 +49,7 @@ const AMSTERDAM_TZ = 'Europe/Amsterdam';
 
 type FormInputs = {
     CompanyId: string;                      // Required - backend: companyId
+    UsedByCompanyIds?: string[];            // Optional - backend: usedByCompanyIds
     Email: string;                          // Required - backend: email
     FirstName: string;                      // Required - backend: firstName
     LastName: string;                       // Required - backend: lastName
@@ -177,6 +178,7 @@ export default function EditDriverPage() {
     
     const schema = yup.object().shape({
         CompanyId: yup.string().required(t('drivers.create.fields.company.required')),
+        UsedByCompanyIds: yup.array().of(yup.string().required()).optional(),
         Email: yup.string().email(t('drivers.create.fields.email.invalid')).required(t('drivers.create.fields.email.required')),
         FirstName: yup.string().required(t('drivers.create.fields.firstName.required')),
         LastName: yup.string().required(t('drivers.create.fields.lastName.required')),
@@ -226,6 +228,7 @@ export default function EditDriverPage() {
         resolver: yupResolver(schema),
         defaultValues: {
             CompanyId: '',
+            UsedByCompanyIds: [],
             Email: '',
             FirstName: '',
             LastName: '',
@@ -332,6 +335,7 @@ export default function EditDriverPage() {
         if (driverData) {
             reset({
                 CompanyId: driverData.companyId || '',
+                UsedByCompanyIds: driverData.usedByCompanies?.map(c => c.id) || [],
                 Email: driverData.email || '',
                 FirstName: driverData.firstName || '',
                 LastName: driverData.lastName || '',
@@ -360,6 +364,7 @@ export default function EditDriverPage() {
             
             reset({
                 CompanyId: driverData.companyId || '',
+                UsedByCompanyIds: driverData.usedByCompanies?.map(c => c.id) || [],
                 Email: driverData.email || '',
                 FirstName: driverData.firstName || '',
                 LastName: driverData.lastName || '',
@@ -438,8 +443,12 @@ export default function EditDriverPage() {
             }
 
             // Prepare data for backend
+            console.log('🔍 [DRIVER EDIT] Form data.UsedByCompanyIds:', data.UsedByCompanyIds);
+            console.log('🔍 [DRIVER EDIT] cleanedData.UsedByCompanyIds:', cleanedData.UsedByCompanyIds);
+            
             const backendData = {
                 companyId: cleanedData.CompanyId,
+                usedByCompanyIds: data.UsedByCompanyIds || [],
                 email: cleanedData.Email,
                 firstName: cleanedData.FirstName,
                 lastName: cleanedData.LastName,
@@ -476,6 +485,9 @@ export default function EditDriverPage() {
                 newUploads: newUploads,
                 fileIdsToDelete: fileIdsToDelete,
             };
+
+            console.log('📤 [DRIVER EDIT] Sending backendData:', JSON.stringify(backendData, null, 2));
+            console.log('📤 [DRIVER EDIT] backendData.usedByCompanyIds:', backendData.usedByCompanyIds);
 
             await mutateAsync({ driverId, data: backendData });
             router.push('/drivers');
@@ -579,6 +591,39 @@ export default function EditDriverPage() {
                                             loading={isCompaniesLoading}
                                             value={
                                                 companiesData?.data.find(c => c.id === field.value) || null
+                                            }
+                                            isOptionEqualToValue={(option, val) => option.id === val.id}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            {/* Used By Companies (Multi-select) */}
+                            <Grid item xs={12}>
+                                <Controller
+                                    name="UsedByCompanyIds"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            multiple
+                                            options={companiesData?.data || []}
+                                            getOptionLabel={(option) => option.name}
+                                            onChange={(_, value) => field.onChange(value.map(v => v.id))}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label={t('drivers.edit.fields.usedByCompanies.label')}
+                                                    variant="outlined"
+                                                    margin="normal"
+                                                    fullWidth
+                                                    error={!!errors.UsedByCompanyIds}
+                                                    helperText={errors.UsedByCompanyIds?.message || t('drivers.edit.fields.usedByCompanies.helperText')}
+                                                />
+                                            )}
+                                            loading={isCompaniesLoading}
+                                            value={
+                                                companiesData?.data.filter(c => 
+                                                    field.value?.includes(c.id)
+                                                ) || []
                                             }
                                             isOptionEqualToValue={(option, val) => option.id === val.id}
                                         />

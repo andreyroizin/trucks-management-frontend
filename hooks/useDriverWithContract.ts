@@ -3,6 +3,11 @@ import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 import { ApplicationFile } from '@/types/file';
 
+export type CompanySimple = {
+    id: string;
+    name: string;
+};
+
 // Driver with Contract Response Type based on backend guide
 export type DriverWithContract = {
     // Personal Information
@@ -75,6 +80,9 @@ export type DriverWithContract = {
     telegramNotificationsEnabled?: boolean;
     telegramChatId?: number | null;
     telegramRegisteredAt?: string | null;
+    
+    // Used By Companies
+    usedByCompanies: CompanySimple[];
     
     // Files
     files?: ApplicationFile[];

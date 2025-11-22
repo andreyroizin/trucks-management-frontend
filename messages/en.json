@@ -1333,6 +1333,10 @@
           "label": "Company",
           "required": "Company is required"
         },
+        "usedByCompanies": {
+          "label": "Used By Companies",
+          "helperText": "Select companies that can use this driver"
+        },
         "email": {
           "label": "Email",
           "required": "Email is required",
@@ -1553,6 +1557,7 @@
       },
       "fields": {
         "company": "Company",
+        "usedByCompanies": "Used By Companies",
         "email": "Email",
         "phone": "Phone",
         "dateOfBirth": "Date of Birth",
@@ -1655,6 +1660,10 @@
       "fields": {
         "company": {
           "label": "Company"
+        },
+        "usedByCompanies": {
+          "label": "Used By Companies",
+          "helperText": "Select companies that can use this driver"
         },
         "email": {
           "label": "Email"
