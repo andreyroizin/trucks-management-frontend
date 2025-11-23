@@ -1856,6 +1856,17 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "planning": {
+      "title": "Planning",
+      "longTerm": "Lange termijn",
+      "weekly": "Wekelijks",
+      "daily": "Dagelijks"
+    },
+    "workManagement": {
+      "title": "Werkbeheer",
+      "myRides": "Mijn ritten",
+      "rideExecutions": "Rit uitvoeringen"
+    },
     "workdays": {
       "title": "Werkdagen",
       "overviewList": "Overzichtslijst",

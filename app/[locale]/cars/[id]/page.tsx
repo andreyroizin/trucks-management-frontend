@@ -35,7 +35,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useCarDetail } from '@/hooks/useCarDetail';
 import { useDeleteCar } from '@/hooks/useDeleteCar';
 import { useDownloadCarFile } from '@/hooks/useDownloadCarFile';
-import { useCompanyDetails } from '@/hooks/useCompanyDetails';
+import { useDrivers } from '@/hooks/useDrivers';
 import { useAssignCarToDriver } from '@/hooks/useAssignCarToDriver';
 import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
@@ -69,8 +69,8 @@ export default function VehicleDetailPage() {
     const [assignmentError, setAssignmentError] = useState<string | null>(null);
     const [driverSearch, setDriverSearch] = useState('');
     
-    // Fetch company details to get drivers
-    const { data: companyData, isLoading: isCompanyLoading } = useCompanyDetails(car?.company?.id || '');
+    // Fetch all available drivers
+    const { data: driversData, isLoading: isDriversLoading } = useDrivers();
     
     // Car assignment mutation
     const { mutateAsync: assignCar, isPending: isAssigning, isError: isAssignError, error: assignError } = useAssignCarToDriver();
@@ -91,21 +91,20 @@ export default function VehicleDetailPage() {
         }
     }, [car]);
     
-    // Debug: Log company data when it changes
+    // Debug: Log drivers data when it changes
     useEffect(() => {
-        if (companyData) {
-            console.log('🏢 [COMPANY DATA] Company details loaded:', {
-                companyId: companyData.id,
-                companyName: companyData.name,
-                driversCount: companyData.drivers?.length || 0,
-                drivers: companyData.drivers?.map(d => ({
-                    id: (d as any).id || d.driverId,
-                    name: `${d.user?.firstName} ${d.user?.lastName}`,
-                    aspNetUserId: d.aspNetUserId,
+        if (driversData) {
+            console.log('👥 [DRIVERS DATA] All available drivers loaded:', {
+                driversCount: driversData.length || 0,
+                drivers: driversData.map(d => ({
+                    id: d.id,
+                    name: `${d.user.firstName} ${d.user.lastName}`,
+                    companyName: d.companyName,
+                    userId: d.user.id,
                 })),
             });
         }
-    }, [companyData]);
+    }, [driversData]);
     
     // Check roles
     useEffect(() => {
@@ -143,24 +142,21 @@ export default function VehicleDetailPage() {
         setAssignmentError(null);
         
         // Find the selected driver to get their user ID
-        console.log('🔍 [CAR ASSIGNMENT] Searching for driver in company data...');
-        console.log('📋 [CAR ASSIGNMENT] Company Drivers:', companyData?.drivers);
+        console.log('🔍 [CAR ASSIGNMENT] Searching for driver in all available drivers...');
+        console.log('📋 [CAR ASSIGNMENT] Available Drivers:', driversData);
         
-        const selectedDriver = companyData?.drivers?.find(d => {
-            const driverId = (d as any).id || d.driverId;
-            return driverId === selectedDriverId;
-        });
+        const selectedDriver = driversData?.find(d => d.id === selectedDriverId);
         
         console.log('👤 [CAR ASSIGNMENT] Found Driver:', selectedDriver);
         
-        if (!selectedDriver?.aspNetUserId) {
+        if (!selectedDriver?.user?.id) {
             console.error('❌ [CAR ASSIGNMENT] Driver user ID not found');
             setAssignmentError('Driver user ID not found');
             return;
         }
         
         const payload = {
-            userId: selectedDriver.aspNetUserId,
+            userId: selectedDriver.user.id,
             carId: car.id,
             companyId: car.company.id,
         };
@@ -200,7 +196,7 @@ export default function VehicleDetailPage() {
                 console.error('🚨 [CAR ASSIGNMENT] Backend error messages:', backendErrors);
                 setAssignmentError(backendErrors[0]); // Show first error to user
             } else {
-                setAssignmentError(err.message || t('cars.detail.errors.assignmentFailed'));
+            setAssignmentError(err.message || t('cars.detail.errors.assignmentFailed'));
             }
         }
     };
@@ -285,7 +281,7 @@ export default function VehicleDetailPage() {
                                     setDriverSearch(''); // Reset search
                                     setOpenDriverModal(true);
                                 }}
-                                disabled={isPending || isCompanyLoading}
+                                disabled={isPending || isDriversLoading}
                                 variant="contained"
                                 startIcon={<PersonAddIcon />}
                                 sx={{
@@ -461,11 +457,11 @@ export default function VehicleDetailPage() {
                         </Alert>
                     )}
                     
-                    {isCompanyLoading ? (
+                    {isDriversLoading ? (
                         <Box display="flex" justifyContent="center" py={4}>
                             <CircularProgress />
                         </Box>
-                    ) : !companyData?.drivers?.length ? (
+                    ) : !driversData?.length ? (
                         <Box textAlign="center" py={4}>
                             <Typography color="text.secondary">
                                 {t('cars.detail.assignmentModal.noDrivers')}
@@ -487,12 +483,12 @@ export default function VehicleDetailPage() {
                             <List sx={{ width: '100%', maxHeight: 400, overflow: 'auto' }}>
                                 {(() => {
                                     // Filter drivers based on search
-                                    const filteredDrivers = companyData.drivers.filter((driver) => {
+                                    const filteredDrivers = driversData.filter((driver) => {
                                         if (!driverSearch) return true;
                                         
                                         const searchLower = driverSearch.toLowerCase();
-                                        const firstName = driver.user?.firstName?.toLowerCase() || '';
-                                        const lastName = driver.user?.lastName?.toLowerCase() || '';
+                                        const firstName = driver.user.firstName.toLowerCase();
+                                        const lastName = driver.user.lastName.toLowerCase();
                                         const fullName = `${firstName} ${lastName}`;
                                         
                                         return firstName.includes(searchLower) || 
@@ -510,42 +506,39 @@ export default function VehicleDetailPage() {
                                         );
                                     }
                                     
-                                    return filteredDrivers.map((driver) => {
-                                        const driverId = (driver as any).id || driver.driverId;
-                                        return (
-                                            <ListItem key={driverId} disablePadding>
-                                                <ListItemButton 
-                                                    onClick={() => {
-                                                        setSelectedDriverId(driverId);
-                                                    }}
-                                                    sx={{ borderRadius: 1 }}
-                                                    disabled={isAssigning}
-                                                >
-                                                    <Radio
-                                                        checked={selectedDriverId === driverId}
-                                                        value={driverId}
-                                                        sx={{ mr: 1 }}
+                                    return filteredDrivers.map((driver) => (
+                                        <ListItem key={driver.id} disablePadding>
+                                            <ListItemButton 
+                                                onClick={() => {
+                                                    setSelectedDriverId(driver.id);
+                                                }}
+                                                sx={{ borderRadius: 1 }}
+                                                disabled={isAssigning}
+                                            >
+                                                <Radio
+                                                    checked={selectedDriverId === driver.id}
+                                                    value={driver.id}
+                                                    sx={{ mr: 1 }}
+                                                />
+                                                <ListItemText 
+                                                    primary={
+                                                        <Typography variant="body1">
+                                                            {driver.user.firstName} {driver.user.lastName}
+                                                        </Typography>
+                                                    }
+                                                    secondary={driver.user.email}
+                                                />
+                                                {selectedDriverId === driver.id && (
+                                                    <Chip 
+                                                        label={t('cars.detail.assignmentModal.selected')} 
+                                                        size="small" 
+                                                        color="primary" 
+                                                        sx={{ ml: 1 }}
                                                     />
-                                                    <ListItemText 
-                                                        primary={
-                                                            <Typography variant="body1">
-                                                                {driver.user?.firstName} {driver.user?.lastName}
-                                                            </Typography>
-                                                        }
-                                                        secondary={driver.user?.email}
-                                                    />
-                                                    {selectedDriverId === driverId && (
-                                                        <Chip 
-                                                            label={t('cars.detail.assignmentModal.selected')} 
-                                                            size="small" 
-                                                            color="primary" 
-                                                            sx={{ ml: 1 }}
-                                                        />
-                                                    )}
-                                                </ListItemButton>
-                                            </ListItem>
-                                        );
-                                    });
+                                                )}
+                                            </ListItemButton>
+                                        </ListItem>
+                                    ));
                                 })()}
                             </List>
                         </>

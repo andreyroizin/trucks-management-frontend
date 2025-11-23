@@ -65,8 +65,8 @@ type FormInputs = {
     PermanentContract?: boolean;            // Optional - backend: permanentContract
     ContractDuration?: number;              // Optional - backend: contractDuration (in months)
     LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
-    ProbationPeriod: string;                // Required - backend: probationPeriod
-    NoticePeriod: string;                   // Required - backend: noticePeriod
+    ProbationPeriod?: string;               // Optional - backend: probationPeriod
+    NoticePeriod?: string;                  // Optional - backend: noticePeriod
     Function: string;                       // Required - backend: function
     WorkweekDuration: number;               // Required - backend: workweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: workweekDurationPercentage
@@ -117,10 +117,17 @@ const getFunctionOptions = () => [
 ];
 
 // Country options - uses i18n-iso-countries library
+// Returns countries with translated labels but Dutch values (for DB storage)
 const getCountryOptions = (locale: string = 'en') => {
-    const countryObj = countries.getNames(locale, { select: 'official' });
-    return Object.entries(countryObj)
-        .map(([code, name]) => ({ value: name, label: name, code }))
+    const countryObjTranslated = countries.getNames(locale, { select: 'official' });
+    const countryObjDutch = countries.getNames('nl', { select: 'official' });
+    
+    return Object.entries(countryObjTranslated)
+        .map(([code, translatedName]) => ({ 
+            code,
+            label: translatedName,           // Show translated name in dropdown
+            value: countryObjDutch[code]     // Store Dutch name in database
+        }))
         .sort((a, b) => a.label.localeCompare(b.label));
 };
 
@@ -194,8 +201,8 @@ export default function EditDriverPage() {
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
         LastWorkingDay: yup.string().optional(),
-        ProbationPeriod: yup.string().required(t('drivers.create.fields.probationPeriod.required')),
-        NoticePeriod: yup.string().required(t('drivers.create.fields.noticePeriod.required')),
+        ProbationPeriod: yup.string().nullable().optional(),
+        NoticePeriod: yup.string().nullable().optional(),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
         WeeklySchedule: yup.string().required(t('drivers.create.fields.weeklySchedule.required')),
@@ -243,8 +250,8 @@ export default function EditDriverPage() {
             EmploymentStartDate: '',
             PermanentContract: false,
             ContractDuration: undefined,
-            ProbationPeriod: '',
-            NoticePeriod: '',
+            ProbationPeriod: undefined,
+            NoticePeriod: undefined,
             Function: '',
             WorkweekDuration: undefined,
             WeeklySchedule: '',
@@ -333,29 +340,6 @@ export default function EditDriverPage() {
     // Pre-fill form when driver data is loaded
     useEffect(() => {
         if (driverData) {
-            reset({
-                CompanyId: driverData.companyId || '',
-                UsedByCompanyIds: driverData.usedByCompanies?.map(c => c.id) || [],
-                Email: driverData.email || '',
-                FirstName: driverData.firstName || '',
-                LastName: driverData.lastName || '',
-                DateOfBirth: driverData.dateOfBirth ? driverData.dateOfBirth.split('T')[0] : '',
-                PhoneNumber: driverData.phoneNumber || '',
-                Address: driverData.address || '',
-                Postcode: driverData.postcode || '',
-                City: driverData.city || '',
-                Country: driverData.country || '',
-                BSN: driverData.bsn || '',
-                IBAN: (driverData as any).iban || '',
-                EmploymentStartDate: driverData.dateOfEmployment ? dayjs(driverData.dateOfEmployment).format('YYYY-MM-DD') : '',
-                PermanentContract: (driverData as any).permanentContract || false,
-                ContractDuration: !(driverData as any).permanentContract && driverData.dateOfEmployment && driverData.lastWorkingDay ? 
-                    calculateContractDuration(driverData.dateOfEmployment, driverData.lastWorkingDay) : 
-                    ((driverData as any).contractDuration ? Number((driverData as any).contractDuration) : undefined),
-                LastWorkingDay: driverData.lastWorkingDay ? 
-                    dayjs(driverData.lastWorkingDay).format('YYYY-MM-DD') : '',
-            });
-            
             // Set contract duration display value
             const duration = !(driverData as any).permanentContract && driverData.dateOfEmployment && driverData.lastWorkingDay ? 
                 calculateContractDuration(driverData.dateOfEmployment, driverData.lastWorkingDay) : 
@@ -381,8 +365,8 @@ export default function EditDriverPage() {
                 ContractDuration: duration,
                 LastWorkingDay: driverData.lastWorkingDay ? 
                     dayjs(driverData.lastWorkingDay).format('YYYY-MM-DD') : '',
-                ProbationPeriod: driverData.probationPeriod || '',
-                NoticePeriod: driverData.noticePeriod || '',
+                ProbationPeriod: driverData.probationPeriod || undefined,
+                NoticePeriod: driverData.noticePeriod || undefined,
                 Function: mapOldFunctionValue(driverData.function, functionOptions),
                 WorkweekDuration: driverData.workweekDuration ? Number(driverData.workweekDuration) : undefined,
                 WeeklySchedule: driverData.weeklySchedule || '',
@@ -819,7 +803,7 @@ export default function EditDriverPage() {
                                             value={
                                                 countryOptions.find(option => option.value === field.value) || null
                                             }
-                                            isOptionEqualToValue={(option, val) => option.value === val.value}
+                                            isOptionEqualToValue={(option, val) => option.code === val.code}
                                         />
                                     )}
                                 />
@@ -995,7 +979,7 @@ export default function EditDriverPage() {
                                         <Autocomplete
                                             options={probationPeriodOptions}
                                             getOptionLabel={(option) => option.label}
-                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            onChange={(_, value) => field.onChange(value?.value || null)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -1003,7 +987,6 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    required
                                                     error={!!errors.ProbationPeriod}
                                                     helperText={errors.ProbationPeriod?.message}
                                                 />
@@ -1024,7 +1007,7 @@ export default function EditDriverPage() {
                                         <Autocomplete
                                             options={noticePeriodOptions}
                                             getOptionLabel={(option) => option.label}
-                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            onChange={(_, value) => field.onChange(value?.value || null)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -1032,7 +1015,6 @@ export default function EditDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    required
                                                     error={!!errors.NoticePeriod}
                                                     helperText={errors.NoticePeriod?.message}
                                                 />

@@ -156,7 +156,7 @@ export default function SideNavigation() {
                          active={pathNoLocale.startsWith('/planning')}
                          main>
                     <ListItemIcon><CalendarTodayIcon/></ListItemIcon>
-                    <ListItemText primary="Planning"/>
+                    <ListItemText primary={t('navigation.planning.title')}/>
                     <KeyboardArrowDown
                         sx={{transform: planningOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
                     />
@@ -166,13 +166,13 @@ export default function SideNavigation() {
                 <Collapse in={planningOpen} timeout="auto" unmountOnExit>
                     <List disablePadding>
                         <NavItem active={isActive('/planning/long-term')} onClick={() => go('/planning/long-term')} sx={{pl: 6}}>
-                            <ListItemText primary="Long-Term"/>
+                            <ListItemText primary={t('navigation.planning.longTerm')}/>
                         </NavItem>
                         <NavItem active={isActive('/planning/weekly')} onClick={() => go('/planning/weekly')} sx={{pl: 6}}>
-                            <ListItemText primary="Weekly"/>
+                            <ListItemText primary={t('navigation.planning.weekly')}/>
                         </NavItem>
                         <NavItem active={isActive('/planning/daily')} onClick={() => go('/planning/daily')} sx={{pl: 6}}>
-                            <ListItemText primary="Daily"/>
+                            <ListItemText primary={t('navigation.planning.daily')}/>
                         </NavItem>
                     </List>
                 </Collapse>
@@ -186,7 +186,7 @@ export default function SideNavigation() {
                              || pathNoLocale.startsWith('/weeks-to-submit')}
                          main>
                     <ListItemIcon><ListIcon/></ListItemIcon>
-                    <ListItemText primary="Work Management"/>
+                    <ListItemText primary={t('navigation.workManagement.title')}/>
                     <KeyboardArrowDown
                         sx={{transform: workdaysOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
                     />
@@ -197,11 +197,11 @@ export default function SideNavigation() {
                     <List disablePadding>
                         {user?.roles?.includes('driver') ? (
                             <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
-                                <ListItemText primary="My Rides"/>
+                                <ListItemText primary={t('navigation.workManagement.myRides')}/>
                             </NavItem>
                         ) : (
                             <NavItem active={isActive('/rides/executions')} onClick={() => go('/rides/executions')} sx={{pl: 6}}>
-                                <ListItemText primary="Ride Executions"/>
+                                <ListItemText primary={t('navigation.workManagement.rideExecutions')}/>
                         </NavItem>
                         )}
                         <NavItem active={isActive('/execution-disputes')} onClick={() => go('/execution-disputes')} sx={{pl: 6}}>

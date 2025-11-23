@@ -66,8 +66,8 @@ type FormInputs = {
     PermanentContract?: boolean;            // Optional - backend: PermanentContract
     ContractDuration?: number;              // Optional - backend: ContractDuration (in months)
     LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
-    ProbationPeriod: string;                // Required - backend: ProbationPeriod
-    NoticePeriod: string;                   // Required - backend: NoticePeriod
+    ProbationPeriod?: string;               // Optional - backend: ProbationPeriod
+    NoticePeriod?: string;                  // Optional - backend: NoticePeriod
     Function: string;                       // Required - backend: Function
     WorkweekDuration: number;               // Required - backend: WorkweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: WorkweekDurationPercentage
@@ -118,10 +118,17 @@ const getFunctionOptions = () => [
 ];
 
 // Country options - uses i18n-iso-countries library
+// Returns countries with translated labels but Dutch values (for DB storage)
 const getCountryOptions = (locale: string = 'en') => {
-    const countryObj = countries.getNames(locale, { select: 'official' });
-    return Object.entries(countryObj)
-        .map(([code, name]) => ({ value: name, label: name, code }))
+    const countryObjTranslated = countries.getNames(locale, { select: 'official' });
+    const countryObjDutch = countries.getNames('nl', { select: 'official' });
+    
+    return Object.entries(countryObjTranslated)
+        .map(([code, translatedName]) => ({ 
+            code,
+            label: translatedName,           // Show translated name in dropdown
+            value: countryObjDutch[code]     // Store Dutch name in database
+        }))
         .sort((a, b) => a.label.localeCompare(b.label));
 };
 
@@ -164,8 +171,8 @@ export default function CreateDriverPage() {
         PermanentContract: yup.boolean().optional(),
         ContractDuration: yup.number().optional().min(1, t('drivers.create.validation.positiveNumber')),
         LastWorkingDay: yup.string().optional(),
-        ProbationPeriod: yup.string().required(t('drivers.create.fields.probationPeriod.required')),
-        NoticePeriod: yup.string().required(t('drivers.create.fields.noticePeriod.required')),
+        ProbationPeriod: yup.string().nullable().optional(),
+        NoticePeriod: yup.string().nullable().optional(),
         Function: yup.string().required(t('drivers.create.fields.function.required')).max(100, t('drivers.create.fields.function.maxLength')),
         WorkweekDuration: yup.number().required(t('drivers.create.fields.workweekDuration.required')).min(1, t('drivers.create.fields.workweekDuration.minHours')),
         WeeklySchedule: yup.string().required(t('drivers.create.fields.weeklySchedule.required')),
@@ -702,7 +709,7 @@ export default function CreateDriverPage() {
                                             value={
                                                 countryOptions.find(option => option.value === field.value) || null
                                             }
-                                            isOptionEqualToValue={(option, val) => option.value === val.value}
+                                            isOptionEqualToValue={(option, val) => option.code === val.code}
                                         />
                                     )}
                                 />
@@ -880,7 +887,7 @@ export default function CreateDriverPage() {
                                         <Autocomplete
                                             options={probationPeriodOptions}
                                             getOptionLabel={(option) => option.label}
-                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            onChange={(_, value) => field.onChange(value?.value || null)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -888,7 +895,6 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    required
                                                     error={!!errors.ProbationPeriod}
                                                     helperText={errors.ProbationPeriod?.message}
                                                 />
@@ -909,7 +915,7 @@ export default function CreateDriverPage() {
                                         <Autocomplete
                                             options={noticePeriodOptions}
                                             getOptionLabel={(option) => option.label}
-                                            onChange={(_, value) => field.onChange(value?.value || '')}
+                                            onChange={(_, value) => field.onChange(value?.value || null)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -917,7 +923,6 @@ export default function CreateDriverPage() {
                                                     variant="outlined"
                                                     margin="normal"
                                                     fullWidth
-                                                    required
                                                     error={!!errors.NoticePeriod}
                                                     helperText={errors.NoticePeriod?.message}
                                                 />

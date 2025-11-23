@@ -29,20 +29,20 @@ const assignCarToDriver = async (
     console.log('🔧 [API] endpoint:', `/users/${userId}/driver`);
     
     try {
-        const response = await api.put<ApiResponse<DriverCarInfo>>(`/users/${userId}/driver`, data);
+    const response = await api.put<ApiResponse<DriverCarInfo>>(`/users/${userId}/driver`, data);
         
         console.log('✅ [API] Response received:', response);
         console.log('✅ [API] Response status:', response.status);
         console.log('✅ [API] Response data:', response.data);
-        
-        if (!response.data.isSuccess) {
+    
+    if (!response.data.isSuccess) {
             console.error('❌ [API] Backend returned isSuccess=false');
             console.error('❌ [API] Errors:', response.data.errors);
-            throw new Error(response.data.errors?.[0] || 'Failed to assign car to driver');
-        }
-        
+        throw new Error(response.data.errors?.[0] || 'Failed to assign car to driver');
+    }
+    
         console.log('✅ [API] Assignment successful, returning data:', response.data.data);
-        return response.data.data;
+    return response.data.data;
     } catch (error: any) {
         console.error('❌ [API] Request failed with error:', error);
         console.error('❌ [API] Error message:', error.message);

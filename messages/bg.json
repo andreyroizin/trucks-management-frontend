@@ -1700,6 +1700,9 @@
         "bsn": {
           "label": "БСН"
         },
+        "iban": {
+          "label": "IBAN"
+        },
         "dateOfEmployment": {
           "label": "Дата на назначаване"
         },
@@ -1853,6 +1856,17 @@
   },
   "navigation": {
     "dashboard": "Табло",
+    "planning": {
+      "title": "Планиране",
+      "longTerm": "Дългосрочно",
+      "weekly": "Седмично",
+      "daily": "Дневно"
+    },
+    "workManagement": {
+      "title": "Управление на работата",
+      "myRides": "Моите пътувания",
+      "rideExecutions": "Изпълнения на пътувания"
+    },
     "workdays": {
       "title": "Работни дни",
       "overviewList": "Преглед на списъка",

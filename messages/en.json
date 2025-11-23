@@ -1851,6 +1851,17 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "planning": {
+      "title": "Planning",
+      "longTerm": "Long-Term",
+      "weekly": "Weekly",
+      "daily": "Daily"
+    },
+    "workManagement": {
+      "title": "Work Management",
+      "myRides": "My Rides",
+      "rideExecutions": "Ride Executions"
+    },
     "workdays": {
       "title": "Workdays",
       "overviewList": "Overview List",
