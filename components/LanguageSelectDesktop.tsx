@@ -6,6 +6,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { SUPPORTED_LOCALES } from '@/utils/constants/supportedLocales';
+import Cookies from 'js-cookie';
 
 const LanguageSelectDesktop = () => {
   const router = useRouter();
@@ -23,6 +24,9 @@ const LanguageSelectDesktop = () => {
   };
 
   const handleSelect = (locale: string) => {
+    // Set cookie to persist language preference
+    Cookies.set('NEXT_LOCALE', locale, { path: '/', expires: 365 });
+    
     // Get the current path segments
     const segments = pathname.split('/');
     

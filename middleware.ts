@@ -32,7 +32,7 @@ export function middleware(req: NextRequest) {
     const path = '/' + segments.join('/');       // "/partrides/123"
 
     if (!SUPPORTED_LOCALES.includes(locale as any)) {
-        const newUrl = new URL(`/${SUPPORTED_LOCALES[0]}${pathname}`, origin); // default 'en'
+        const newUrl = new URL(`/${SUPPORTED_LOCALES[0]}${pathname}`, req.url);
         return NextResponse.redirect(newUrl);
     }
 

@@ -6,5 +6,11 @@ export const routing = defineRouting({
     locales: SUPPORTED_LOCALES,
 
     // Used when no locale matches
-    defaultLocale: 'en'
+    defaultLocale: 'en',
+    
+    // Use cookie for locale detection
+    localeDetection: true,
+    
+    // Redirect to the locale from the cookie when visiting '/'
+    localePrefix: 'always'
 });
