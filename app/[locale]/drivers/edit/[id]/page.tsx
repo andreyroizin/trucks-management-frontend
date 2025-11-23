@@ -65,8 +65,8 @@ type FormInputs = {
     PermanentContract?: boolean;            // Optional - backend: permanentContract
     ContractDuration?: number;              // Optional - backend: contractDuration (in months)
     LastWorkingDay?: string;                // Optional - backend: lastWorkingDay (calculated from EmploymentStartDate + ContractDuration, but editable)
-    ProbationPeriod?: string;               // Optional - backend: probationPeriod
-    NoticePeriod?: string;                  // Optional - backend: noticePeriod
+    ProbationPeriod?: string | null;        // Optional - backend: probationPeriod
+    NoticePeriod?: string | null;           // Optional - backend: noticePeriod
     Function: string;                       // Required - backend: function
     WorkweekDuration: number;               // Required - backend: workweekDuration
     WorkweekDurationPercentage?: number;    // Calculated - backend: workweekDurationPercentage
