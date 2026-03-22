@@ -1,99 +1,37 @@
-name: Deploy Next.js to AWS Lightsail (Zero Downtime)
+name: Frontend Build Validation
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js for initial build
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 22  # Ensure compatibility with your Node.js version
+          node-version: 22
           cache: 'npm'
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Run the first build to check for errors
-      - name: Build Locally
+      - name: Build Next.js
         env:
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
         run: npm run build
 
-      # Step 5: Deploy to the server
-      - name: Deploy to Server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          # Set up SSH
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-          # Add the server to known_hosts
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-
-          # Create .env.local on server
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > /var/www/frontend/.env.local
-          EOF
-
-          # Deploy the .next directory
-          scp -r .next public package.json package-lock.json ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/frontend/
-
-          # Run commands on the server
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd /var/www/frontend
-            npm install --production
-            
-            # Zero-downtime reload (graceful restart)
-            pm2 reload trucks-frontend || pm2 start npm --name "trucks-frontend" -- start
-          EOF
-
-      # Step 6: Health Check
-      - name: Verify Deployment
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            # Wait for app to be ready
-            echo "⏳ Waiting for frontend to be ready..."
-            sleep 5
-            
-            # Health check with retries
-            for i in {1..10}; do
-              if curl -f -s http://localhost:3000 > /dev/null; then
-                echo "✅ Frontend is responding"
-                
-                # Verify PM2 status
-                if pm2 list | grep -q "trucks-frontend.*online"; then
-                  echo "✅ PM2 status: online"
-                  echo "✅ Deployment successful!"
-                  exit 0
-                fi
-              fi
-              echo "⏳ Waiting... attempt $i/10"
-              sleep 3
-            done
-            
-            echo "❌ Health check failed - frontend not responding"
-            exit 1
-          EOF
-
-      # Step 7: Deployment Summary
-      - name: Deployment Summary
+      - name: Build Successful
         if: success()
         run: |
-          echo "✅ Frontend deployment completed successfully"
-          echo "🔗 Website: https://vervoermanager.nl"
-          echo "📝 Commit: ${{ github.sha }}"
-          echo "👤 Deployed by: ${{ github.actor }}"
+          echo "✅ Build validation passed"
+          echo "📝 Commit: ${GITHUB_SHA:0:7}"
