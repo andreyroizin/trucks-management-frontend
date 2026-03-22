@@ -11,7 +11,7 @@ sudo chown -R ubuntu:ubuntu .
 
 # Pull latest changes from main
 echo "📦 Pulling latest code from GitHub..."
-git fetch origin
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github -o StrictHostKeyChecking=accept-new" git fetch origin
 
 # Stash any local changes
 if ! git diff-index --quiet HEAD -- 2>/dev/null; then
@@ -20,7 +20,7 @@ if ! git diff-index --quiet HEAD -- 2>/dev/null; then
 fi
 
 git checkout main
-git pull origin main
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github -o StrictHostKeyChecking=accept-new" git pull origin main
 
 # Install dependencies
 echo "📥 Installing dependencies..."

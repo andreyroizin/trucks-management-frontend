@@ -17,7 +17,7 @@ trap "rm -f $LOCK_FILE" EXIT
 cd "$REPO_DIR"
 
 # Fetch latest from GitHub
-git fetch origin main --quiet
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_github -o StrictHostKeyChecking=accept-new" git fetch origin main --quiet
 
 # Check if we're behind
 LOCAL=$(git rev-parse main)
