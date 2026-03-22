@@ -1,9 +1,9 @@
-name: Deploy Next.js to AWS Lightsail
+name: Deploy Next.js to AWS Lightsail (Zero Downtime)
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on pushes to the main branch
+      - main
 
 jobs:
   deploy:
@@ -23,7 +23,7 @@ jobs:
 
       # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # Step 4: Run the first build to check for errors
       - name: Build Locally
@@ -56,5 +56,44 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             cd /var/www/frontend
             npm install --production
-            pm2 restart trucks-frontend || pm2 start npm --name "trucks-frontend" -- start
+            
+            # Zero-downtime reload (graceful restart)
+            pm2 reload trucks-frontend || pm2 start npm --name "trucks-frontend" -- start
           EOF
+
+      # Step 6: Health Check
+      - name: Verify Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            # Wait for app to be ready
+            echo "⏳ Waiting for frontend to be ready..."
+            sleep 5
+            
+            # Health check with retries
+            for i in {1..10}; do
+              if curl -f -s http://localhost:3000 > /dev/null; then
+                echo "✅ Frontend is responding"
+                
+                # Verify PM2 status
+                if pm2 list | grep -q "trucks-frontend.*online"; then
+                  echo "✅ PM2 status: online"
+                  echo "✅ Deployment successful!"
+                  exit 0
+                fi
+              fi
+              echo "⏳ Waiting... attempt $i/10"
+              sleep 3
+            done
+            
+            echo "❌ Health check failed - frontend not responding"
+            exit 1
+          EOF
+
+      # Step 7: Deployment Summary
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "✅ Frontend deployment completed successfully"
+          echo "🔗 Website: https://vervoermanager.nl"
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "👤 Deployed by: ${{ github.actor }}"
