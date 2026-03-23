@@ -20,7 +20,7 @@ Internet → vervoermanager.nl / api.vervoermanager.nl
 
 ## Backend Deployment
 
-- **Repo**: https://github.com/Misha0501/trucks-management-backend
+- **Repo**: https://github.com/andreyroizin/trucks-management-backend
 - **Deploy script**: `deploy-webhook.sh` (installed as `/usr/local/bin/deploy-backend`)
 - **Auto-deploy**: Cron every 2 min (`auto-deploy-checker.sh`)
 - **Log**: `/var/log/auto-deploy.log`
