@@ -1,61 +1,49 @@
-# Truck Management Frontend
+# VervoerManager Frontend
 
-Next.js frontend application for the truck management system.
+Next.js frontend for the VervoerManager truck/transport management system.
 
-## Quick Deploy
+**Live**: https://vervoermanager.nl
 
-When you merge to `main`, the server automatically deploys within 2 minutes.
-
-To deploy immediately:
+## Quick Start
 
 ```bash
-ssh ubuntu@3.73.183.137 "sudo /usr/local/bin/deploy-frontend"
-```
-
-## Local Development
-
-```bash
-# Install dependencies
 npm install
-
-# Run dev server
 npm run dev
-
-# Build
-npm run build
-
-# Start production server
-npm start
 ```
 
-## Environment Variables
+Set `NEXT_PUBLIC_API_BASE_URL` in `.env.local` (e.g. `https://api.vervoermanager.nl` or local backend URL).
 
-Create a `.env.local` file:
+## Documentation
 
-```env
-NEXT_PUBLIC_API_BASE_URL=https://api.vervoermanager.nl
-```
+**Start here:** [docs/INDEX.md](docs/INDEX.md) – Master map of all documentation.
 
-## Deployment
+| Doc | Description |
+|-----|-------------|
+| [CONTEXT.md](CONTEXT.md) | Entry point for AI tools & teammates |
+| [docs/CONTRIBUTING_DOCS.md](docs/CONTRIBUTING_DOCS.md) | How to extend docs when adding features |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture |
+| [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md) | Domain & Dutch terms |
+| [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Next.js structure, patterns |
+| [docs/api/CONTRACT.md](docs/api/CONTRACT.md) | API response envelope, DTOs |
+| [docs/api/ENDPOINTS.md](docs/api/ENDPOINTS.md) | All API endpoints |
+| [docs/auth/FLOW.md](docs/auth/FLOW.md) | JWT, login, roles |
+| [docs/data/SCHEMA.md](docs/data/SCHEMA.md) | Database entities |
+| [docs/setup/DEVELOPMENT.md](docs/setup/DEVELOPMENT.md) | Local dev setup |
+| [docs/setup/DEPLOYMENT.md](docs/setup/DEPLOYMENT.md) | AWS Lightsail deployment |
+| [docs/setup/ENV_REFERENCE.md](docs/setup/ENV_REFERENCE.md) | Environment variables |
+| [docs/features/](docs/features/) | Feature docs (DRIVERS, RIDES, PARTRIDES, etc.) |
+| [docs/requirements/](docs/requirements/) | Phase 1 index, glossary |
 
-The server runs a cron job that checks for new commits every 2 minutes and automatically deploys them with zero downtime using PM2.
+## Deploy
 
-**Manual deployment:**
+Merge to `main` → auto-deploy within ~2 minutes.
+
+**Manual deploy:**
 ```bash
 ssh ubuntu@3.73.183.137 "sudo /usr/local/bin/deploy-frontend"
 ```
 
-**View deployment logs:**
+**Logs:**
 ```bash
 ssh ubuntu@3.73.183.137 "tail -f /var/log/auto-deploy-frontend.log"
-```
-
-**Check PM2 status:**
-```bash
-ssh ubuntu@3.73.183.137 "pm2 list"
-```
-
-**Check website:**
-```bash
-curl https://vervoermanager.nl
 ```
