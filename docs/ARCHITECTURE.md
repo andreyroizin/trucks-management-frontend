@@ -34,7 +34,7 @@
 | Repo | Purpose | URL |
 |------|---------|-----|
 | trucks-management-frontend | Next.js web app | https://github.com/andreyroizin/trucks-management-frontend |
-| trucks-management-backend | .NET API + DB | https://github.com/Misha0501/trucks-management-backend |
+| trucks-management-backend | .NET API + DB | https://github.com/andreyroizin/trucks-management-backend |
 
 ## Live URLs
 - **Website**: https://vervoermanager.nl

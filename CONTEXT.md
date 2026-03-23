@@ -30,5 +30,5 @@
 
 ## Related Repos
 
-- **Backend**: https://github.com/Misha0501/trucks-management-backend
+- **Backend**: https://github.com/andreyroizin/trucks-management-backend
 - **API**: https://api.vervoermanager.nl
