@@ -1,0 +1,35 @@
+# VervoerManager Frontend – Cursor Rules
+
+## Onboarding
+
+When starting work on this project:
+
+1. **Read `CONTEXT.md`** – Project identity, quick reference.
+2. **Read `docs/INDEX.md`** – Full documentation map.
+3. **For feature work**: Read the relevant `docs/features/<FEATURE>.md` (e.g. `docs/features/DRIVERS.md`).
+4. **For API work**: Read `docs/api/CONTRACT.md` and `docs/api/ENDPOINTS.md`.
+5. **For auth work**: Read `docs/auth/FLOW.md`.
+6. **For schema/data**: Read `docs/data/SCHEMA.md` and `docs/data/ENTITIES.md`.
+
+## When Adding or Changing Features
+
+After implementing a feature or significant behavior change:
+
+1. **Update or create** `docs/features/<FEATURE>.md` using the template in `docs/CONTRIBUTING_DOCS.md`.
+2. **Update** `docs/INDEX.md` if you added a new feature doc.
+3. **Update** `docs/api/ENDPOINTS.md` if you added new API endpoints.
+4. **Update** `docs/data/SCHEMA.md` or `docs/data/ENTITIES.md` if you changed entities.
+5. **Update** `docs/requirements/PHASE1_INDEX.md` if the work maps to a Phase 1 requirement.
+6. **Commit** documentation changes together with code changes.
+
+## Documentation as Source of Truth
+
+This documentation is the source of truth for both the team and AI. Keep it accurate. When in doubt, prefer updating the docs over leaving them stale.
+
+## Key Conventions
+
+- Routes: `app/[locale]/` – all under locale.
+- Hooks: `hooks/use*.ts` – one per entity or flow.
+- API: `utils/api.ts` – Axios with Bearer token and Accept-Language.
+- Forms: react-hook-form + yup.
+- UI: MUI v6, Tailwind.

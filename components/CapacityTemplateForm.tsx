@@ -289,7 +289,7 @@ export default function CapacityTemplateForm({ open, onClose, template }: Props)
                                             getOptionLabel={(option) => option.name}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             loading={isLoadingCompanies}
-                                            disabled={isEditing || !isGlobalAdmin} // Cannot change company when editing, or if not global admin
+                                            disabled={isEditing} // Cannot change company when editing
                                             onChange={(_, newValue) => {
                                                 field.onChange(newValue?.id || '');
                                             }}
