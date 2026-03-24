@@ -70,6 +70,27 @@ ssh ubuntu@3.73.183.137 "pm2 list"
 ssh ubuntu@3.73.183.137 "pm2 logs trucks-frontend --lines 30"
 ```
 
+## Switching Backend to New Repository
+
+If you need to point the server at a different backend repo:
+
+```bash
+# Option 1: SSH and run manually
+ssh ubuntu@3.73.183.137
+cd /var/www/backend
+git remote set-url origin https://github.com/andreyroizin/trucks-management-backend.git
+git fetch origin
+git reset --hard origin/main
+sudo /usr/local/bin/deploy-backend
+
+# Option 2: Use the script (from frontend repo)
+scp scripts/switch-backend-remote-on-server.sh ubuntu@3.73.183.137:/tmp/
+ssh ubuntu@3.73.183.137 "sudo bash /tmp/switch-backend-remote-on-server.sh"
+ssh ubuntu@3.73.183.137 "sudo /usr/local/bin/deploy-backend"
+```
+
+The deploy scripts (`deploy-webhook.sh`, `auto-deploy-checker.sh`) use `git pull origin main`—they pull from whatever remote is configured, so switching the remote is sufficient.
+
 ## Environment (Production)
 
 - **Backend**: `.env` in `/var/www/backend` – DB, SMTP, Telegram
