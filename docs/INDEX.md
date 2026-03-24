@@ -52,6 +52,7 @@
 |-----|-------------|
 | [setup/DEVELOPMENT.md](setup/DEVELOPMENT.md) | Local dev setup |
 | [setup/DEPLOYMENT.md](setup/DEPLOYMENT.md) | AWS Lightsail deployment |
+| [setup/SSH_SERVER_ACCESS.md](setup/SSH_SERVER_ACCESS.md) | SSH to production (Lightsail key, AWS CLI) |
 | [setup/ENV_REFERENCE.md](setup/ENV_REFERENCE.md) | Environment variables |
 
 ---
