@@ -30,6 +30,8 @@ import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 import ContractTypeSection from '@/components/ContractTypeSection';
 import { ContractTypeValue } from '@/constants/contractTypes';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import countries from 'i18n-iso-countries';
 import en from 'i18n-iso-countries/langs/en.json';
 import nl from 'i18n-iso-countries/langs/nl.json';
@@ -39,8 +41,6 @@ import bg from 'i18n-iso-countries/langs/bg.json';
 countries.registerLocale(en);
 countries.registerLocale(nl);
 countries.registerLocale(bg);
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -240,10 +240,12 @@ export default function CreateDriverPage() {
         setError,
         formState: { errors },
     } = useForm<FormInputs>({
-        resolver: yupResolver(schema),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: yupResolver(schema) as any,
         defaultValues: {
             CompanyId: '',
             UsedByCompanyIds: [],
+            ContractType: 'CAO' as ContractTypeValue,
             Email: '',
             Password: '',
             FirstName: '',
@@ -1125,8 +1127,9 @@ export default function CreateDriverPage() {
                         </Grid>
                     </Box>
 
-                    {/* Compensation Block — only for CAO */}
+                    {/* Compensation & Commute Blocks — only for CAO */}
                     {contractType === 'CAO' && (
+                    <>
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                             {t('drivers.create.sections.compensation')}
@@ -1281,7 +1284,7 @@ export default function CreateDriverPage() {
                             </Grid>
                         </Grid>
                     </Box>
-                    )} {/* end contractType === 'CAO' */}
+                    </> )} {/* end contractType === 'CAO' */}
 
                     {/* Vacation & Allowances Block */}
                     <Box mb={4}>
