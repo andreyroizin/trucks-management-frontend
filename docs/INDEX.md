@@ -37,6 +37,7 @@
 | Doc | Description |
 |-----|-------------|
 | [features/DRIVERS.md](features/DRIVERS.md) | Driver management, contracts, onboarding |
+| [features/CONTRACT_TYPES.md](features/CONTRACT_TYPES.md) | R24 – CAO / ZZP / Inleen / Brief Loonschaal contract types |
 | [features/RIDES.md](features/RIDES.md) | Ride planning, assignment, execution |
 | [features/PARTRIDES.md](features/PARTRIDES.md) | Part rides, approvals, disputes |
 | [features/CLIENTS.md](features/CLIENTS.md) | Client CRUD, rates, surcharges |

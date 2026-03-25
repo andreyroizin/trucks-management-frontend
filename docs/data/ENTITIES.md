@@ -57,3 +57,15 @@ Extend this file when adding or significantly changing entities. See [CONTRIBUTI
 - **Table**: `ContactPersons`
 - **Key fields**: Id, AspNetUserId, IsDeleted
 - **Notes**: Links to ApplicationUser. Linked to Companies/Clients via ContactPersonClientCompany.
+
+---
+
+## EmployeeContract
+
+- **Table**: `EmployeeContracts`
+- **Key fields**: Id, DriverId, CompanyId, ContractType, Status, ReleaseVersion, DateOfEmployment, LastWorkingDay, PayScale, PayScaleStep, WorkweekDuration, HourlyWage100Percent, Atv
+- **ContractType enum**: `CAO = 0`, `ZZP = 1`, `Inleen = 2`, `BriefLoonschaal = 3`
+- **ZZP-specific fields**: ZzpBtwNumber, ZzpKvkNumber, ZzpHourlyRateExclBtw, ZzpBtwPercentage, ZzpMediationFeePerWeek, ZzpContractNumber, ZzpWorkDescription, ZzpLocation
+- **Inleen-specific fields**: InleenLendingCompanyId (FK → Company), InleenBorrowingCompanyId (FK → Company), InleenStartDate, InleenEndDate, InleenHourlyRate, InleenWorkDescription, InleenLocation
+- **BriefLoonschaal-specific fields**: BriefMonthlySalary, BriefGrade, BriefExpectedMonthlyHours
+- **Notes**: One per driver. Status: Pending / Active / Expired. Schema columns for ZZP/Inleen/Brief were added via direct SQL `ALTER TABLE` (no separate EF migration file). `ContractType` is stored as integer in DB; serialized as string on all API responses via `.ToString()`. All DateTime fields are `timestamp with time zone`; code applies `DateTime.SpecifyKind(…, DateTimeKind.Utc)` before saving.

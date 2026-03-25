@@ -76,9 +76,9 @@ All endpoints return JSON wrapped in `ApiResponse<T>` unless noted. See [api/CON
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/drivers` | List drivers (paginated) |
-| POST | `/drivers/create-with-contract` | Create driver with contract |
-| GET | `/drivers/{driverId}/with-contract` | Driver with contract detail |
-| PUT | `/drivers/{driverId}/with-contract` | Update driver with contract |
+| POST | `/drivers/create-with-contract` | Create driver with contract (incl. ContractType + ZZP/Inleen/Brief fields) |
+| GET | `/drivers/{driverId}/with-contract` | Driver with contract detail (returns ContractType string + type-specific fields) |
+| PUT | `/drivers/{driverId}/with-contract` | Update driver with contract (incl. ContractType + ZZP/Inleen/Brief fields) |
 | DELETE | `/drivers/{driverId}/with-contract` | Delete driver |
 | POST | `/drivers/{driverId}/contracts/regenerate` | Regenerate contract |
 | GET | `/drivers/{driverId}/contracts` | List contract versions |

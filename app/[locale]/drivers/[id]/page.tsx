@@ -48,6 +48,7 @@ import ContractVersionDetailsModal from '@/components/ContractVersionDetailsModa
 import { useAuth } from '@/hooks/useAuth';
 import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 import { useSnack } from '@/providers/SnackProvider';
+import ContractTypeBadge from '@/components/ContractTypeBadge';
 import dayjs from 'dayjs';
 
 export default function DriverDetailPage() {
@@ -271,9 +272,14 @@ export default function DriverDetailPage() {
                         gap: 2,
                     }}
                 >
-                    <Typography variant="h4" fontWeight={500}>
-                        {driver.firstName} {driver.lastName}
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+                        <Typography variant="h4" fontWeight={500}>
+                            {driver.firstName} {driver.lastName}
+                        </Typography>
+                        {driver.contractType && (
+                            <ContractTypeBadge contractType={driver.contractType} size="medium" />
+                        )}
+                    </Box>
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {/* Edit Button */}
@@ -450,6 +456,108 @@ export default function DriverDetailPage() {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                {/* ZZP-specific contract info */}
+                {driver.contractType === 'ZZP' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            {t('drivers.detail.sections.zzpDetails')}
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.zzpBtwNumber')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpBtwNumber || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpKvkNumber')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpKvkNumber || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpHourlyRate')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpHourlyRateExclBtw ? `€ ${driver.zzpHourlyRateExclBtw.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpBtwPercentage')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpBtwPercentage != null ? `${driver.zzpBtwPercentage}%` : '21%'}</TableCell>
+                                </TableRow>
+                                {driver.zzpMediationFeePerWeek != null && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpMediationFee')}</TableCell>
+                                        <TableCell sx={{border: 'none'}}>€ {driver.zzpMediationFeePerWeek.toFixed(2)}</TableCell>
+                                    </TableRow>
+                                )}
+                                {driver.zzpContractNumber && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpContractNumber')}</TableCell>
+                                        <TableCell sx={{border: 'none'}}>{driver.zzpContractNumber}</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
+
+                {/* Inleen-specific contract info */}
+                {driver.contractType === 'Inleen' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            {t('drivers.detail.sections.inleenDetails')}
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.inleenLendingCompany')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenLendingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenBorrowingCompany')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenBorrowingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenHourlyRate')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenHourlyRate ? `€ ${driver.inleenHourlyRate.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenPeriod')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {formatDate(driver.inleenStartDate)} – {formatDate(driver.inleenEndDate) || t('drivers.detail.fields.inleenIndefinite')}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
+
+                {/* BriefLoonschaal-specific contract info */}
+                {driver.contractType === 'BriefLoonschaal' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            {t('drivers.detail.sections.briefDetails')}
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.briefMonthlySalary')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.briefMonthlySalary ? `€ ${driver.briefMonthlySalary.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                {driver.briefGrade && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.briefGrade')}</TableCell>
+                                        <TableCell sx={{border: 'none'}}>{driver.briefGrade}</TableCell>
+                                    </TableRow>
+                                )}
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.briefExpectedHours')}</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.briefExpectedMonthlyHours ?? 173.33}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
 
                 <Divider sx={{ my: 3 }} />
 

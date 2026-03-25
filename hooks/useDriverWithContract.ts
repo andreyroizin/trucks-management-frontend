@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 import { ApplicationFile } from '@/types/file';
+import { ContractTypeValue } from '@/constants/contractTypes';
 
 export type CompanySimple = {
     id: string;
@@ -44,9 +45,10 @@ export type DriverWithContract = {
     signedAt?: string;
     accessCode?: string;
     releaseVersion?: string;
-    lastWorkingDay?: string; // This is the contract end date
+    lastWorkingDay?: string;
+    contractType?: ContractTypeValue;
     
-    // Compensation
+    // Compensation (CAO)
     payScale?: string;
     payScaleStep?: string;
     compensationPerMonthExclBtw?: number;
@@ -86,6 +88,32 @@ export type DriverWithContract = {
     
     // Files
     files?: ApplicationFile[];
+
+    // ZZP contract fields
+    zzpBtwNumber?: string;
+    zzpKvkNumber?: string;
+    zzpHourlyRateExclBtw?: number;
+    zzpBtwPercentage?: number;
+    zzpMediationFeePerWeek?: number;
+    zzpContractNumber?: string;
+    zzpWorkDescription?: string;
+    zzpLocation?: string;
+
+    // Inleen contract fields
+    inleenLendingCompanyId?: string;
+    inleenLendingCompanyName?: string;
+    inleenBorrowingCompanyId?: string;
+    inleenBorrowingCompanyName?: string;
+    inleenStartDate?: string;
+    inleenEndDate?: string;
+    inleenHourlyRate?: number;
+    inleenWorkDescription?: string;
+    inleenLocation?: string;
+
+    // BriefLoonschaal contract fields
+    briefMonthlySalary?: number;
+    briefGrade?: string;
+    briefExpectedMonthlyHours?: number;
 };
 
 // API call function

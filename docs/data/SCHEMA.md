@@ -55,7 +55,7 @@ Car ── CompanyId ──► Company
 | **Ride** | Id, CompanyId, ClientId, PlannedDate, TruckId | Planned trip |
 | **PartRide** | Id, RideId, DriverId, CarId, ClientId, Date | Status: PendingAdmin, Dispute, Accepted, Rejected |
 | **ContactPerson** | Id, AspNetUserId | Links to ApplicationUser |
-| **EmployeeContract** | Id, DriverId, CompanyId | Contract details, signing |
+| **EmployeeContract** | Id, DriverId, CompanyId, ContractType | Contract details, signing. ContractType: CAO/ZZP/Inleen/BriefLoonschaal. Type-specific fields: Zzp*, Inleen*, Brief* columns. |
 | **Charter** | Id, ... | Long-term vehicle charter |
 | **Rate** | Id, ClientId | Pricing |
 | **Surcharge** | Id, ClientId | Surcharges |
