@@ -1603,7 +1603,10 @@
         "carAssignment": "Car Assignment",
         "contractStatus": "Contract Status",
         "documents": "Driver Documents",
-        "remark": "Remark"
+        "remark": "Remark",
+        "zzpDetails": "ZZP Details",
+        "inleenDetails": "Inleen Details",
+        "briefDetails": "Pay Scale Details"
       },
       "fields": {
         "company": "Company",
@@ -1634,7 +1637,21 @@
         "noCarAssigned": "No car assigned",
         "status": "Status",
         "signedDate": "Signed Date",
-        "accessCode": "Access Code"
+        "accessCode": "Access Code",
+        "zzpBtwNumber": "VAT number",
+        "zzpKvkNumber": "CoC number",
+        "zzpHourlyRate": "Hourly rate excl. VAT",
+        "zzpBtwPercentage": "VAT %",
+        "zzpMediationFee": "Mediation fee / week",
+        "zzpContractNumber": "Contract number",
+        "inleenLendingCompany": "Lending company",
+        "inleenBorrowingCompany": "Borrowing company",
+        "inleenHourlyRate": "Inleen rate / hour",
+        "inleenPeriod": "Inleen period",
+        "inleenIndefinite": "open-ended",
+        "briefMonthlySalary": "Gross monthly salary",
+        "briefGrade": "Pay scale",
+        "briefExpectedHours": "Expected hours / month"
       },
       "permanent": "Permanent",
       "yes": "Yes",

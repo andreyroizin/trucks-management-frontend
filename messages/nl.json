@@ -1608,7 +1608,10 @@
         "carAssignment": "Auto toewijzing",
         "contractStatus": "Contractstatus",
         "documents": "Chauffeurdocumenten",
-        "remark": "Opmerking"
+        "remark": "Opmerking",
+        "zzpDetails": "ZZP Gegevens",
+        "inleenDetails": "Inleen Gegevens",
+        "briefDetails": "Loonschaal Gegevens"
       },
       "fields": {
         "company": "Bedrijf",
@@ -1639,7 +1642,21 @@
         "noCarAssigned": "Geen auto toegewezen",
         "status": "Status",
         "signedDate": "Ondertekende datum",
-        "accessCode": "Toegangscode"
+        "accessCode": "Toegangscode",
+        "zzpBtwNumber": "BTW-nummer",
+        "zzpKvkNumber": "KvK-nummer",
+        "zzpHourlyRate": "Uurtarief excl. BTW",
+        "zzpBtwPercentage": "BTW %",
+        "zzpMediationFee": "Bemiddelingsvergoeding/week",
+        "zzpContractNumber": "Contractnummer",
+        "inleenLendingCompany": "Uitlener",
+        "inleenBorrowingCompany": "Inlener",
+        "inleenHourlyRate": "Inleentarief/uur",
+        "inleenPeriod": "Inleenperiode",
+        "inleenIndefinite": "onbepaald",
+        "briefMonthlySalary": "Bruto maandsalaris",
+        "briefGrade": "Loonschaal",
+        "briefExpectedHours": "Verwachte uren/maand"
       },
       "noRemark": "Geen opmerking opgegeven",
       "noDocuments": "Geen documenten geüpload.",

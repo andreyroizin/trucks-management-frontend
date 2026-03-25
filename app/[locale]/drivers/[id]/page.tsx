@@ -462,35 +462,35 @@ export default function DriverDetailPage() {
                     <>
                         <Divider sx={{ my: 3 }} />
                         <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                            ZZP Gegevens
+                            {t('drivers.detail.sections.zzpDetails')}
                         </Typography>
                         <Table size="small">
                             <TableBody>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>BTW-nummer</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.zzpBtwNumber')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.zzpBtwNumber || t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>KvK-nummer</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpKvkNumber')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.zzpKvkNumber || t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>Uurtarief excl. BTW</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpHourlyRate')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.zzpHourlyRateExclBtw ? `€ ${driver.zzpHourlyRateExclBtw.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>BTW %</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpBtwPercentage')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.zzpBtwPercentage != null ? `${driver.zzpBtwPercentage}%` : '21%'}</TableCell>
                                 </TableRow>
                                 {driver.zzpMediationFeePerWeek != null && (
                                     <TableRow>
-                                        <TableCell sx={{pl: 0, border: 'none'}}>Bemiddelingsvergoeding/week</TableCell>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpMediationFee')}</TableCell>
                                         <TableCell sx={{border: 'none'}}>€ {driver.zzpMediationFeePerWeek.toFixed(2)}</TableCell>
                                     </TableRow>
                                 )}
                                 {driver.zzpContractNumber && (
                                     <TableRow>
-                                        <TableCell sx={{pl: 0, border: 'none'}}>Contractnummer</TableCell>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.zzpContractNumber')}</TableCell>
                                         <TableCell sx={{border: 'none'}}>{driver.zzpContractNumber}</TableCell>
                                     </TableRow>
                                 )}
@@ -504,26 +504,26 @@ export default function DriverDetailPage() {
                     <>
                         <Divider sx={{ my: 3 }} />
                         <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                            Inleen Gegevens
+                            {t('drivers.detail.sections.inleenDetails')}
                         </Typography>
                         <Table size="small">
                             <TableBody>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>Uitlener</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.inleenLendingCompany')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.inleenLendingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>Inlener</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenBorrowingCompany')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.inleenBorrowingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>Inleentarief/uur</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenHourlyRate')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.inleenHourlyRate ? `€ ${driver.inleenHourlyRate.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>Inleenperiode</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.inleenPeriod')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        {formatDate(driver.inleenStartDate)} – {formatDate(driver.inleenEndDate) || 'onbepaald'}
+                                        {formatDate(driver.inleenStartDate)} – {formatDate(driver.inleenEndDate) || t('drivers.detail.fields.inleenIndefinite')}
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
@@ -536,22 +536,22 @@ export default function DriverDetailPage() {
                     <>
                         <Divider sx={{ my: 3 }} />
                         <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
-                            Brief Loonschaal Gegevens
+                            {t('drivers.detail.sections.briefDetails')}
                         </Typography>
                         <Table size="small">
                             <TableBody>
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>Bruto maandsalaris</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>{t('drivers.detail.fields.briefMonthlySalary')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.briefMonthlySalary ? `€ ${driver.briefMonthlySalary.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
                                 </TableRow>
                                 {driver.briefGrade && (
                                     <TableRow>
-                                        <TableCell sx={{pl: 0, border: 'none'}}>Loonschaal</TableCell>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.briefGrade')}</TableCell>
                                         <TableCell sx={{border: 'none'}}>{driver.briefGrade}</TableCell>
                                     </TableRow>
                                 )}
                                 <TableRow>
-                                    <TableCell sx={{pl: 0, border: 'none'}}>Verwachte uren/maand</TableCell>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>{t('drivers.detail.fields.briefExpectedHours')}</TableCell>
                                     <TableCell sx={{border: 'none'}}>{driver.briefExpectedMonthlyHours ?? 173.33}</TableCell>
                                 </TableRow>
                             </TableBody>

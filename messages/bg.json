@@ -1608,7 +1608,10 @@
         "carAssignment": "Назначаване на автомобил",
         "contractStatus": "Статус на договора",
         "documents": "Документи на шофьора",
-        "remark": "Забележка"
+        "remark": "Забележка",
+        "zzpDetails": "ZZP Данни",
+        "inleenDetails": "Inleen Данни",
+        "briefDetails": "Данни за тарифна скала"
       },
       "fields": {
         "company": "Компания",
@@ -1639,7 +1642,21 @@
         "noCarAssigned": "Няма назначен автомобил",
         "status": "Статус",
         "signedDate": "Дата на подписване",
-        "accessCode": "Код за достъп"
+        "accessCode": "Код за достъп",
+        "zzpBtwNumber": "ДДС номер",
+        "zzpKvkNumber": "КвК номер",
+        "zzpHourlyRate": "Часова ставка без ДДС",
+        "zzpBtwPercentage": "ДДС %",
+        "zzpMediationFee": "Посредническа такса/седмица",
+        "zzpContractNumber": "Номер на договор",
+        "inleenLendingCompany": "Отдаваща фирма",
+        "inleenBorrowingCompany": "Наемаща фирма",
+        "inleenHourlyRate": "Тарифа Inleen/час",
+        "inleenPeriod": "Inleen период",
+        "inleenIndefinite": "без краен срок",
+        "briefMonthlySalary": "Брутна месечна заплата",
+        "briefGrade": "Тарифна скала",
+        "briefExpectedHours": "Очаквани часове/месец"
       },
       "noRemark": "Няма предоставена забележка",
       "noDocuments": "Няма качени документи.",
