@@ -1520,6 +1520,54 @@
         "positiveNumber": "Трябва да бъде положително число",
         "passwordSpecialChar": "Паролата трябва да съдържа поне един специален символ."
       },
+      "contractType": {
+        "label": "Вид договор",
+        "options": {
+          "CAO":             { "label": "CAO TLN",          "description": "Колективен трудов договор — стандартна тарифна скала" },
+          "ZZP":             { "label": "ZZP",              "description": "Самостоятелно заетo лице / фрийлансър" },
+          "Inleen":          { "label": "Inleen",           "description": "Командировка — шофьор нает от друга компания" },
+          "BriefLoonschaal": { "label": "Brief Loonschaal", "description": "Фиксирана месечна заплата по писмо за заетост (не по CAO таблица)" }
+        },
+        "zzp": {
+          "sectionTitle": "ZZP Данни",
+          "btwNumber":           "ДДС номер *",
+          "kvkNumber":           "КвК номер *",
+          "hourlyRateExclBtw":   "Часова ставка без ДДС (€) *",
+          "btwPercentage":       "ДДС % (по подразбиране 21)",
+          "mediationFee":        "Посредническа такса/седмица (€)",
+          "contractNumber":      "Номер на договор",
+          "location":            "Местоположение",
+          "workDescription":     "Описание на работата",
+          "btwPlaceholder":      "NL123456789B01",
+          "kvkPlaceholder":      "12345678",
+          "contractNrPlaceholder": "20260201-01",
+          "locationPlaceholder": "Нидерландия",
+          "workDescPlaceholder": "Транспорт на стоки по шосе"
+        },
+        "inleen": {
+          "sectionTitle":    "Inleen Данни",
+          "lendingCompany":  "Фирма отдаваща (ID) *",
+          "lendingHelper":   "Компания, която предоставя шофьора",
+          "borrowingCompany":"Фирма наемаща (ID)",
+          "borrowingHelper": "Компания, която наема шофьора (по избор)",
+          "hourlyRate":      "Тарифа Inleen/час (€) *",
+          "startDate":       "Начална дата",
+          "endDate":         "Крайна дата",
+          "workDescription": "Описание на работата",
+          "location":        "Местоположение",
+          "lendingPlaceholder":   "UUID на отдаващата фирма",
+          "borrowingPlaceholder": "UUID на наемащата фирма"
+        },
+        "brief": {
+          "sectionTitle":     "Данни за тарифна скала",
+          "monthlySalary":    "Брутна месечна заплата (€) *",
+          "salaryHelper":     "Фиксирана заплата по писмо за заетост",
+          "grade":            "Тарифна скала (по избор)",
+          "gradePlaceholder": "напр. Скала 5",
+          "expectedHours":    "Очаквани часове/месец",
+          "hoursHelper":      "По подразбиране: 173,33 (40ч/седмица)"
+        }
+      },
       "periodOptions": {
         "1": "1 месец",
         "2": "2 месеца",

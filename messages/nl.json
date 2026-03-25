@@ -1520,6 +1520,54 @@
         "positiveNumber": "Moet een positief getal zijn",
         "passwordSpecialChar": "Wachtwoord moet minstens één speciaal teken bevatten."
       },
+      "contractType": {
+        "label": "Contracttype",
+        "options": {
+          "CAO":             { "label": "CAO TLN",          "description": "Collectieve arbeidsovereenkomst — standaard loonschaal" },
+          "ZZP":             { "label": "ZZP",              "description": "Zelfstandige zonder personeel — freelancer" },
+          "Inleen":          { "label": "Inleen",           "description": "Detachering — chauffeur ingeleend van een ander bedrijf" },
+          "BriefLoonschaal": { "label": "Brief Loonschaal", "description": "Vast maandsalaris conform arbeidsbrief (niet CAO-tabel)" }
+        },
+        "zzp": {
+          "sectionTitle": "ZZP Gegevens",
+          "btwNumber":           "BTW-nummer *",
+          "kvkNumber":           "KvK-nummer *",
+          "hourlyRateExclBtw":   "Uurtarief excl. BTW (€) *",
+          "btwPercentage":       "BTW % (standaard 21)",
+          "mediationFee":        "Bemiddelingsvergoeding/week (€)",
+          "contractNumber":      "Contractnummer",
+          "location":            "Locatie",
+          "workDescription":     "Omschrijving werkzaamheden",
+          "btwPlaceholder":      "NL123456789B01",
+          "kvkPlaceholder":      "12345678",
+          "contractNrPlaceholder": "20260201-01",
+          "locationPlaceholder": "Nederland",
+          "workDescPlaceholder": "Vervoer van goederen over de weg"
+        },
+        "inleen": {
+          "sectionTitle":    "Inleen Gegevens",
+          "lendingCompany":  "Uitlener (bedrijf-ID) *",
+          "lendingHelper":   "Bedrijf dat de chauffeur uitleent",
+          "borrowingCompany":"Inlener (bedrijf-ID)",
+          "borrowingHelper": "Bedrijf dat de chauffeur inleent (optioneel)",
+          "hourlyRate":      "Inleentarief/uur (€) *",
+          "startDate":       "Inleen startdatum",
+          "endDate":         "Inleen einddatum",
+          "workDescription": "Omschrijving werkzaamheden",
+          "location":        "Locatie",
+          "lendingPlaceholder":   "UUID van uitleenbedrijf",
+          "borrowingPlaceholder": "UUID van inlenend bedrijf"
+        },
+        "brief": {
+          "sectionTitle":     "Loonschaal Gegevens",
+          "monthlySalary":    "Bruto maandsalaris (€) *",
+          "salaryHelper":     "Vast maandsalaris conform arbeidsbrief",
+          "grade":            "Loonschaal (optioneel)",
+          "gradePlaceholder": "Bijv. Schaal 5",
+          "expectedHours":    "Verwachte uren/maand",
+          "hoursHelper":      "Standaard: 173,33 (40u/week)"
+        }
+      },
       "periodOptions": {
         "1": "1 maand",
         "2": "2 maanden",

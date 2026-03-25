@@ -1515,6 +1515,54 @@
         "positiveNumber": "Must be a positive number",
         "passwordSpecialChar": "Password must include at least one special character."
       },
+      "contractType": {
+        "label": "Contract Type",
+        "options": {
+          "CAO":             { "label": "CAO TLN",          "description": "Collective labour agreement — standard pay scale" },
+          "ZZP":             { "label": "ZZP",              "description": "Self-employed / freelancer" },
+          "Inleen":          { "label": "Inleen",           "description": "Secondment — driver on loan from another company" },
+          "BriefLoonschaal": { "label": "Brief Loonschaal", "description": "Fixed monthly salary per employment letter (not CAO table)" }
+        },
+        "zzp": {
+          "sectionTitle": "ZZP Details",
+          "btwNumber":           "VAT number *",
+          "kvkNumber":           "CoC number *",
+          "hourlyRateExclBtw":   "Hourly rate excl. VAT (€) *",
+          "btwPercentage":       "VAT % (default 21)",
+          "mediationFee":        "Mediation fee / week (€)",
+          "contractNumber":      "Contract number",
+          "location":            "Location",
+          "workDescription":     "Work description",
+          "btwPlaceholder":      "NL123456789B01",
+          "kvkPlaceholder":      "12345678",
+          "contractNrPlaceholder": "20260201-01",
+          "locationPlaceholder": "Netherlands",
+          "workDescPlaceholder": "Transport of goods by road"
+        },
+        "inleen": {
+          "sectionTitle":    "Inleen Details",
+          "lendingCompany":  "Lending company (ID) *",
+          "lendingHelper":   "Company that lends out the driver",
+          "borrowingCompany":"Borrowing company (ID)",
+          "borrowingHelper": "Company that borrows the driver (optional)",
+          "hourlyRate":      "Inleen rate / hour (€) *",
+          "startDate":       "Start date",
+          "endDate":         "End date",
+          "workDescription": "Work description",
+          "location":        "Location",
+          "lendingPlaceholder":   "UUID of lending company",
+          "borrowingPlaceholder": "UUID of borrowing company"
+        },
+        "brief": {
+          "sectionTitle":     "Pay Scale Details",
+          "monthlySalary":    "Gross monthly salary (€) *",
+          "salaryHelper":     "Fixed salary per employment letter",
+          "grade":            "Pay scale (optional)",
+          "gradePlaceholder": "e.g. Scale 5",
+          "expectedHours":    "Expected hours / month",
+          "hoursHelper":      "Default: 173.33 (40 h/week)"
+        }
+      },
       "periodOptions": {
         "1": "1 month",
         "2": "2 months",
