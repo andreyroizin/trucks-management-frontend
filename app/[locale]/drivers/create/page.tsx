@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import {
     Box,
     Typography,
@@ -25,6 +26,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateDriver } from '@/hooks/useCreateDriver';
+import { useMarkProspectConverted } from '@/hooks/useConvertPotentialDriver';
 import FileUploadBox from '@/components/FileUploadBox';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 import ContractTypeSection from '@/components/ContractTypeSection';
@@ -163,6 +165,8 @@ export default function CreateDriverPage() {
     const { user, isAuthenticated, loading: authLoading } = useAuth();
     const { data: companiesData, isLoading: isCompaniesLoading } = useCompanies(1, 100);
     const { mutateAsync, isPending, isError, error } = useCreateDriver();
+    const { mutateAsync: markConverted } = useMarkProspectConverted();
+    const searchParams = useSearchParams();
     const t = useTranslations();
     const locale = useLocale();
     
@@ -278,6 +282,28 @@ export default function CreateDriverPage() {
         },
     });
 
+    // Pre-fill from prospect conversion URL params
+    useEffect(() => {
+        const prospectId = searchParams.get('prospectId');
+        if (!prospectId) return;
+
+        const firstName = searchParams.get('firstName') || '';
+        const lastName = searchParams.get('lastName') || '';
+        const email = searchParams.get('email') || '';
+        const phoneNumber = searchParams.get('phoneNumber') || '';
+        const companyId = searchParams.get('companyId') || '';
+
+        reset((prev) => ({
+            ...prev,
+            FirstName: firstName,
+            LastName: lastName,
+            Email: email,
+            PhoneNumber: phoneNumber,
+            CompanyId: companyId,
+        }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
+
     // Check access permissions
     const allowedRoles = ['globalAdmin', 'customerAdmin'];
     const hasAccess = user?.roles.some(r => allowedRoles.includes(r));
@@ -383,6 +409,17 @@ export default function CreateDriverPage() {
             // Store driver ID and contract version ID for success dialog
             setCreatedDriverId(response.DriverId);
             setContractVersionId(response.contractVersionId || null);
+
+            // If converted from a prospect, mark the prospect as converted
+            const prospectId = searchParams.get('prospectId');
+            if (prospectId && response.DriverId) {
+                try {
+                    await markConverted({ prospectId, driverId: response.DriverId });
+                } catch {
+                    // Non-fatal: log but don't block the success flow
+                    console.warn('Could not mark prospect as converted');
+                }
+            }
             
             // Reset form
             reset();

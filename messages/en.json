@@ -1942,6 +1942,7 @@
     "companies": "Companies",
     "admins": "Admins",
     "moduleToggles": "Module Toggles",
+    "potentialDrivers": "Potential Drivers",
     "reports": "Reports",
     "settings": "Settings",
     "profile": {
@@ -3785,6 +3786,91 @@
         "label": "HR",
         "description": "Contracts, HR letters, employee management"
       }
+    }
+  },
+  "potentialDrivers": {
+    "title": "Potential Drivers",
+    "subtitle": "Manage driver candidates before they become active drivers",
+    "navigation": "Potential Drivers",
+    "addNew": "Add New",
+    "emptyState": "No potential drivers found",
+    "list": {
+      "columns": {
+        "name": "Name",
+        "phone": "Phone",
+        "email": "Email",
+        "status": "Status",
+        "expectedStart": "Expected Start",
+        "company": "Company",
+        "actions": "Actions"
+      }
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "convert": "Convert to Driver",
+      "delete": "Delete",
+      "viewDriver": "View Driver Profile →"
+    },
+    "status": {
+      "New": "New",
+      "Contacted": "Contacted",
+      "Interviewing": "Interviewing",
+      "OfferMade": "Offer Made",
+      "Accepted": "Accepted",
+      "Rejected": "Rejected",
+      "Converted": "Converted"
+    },
+    "source": {
+      "Referral": "Referral",
+      "JobBoard": "Job Board",
+      "LinkedIn": "LinkedIn",
+      "WalkIn": "Walk-in",
+      "Other": "Other"
+    },
+    "fields": {
+      "firstName": { "label": "First Name", "required": "First name is required" },
+      "lastName": { "label": "Last Name", "required": "Last name is required" },
+      "email": { "label": "Email", "required": "Email is required", "invalid": "Invalid email address" },
+      "phoneNumber": { "label": "Phone Number", "required": "Phone number is required" },
+      "company": { "label": "Company", "required": "Company is required" },
+      "status": { "label": "Status" },
+      "source": { "label": "Source" },
+      "notes": { "label": "Notes", "placeholder": "Additional notes about this candidate..." },
+      "experienceYears": { "label": "Years of Experience" },
+      "hasCELicense": { "label": "Has CE License" },
+      "firstContactDate": { "label": "First Contact Date" },
+      "lastContactDate": { "label": "Last Contact Date" },
+      "expectedStartDate": { "label": "Expected Start Date" }
+    },
+    "sections": {
+      "personal": "Personal Information",
+      "recruitment": "Recruitment Details"
+    },
+    "create": {
+      "title": "Add Potential Driver",
+      "subtitle": "Register a new driver candidate",
+      "success": "Potential driver added successfully",
+      "error": "Failed to add potential driver"
+    },
+    "edit": {
+      "title": "Edit Potential Driver",
+      "subtitle": "Update candidate information",
+      "success": "Potential driver updated successfully",
+      "error": "Failed to update potential driver",
+      "buttons": { "submit": "Save Changes", "submitting": "Saving..." }
+    },
+    "detail": {
+      "convertedLabel": "Converted on",
+      "noContract": "No contract type assigned",
+      "deleteConfirm": "Are you sure you want to delete this candidate? This action cannot be undone.",
+      "deleteSuccess": "Candidate deleted",
+      "alreadyConverted": "This candidate has already been converted to a driver."
+    },
+    "convert": {
+      "title": "Convert to Driver",
+      "description": "This will open the driver creation form pre-filled with the candidate's data. Complete the remaining fields and save to create the driver account.",
+      "confirm": "Proceed to Create Driver"
     }
   }
 }

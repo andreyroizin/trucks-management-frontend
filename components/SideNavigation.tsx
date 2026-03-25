@@ -81,6 +81,7 @@ export default function SideNavigation() {
     const allowedToView = user?.roles?.some(role =>
         ['globalAdmin', 'customerAdmin', 'employer', 'customerAccountant', 'customer'].includes(role)
     );
+    const isGlobalAdmin = user?.roles?.includes('globalAdmin');
 
     const initials = user
         ? `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
@@ -223,6 +224,14 @@ export default function SideNavigation() {
                     <ListItemIcon><PersonIcon/></ListItemIcon>
                     <ListItemText primary={t('navigation.drivers')}/>
                 </NavItem>
+
+                {/* Potential Drivers — gated by HR module, visible to globalAdmin + customerAdmin */}
+                {isModuleEnabled('HR') && (isGlobalAdmin || user?.roles?.includes('customerAdmin')) && (
+                    <NavItem active={isActive('/potential-drivers')} main onClick={() => go('/potential-drivers')}>
+                        <ListItemIcon><PersonIcon/></ListItemIcon>
+                        <ListItemText primary={t('navigation.potentialDrivers')}/>
+                    </NavItem>
+                )}
 
                 {/* Vehicles */}
                 <NavItem active={isActive('/cars')} main onClick={() => go('/cars')}>
