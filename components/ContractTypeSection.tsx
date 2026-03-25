@@ -6,9 +6,11 @@ import {
     Typography,
     TextField,
     Grid,
-    ToggleButtonGroup,
-    ToggleButton,
     Chip,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from '@mui/material';
 import { Controller, Control, UseFormWatch } from 'react-hook-form';
 import { CONTRACT_TYPE_OPTIONS, ContractTypeValue } from '@/constants/contractTypes';
@@ -38,44 +40,31 @@ export default function ContractTypeSection({
     return (
         <Box>
             {/* ── Contract Type Selector ──────────────────────────────────── */}
-            <Typography variant="subtitle1" fontWeight={600} mb={1}>
-                Contract Type
-            </Typography>
-
             <Controller
                 name="ContractType"
                 control={control}
                 defaultValue="CAO"
                 render={({ field }) => (
-                    <ToggleButtonGroup
-                        value={field.value}
-                        exclusive
-                        onChange={(_, val) => { if (val) field.onChange(val); }}
-                        sx={{ flexWrap: 'wrap', gap: 1, mb: 2 }}
-                    >
-                        {CONTRACT_TYPE_OPTIONS.map((opt) => (
-                            <ToggleButton
-                                key={opt.value}
-                                value={opt.value}
-                                sx={{
-                                    px: 2,
-                                    py: 1,
-                                    borderRadius: 2,
-                                    textTransform: 'none',
-                                    fontWeight: field.value === opt.value ? 700 : 400,
-                                }}
-                            >
-                                <Box>
-                                    <Typography variant="body2" fontWeight="inherit">
-                                        {opt.label}
-                                    </Typography>
-                                    <Typography variant="caption" color="text.secondary" display="block">
-                                        {opt.description}
-                                    </Typography>
-                                </Box>
-                            </ToggleButton>
-                        ))}
-                    </ToggleButtonGroup>
+                    <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                        <InputLabel>Contract Type</InputLabel>
+                        <Select
+                            {...field}
+                            label="Contract Type"
+                        >
+                            {CONTRACT_TYPE_OPTIONS.map((opt) => (
+                                <MenuItem key={opt.value} value={opt.value}>
+                                    <Box>
+                                        <Typography variant="body2" fontWeight={500}>
+                                            {opt.label}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary" display="block">
+                                            {opt.description}
+                                        </Typography>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 )}
             />
 
