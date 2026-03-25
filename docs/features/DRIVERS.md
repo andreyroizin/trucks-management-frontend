@@ -12,6 +12,7 @@ Manage drivers: create, edit, view, assign to companies/cars. Generate and sign 
 
 - **Routes**: `/[locale]/drivers`, `/[locale]/drivers/create`, `/[locale]/drivers/[id]`, `/[locale]/drivers/edit/[id]`, `/[locale]/users/edit/[id]/driver`, `/[locale]/users/edit/[id]/driver/compensations`
 - **Key pages**: `app/[locale]/drivers/page.tsx`, `app/[locale]/drivers/create/page.tsx`, `app/[locale]/drivers/[id]/page.tsx`, `app/[locale]/drivers/edit/[id]/page.tsx`
+- **Components**: `ContractTypeSection` (contract type dropdown + conditional fields), `ContractTypeBadge` (type chip shown on list cards and detail page), `DriverCard`
 - **Hooks**: `useDrivers`, `useCreateDriver`, `useUpdateDriver`, `useDriverWithContract`, `useDriverCompensations`, `useDriverContracts`, `useDriverFiles`, `useAssignCarToDriver`, `useDriverWeekDetails`, `useSignDriverWeek`, `useGenerateInvoice`
 
 ## Backend
@@ -34,4 +35,5 @@ Manage drivers: create, edit, view, assign to companies/cars. Generate and sign 
 ## Related
 
 - [CLIENTS.md](CLIENTS.md), [RIDES.md](RIDES.md), [INVOICING.md](INVOICING.md)
+- [CONTRACT_TYPES.md](CONTRACT_TYPES.md) – R24 multiple contract types detail
 - Requirements: R21 (Onboarding), R23 (Potential Driver), R24–R25 (Contracts)

@@ -76,6 +76,30 @@ export interface UpdateDriverInput {
         originalFileName: string;
     }[];
     fileIdsToDelete?: string[];
+
+    // Contract type
+    contractType?: string;
+    // ZZP fields
+    zzpBtwNumber?: string;
+    zzpKvkNumber?: string;
+    zzpHourlyRateExclBtw?: number;
+    zzpBtwPercentage?: number;
+    zzpMediationFeePerWeek?: number;
+    zzpContractNumber?: string;
+    zzpWorkDescription?: string;
+    zzpLocation?: string;
+    // Inleen fields
+    inleenLendingCompanyId?: string;
+    inleenBorrowingCompanyId?: string;
+    inleenStartDate?: string;
+    inleenEndDate?: string;
+    inleenHourlyRate?: number;
+    inleenWorkDescription?: string;
+    inleenLocation?: string;
+    // BriefLoonschaal fields
+    briefMonthlySalary?: number;
+    briefGrade?: string;
+    briefExpectedMonthlyHours?: number;
 }
 
 export interface DriverWithContractResponse {

@@ -28,17 +28,19 @@ import { useDownloadDriverFile } from '@/hooks/useDownloadDriverFile';
 import { ApplicationFile } from '@/types/file';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import countries from 'i18n-iso-countries';
 import en from 'i18n-iso-countries/langs/en.json';
 import nl from 'i18n-iso-countries/langs/nl.json';
 import bg from 'i18n-iso-countries/langs/bg.json';
+import ContractTypeSection from '@/components/ContractTypeSection';
+import { ContractTypeValue } from '@/constants/contractTypes';
 
 // Register country data for multiple languages
 countries.registerLocale(en);
 countries.registerLocale(nl);
 countries.registerLocale(bg);
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -79,6 +81,30 @@ type FormInputs = {
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: kilometersAllowanceAllowed
     ATV: number;                            // Required - backend: atv (default 3.5)
     Remark?: string;                        // Optional - backend: remark
+
+    // Contract type + type-specific fields
+    ContractType: ContractTypeValue;
+    // ZZP
+    ZzpBtwNumber?: string;
+    ZzpKvkNumber?: string;
+    ZzpHourlyRateExclBtw?: number;
+    ZzpBtwPercentage?: number;
+    ZzpMediationFeePerWeek?: number;
+    ZzpContractNumber?: string;
+    ZzpWorkDescription?: string;
+    ZzpLocation?: string;
+    // Inleen
+    InleenLendingCompanyId?: string;
+    InleenBorrowingCompanyId?: string;
+    InleenStartDate?: string;
+    InleenEndDate?: string;
+    InleenHourlyRate?: number;
+    InleenWorkDescription?: string;
+    InleenLocation?: string;
+    // BriefLoonschaal
+    BriefMonthlySalary?: number;
+    BriefGrade?: string;
+    BriefExpectedMonthlyHours?: number;
 };
 
 const getPeriodOptions = (t: any) => [
@@ -214,6 +240,26 @@ export default function EditDriverPage() {
         KilometersAllowanceAllowed: yup.boolean().optional(),
         ATV: yup.number().required(t('drivers.create.fields.atv.required')).min(0, t('drivers.create.validation.positiveNumber')),
         Remark: yup.string().optional(),
+        // Contract type
+        ContractType: yup.string().required(),
+        ZzpBtwNumber: yup.string().optional(),
+        ZzpKvkNumber: yup.string().optional(),
+        ZzpHourlyRateExclBtw: yup.number().optional().min(0),
+        ZzpBtwPercentage: yup.number().optional().min(0),
+        ZzpMediationFeePerWeek: yup.number().optional().min(0),
+        ZzpContractNumber: yup.string().optional(),
+        ZzpWorkDescription: yup.string().optional(),
+        ZzpLocation: yup.string().optional(),
+        InleenLendingCompanyId: yup.string().optional(),
+        InleenBorrowingCompanyId: yup.string().optional(),
+        InleenStartDate: yup.string().optional(),
+        InleenEndDate: yup.string().optional(),
+        InleenHourlyRate: yup.number().optional().min(0),
+        InleenWorkDescription: yup.string().optional(),
+        InleenLocation: yup.string().optional(),
+        BriefMonthlySalary: yup.number().optional().min(0),
+        BriefGrade: yup.string().optional(),
+        BriefExpectedMonthlyHours: yup.number().optional().min(0),
     });
 
     // File management state
@@ -232,10 +278,12 @@ export default function EditDriverPage() {
         setError,
         formState: { errors },
     } = useForm<FormInputs>({
-        resolver: yupResolver(schema),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: yupResolver(schema) as any,
         defaultValues: {
             CompanyId: '',
             UsedByCompanyIds: [],
+            ContractType: 'CAO' as ContractTypeValue,
             Email: '',
             FirstName: '',
             LastName: '',
@@ -378,6 +426,29 @@ export default function EditDriverPage() {
                 KilometersAllowanceAllowed: (driverData as any).kilometersAllowanceAllowed || false,
                 ATV: (driverData as any).atv !== undefined ? Number((driverData as any).atv) : 3.5,
                 Remark: driverData.remark || '',
+                // Contract type
+                ContractType: (driverData.contractType as ContractTypeValue) || 'CAO',
+                // ZZP
+                ZzpBtwNumber: driverData.zzpBtwNumber || '',
+                ZzpKvkNumber: driverData.zzpKvkNumber || '',
+                ZzpHourlyRateExclBtw: driverData.zzpHourlyRateExclBtw !== undefined ? Number(driverData.zzpHourlyRateExclBtw) : undefined,
+                ZzpBtwPercentage: driverData.zzpBtwPercentage !== undefined ? Number(driverData.zzpBtwPercentage) : undefined,
+                ZzpMediationFeePerWeek: driverData.zzpMediationFeePerWeek !== undefined ? Number(driverData.zzpMediationFeePerWeek) : undefined,
+                ZzpContractNumber: driverData.zzpContractNumber || '',
+                ZzpWorkDescription: driverData.zzpWorkDescription || '',
+                ZzpLocation: driverData.zzpLocation || '',
+                // Inleen
+                InleenLendingCompanyId: driverData.inleenLendingCompanyId || '',
+                InleenBorrowingCompanyId: driverData.inleenBorrowingCompanyId || '',
+                InleenStartDate: driverData.inleenStartDate ? dayjs(driverData.inleenStartDate).format('YYYY-MM-DD') : '',
+                InleenEndDate: driverData.inleenEndDate ? dayjs(driverData.inleenEndDate).format('YYYY-MM-DD') : '',
+                InleenHourlyRate: driverData.inleenHourlyRate !== undefined ? Number(driverData.inleenHourlyRate) : undefined,
+                InleenWorkDescription: driverData.inleenWorkDescription || '',
+                InleenLocation: driverData.inleenLocation || '',
+                // BriefLoonschaal
+                BriefMonthlySalary: driverData.briefMonthlySalary !== undefined ? Number(driverData.briefMonthlySalary) : undefined,
+                BriefGrade: driverData.briefGrade || '',
+                BriefExpectedMonthlyHours: driverData.briefExpectedMonthlyHours !== undefined ? Number(driverData.briefExpectedMonthlyHours) : undefined,
             });
         }
     }, [driverData, reset]);
@@ -430,6 +501,14 @@ export default function EditDriverPage() {
             console.log('🔍 [DRIVER EDIT] Form data.UsedByCompanyIds:', data.UsedByCompanyIds);
             console.log('🔍 [DRIVER EDIT] cleanedData.UsedByCompanyIds:', cleanedData.UsedByCompanyIds);
             
+            // Format Inleen dates to UTC ISO strings
+            const inleenStartDate = cleanedData.InleenStartDate
+                ? new Date(cleanedData.InleenStartDate).toISOString()
+                : undefined;
+            const inleenEndDate = cleanedData.InleenEndDate
+                ? new Date(cleanedData.InleenEndDate).toISOString()
+                : undefined;
+
             const backendData = {
                 companyId: cleanedData.CompanyId,
                 usedByCompanyIds: data.UsedByCompanyIds || [],
@@ -465,6 +544,29 @@ export default function EditDriverPage() {
                 kilometersAllowanceAllowed: cleanedData.KilometersAllowanceAllowed,
                 atv: cleanedData.ATV !== undefined ? Number(cleanedData.ATV) : undefined,
                 remark: cleanedData.Remark,
+                // Contract type
+                contractType: cleanedData.ContractType || 'CAO',
+                // ZZP fields
+                zzpBtwNumber: cleanedData.ZzpBtwNumber,
+                zzpKvkNumber: cleanedData.ZzpKvkNumber,
+                zzpHourlyRateExclBtw: cleanedData.ZzpHourlyRateExclBtw,
+                zzpBtwPercentage: cleanedData.ZzpBtwPercentage,
+                zzpMediationFeePerWeek: cleanedData.ZzpMediationFeePerWeek,
+                zzpContractNumber: cleanedData.ZzpContractNumber,
+                zzpWorkDescription: cleanedData.ZzpWorkDescription,
+                zzpLocation: cleanedData.ZzpLocation,
+                // Inleen fields
+                inleenLendingCompanyId: cleanedData.InleenLendingCompanyId,
+                inleenBorrowingCompanyId: cleanedData.InleenBorrowingCompanyId,
+                inleenStartDate,
+                inleenEndDate,
+                inleenHourlyRate: cleanedData.InleenHourlyRate,
+                inleenWorkDescription: cleanedData.InleenWorkDescription,
+                inleenLocation: cleanedData.InleenLocation,
+                // BriefLoonschaal fields
+                briefMonthlySalary: cleanedData.BriefMonthlySalary,
+                briefGrade: cleanedData.BriefGrade,
+                briefExpectedMonthlyHours: cleanedData.BriefExpectedMonthlyHours,
                 // Include file operations
                 newUploads: newUploads,
                 fileIdsToDelete: fileIdsToDelete,
@@ -1300,6 +1402,18 @@ export default function EditDriverPage() {
                                 />
                             </Grid>
                         </Grid>
+                    </Box>
+
+                    {/* Contract Type Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            {t('drivers.create.contractType.label')}
+                        </Typography>
+                        <ContractTypeSection
+                            control={control}
+                            watch={watch}
+                            errors={errors}
+                        />
                     </Box>
 
                     {/* Vacation & Allowances Block */}

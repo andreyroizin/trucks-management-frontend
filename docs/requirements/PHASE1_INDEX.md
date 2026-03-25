@@ -22,7 +22,7 @@ Phase 1 requirements are split into two documents. R2–R5 moved to next phase.
 | ID | Title | Status |
 |----|-------|--------|
 | R23 | Potential Driver Management (Company Linking) | Pending |
-| R24 | Multiple Contract Types (CAO, ZZP, Inleen, Brief Loonschaal) | Pending |
+| R24 | Multiple Contract Types (CAO, ZZP, Inleen, Brief Loonschaal) | ✅ Implemented |
 | R25 | Comprehensive Contract System (All Employee Types & Contract Variations) | Pending |
 | R26 | Business Partner/Supplier Management (NIWO, Kiwa, Document Tracking) | Pending |
 | R28 | Internal Regulations & Policy Document Management (Reglement) | Pending |
