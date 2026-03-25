@@ -354,3 +354,14 @@ All endpoints return JSON wrapped in `ApiResponse<T>` unless noted. See [api/CON
 | PUT | `/quotes/{id}/status` | Update quote status (body: `{ status }`) |
 | DELETE | `/quotes/{id}` | Soft delete quote |
 | GET | `/quotes/{id}/pdf` | Download quote PDF (blob) |
+
+---
+
+## Starting Balances
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/drivers/{driverId}/starting-balances` | List starting balances (optional `?year=` filter) |
+| GET | `/drivers/{driverId}/starting-balances/{year}` | Get starting balance for specific year |
+| POST | `/drivers/{driverId}/starting-balances` | Upsert starting balance (body: `{ year, vacationHours, tvtHours, advHours, notes? }`) |
+| DELETE | `/drivers/{driverId}/starting-balances/{year}` | Delete starting balance for specific year |

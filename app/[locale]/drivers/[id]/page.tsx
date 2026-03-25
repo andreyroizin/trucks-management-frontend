@@ -45,6 +45,8 @@ import { useRegenerateContract } from '@/hooks/useRegenerateContract';
 import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
 import ContractVersionDetailsModal from '@/components/ContractVersionDetailsModal';
+import StartingBalancesDialog from '@/components/StartingBalancesDialog';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useAuth } from '@/hooks/useAuth';
 import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 import { useSnack } from '@/providers/SnackProvider';
@@ -82,6 +84,7 @@ export default function DriverDetailPage() {
     const [historyExpanded, setHistoryExpanded] = useState(false);
     const [versionDetailsOpen, setVersionDetailsOpen] = useState(false);
     const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
+    const [startingBalancesOpen, setStartingBalancesOpen] = useState(false);
     
     // Check roles
     useEffect(() => {
@@ -294,6 +297,21 @@ export default function DriverDetailPage() {
                             >
                                 <DriveFileRenameOutlineRoundedIcon />
                             </IconButton>
+
+                            {/* Starting Balances Button */}
+                            <Tooltip title={t('startingBalances.title')}>
+                                <IconButton
+                                    onClick={() => setStartingBalancesOpen(true)}
+                                    sx={{
+                                        bgcolor: 'grey.800',
+                                        color: 'common.white',
+                                        borderRadius: 1,
+                                        '&:hover': { bgcolor: 'grey.700' },
+                                    }}
+                                >
+                                    <AccountBalanceIcon />
+                                </IconButton>
+                            </Tooltip>
 
                             {/* Delete Button */}
                             <IconButton
@@ -976,6 +994,16 @@ export default function DriverDetailPage() {
                     versionId={selectedVersionId}
                     driverId={id as string}
                     driverName={`${driver.firstName}_${driver.lastName}`}
+                />
+            )}
+
+            {/* Starting Balances Dialog */}
+            {id && driver && (
+                <StartingBalancesDialog
+                    open={startingBalancesOpen}
+                    onClose={() => setStartingBalancesOpen(false)}
+                    driverId={id as string}
+                    driverName={`${driver.firstName} ${driver.lastName}`}
                 />
             )}
         </Box>

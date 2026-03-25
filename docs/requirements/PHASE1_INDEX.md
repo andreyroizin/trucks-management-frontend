@@ -27,7 +27,7 @@ Phase 1 requirements are split into two documents. R2–R5 moved to next phase.
 | R26 | Business Partner/Supplier Management (NIWO, Kiwa, Document Tracking) | Pending |
 | R28 | Internal Regulations & Policy Document Management (Reglement) | Pending |
 | R31 | Comprehensive Driver Profile/Dossier ("Map per Driver") | Pending |
-| R32 | Admin Starting Balance Override (Initial Vacation, ADV, Compensation Hours) | Pending |
+| R32 | Admin Starting Balance Override (Initial Vacation, ADV, Compensation Hours) | Done |
 | R33 | HR Letter Generation System (Leave, Vacation, Warning, Termination) | Pending |
 | R34 | Payroll & Tax Reporting (UVS, Payroll Statements, Annual Statement) | Done |
 | R35 | Annual Statement Workflows (Leaving vs. Active Employees) | Done |

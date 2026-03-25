@@ -3957,5 +3957,33 @@
       "statusUpdateFailed": "Status bijwerken mislukt",
       "loadFailed": "Offertes laden mislukt"
     }
+  },
+  "startingBalances": {
+    "title": "Beginsaldo's",
+    "subtitle": "Overschrijf het beginsaldo voor vakantie-, TvT- en ADV-uren. Deze waarden worden opgeteld bij de berekende totalen in urenstaten.",
+    "year": "Jaar",
+    "vacationHours": "Vakantie-uren",
+    "vacationDays": "≈ {days} dagen",
+    "tvtHours": "TvT-uren",
+    "advHours": "ADV-uren",
+    "notes": "Opmerkingen",
+    "notesPlaceholder": "bijv. Overgenomen van vorige werkgever",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "cancel": "Annuleren",
+    "delete": "Saldo verwijderen",
+    "setOn": "Ingesteld op {date} door {user}",
+    "success": {
+      "saved": "Beginsaldo succesvol opgeslagen",
+      "deleted": "Beginsaldo succesvol verwijderd"
+    },
+    "errors": {
+      "saveFailed": "Beginsaldo opslaan mislukt",
+      "deleteFailed": "Beginsaldo verwijderen mislukt"
+    },
+    "deleteConfirm": {
+      "title": "Beginsaldo verwijderen",
+      "message": "Weet u zeker dat u het beginsaldo voor {year} wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    }
   }
 }

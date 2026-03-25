@@ -4002,5 +4002,33 @@
       "statusUpdateFailed": "Failed to update quote status",
       "loadFailed": "Failed to load quotes"
     }
+  },
+  "startingBalances": {
+    "title": "Starting Balances",
+    "subtitle": "Override the starting balance for vacation, TvT, and ADV hours. These values are added to the calculated totals in timesheets.",
+    "year": "Year",
+    "vacationHours": "Vacation Hours",
+    "vacationDays": "≈ {days} days",
+    "tvtHours": "TvT Hours",
+    "advHours": "ADV Hours",
+    "notes": "Notes",
+    "notesPlaceholder": "e.g. Carried over from previous employer",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete Balance",
+    "setOn": "Set on {date} by {user}",
+    "success": {
+      "saved": "Starting balance saved successfully",
+      "deleted": "Starting balance deleted successfully"
+    },
+    "errors": {
+      "saveFailed": "Failed to save starting balance",
+      "deleteFailed": "Failed to delete starting balance"
+    },
+    "deleteConfirm": {
+      "title": "Delete Starting Balance",
+      "message": "Are you sure you want to delete the starting balance for {year}? This cannot be undone."
+    }
   }
 }
