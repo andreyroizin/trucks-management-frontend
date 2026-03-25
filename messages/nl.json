@@ -1949,6 +1949,7 @@
     "moduleToggles": "Modulebeheer",
     "reports": "Rapporten",
     "annualStatements": "Jaaropgaven",
+    "quotes": "Offertes",
     "settings": "Instellingen",
     "profile": {
       "title": "Profiel",
@@ -3848,6 +3849,113 @@
       "loadFailed": "Laden van jaaropgaven mislukt",
       "loadPendingFailed": "Laden van openstaande vertrekkers mislukt",
       "loadOverdueFailed": "Laden van te late opgaven mislukt"
+    }
+  },
+  "quotes": {
+    "title": "Offertes",
+    "subtitle": "Maak en beheer offertes voor klanten",
+    "createButton": "Nieuwe Offerte",
+    "searchPlaceholder": "Zoek op offertenummer, klant of onderwerp...",
+    "noData": "Geen offertes gevonden.",
+    "status": {
+      "draft": "Concept",
+      "sent": "Verzonden",
+      "accepted": "Geaccepteerd",
+      "rejected": "Afgewezen",
+      "expired": "Verlopen"
+    },
+    "filter": {
+      "allStatuses": "Alle Statussen"
+    },
+    "table": {
+      "quoteNumber": "Offerte #",
+      "client": "Klant",
+      "subject": "Onderwerp",
+      "total": "Totaal (incl. BTW)",
+      "status": "Status",
+      "validUntil": "Geldig tot",
+      "created": "Aangemaakt",
+      "actions": "Acties"
+    },
+    "actions": {
+      "downloadPdf": "PDF Downloaden",
+      "delete": "Verwijderen",
+      "edit": "Bewerken",
+      "markSent": "Markeer als Verzonden",
+      "markAccepted": "Accepteren",
+      "markRejected": "Afwijzen",
+      "revertToDraft": "Terug naar Concept"
+    },
+    "deleteConfirm": {
+      "title": "Offerte Verwijderen",
+      "message": "Weet u zeker dat u deze offerte wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    },
+    "create": {
+      "title": "Offerte Aanmaken",
+      "subtitle": "Vul de gegevens in om een nieuwe offerte te maken",
+      "submitButton": "Opslaan als Concept"
+    },
+    "edit": {
+      "title": "Offerte Bewerken",
+      "submitButton": "Wijzigingen Opslaan"
+    },
+    "detail": {
+      "backToList": "Terug naar Offertes",
+      "createdOn": "Aangemaakt {date}",
+      "sentOn": "Verzonden {date}",
+      "acceptedOn": "Geaccepteerd {date}",
+      "rejectedOn": "Afgewezen {date}",
+      "from": "Van",
+      "to": "Aan",
+      "subject": "Onderwerp",
+      "validUntil": "Geldig tot",
+      "lineItems": "Regelitems",
+      "lineTotal": "Totaal",
+      "notes": "Opmerkingen & Voorwaarden"
+    },
+    "form": {
+      "companySection": "Bedrijf",
+      "company": "Bedrijf",
+      "clientSection": "Klant",
+      "existingClient": "Bestaande klant",
+      "selectClient": "Selecteer klant",
+      "clientName": "Klantnaam",
+      "clientEmail": "E-mail",
+      "clientAddress": "Adres",
+      "clientPostcode": "Postcode",
+      "clientCity": "Plaats",
+      "clientCountry": "Land",
+      "clientKvk": "KVK-nummer",
+      "clientBtw": "BTW-nummer",
+      "detailsSection": "Offerte Details",
+      "subject": "Onderwerp",
+      "validUntil": "Geldig tot",
+      "vatPercentage": "BTW %",
+      "notes": "Opmerkingen / Voorwaarden",
+      "lineItemsSection": "Regelitems",
+      "addLineItem": "Regel toevoegen",
+      "removeLineItem": "Verwijderen",
+      "lineDescription": "Omschrijving",
+      "lineQuantity": "Aantal",
+      "lineUnit": "Eenheid",
+      "lineUnitPrice": "Prijs per eenheid (excl. BTW)",
+      "subtotal": "Subtotaal excl. BTW",
+      "vatAmount": "BTW ({percentage}%)",
+      "totalInclVat": "Totaal incl. BTW",
+      "submitting": "Opslaan..."
+    },
+    "units": {
+      "uur": "Uur",
+      "rit": "Rit",
+      "dag": "Dag",
+      "stuk": "Stuk"
+    },
+    "errors": {
+      "createFailed": "Offerte aanmaken mislukt",
+      "updateFailed": "Offerte bijwerken mislukt",
+      "deleteFailed": "Offerte verwijderen mislukt",
+      "statusUpdateFailed": "Status bijwerken mislukt",
+      "loadFailed": "Offertes laden mislukt"
     }
   }
 }

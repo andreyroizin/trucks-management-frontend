@@ -33,7 +33,7 @@ Phase 1 requirements are split into two documents. R2–R5 moved to next phase.
 | R35 | Annual Statement Workflows (Leaving vs. Active Employees) | Done |
 | R36 | Financial Reporting – Debtors & Creditors List with Turnover | Pending |
 | R37 | Invoicing System (Customer Invoices & Self-Billing) | Pending |
-| R38 | Quote/Quotation System (Offerte) | Pending |
+| R38 | Quote/Quotation System (Offerte) | Done |
 
 ## Navigation
 

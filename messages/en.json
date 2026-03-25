@@ -1944,6 +1944,7 @@
     "moduleToggles": "Module Toggles",
     "reports": "Reports",
     "annualStatements": "Annual Statements",
+    "quotes": "Quotes",
     "settings": "Settings",
     "profile": {
       "title": "Profile",
@@ -3893,6 +3894,113 @@
       "loadFailed": "Failed to load annual statements",
       "loadPendingFailed": "Failed to load pending departures",
       "loadOverdueFailed": "Failed to load overdue statements"
+    }
+  },
+  "quotes": {
+    "title": "Quotes",
+    "subtitle": "Create and manage quotes (offertes) for customers",
+    "createButton": "New Quote",
+    "searchPlaceholder": "Search by quote number, client or subject...",
+    "noData": "No quotes found.",
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    },
+    "filter": {
+      "allStatuses": "All Statuses"
+    },
+    "table": {
+      "quoteNumber": "Quote #",
+      "client": "Client",
+      "subject": "Subject",
+      "total": "Total (incl. BTW)",
+      "status": "Status",
+      "validUntil": "Valid Until",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadPdf": "Download PDF",
+      "delete": "Delete",
+      "edit": "Edit",
+      "markSent": "Mark as Sent",
+      "markAccepted": "Accept",
+      "markRejected": "Reject",
+      "revertToDraft": "Revert to Draft"
+    },
+    "deleteConfirm": {
+      "title": "Delete Quote",
+      "message": "Are you sure you want to delete this quote? This action cannot be undone."
+    },
+    "create": {
+      "title": "Create Quote",
+      "subtitle": "Fill in the details to create a new quote",
+      "submitButton": "Save as Draft"
+    },
+    "edit": {
+      "title": "Edit Quote",
+      "submitButton": "Save Changes"
+    },
+    "detail": {
+      "backToList": "Back to Quotes",
+      "createdOn": "Created {date}",
+      "sentOn": "Sent {date}",
+      "acceptedOn": "Accepted {date}",
+      "rejectedOn": "Rejected {date}",
+      "from": "From",
+      "to": "To",
+      "subject": "Subject",
+      "validUntil": "Valid until",
+      "lineItems": "Line Items",
+      "lineTotal": "Total",
+      "notes": "Notes & Terms"
+    },
+    "form": {
+      "companySection": "Company",
+      "company": "Company",
+      "clientSection": "Customer",
+      "existingClient": "Existing client",
+      "selectClient": "Select client",
+      "clientName": "Customer name",
+      "clientEmail": "Email",
+      "clientAddress": "Address",
+      "clientPostcode": "Postcode",
+      "clientCity": "City",
+      "clientCountry": "Country",
+      "clientKvk": "KVK number",
+      "clientBtw": "BTW number",
+      "detailsSection": "Quote Details",
+      "subject": "Subject",
+      "validUntil": "Valid until",
+      "vatPercentage": "BTW %",
+      "notes": "Notes / Terms",
+      "lineItemsSection": "Line Items",
+      "addLineItem": "Add line",
+      "removeLineItem": "Remove",
+      "lineDescription": "Description",
+      "lineQuantity": "Quantity",
+      "lineUnit": "Unit",
+      "lineUnitPrice": "Unit price (excl. BTW)",
+      "subtotal": "Subtotal excl. BTW",
+      "vatAmount": "BTW ({percentage}%)",
+      "totalInclVat": "Total incl. BTW",
+      "submitting": "Saving..."
+    },
+    "units": {
+      "uur": "Hour",
+      "rit": "Trip",
+      "dag": "Day",
+      "stuk": "Piece"
+    },
+    "errors": {
+      "createFailed": "Failed to create quote",
+      "updateFailed": "Failed to update quote",
+      "deleteFailed": "Failed to delete quote",
+      "statusUpdateFailed": "Failed to update quote status",
+      "loadFailed": "Failed to load quotes"
     }
   }
 }

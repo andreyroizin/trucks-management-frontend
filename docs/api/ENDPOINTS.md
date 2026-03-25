@@ -340,3 +340,17 @@ All endpoints return JSON wrapped in `ApiResponse<T>` unless noted. See [api/CON
 | POST | `/annual-statements/generate-for-departure/{driverId}` | Generate departure statement for terminated driver |
 | POST | `/annual-statements/generate-year-end-batch/{year}` | Batch generate for all active employees of given year |
 | GET | `/annual-statements/{id}/download` | Download statement PDF (blob) |
+
+---
+
+## Quotes (Offerte)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/quotes` | List quotes (paginated, filterable by search/status/company) |
+| GET | `/quotes/{id}` | Quote detail with line items |
+| POST | `/quotes` | Create quote (auto-generates number, status = Draft) |
+| PUT | `/quotes/{id}` | Update quote (Draft only) |
+| PUT | `/quotes/{id}/status` | Update quote status (body: `{ status }`) |
+| DELETE | `/quotes/{id}` | Soft delete quote |
+| GET | `/quotes/{id}/pdf` | Download quote PDF (blob) |

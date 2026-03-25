@@ -1949,6 +1949,7 @@
     "moduleToggles": "Модули",
     "reports": "Отчети",
     "annualStatements": "Годишни справки",
+    "quotes": "Оферти",
     "settings": "Настройки",
     "profile": {
       "title": "Профил",
@@ -3878,6 +3879,113 @@
       "loadFailed": "Неуспешно зареждане на годишни справки",
       "loadPendingFailed": "Неуспешно зареждане на чакащи напускания",
       "loadOverdueFailed": "Неуспешно зареждане на просрочени справки"
+    }
+  },
+  "quotes": {
+    "title": "Оферти",
+    "subtitle": "Създавайте и управлявайте оферти за клиенти",
+    "createButton": "Нова Оферта",
+    "searchPlaceholder": "Търсене по номер, клиент или тема...",
+    "noData": "Няма намерени оферти.",
+    "status": {
+      "draft": "Чернова",
+      "sent": "Изпратена",
+      "accepted": "Приета",
+      "rejected": "Отхвърлена",
+      "expired": "Изтекла"
+    },
+    "filter": {
+      "allStatuses": "Всички статуси"
+    },
+    "table": {
+      "quoteNumber": "Оферта #",
+      "client": "Клиент",
+      "subject": "Тема",
+      "total": "Общо (с ДДС)",
+      "status": "Статус",
+      "validUntil": "Валидна до",
+      "created": "Създадена",
+      "actions": "Действия"
+    },
+    "actions": {
+      "downloadPdf": "Изтегли PDF",
+      "delete": "Изтрий",
+      "edit": "Редактирай",
+      "markSent": "Маркирай като Изпратена",
+      "markAccepted": "Приеми",
+      "markRejected": "Отхвърли",
+      "revertToDraft": "Върни в Чернова"
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на оферта",
+      "message": "Сигурни ли сте, че искате да изтриете тази оферта? Действието не може да бъде отменено."
+    },
+    "create": {
+      "title": "Създаване на оферта",
+      "subtitle": "Попълнете данните за нова оферта",
+      "submitButton": "Запази като чернова"
+    },
+    "edit": {
+      "title": "Редактиране на оферта",
+      "submitButton": "Запази промените"
+    },
+    "detail": {
+      "backToList": "Обратно към офертите",
+      "createdOn": "Създадена {date}",
+      "sentOn": "Изпратена {date}",
+      "acceptedOn": "Приета {date}",
+      "rejectedOn": "Отхвърлена {date}",
+      "from": "От",
+      "to": "До",
+      "subject": "Тема",
+      "validUntil": "Валидна до",
+      "lineItems": "Позиции",
+      "lineTotal": "Общо",
+      "notes": "Бележки и условия"
+    },
+    "form": {
+      "companySection": "Фирма",
+      "company": "Фирма",
+      "clientSection": "Клиент",
+      "existingClient": "Съществуващ клиент",
+      "selectClient": "Избери клиент",
+      "clientName": "Име на клиент",
+      "clientEmail": "Имейл",
+      "clientAddress": "Адрес",
+      "clientPostcode": "Пощенски код",
+      "clientCity": "Град",
+      "clientCountry": "Държава",
+      "clientKvk": "KVK номер",
+      "clientBtw": "ДДС номер",
+      "detailsSection": "Детайли на офертата",
+      "subject": "Тема",
+      "validUntil": "Валидна до",
+      "vatPercentage": "ДДС %",
+      "notes": "Бележки / Условия",
+      "lineItemsSection": "Позиции",
+      "addLineItem": "Добави позиция",
+      "removeLineItem": "Премахни",
+      "lineDescription": "Описание",
+      "lineQuantity": "Количество",
+      "lineUnit": "Мерна единица",
+      "lineUnitPrice": "Ед. цена (без ДДС)",
+      "subtotal": "Междинна сума без ДДС",
+      "vatAmount": "ДДС ({percentage}%)",
+      "totalInclVat": "Общо с ДДС",
+      "submitting": "Запазване..."
+    },
+    "units": {
+      "uur": "Час",
+      "rit": "Курс",
+      "dag": "Ден",
+      "stuk": "Брой"
+    },
+    "errors": {
+      "createFailed": "Неуспешно създаване на оферта",
+      "updateFailed": "Неуспешно обновяване на оферта",
+      "deleteFailed": "Неуспешно изтриване на оферта",
+      "statusUpdateFailed": "Неуспешна промяна на статус",
+      "loadFailed": "Неуспешно зареждане на оферти"
     }
   }
 }
