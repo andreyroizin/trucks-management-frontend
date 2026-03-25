@@ -29,8 +29,8 @@ Phase 1 requirements are split into two documents. R2–R5 moved to next phase.
 | R31 | Comprehensive Driver Profile/Dossier ("Map per Driver") | Pending |
 | R32 | Admin Starting Balance Override (Initial Vacation, ADV, Compensation Hours) | Pending |
 | R33 | HR Letter Generation System (Leave, Vacation, Warning, Termination) | Pending |
-| R34 | Payroll & Tax Reporting (UVS, Payroll Statements, Annual Statement) | Pending |
-| R35 | Annual Statement Workflows (Leaving vs. Active Employees) | Pending |
+| R34 | Payroll & Tax Reporting (UVS, Payroll Statements, Annual Statement) | Done |
+| R35 | Annual Statement Workflows (Leaving vs. Active Employees) | Done |
 | R36 | Financial Reporting – Debtors & Creditors List with Turnover | Pending |
 | R37 | Invoicing System (Customer Invoices & Self-Billing) | Pending |
 | R38 | Quote/Quotation System (Offerte) | Pending |

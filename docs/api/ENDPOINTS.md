@@ -326,3 +326,17 @@ All endpoints return JSON wrapped in `ApiResponse<T>` unless noted. See [api/CON
 | GET | `/drivers/{id}/telegram/registration-link` | Get Telegram registration link |
 | DELETE | `/drivers/{id}/telegram` | Disconnect Telegram |
 | POST | `/telegram/test` | Test Telegram |
+
+---
+
+## Annual Statements (Jaaropgave)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/annual-statements` | List annual statements (paginated, filterable by year/driver/status/company) |
+| GET | `/annual-statements/pending-departures` | List terminated drivers needing jaaropgave |
+| GET | `/annual-statements/overdue` | List departures overdue >28 days |
+| POST | `/annual-statements/generate` | Generate single statement (body: `{ driverId, year }`) |
+| POST | `/annual-statements/generate-for-departure/{driverId}` | Generate departure statement for terminated driver |
+| POST | `/annual-statements/generate-year-end-batch/{year}` | Batch generate for all active employees of given year |
+| GET | `/annual-statements/{id}/download` | Download statement PDF (blob) |

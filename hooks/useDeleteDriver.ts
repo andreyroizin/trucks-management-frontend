@@ -1,30 +1,35 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 
-// Delete Driver Response Type
 export interface DeleteDriverResponse {
-    success: boolean;
+    isSuccess: boolean;
+    statusCode: number;
     data: {
         driverId: string;
         message: string;
         terminationDate: string;
+        terminationReason?: string;
     };
-    message: string;
+    errors: string[] | null;
 }
 
-// --- DELETE DRIVER FUNCTION ---
-const deleteDriverWithContract = async (driverId: string): Promise<DeleteDriverResponse> => {
-    const response = await api.delete<DeleteDriverResponse>(`/drivers/${driverId}/with-contract`);
+export type DeleteDriverParams = {
+    driverId: string;
+    reason?: string;
+};
+
+const deleteDriverWithContract = async ({ driverId, reason }: DeleteDriverParams): Promise<DeleteDriverResponse> => {
+    const response = await api.delete<DeleteDriverResponse>(`/drivers/${driverId}/with-contract`, {
+        data: reason ? { reason } : undefined,
+    });
     return response.data;
 };
 
-// --- HOOK TO DELETE A DRIVER ---
 export const useDeleteDriver = () => {
     const queryClient = useQueryClient();
-    return useMutation<DeleteDriverResponse, Error, string>({
-        mutationFn: (driverId: string) => deleteDriverWithContract(driverId),
+    return useMutation<DeleteDriverResponse, Error, DeleteDriverParams>({
+        mutationFn: deleteDriverWithContract,
         onSuccess: () => {
-            // Invalidate related queries
             queryClient.invalidateQueries({ queryKey: ['drivers'] });
             queryClient.invalidateQueries({ queryKey: ['driverWithContract'] });
             queryClient.invalidateQueries({ queryKey: ['cars'] });

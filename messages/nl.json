@@ -1948,6 +1948,7 @@
     "admins": "Beheerders",
     "moduleToggles": "Modulebeheer",
     "reports": "Rapporten",
+    "annualStatements": "Jaaropgaven",
     "settings": "Instellingen",
     "profile": {
       "title": "Profiel",
@@ -3740,6 +3741,113 @@
         "label": "HR",
         "description": "Contracten, HR-brieven, personeelsbeheer"
       }
+    }
+  },
+  "annualStatements": {
+    "title": "Jaaropgaven",
+    "subtitle": "Genereer en beheer jaaropgaven voor werknemers",
+    "tabs": {
+      "active": "Actieve Werknemers",
+      "departing": "Vertrekkende Werknemers"
+    },
+    "active": {
+      "title": "Jaaropgaven (Jaareinde)",
+      "yearLabel": "Jaar",
+      "generateAll": "Genereer voor alle actieve werknemers",
+      "generating": "Bezig met genereren...",
+      "statusGenerated": "Gegenereerd",
+      "statusPending": "In afwachting",
+      "statusSent": "Verzonden",
+      "noData": "Geen jaaropgaven gevonden voor dit jaar.",
+      "table": {
+        "employee": "Werknemer",
+        "hours": "Totale Uren",
+        "grossWage": "Bruto Loon",
+        "vacation": "Vakantiedagen",
+        "status": "Status",
+        "actions": "Acties",
+        "generatedAt": "Gegenereerd"
+      },
+      "progress": "{count} van {total} gegenereerd ({percentage}%)"
+    },
+    "departing": {
+      "title": "Vertrekkende Werknemers (Tussentijdse Opgaven)",
+      "filterLabel": "Filter",
+      "noData": "Geen openstaande vertrekkers gevonden.",
+      "overdueWarning": "{count} te laat (>28 dagen)",
+      "table": {
+        "employee": "Werknemer",
+        "company": "Bedrijf",
+        "terminationDate": "Beëindigd",
+        "period": "Periode",
+        "daysSince": "Dagen Sinds",
+        "status": "Status",
+        "actions": "Acties"
+      },
+      "statusOverdue": "TE LAAT",
+      "statusPending": "In afwachting",
+      "statusDone": "Gereed"
+    },
+    "actions": {
+      "generate": "Genereer",
+      "generateNow": "Nu Genereren",
+      "download": "Download",
+      "view": "Bekijken",
+      "delete": "Verwijderen"
+    },
+    "generate": {
+      "title": "Jaaropgave Genereren",
+      "selectDriver": "Selecteer Werknemer",
+      "selectYear": "Jaar",
+      "submit": "Genereren",
+      "submitting": "Bezig met genereren...",
+      "success": "Jaaropgave succesvol gegenereerd",
+      "error": "Jaaropgave genereren mislukt"
+    },
+    "batch": {
+      "title": "Jaaropgaven genereren voor {year}",
+      "description": "Dit genereert een jaaropgave voor alle werknemers die op 31 december {year} actief waren.",
+      "employeesFound": "Werknemers gevonden: {count}",
+      "confirm": "Alles Genereren",
+      "cancel": "Annuleren",
+      "progress": "Jaaropgaven worden gegenereerd...",
+      "progressDetail": "{completed} van {total} voltooid",
+      "success": "{count} jaaropgaven gegenereerd voor {year}",
+      "successWithErrors": "{count} gegenereerd, {errors} fouten",
+      "runInBackground": "Sluiten",
+      "error": "Batch generatie mislukt"
+    },
+    "terminate": {
+      "title": "Werknemer beëindigen: {name}",
+      "terminationDate": "Beëindigingsdatum",
+      "reason": "Reden",
+      "reasons": {
+        "resignation": "Ontslag genomen",
+        "contractExpired": "Contract verlopen",
+        "performance": "Prestatieproblemen",
+        "other": "Anders"
+      },
+      "otherReason": "Specificeer reden",
+      "generateJaaropgave": "Jaaropgave nu genereren",
+      "generateJaaropgaveHint": "Aanbevolen — wettelijke verplichting binnen 4 weken",
+      "sendTerminationLetter": "Beëindigingsbrief versturen",
+      "sendTerminationLetterHint": "Binnenkort beschikbaar",
+      "confirm": "Bevestig Beëindiging",
+      "cancel": "Annuleren",
+      "confirming": "Verwerken...",
+      "success": "Werknemer succesvol beëindigd",
+      "error": "Beëindiging werknemer mislukt"
+    },
+    "deleteConfirm": {
+      "title": "Jaaropgave Verwijderen",
+      "message": "Weet u zeker dat u deze jaaropgave wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "success": "Jaaropgave verwijderd",
+      "error": "Verwijderen van jaaropgave mislukt"
+    },
+    "errors": {
+      "loadFailed": "Laden van jaaropgaven mislukt",
+      "loadPendingFailed": "Laden van openstaande vertrekkers mislukt",
+      "loadOverdueFailed": "Laden van te late opgaven mislukt"
     }
   }
 }

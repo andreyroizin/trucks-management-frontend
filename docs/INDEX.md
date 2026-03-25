@@ -45,6 +45,7 @@
 | [features/PLANNING.md](features/PLANNING.md) | Weekly/daily planning, capacity |
 | [features/INVOICING.md](features/INVOICING.md) | Driver invoices, reports |
 | [features/MODULE_TOGGLES.md](features/MODULE_TOGGLES.md) | Module toggle system — per-admin feature access control |
+| [features/ANNUAL_STATEMENTS.md](features/ANNUAL_STATEMENTS.md) | Jaaropgave: year-end & departure statements |
 
 ---
 

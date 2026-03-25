@@ -84,7 +84,7 @@ export default function EditDriverPage() {
     const handleDelete = async () => {
         setDeleteErrorMsg(null);
         try {
-            await deleteDriver(userDetails?.driverInfo?.driverId || '');
+            await deleteDriver({ driverId: userDetails?.driverInfo?.driverId || '' });
             setOpenModal(false);
             router.push('/drivers'); // Redirect after deletion
         } catch (err: any) {

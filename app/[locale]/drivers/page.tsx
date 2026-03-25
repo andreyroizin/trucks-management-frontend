@@ -6,14 +6,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useDrivers } from '@/hooks/useDrivers';
-import { useDeleteDriver } from '@/hooks/useDeleteDriver';
 import DriverCard from '@/components/DriverCard';
 import { CircularProgress, Typography, Alert, Box, Button, Grid, IconButton, TablePagination } from '@mui/material';
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from '@tanstack/react-query';
 import SyncIcon from "@mui/icons-material/Sync";
 import { DebouncedSearchInput } from "@/components/DebouncedSearchInput";
-import ConfirmModal from '@/components/ConfirmModal';
+import TerminateDriverDialog from '@/components/TerminateDriverDialog';
 import LanguageSelectDesktop from "@/components/LanguageSelectDesktop";
 
 export default function DriversPage() {
@@ -21,7 +20,6 @@ export default function DriversPage() {
     const { user, isAuthenticated, loading } = useAuth();
     const t = useTranslations();
     const { data: drivers, isLoading: isLoadingDrivers, isError: isErrorDrivers } = useDrivers();
-    const { mutateAsync: deleteDriver, isPending: isDeleting } = useDeleteDriver();
     
     const queryClient = useQueryClient();
     
@@ -41,10 +39,10 @@ export default function DriversPage() {
         setPage(1);
     }, [debouncedSearch]);
     
-    // Delete confirmation modal state
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [driverToDelete, setDriverToDelete] = useState<string | null>(null);
-    const [driverToDeleteName, setDriverToDeleteName] = useState<{ firstName: string; lastName: string } | null>(null);
+    // Terminate dialog state (enhanced flow with jaaropgave generation)
+    const [openTerminateDialog, setOpenTerminateDialog] = useState(false);
+    const [driverToTerminate, setDriverToTerminate] = useState<string | null>(null);
+    const [driverToTerminateName, setDriverToTerminateName] = useState('');
 
     useEffect(() => {
         const allowedRoles = ['globalAdmin', 'customerAdmin'];
@@ -65,20 +63,10 @@ export default function DriversPage() {
 
     const handleDelete = (driverId: string) => {
         const driver = drivers?.find(d => d.id === driverId);
-        setDriverToDelete(driverId);
-        setDriverToDeleteName(driver ? { firstName: driver.user.firstName, lastName: driver.user.lastName } : null);
-        setOpenDeleteModal(true);
-    };
-
-    const confirmDelete = async () => {
-        if (driverToDelete) {
-            try {
-                await deleteDriver(driverToDelete);
-                setOpenDeleteModal(false);
-                setDriverToDelete(null);
-            } catch (error) {
-                console.error('Failed to delete driver:', error);
-            }
+        if (driver) {
+            setDriverToTerminate(driverId);
+            setDriverToTerminateName(`${driver.user.firstName} ${driver.user.lastName}`);
+            setOpenTerminateDialog(true);
         }
     };
 
@@ -171,26 +159,22 @@ export default function DriversPage() {
                 rowsPerPageOptions={[6, 9, 12, 15]}
             />
             
-            {/* Delete Confirmation Modal */}
-            <ConfirmModal
-                open={openDeleteModal}
-                title={t('drivers.detail.deleteConfirm.title')}
-                message={driverToDeleteName 
-                    ? t('drivers.detail.deleteConfirm.message', { 
-                        firstName: driverToDeleteName.firstName, 
-                        lastName: driverToDeleteName.lastName 
-                    })
-                    : t('drivers.detail.deleteConfirm.message', { firstName: '', lastName: '' })
-                }
-                onClose={() => {
-                    if (!isDeleting) {
-                        setOpenDeleteModal(false);
-                        setDriverToDelete(null);
-                        setDriverToDeleteName(null);
-                    }
-                }}
-                onConfirm={confirmDelete}
-            />
+            {/* Terminate Driver Dialog (enhanced with jaaropgave generation) */}
+            {driverToTerminate && (
+                <TerminateDriverDialog
+                    open={openTerminateDialog}
+                    driverId={driverToTerminate}
+                    driverName={driverToTerminateName}
+                    onClose={() => {
+                        setOpenTerminateDialog(false);
+                        setDriverToTerminate(null);
+                        setDriverToTerminateName('');
+                    }}
+                    onSuccess={() => {
+                        queryClient.invalidateQueries({ queryKey: ['drivers'] });
+                    }}
+                />
+            )}
         </Box>
     );
 }

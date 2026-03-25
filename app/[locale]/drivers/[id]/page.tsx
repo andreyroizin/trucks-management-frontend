@@ -96,7 +96,7 @@ export default function DriverDetailPage() {
     const handleDelete = async () => {
         setDeleteErrorMsg(null);
         try {
-            await deleteDriver(id as string);
+            await deleteDriver({ driverId: id as string });
             setOpenModal(false);
             router.push('/drivers');
         } catch (err: any) {

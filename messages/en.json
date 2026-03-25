@@ -1943,6 +1943,7 @@
     "admins": "Admins",
     "moduleToggles": "Module Toggles",
     "reports": "Reports",
+    "annualStatements": "Annual Statements",
     "settings": "Settings",
     "profile": {
       "title": "Profile",
@@ -3785,6 +3786,113 @@
         "label": "HR",
         "description": "Contracts, HR letters, employee management"
       }
+    }
+  },
+  "annualStatements": {
+    "title": "Annual Statements",
+    "subtitle": "Generate and manage annual statements (jaaropgave) for employees",
+    "tabs": {
+      "active": "Active Employees",
+      "departing": "Departing Employees"
+    },
+    "active": {
+      "title": "Year-End Annual Statements",
+      "yearLabel": "Year",
+      "generateAll": "Generate for All Active Employees",
+      "generating": "Generating...",
+      "statusGenerated": "Generated",
+      "statusPending": "Pending",
+      "statusSent": "Sent",
+      "noData": "No annual statements found for this year.",
+      "table": {
+        "employee": "Employee",
+        "hours": "Total Hours",
+        "grossWage": "Gross Wage",
+        "vacation": "Vacation Days",
+        "status": "Status",
+        "actions": "Actions",
+        "generatedAt": "Generated"
+      },
+      "progress": "{count} of {total} generated ({percentage}%)"
+    },
+    "departing": {
+      "title": "Departing Employees (Mid-Year Statements)",
+      "filterLabel": "Filter",
+      "noData": "No pending departures found.",
+      "overdueWarning": "{count} overdue (>28 days)",
+      "table": {
+        "employee": "Employee",
+        "company": "Company",
+        "terminationDate": "Terminated",
+        "period": "Period Covered",
+        "daysSince": "Days Since",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "statusOverdue": "OVERDUE",
+      "statusPending": "Pending",
+      "statusDone": "Done"
+    },
+    "actions": {
+      "generate": "Generate",
+      "generateNow": "Generate Now",
+      "download": "Download",
+      "view": "View",
+      "delete": "Delete"
+    },
+    "generate": {
+      "title": "Generate Annual Statement",
+      "selectDriver": "Select Driver",
+      "selectYear": "Year",
+      "submit": "Generate",
+      "submitting": "Generating...",
+      "success": "Annual statement generated successfully",
+      "error": "Failed to generate annual statement"
+    },
+    "batch": {
+      "title": "Generate Annual Statements for {year}",
+      "description": "This will generate jaaropgave for all employees who were active as of December 31, {year}.",
+      "employeesFound": "Employees found: {count}",
+      "confirm": "Generate All",
+      "cancel": "Cancel",
+      "progress": "Generating Annual Statements...",
+      "progressDetail": "{completed} of {total} completed",
+      "success": "{count} annual statements generated for {year}",
+      "successWithErrors": "{count} generated, {errors} errors",
+      "runInBackground": "Close",
+      "error": "Failed to generate batch statements"
+    },
+    "terminate": {
+      "title": "Terminate Employee: {name}",
+      "terminationDate": "Termination Date",
+      "reason": "Reason",
+      "reasons": {
+        "resignation": "Resignation",
+        "contractExpired": "Contract Expired",
+        "performance": "Performance Issues",
+        "other": "Other"
+      },
+      "otherReason": "Specify reason",
+      "generateJaaropgave": "Generate annual statement (jaaropgave) now",
+      "generateJaaropgaveHint": "Recommended — legal requirement within 4 weeks",
+      "sendTerminationLetter": "Send termination letter",
+      "sendTerminationLetterHint": "Coming soon",
+      "confirm": "Confirm Termination",
+      "cancel": "Cancel",
+      "confirming": "Processing...",
+      "success": "Employee terminated successfully",
+      "error": "Failed to terminate employee"
+    },
+    "deleteConfirm": {
+      "title": "Delete Annual Statement",
+      "message": "Are you sure you want to delete this annual statement? This action cannot be undone.",
+      "success": "Annual statement deleted",
+      "error": "Failed to delete annual statement"
+    },
+    "errors": {
+      "loadFailed": "Failed to load annual statements",
+      "loadPendingFailed": "Failed to load pending departures",
+      "loadOverdueFailed": "Failed to load overdue statements"
     }
   }
 }
