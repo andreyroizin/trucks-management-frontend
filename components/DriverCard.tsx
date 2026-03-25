@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import {useRouter} from 'next/navigation';
 import { useDriverWithContract } from '@/hooks/useDriverWithContract';
+import ContractTypeBadge from '@/components/ContractTypeBadge';
 
 export type DriverCardProps = {
     id: string;
@@ -94,9 +95,14 @@ export default function DriverCard({
             >
                 <CardHeader
                     title={
-                        <Typography variant="subtitle1" fontWeight={600}>
-                            {firstName} {lastName}
-                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                            <Typography variant="subtitle1" fontWeight={600}>
+                                {firstName} {lastName}
+                            </Typography>
+                            {contractData?.contractType && (
+                                <ContractTypeBadge contractType={contractData.contractType} />
+                            )}
+                        </Box>
                     }
                     action={
                         (onEdit || onDelete) ? (

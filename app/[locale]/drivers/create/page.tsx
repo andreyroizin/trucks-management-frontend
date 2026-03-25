@@ -27,6 +27,8 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { useCreateDriver } from '@/hooks/useCreateDriver';
 import FileUploadBox from '@/components/FileUploadBox';
 import { getHourlyWage, getAvailableSteps } from '@/data/payScales';
+import ContractTypeSection from '@/components/ContractTypeSection';
+import { ContractTypeValue } from '@/constants/contractTypes';
 import dayjs from 'dayjs';
 import countries from 'i18n-iso-countries';
 import en from 'i18n-iso-countries/langs/en.json';
@@ -80,6 +82,30 @@ type FormInputs = {
     KilometersAllowanceAllowed?: boolean;   // Optional - backend: KilometersAllowanceAllowed
     ATV: number;                            // Required - backend: Atv (default 3.5)
     Remark?: string;                        // Optional - backend: Remark
+
+    // Contract type + type-specific fields
+    ContractType: ContractTypeValue;
+    // ZZP
+    ZzpBtwNumber?: string;
+    ZzpKvkNumber?: string;
+    ZzpHourlyRateExclBtw?: number;
+    ZzpBtwPercentage?: number;
+    ZzpMediationFeePerWeek?: number;
+    ZzpContractNumber?: string;
+    ZzpWorkDescription?: string;
+    ZzpLocation?: string;
+    // Inleen
+    InleenLendingCompanyId?: string;
+    InleenBorrowingCompanyId?: string;
+    InleenStartDate?: string;
+    InleenEndDate?: string;
+    InleenHourlyRate?: number;
+    InleenWorkDescription?: string;
+    InleenLocation?: string;
+    // BriefLoonschaal
+    BriefMonthlySalary?: number;
+    BriefGrade?: string;
+    BriefExpectedMonthlyHours?: number;
 };
 
 const getPeriodOptions = (t: any) => [
@@ -257,6 +283,9 @@ export default function CreateDriverPage() {
     // Watch workweek duration to calculate percentage
     const workweekDuration = watch('WorkweekDuration');
     const workweekPercentage = workweekDuration ? Math.round((workweekDuration / 40) * 100) : 0;
+
+    // Watch contract type
+    const contractType: ContractTypeValue = watch('ContractType') ?? 'CAO';
 
     // Watch pay scale and step to calculate hourly wage
     const payScale = watch('PayScale');
@@ -756,6 +785,18 @@ export default function CreateDriverPage() {
                         </Grid>
                     </Box>
 
+                    {/* Contract Type Block */}
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                            Contract Type
+                        </Typography>
+                        <ContractTypeSection
+                            control={control}
+                            watch={watch}
+                            errors={errors}
+                        />
+                    </Box>
+
                     {/* Employment Dates Block */}
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
@@ -1084,7 +1125,8 @@ export default function CreateDriverPage() {
                         </Grid>
                     </Box>
 
-                    {/* Compensation Block */}
+                    {/* Compensation Block — only for CAO */}
+                    {contractType === 'CAO' && (
                     <Box mb={4}>
                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                             {t('drivers.create.sections.compensation')}
@@ -1239,6 +1281,7 @@ export default function CreateDriverPage() {
                             </Grid>
                         </Grid>
                     </Box>
+                    )} {/* end contractType === 'CAO' */}
 
                     {/* Vacation & Allowances Block */}
                     <Box mb={4}>

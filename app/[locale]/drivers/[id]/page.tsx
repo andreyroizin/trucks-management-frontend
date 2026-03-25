@@ -48,6 +48,7 @@ import ContractVersionDetailsModal from '@/components/ContractVersionDetailsModa
 import { useAuth } from '@/hooks/useAuth';
 import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 import { useSnack } from '@/providers/SnackProvider';
+import ContractTypeBadge from '@/components/ContractTypeBadge';
 import dayjs from 'dayjs';
 
 export default function DriverDetailPage() {
@@ -271,9 +272,14 @@ export default function DriverDetailPage() {
                         gap: 2,
                     }}
                 >
-                    <Typography variant="h4" fontWeight={500}>
-                        {driver.firstName} {driver.lastName}
-                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+                        <Typography variant="h4" fontWeight={500}>
+                            {driver.firstName} {driver.lastName}
+                        </Typography>
+                        {driver.contractType && (
+                            <ContractTypeBadge contractType={driver.contractType} size="medium" />
+                        )}
+                    </Box>
                     {(isCustomerAdmin || isGlobalAdmin) && (
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             {/* Edit Button */}
@@ -450,6 +456,108 @@ export default function DriverDetailPage() {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                {/* ZZP-specific contract info */}
+                {driver.contractType === 'ZZP' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            ZZP Gegevens
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>BTW-nummer</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpBtwNumber || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>KvK-nummer</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpKvkNumber || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>Uurtarief excl. BTW</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpHourlyRateExclBtw ? `€ ${driver.zzpHourlyRateExclBtw.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>BTW %</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.zzpBtwPercentage != null ? `${driver.zzpBtwPercentage}%` : '21%'}</TableCell>
+                                </TableRow>
+                                {driver.zzpMediationFeePerWeek != null && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>Bemiddelingsvergoeding/week</TableCell>
+                                        <TableCell sx={{border: 'none'}}>€ {driver.zzpMediationFeePerWeek.toFixed(2)}</TableCell>
+                                    </TableRow>
+                                )}
+                                {driver.zzpContractNumber && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>Contractnummer</TableCell>
+                                        <TableCell sx={{border: 'none'}}>{driver.zzpContractNumber}</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
+
+                {/* Inleen-specific contract info */}
+                {driver.contractType === 'Inleen' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            Inleen Gegevens
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>Uitlener</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenLendingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>Inlener</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenBorrowingCompanyName || t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>Inleentarief/uur</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.inleenHourlyRate ? `€ ${driver.inleenHourlyRate.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>Inleenperiode</TableCell>
+                                    <TableCell sx={{border: 'none'}}>
+                                        {formatDate(driver.inleenStartDate)} – {formatDate(driver.inleenEndDate) || 'onbepaald'}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
+
+                {/* BriefLoonschaal-specific contract info */}
+                {driver.contractType === 'BriefLoonschaal' && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
+                            Brief Loonschaal Gegevens
+                        </Typography>
+                        <Table size="small">
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none', width: 180}}>Bruto maandsalaris</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.briefMonthlySalary ? `€ ${driver.briefMonthlySalary.toFixed(2)}` : t('drivers.detail.notAvailable')}</TableCell>
+                                </TableRow>
+                                {driver.briefGrade && (
+                                    <TableRow>
+                                        <TableCell sx={{pl: 0, border: 'none'}}>Loonschaal</TableCell>
+                                        <TableCell sx={{border: 'none'}}>{driver.briefGrade}</TableCell>
+                                    </TableRow>
+                                )}
+                                <TableRow>
+                                    <TableCell sx={{pl: 0, border: 'none'}}>Verwachte uren/maand</TableCell>
+                                    <TableCell sx={{border: 'none'}}>{driver.briefExpectedMonthlyHours ?? 173.33}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </>
+                )}
 
                 <Divider sx={{ my: 3 }} />
 

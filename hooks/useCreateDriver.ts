@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api';
 import { ApiResponse } from '@/types/api';
 import axios from 'axios';
+import { ContractTypeValue } from '@/constants/contractTypes';
 
 // --- TYPES ---
 export type CreateDriverInput = {
@@ -13,6 +14,33 @@ export type CreateDriverInput = {
     
     // Group 2: Company Assignment (Required)
     CompanyId: string;
+
+    // Contract type
+    ContractType?: ContractTypeValue;
+
+    // ZZP fields
+    ZzpBtwNumber?: string;
+    ZzpKvkNumber?: string;
+    ZzpHourlyRateExclBtw?: number;
+    ZzpBtwPercentage?: number;
+    ZzpMediationFeePerWeek?: number;
+    ZzpContractNumber?: string;
+    ZzpWorkDescription?: string;
+    ZzpLocation?: string;
+
+    // Inleen fields
+    InleenLendingCompanyId?: string;
+    InleenBorrowingCompanyId?: string;
+    InleenStartDate?: string;
+    InleenEndDate?: string;
+    InleenHourlyRate?: number;
+    InleenWorkDescription?: string;
+    InleenLocation?: string;
+
+    // BriefLoonschaal fields
+    BriefMonthlySalary?: number;
+    BriefGrade?: string;
+    BriefExpectedMonthlyHours?: number;
     
     // Group 3: Employment Details (Required fields)
     DateOfEmployment: string;
