@@ -99,7 +99,7 @@ export default function DriverCard({
                             <Typography variant="subtitle1" fontWeight={600}>
                                 {firstName} {lastName}
                             </Typography>
-                            {contractData?.contractType && (
+                            {contractData?.contractType != null && (
                                 <ContractTypeBadge contractType={contractData.contractType} />
                             )}
                         </Box>
