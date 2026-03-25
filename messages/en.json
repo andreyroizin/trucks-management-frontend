@@ -332,6 +332,8 @@
         "notSigned": "This week hasn't been signed yet.",
         "goToCurrent": "Go to current period",
         "generateInvoice": "Generate Invoice",
+        "financeModuleRequired": "Finance module required",
+        "financeModuleDisabledMessage": "Invoice generation is disabled because the Finance module is turned off for your organization. Please contact your administrator to enable it.",
         "loadError": "Failed to load week details"
       },
       "invoice": {
@@ -1639,7 +1641,8 @@
         "fileName": "File Name",
         "viewDetails": "View Details",
         "contractSnapshot": "Contract Snapshot",
-        "actions": "Actions"
+        "actions": "Actions",
+        "hrModuleRequired": "HR module required"
       }
     },
     "edit": {
@@ -1873,6 +1876,7 @@
     "clients": "Clients",
     "companies": "Companies",
     "admins": "Admins",
+    "moduleToggles": "Module Toggles",
     "reports": "Reports",
     "settings": "Settings",
     "profile": {
@@ -3687,6 +3691,34 @@
       "errors": {
         "loadFailed": "Failed to load customer admin data",
         "updateFailed": "Failed to update customer admin"
+      }
+    }
+  },
+  "moduleToggles": {
+    "title": "Module Toggles",
+    "subtitle": "Enable or disable modules for each customer admin. Enabled modules apply to all their companies.",
+    "searchPlaceholder": "Search admins, emails or companies...",
+    "active": "active",
+    "alwaysIncluded": "Always included",
+    "noResults": "No admins found",
+    "loadError": "Failed to load customer admins.",
+    "noPermission": "You do not have permission to manage module toggles.",
+    "modules": {
+      "base": {
+        "label": "Base",
+        "description": "Drivers, vehicles, clients, companies"
+      },
+      "planning": {
+        "label": "Planning",
+        "description": "Ride planning, scheduling, hours"
+      },
+      "finance": {
+        "label": "Finance",
+        "description": "Payroll, invoicing, reports"
+      },
+      "hr": {
+        "label": "HR",
+        "description": "Contracts, HR letters, employee management"
       }
     }
   }

@@ -25,7 +25,9 @@ import {
     TableHead,
     TableContainer,
     Collapse,
+    Tooltip,
 } from '@mui/material';
+import LockIcon from '@mui/icons-material/LockRounded';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -44,6 +46,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 import FileTile from '@/components/FileTile';
 import ContractVersionDetailsModal from '@/components/ContractVersionDetailsModal';
 import { useAuth } from '@/hooks/useAuth';
+import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 import { useSnack } from '@/providers/SnackProvider';
 import dayjs from 'dayjs';
 
@@ -66,6 +69,8 @@ export default function DriverDetailPage() {
     const isCustomerAdmin = user?.roles.includes('customerAdmin');
     const isGlobalAdmin = user?.roles.includes('globalAdmin');
     const isAdmin = isCustomerAdmin || isGlobalAdmin;
+    const { isModuleEnabled } = useFeatureModules();
+    const hrEnabled = isModuleEnabled('HR');
 
     // Confirm modal state for delete
     const [openModal, setOpenModal] = useState(false);
@@ -520,10 +525,37 @@ export default function DriverDetailPage() {
                 <Divider sx={{ my: 3 }} />
 
                 {/* Contract Section */}
+                <Box sx={{ position: 'relative' }}>
+                    {!hrEnabled && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                zIndex: 2,
+                                bgcolor: 'rgba(255,255,255,0.6)',
+                                borderRadius: 2,
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                justifyContent: 'flex-end',
+                                pt: 0.5,
+                                pr: 1,
+                            }}
+                        >
+                            <Tooltip title={t('drivers.detail.contracts.hrModuleRequired')} arrow>
+                                <Chip
+                                    icon={<LockIcon sx={{ fontSize: 16 }} />}
+                                    label={t('drivers.detail.contracts.hrModuleRequired')}
+                                    size="small"
+                                    sx={{ bgcolor: 'rgba(255,255,255,0.9)', fontWeight: 500 }}
+                                />
+                            </Tooltip>
+                        </Box>
+                    )}
+                    <Box sx={{ opacity: hrEnabled ? 1 : 0.45, pointerEvents: hrEnabled ? 'auto' : 'none' }}>
                 <Typography variant="h6" fontWeight={500} sx={{mb: 2}}>
                     {t('drivers.detail.contracts.title')}
                 </Typography>
-                
+
                 {isLoadingContract ? (
                     <Box display="flex" justifyContent="center" py={2}>
                         <CircularProgress size={24} />
@@ -537,9 +569,9 @@ export default function DriverDetailPage() {
                                         {t('drivers.detail.contracts.version')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        <Chip 
-                                            label={`v${latestContract.versionNumber}`} 
-                                            size="small" 
+                                        <Chip
+                                            label={`v${latestContract.versionNumber}`}
+                                            size="small"
                                             color={latestContract.isLatestVersion ? 'primary' : 'default'}
                                         />
                                     </TableCell>
@@ -549,11 +581,11 @@ export default function DriverDetailPage() {
                                         {t('drivers.detail.contracts.status')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        <Chip 
-                                            label={latestContract.status === 'Generated' 
+                                        <Chip
+                                            label={latestContract.status === 'Generated'
                                                 ? t('drivers.detail.contracts.statusGenerated')
-                                                : t('drivers.detail.contracts.statusSuperseded')} 
-                                            size="small" 
+                                                : t('drivers.detail.contracts.statusSuperseded')}
+                                            size="small"
                                             color={latestContract.status === 'Generated' ? 'success' : 'default'}
                                         />
                                     </TableCell>
@@ -563,7 +595,7 @@ export default function DriverDetailPage() {
                                         {t('drivers.detail.contracts.generatedAt')}
                                     </TableCell>
                                     <TableCell sx={{border: 'none'}}>
-                                        {latestContract.generatedAt 
+                                        {latestContract.generatedAt
                                             ? dayjs(latestContract.generatedAt).format('DD MMM YYYY, HH:mm')
                                             : t('drivers.detail.notAvailable')}
                             </TableCell>
@@ -586,7 +618,7 @@ export default function DriverDetailPage() {
                         </TableRow>
                     </TableBody>
                 </Table>
-                        
+
                         <Stack direction="row" spacing={2} sx={{mt: 2}}>
                             <Button
                                 variant="contained"
@@ -603,7 +635,7 @@ export default function DriverDetailPage() {
                                     t('drivers.detail.contracts.download')
                                 )}
                             </Button>
-                            
+
                             {isAdmin && (
                                 <Button
                                     variant="outlined"
@@ -659,7 +691,7 @@ export default function DriverDetailPage() {
                         >
                             {t('drivers.detail.contracts.history')}
                         </Button>
-                        
+
                         <Collapse in={historyExpanded}>
                             <TableContainer component={Paper} variant="outlined">
                                 <Table size="small">
@@ -675,7 +707,7 @@ export default function DriverDetailPage() {
                                     </TableHead>
                                     <TableBody>
                                         {contractVersions.map((version) => (
-                                            <TableRow 
+                                            <TableRow
                                                 key={version.id}
                                                 sx={{
                                                     bgcolor: version.isLatestVersion ? 'action.selected' : 'transparent',
@@ -683,23 +715,23 @@ export default function DriverDetailPage() {
                                                 }}
                                             >
                                                 <TableCell>
-                                                    <Chip 
-                                                        label={`v${version.versionNumber}`} 
+                                                    <Chip
+                                                        label={`v${version.versionNumber}`}
                                                         size="small"
                                                         color={version.isLatestVersion ? 'primary' : 'default'}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    {version.generatedAt 
+                                                    {version.generatedAt
                                                         ? dayjs(version.generatedAt).format('DD MMM YYYY, HH:mm')
                                                         : t('drivers.detail.notAvailable')}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Chip 
-                                                        label={version.status === 'Generated' 
+                                                    <Chip
+                                                        label={version.status === 'Generated'
                                                             ? t('drivers.detail.contracts.statusGenerated')
-                                                            : t('drivers.detail.contracts.statusSuperseded')} 
-                                                        size="small" 
+                                                            : t('drivers.detail.contracts.statusSuperseded')}
+                                                        size="small"
                                                         color={version.status === 'Generated' ? 'success' : 'default'}
                                                     />
                                                 </TableCell>
@@ -731,6 +763,8 @@ export default function DriverDetailPage() {
                         </Collapse>
                     </Box>
                 )}
+                    </Box>
+                </Box>
 
                 <Divider sx={{ my: 3 }} />
 

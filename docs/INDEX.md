@@ -43,6 +43,7 @@
 | [features/COMPANIES.md](features/COMPANIES.md) | Company management |
 | [features/PLANNING.md](features/PLANNING.md) | Weekly/daily planning, capacity |
 | [features/INVOICING.md](features/INVOICING.md) | Driver invoices, reports |
+| [features/MODULE_TOGGLES.md](features/MODULE_TOGGLES.md) | Module toggle system — per-admin feature access control |
 
 ---
 

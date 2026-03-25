@@ -19,8 +19,10 @@ import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettingsRounded';
+import TuneIcon from '@mui/icons-material/TuneRounded';
 import Avatar from '@mui/material/Avatar';
 import {useAuth} from '@/hooks/useAuth';
+import {useFeatureModules} from '@/providers/FeatureModuleProvider';
 import {SUPPORTED_LOCALES} from "@/utils/constants/supportedLocales";
 import { routing } from '@/i18n/routing';
 
@@ -73,7 +75,8 @@ export default function SideNavigation() {
         const parts = pathname.split('/');
         return parts.length > 1 && SUPPORTED_LOCALES.includes(parts[1] as any) ? parts[1] : routing.defaultLocale;
     }, [pathname]);
-    const { isAuthenticated, user, logout, loading } = useAuth(); // { firstName, lastName, roles }
+    const { isAuthenticated, user, logout, loading } = useAuth();
+    const { isModuleEnabled } = useFeatureModules();
 
     const allowedToView = user?.roles?.some(role =>
         ['globalAdmin', 'customerAdmin', 'employer', 'customerAccountant', 'customer'].includes(role)
@@ -151,67 +154,69 @@ export default function SideNavigation() {
                 </NavItem>
                 */}
 
-                {/* Planning parent */}
-                <NavItem onClick={() => setPlanningOpen((p) => !p)}
-                         active={pathNoLocale.startsWith('/planning')}
-                         main>
-                    <ListItemIcon><CalendarTodayIcon/></ListItemIcon>
-                    <ListItemText primary={t('navigation.planning.title')}/>
-                    <KeyboardArrowDown
-                        sx={{transform: planningOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
-                    />
-                </NavItem>
+                {/* Planning parent — gated by Planning module */}
+                {isModuleEnabled('Planning') && (
+                    <>
+                        <NavItem onClick={() => setPlanningOpen((p) => !p)}
+                                 active={pathNoLocale.startsWith('/planning')}
+                                 main>
+                            <ListItemIcon><CalendarTodayIcon/></ListItemIcon>
+                            <ListItemText primary={t('navigation.planning.title')}/>
+                            <KeyboardArrowDown
+                                sx={{transform: planningOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
+                            />
+                        </NavItem>
 
-                {/* Planning children */}
-                <Collapse in={planningOpen} timeout="auto" unmountOnExit>
-                    <List disablePadding>
-                        <NavItem active={isActive('/planning/long-term')} onClick={() => go('/planning/long-term')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.planning.longTerm')}/>
-                        </NavItem>
-                        <NavItem active={isActive('/planning/weekly')} onClick={() => go('/planning/weekly')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.planning.weekly')}/>
-                        </NavItem>
-                        <NavItem active={isActive('/planning/daily')} onClick={() => go('/planning/daily')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.planning.daily')}/>
-                        </NavItem>
-                    </List>
-                </Collapse>
+                        <Collapse in={planningOpen} timeout="auto" unmountOnExit>
+                            <List disablePadding>
+                                <NavItem active={isActive('/planning/long-term')} onClick={() => go('/planning/long-term')} sx={{pl: 6}}>
+                                    <ListItemText primary={t('navigation.planning.longTerm')}/>
+                                </NavItem>
+                                <NavItem active={isActive('/planning/weekly')} onClick={() => go('/planning/weekly')} sx={{pl: 6}}>
+                                    <ListItemText primary={t('navigation.planning.weekly')}/>
+                                </NavItem>
+                                <NavItem active={isActive('/planning/daily')} onClick={() => go('/planning/daily')} sx={{pl: 6}}>
+                                    <ListItemText primary={t('navigation.planning.daily')}/>
+                                </NavItem>
+                            </List>
+                        </Collapse>
 
-                {/* Work Management parent */}
-                <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
-                         active={pathNoLocale.startsWith('/partrides')
-                             || pathNoLocale.startsWith('/rides/executions')
-                             || pathNoLocale.startsWith('/driver/rides')
-                             || pathNoLocale.startsWith('/execution-disputes')
-                             || pathNoLocale.startsWith('/weeks-to-submit')}
-                         main>
-                    <ListItemIcon><ListIcon/></ListItemIcon>
-                    <ListItemText primary={t('navigation.workManagement.title')}/>
-                    <KeyboardArrowDown
-                        sx={{transform: workdaysOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
-                    />
-                </NavItem>
+                        {/* Work Management — also gated by Planning module */}
+                        <NavItem onClick={() => setWorkdaysOpen((p) => !p)}
+                                 active={pathNoLocale.startsWith('/partrides')
+                                     || pathNoLocale.startsWith('/rides/executions')
+                                     || pathNoLocale.startsWith('/driver/rides')
+                                     || pathNoLocale.startsWith('/execution-disputes')
+                                     || pathNoLocale.startsWith('/weeks-to-submit')}
+                                 main>
+                            <ListItemIcon><ListIcon/></ListItemIcon>
+                            <ListItemText primary={t('navigation.workManagement.title')}/>
+                            <KeyboardArrowDown
+                                sx={{transform: workdaysOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: '.2s'}}
+                            />
+                        </NavItem>
 
-                {/* Work Management children */}
-                <Collapse in={workdaysOpen} timeout="auto" unmountOnExit>
-                    <List disablePadding>
-                        {user?.roles?.includes('driver') ? (
-                            <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
-                                <ListItemText primary={t('navigation.workManagement.myRides')}/>
-                            </NavItem>
-                        ) : (
-                            <NavItem active={isActive('/rides/executions')} onClick={() => go('/rides/executions')} sx={{pl: 6}}>
-                                <ListItemText primary={t('navigation.workManagement.rideExecutions')}/>
-                        </NavItem>
-                        )}
-                        <NavItem active={isActive('/execution-disputes')} onClick={() => go('/execution-disputes')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.workdays.disputesList')}/>
-                        </NavItem>
-                        <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/weeks-to-submit')} sx={{pl: 6}}>
-                            <ListItemText primary={t('navigation.workdays.weeksToSubmit')}/>
-                        </NavItem>
-                    </List>
-                </Collapse>
+                        <Collapse in={workdaysOpen} timeout="auto" unmountOnExit>
+                            <List disablePadding>
+                                {user?.roles?.includes('driver') ? (
+                                    <NavItem active={isActive('/driver/rides')} onClick={() => go('/driver/rides')} sx={{pl: 6}}>
+                                        <ListItemText primary={t('navigation.workManagement.myRides')}/>
+                                    </NavItem>
+                                ) : (
+                                    <NavItem active={isActive('/rides/executions')} onClick={() => go('/rides/executions')} sx={{pl: 6}}>
+                                        <ListItemText primary={t('navigation.workManagement.rideExecutions')}/>
+                                    </NavItem>
+                                )}
+                                <NavItem active={isActive('/execution-disputes')} onClick={() => go('/execution-disputes')} sx={{pl: 6}}>
+                                    <ListItemText primary={t('navigation.workdays.disputesList')}/>
+                                </NavItem>
+                                <NavItem active={isActive('/weeks-to-submit')} onClick={() => go('/weeks-to-submit')} sx={{pl: 6}}>
+                                    <ListItemText primary={t('navigation.workdays.weeksToSubmit')}/>
+                                </NavItem>
+                            </List>
+                        </Collapse>
+                    </>
+                )}
 
                 {/* Drivers */}
                 <NavItem active={isActive('/drivers')} main onClick={() => go('/drivers')}>
@@ -245,11 +250,21 @@ export default function SideNavigation() {
                     </NavItem>
                 )}
 
-                {/* Reports */}
-                <NavItem active={isActive('/reports')} main onClick={() => go('/reports')}>
-                    <ListItemIcon><AssessmentIcon/></ListItemIcon>
-                    <ListItemText primary={t('navigation.reports')}/>
-                </NavItem>
+                {/* Module Toggles - Only for globalAdmin */}
+                {user?.roles?.includes('globalAdmin') && (
+                    <NavItem active={isActive('/admins/feature-toggles')} main onClick={() => go('/admins/feature-toggles')}>
+                        <ListItemIcon><TuneIcon/></ListItemIcon>
+                        <ListItemText primary={t('navigation.moduleToggles')}/>
+                    </NavItem>
+                )}
+
+                {/* Reports — gated by Finance module */}
+                {isModuleEnabled('Finance') && (
+                    <NavItem active={isActive('/reports')} main onClick={() => go('/reports')}>
+                        <ListItemIcon><AssessmentIcon/></ListItemIcon>
+                        <ListItemText primary={t('navigation.reports')}/>
+                    </NavItem>
+                )}
 
                 {/* <Divider sx={{my: 3}}/> */}
 

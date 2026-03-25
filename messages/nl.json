@@ -337,6 +337,8 @@
         "notSigned": "Deze week is nog niet ondertekend.",
         "goToCurrent": "Ga naar de huidige periode",
         "generateInvoice": "Factuur Genereren",
+        "financeModuleRequired": "Finance-module vereist",
+        "financeModuleDisabledMessage": "Facturen genereren is uitgeschakeld omdat de Finance-module is uitgeschakeld voor uw organisatie. Neem contact op met uw beheerder om deze in te schakelen.",
         "loadError": "Kan week niet laden"
       },
       "invoice": {
@@ -1640,7 +1642,8 @@
         "fileName": "Bestandsnaam",
         "viewDetails": "Details Bekijken",
         "contractSnapshot": "Contract Momentopname",
-        "actions": "Acties"
+        "actions": "Acties",
+        "hrModuleRequired": "HR-module vereist"
       },
       "permanent": "Permanent",
       "yes": "Ja",
@@ -1878,6 +1881,7 @@
     "clients": "Klanten",
     "companies": "Bedrijven",
     "admins": "Beheerders",
+    "moduleToggles": "Modulebeheer",
     "reports": "Rapporten",
     "settings": "Instellingen",
     "profile": {
@@ -3642,6 +3646,34 @@
       "errors": {
         "loadFailed": "Laden van klantbeheerder gegevens mislukt",
         "updateFailed": "Bijwerken van klantbeheerder mislukt"
+      }
+    }
+  },
+  "moduleToggles": {
+    "title": "Modulebeheer",
+    "subtitle": "Schakel modules in of uit per klantbeheerder. Ingeschakelde modules gelden voor al hun bedrijven.",
+    "searchPlaceholder": "Zoek beheerders, e-mails of bedrijven...",
+    "active": "actief",
+    "alwaysIncluded": "Altijd inbegrepen",
+    "noResults": "Geen beheerders gevonden",
+    "loadError": "Laden van klantbeheerders mislukt.",
+    "noPermission": "U heeft geen toestemming om modulebeheer te beheren.",
+    "modules": {
+      "base": {
+        "label": "Basis",
+        "description": "Chauffeurs, voertuigen, klanten, bedrijven"
+      },
+      "planning": {
+        "label": "Planning",
+        "description": "Ritplanning, roostering, uren"
+      },
+      "finance": {
+        "label": "Financiën",
+        "description": "Salarisadministratie, facturering, rapporten"
+      },
+      "hr": {
+        "label": "HR",
+        "description": "Contracten, HR-brieven, personeelsbeheer"
       }
     }
   }

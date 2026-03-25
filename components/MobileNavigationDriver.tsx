@@ -27,12 +27,14 @@ import Link from "next/link"; // adjust path to your auth hook
 import {useTranslations} from 'next-intl';
 import { SUPPORTED_LOCALES } from '@/utils/constants/supportedLocales';
 import { routing } from '@/i18n/routing';
+import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 
 /* ------------------------------------------------- */
 export default function MobileNavigationDriver() {
     const router = useRouter();
     const pathname = usePathname();
     const {isAuthenticated, user, logout, loading} = useAuth();
+    const { isModuleEnabled } = useFeatureModules();
     const t = useTranslations('nav.driver');
 
     const [open, setOpen] = useState(false);
@@ -120,33 +122,37 @@ export default function MobileNavigationDriver() {
                         </ListItemButton>
                         <Divider/>
 
-                        <ListItemButton onClick={() => go('/driver/rides')}
-                                        sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('myRides')}/>
-                            <ArrowRightIcon fontSize="small"/>
-                        </ListItemButton>
-                        <Divider/>
+                        {isModuleEnabled('Planning') && (
+                            <>
+                                <ListItemButton onClick={() => go('/driver/rides')}
+                                                sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
+                                    <ListItemText primary={t('myRides')}/>
+                                    <ArrowRightIcon fontSize="small"/>
+                                </ListItemButton>
+                                <Divider/>
 
-                        <ListItemButton onClick={() => go('/periods/driver/pending')}
-                                        sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('pending')}/>
-                            <ArrowRightIcon fontSize="small"/>
-                        </ListItemButton>
-                        <Divider/>
+                                <ListItemButton onClick={() => go('/periods/driver/pending')}
+                                                sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
+                                    <ListItemText primary={t('pending')}/>
+                                    <ArrowRightIcon fontSize="small"/>
+                                </ListItemButton>
+                                <Divider/>
 
-                        <ListItemButton onClick={() => go('/disputes')}
-                                        sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('disputes')}/>
-                            <ArrowRightIcon fontSize="small"/>
-                        </ListItemButton>
-                        <Divider/>
+                                <ListItemButton onClick={() => go('/disputes')}
+                                                sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
+                                    <ListItemText primary={t('disputes')}/>
+                                    <ArrowRightIcon fontSize="small"/>
+                                </ListItemButton>
+                                <Divider/>
 
-                        <ListItemButton onClick={() => go('/periods/driver/archived')}
-                                        sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
-                            <ListItemText primary={t('archived')}/>
-                            <ArrowRightIcon fontSize="small"/>
-                        </ListItemButton>
-                        <Divider/>
+                                <ListItemButton onClick={() => go('/periods/driver/archived')}
+                                                sx={{backgroundColor: '#fff', py: 2, pl: 3, pr: 2}}>
+                                    <ListItemText primary={t('archived')}/>
+                                    <ArrowRightIcon fontSize="small"/>
+                                </ListItemButton>
+                                <Divider/>
+                            </>
+                        )}
 
                         <ListItemButton onClick={() => {
                             logout();
