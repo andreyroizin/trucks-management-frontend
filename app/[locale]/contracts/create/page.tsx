@@ -12,7 +12,8 @@ import {
     Autocomplete,
     MenuItem,
     FormControlLabel,
-    Checkbox
+    Checkbox,
+    Divider
 } from '@mui/material';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -25,13 +26,15 @@ import {useAuth} from '@/hooks/useAuth';
 import {useDrivers} from '@/hooks/useDrivers';
 import {useCompanies} from '@/hooks/useCompanies';
 
-import {useCreateEmployeeContract, CreateEmployeeContractInput} from '@/hooks/useCreateEmployeeContract';
+import {useCreateEmployeeContract, CreateEmployeeContractInput, ContractType} from '@/hooks/useCreateEmployeeContract';
 
 // React Hook Form + Yup
-import {useForm, Controller, SubmitHandler} from 'react-hook-form';
+import {useForm, Controller, SubmitHandler, useWatch} from 'react-hook-form';
 import * as yup from 'yup';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useTranslations} from 'next-intl';
+
+const CONTRACT_TYPES: ContractType[] = ['CAO', 'ZZP', 'Inleen', 'BriefLoonschaal', 'Raam', 'Bemiddeling'];
 
 export default function CreateEmployeeContractPage() {
     dayjs.extend(utc);
@@ -95,6 +98,7 @@ export default function CreateEmployeeContractPage() {
         },
     });
 
+    const contractType = useWatch({ control, name: 'contractType' });
     const {mutateAsync: createContract, isPending} = useCreateEmployeeContract();
     const [apiError, setApiError] = React.useState<string | null>(null);
 
@@ -173,6 +177,24 @@ export default function CreateEmployeeContractPage() {
                 >
                     {/* LEFT COLUMN (Driver + Employee) */}
                     <Box display="flex" flexDirection="column" gap={2}>
+                        {/* Contract Type */}
+                        <Controller
+                            name="contractType"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    select
+                                    label="Contract Type"
+                                    helperText="Select the type of contract"
+                                >
+                                    {CONTRACT_TYPES.map((ct) => (
+                                        <MenuItem key={ct} value={ct}>{ct}</MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+                        />
+
                         {/* Driver (optional) */}
                         <Controller
                             name="driverId"
@@ -824,6 +846,115 @@ export default function CreateEmployeeContractPage() {
                         />
                     </Box>
                 </Box>
+
+                {/* RAAM FIELDS */}
+                {contractType === 'Raam' && (
+                    <Box mt={2} width="100%" maxWidth={1000}>
+                        <Divider sx={{mb: 2}}/>
+                        <Typography variant="h6" mb={2}>Raam (Framework) Contract Fields</Typography>
+                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'}, gap: 2}}>
+                            <Controller name="raamContractNumber" control={control} render={({field}) => (
+                                <TextField {...field} label="Raam Contract Number" helperText="e.g. RAAM-2026-001 (optional)"/>
+                            )}/>
+                            <Controller name="raamOpdrachtgeverName" control={control} render={({field}) => (
+                                <TextField {...field} label="Opdrachtgever Name *" helperText="Transport company name (required)"/>
+                            )}/>
+                            <Controller name="raamOpdrachtgeverKvk" control={control} render={({field}) => (
+                                <TextField {...field} label="Opdrachtgever KvK" helperText="KvK number of transport company"/>
+                            )}/>
+                            <Controller name="raamOpdrachtgeverAddress" control={control} render={({field}) => (
+                                <TextField {...field} label="Opdrachtgever Address"/>
+                            )}/>
+                            <Controller name="raamOpdrachtgeverCity" control={control} render={({field}) => (
+                                <TextField {...field} label="Opdrachtgever City"/>
+                            )}/>
+                            <Controller name="raamWorkDescription" control={control} render={({field}) => (
+                                <TextField {...field} label="Work Description" helperText="e.g. Vervoer van goederen over de weg"/>
+                            )}/>
+                            <Controller name="raamLocation" control={control} render={({field}) => (
+                                <TextField {...field} label="Location" helperText="e.g. Nederland"/>
+                            )}/>
+                            <Controller name="raamHourlyRateExclBtw" control={control} render={({field}) => (
+                                <TextField {...field} type="number" label="Hourly Rate Excl BTW (€) *" helperText="Rate Boratech charges the transport company (required)"/>
+                            )}/>
+                            <Controller name="raamBtwPercentage" control={control} render={({field}) => (
+                                <TextField {...field} type="number" label="BTW %" helperText="Default 21"/>
+                            )}/>
+                            <Controller name="raamPaymentTermDays" control={control} render={({field}) => (
+                                <TextField {...field} label="Payment Term" helperText="e.g. 14 dagen"/>
+                            )}/>
+                            <Controller name="raamStartDate" control={control} render={({field}) => (
+                                <DesktopDatePicker
+                                    label="Start Date"
+                                    value={field.value ? dayjs(field.value) : null}
+                                    onChange={(v) => field.onChange(v ? v.toISOString() : null)}
+                                    slotProps={{textField: {helperText: 'Raam contract start date'}}}
+                                />
+                            )}/>
+                            <Controller name="raamEndDate" control={control} render={({field}) => (
+                                <DesktopDatePicker
+                                    label="End Date"
+                                    value={field.value ? dayjs(field.value) : null}
+                                    onChange={(v) => field.onChange(v ? v.toISOString() : null)}
+                                    slotProps={{textField: {helperText: 'Leave empty for indefinite duration'}}}
+                                />
+                            )}/>
+                        </Box>
+                    </Box>
+                )}
+
+                {/* BEMIDDELING FIELDS */}
+                {contractType === 'Bemiddeling' && (
+                    <Box mt={2} width="100%" maxWidth={1000}>
+                        <Divider sx={{mb: 2}}/>
+                        <Typography variant="h6" mb={2}>Bemiddeling (Mediation) Contract Fields</Typography>
+                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', md: '1fr 1fr'}, gap: 2}}>
+                            <Controller name="bemiddelingContractNumber" control={control} render={({field}) => (
+                                <TextField {...field} label="Bemiddeling Contract Number" helperText="e.g. BEM-2026-001 (optional)"/>
+                            )}/>
+                            <Controller name="bemiddelingOpdrachtnemerKvk" control={control} render={({field}) => (
+                                <TextField {...field} label="Driver KvK Number *" helperText="ZZP driver's KvK (required)"/>
+                            )}/>
+                            <Controller name="bemiddelingOpdrachtnemerBtw" control={control} render={({field}) => (
+                                <TextField {...field} label="Driver BTW Number" helperText="ZZP driver's BTW number (optional)"/>
+                            )}/>
+                            <Controller name="bemiddelingWorkDescription" control={control} render={({field}) => (
+                                <TextField {...field} label="Work Description" helperText="e.g. Vervoer van goederen over de weg"/>
+                            )}/>
+                            <Controller name="bemiddelingLocation" control={control} render={({field}) => (
+                                <TextField {...field} label="Location" helperText="e.g. Nederland"/>
+                            )}/>
+                            <Controller name="bemiddelingHourlyRateExclBtw" control={control} render={({field}) => (
+                                <TextField {...field} type="number" label="Hourly Rate Excl BTW (€) *" helperText="Rate paid to driver (required)"/>
+                            )}/>
+                            <Controller name="bemiddelingBtwPercentage" control={control} render={({field}) => (
+                                <TextField {...field} type="number" label="BTW %" helperText="Default 21"/>
+                            )}/>
+                            <Controller name="bemiddelingMediationFeePerWeek" control={control} render={({field}) => (
+                                <TextField {...field} type="number" label="Mediation Fee / Week (€)" helperText="Boratech mediation fee per week"/>
+                            )}/>
+                            <Controller name="bemiddelingPaymentTermDays" control={control} render={({field}) => (
+                                <TextField {...field} label="Payment Term" helperText="e.g. 14 dagen"/>
+                            )}/>
+                            <Controller name="bemiddelingStartDate" control={control} render={({field}) => (
+                                <DesktopDatePicker
+                                    label="Start Date"
+                                    value={field.value ? dayjs(field.value) : null}
+                                    onChange={(v) => field.onChange(v ? v.toISOString() : null)}
+                                    slotProps={{textField: {helperText: 'Bemiddeling contract start date'}}}
+                                />
+                            )}/>
+                            <Controller name="bemiddelingEndDate" control={control} render={({field}) => (
+                                <DesktopDatePicker
+                                    label="End Date"
+                                    value={field.value ? dayjs(field.value) : null}
+                                    onChange={(v) => field.onChange(v ? v.toISOString() : null)}
+                                    slotProps={{textField: {helperText: 'Leave empty for indefinite duration'}}}
+                                />
+                            )}/>
+                        </Box>
+                    </Box>
+                )}
 
                 {/* SUBMIT BUTTON */}
                 <Box mt={2} width="100%" maxWidth={1000}>
