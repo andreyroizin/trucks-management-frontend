@@ -20,6 +20,7 @@ import { useDeletePotentialDriver } from '@/hooks/useDeletePotentialDriver';
 import { useFeatureModules } from '@/providers/FeatureModuleProvider';
 import { PotentialDriverStatus } from '@/types/potentialDriver';
 import ConfirmModal from '@/components/ConfirmModal';
+import LanguageSelectDesktop from '@/components/LanguageSelectDesktop';
 
 const STATUS_COLORS: Record<string, 'default' | 'primary' | 'warning' | 'success' | 'error' | 'info' | 'secondary'> = {
     New: 'default',
@@ -78,13 +79,16 @@ export default function PotentialDriversPage() {
                         {t('potentialDrivers.subtitle')}
                     </Typography>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => router.push('/potential-drivers/create')}
-                >
-                    {t('potentialDrivers.addNew')}
-                </Button>
+                <Box display="flex" alignItems="center" gap={2}>
+                    <LanguageSelectDesktop />
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => router.push('/potential-drivers/create')}
+                    >
+                        {t('potentialDrivers.addNew')}
+                    </Button>
+                </Box>
             </Box>
 
             {/* Filters */}
@@ -141,8 +145,12 @@ export default function PotentialDriversPage() {
                                 {data?.data.map((p) => (
                                     <TableRow
                                         key={p.id}
-                                        sx={{ opacity: p.status === 'Converted' ? 0.6 : 1 }}
                                         hover
+                                        onClick={() => router.push(`/potential-drivers/${p.id}`)}
+                                        sx={{
+                                            opacity: p.status === 'Converted' ? 0.6 : 1,
+                                            cursor: 'pointer',
+                                        }}
                                     >
                                         <TableCell sx={{ fontWeight: 500 }}>
                                             {p.firstName} {p.lastName}
@@ -162,7 +170,7 @@ export default function PotentialDriversPage() {
                                                 : '—'}
                                         </TableCell>
                                         {isGlobalAdmin && <TableCell>{p.companyName ?? '—'}</TableCell>}
-                                        <TableCell align="right">
+                                        <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                                             <Tooltip title={t('potentialDrivers.actions.view')}>
                                                 <IconButton size="small" onClick={() => router.push(`/potential-drivers/${p.id}`)}>
                                                     <VisibilityIcon fontSize="small" />
