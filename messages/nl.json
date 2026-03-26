@@ -1947,6 +1947,7 @@
     "companies": "Bedrijven",
     "admins": "Beheerders",
     "moduleToggles": "Modulebeheer",
+    "potentialDrivers": "Potentiële chauffeurs",
     "reports": "Rapporten",
     "annualStatements": "Jaaropgaven",
     "quotes": "Offertes",
@@ -3742,6 +3743,91 @@
         "label": "HR",
         "description": "Contracten, HR-brieven, personeelsbeheer"
       }
+    }
+  },
+  "potentialDrivers": {
+    "title": "Potentiële chauffeurs",
+    "subtitle": "Beheer kandidaat-chauffeurs voordat ze actieve chauffeurs worden",
+    "navigation": "Potentiële chauffeurs",
+    "addNew": "Nieuwe toevoegen",
+    "emptyState": "Geen potentiële chauffeurs gevonden",
+    "list": {
+      "columns": {
+        "name": "Naam",
+        "phone": "Telefoon",
+        "email": "E-mail",
+        "status": "Status",
+        "expectedStart": "Verwachte start",
+        "company": "Bedrijf",
+        "actions": "Acties"
+      }
+    },
+    "actions": {
+      "view": "Bekijken",
+      "edit": "Bewerken",
+      "convert": "Converteren naar chauffeur",
+      "delete": "Verwijderen",
+      "viewDriver": "Bekijk chauffeursprofiel →"
+    },
+    "status": {
+      "New": "Nieuw",
+      "Contacted": "Benaderd",
+      "Interviewing": "In gesprek",
+      "OfferMade": "Aanbod gedaan",
+      "Accepted": "Geaccepteerd",
+      "Rejected": "Afgewezen",
+      "Converted": "Geconverteerd"
+    },
+    "source": {
+      "Referral": "Referral",
+      "JobBoard": "Jobboard",
+      "LinkedIn": "LinkedIn",
+      "WalkIn": "Binnengelopen",
+      "Other": "Overig"
+    },
+    "fields": {
+      "firstName": { "label": "Voornaam", "required": "Voornaam is verplicht" },
+      "lastName": { "label": "Achternaam", "required": "Achternaam is verplicht" },
+      "email": { "label": "E-mail", "required": "E-mail is verplicht", "invalid": "Ongeldig e-mailadres" },
+      "phoneNumber": { "label": "Telefoonnummer", "required": "Telefoonnummer is verplicht" },
+      "company": { "label": "Bedrijf", "required": "Bedrijf is verplicht" },
+      "status": { "label": "Status" },
+      "source": { "label": "Bron" },
+      "notes": { "label": "Notities", "placeholder": "Aanvullende notities over deze kandidaat..." },
+      "experienceYears": { "label": "Jaren ervaring" },
+      "hasCELicense": { "label": "Heeft CE-rijbewijs" },
+      "firstContactDate": { "label": "Eerste contactdatum" },
+      "lastContactDate": { "label": "Laatste contactdatum" },
+      "expectedStartDate": { "label": "Verwachte startdatum" }
+    },
+    "sections": {
+      "personal": "Persoonlijke informatie",
+      "recruitment": "Wervingsdetails"
+    },
+    "create": {
+      "title": "Potentiële chauffeur toevoegen",
+      "subtitle": "Registreer een nieuwe kandidaat-chauffeur",
+      "success": "Potentiële chauffeur succesvol toegevoegd",
+      "error": "Kan potentiële chauffeur niet toevoegen"
+    },
+    "edit": {
+      "title": "Potentiële chauffeur bewerken",
+      "subtitle": "Kandidaatinformatie bijwerken",
+      "success": "Potentiële chauffeur succesvol bijgewerkt",
+      "error": "Kan potentiële chauffeur niet bijwerken",
+      "buttons": { "submit": "Wijzigingen opslaan", "submitting": "Opslaan..." }
+    },
+    "detail": {
+      "convertedLabel": "Geconverteerd op",
+      "noContract": "Geen contracttype toegewezen",
+      "deleteConfirm": "Weet je zeker dat je deze kandidaat wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "deleteSuccess": "Kandidaat verwijderd",
+      "alreadyConverted": "Deze kandidaat is al geconverteerd naar een chauffeur."
+    },
+    "convert": {
+      "title": "Converteren naar chauffeur",
+      "description": "Dit opent het aanmaakformulier voor chauffeurs, vooringevuld met de gegevens van de kandidaat. Vul de resterende velden in en sla op om het chauffeursprofiel aan te maken.",
+      "confirm": "Ga door naar chauffeur aanmaken"
     }
   },
   "annualStatements": {
