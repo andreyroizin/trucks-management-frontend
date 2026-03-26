@@ -1259,7 +1259,7 @@ HR module must be enabled for the customerAdmin being tested.
 
 ---
 
-## PHASE 4 — R25 Part B: Raam + Bemiddeling Contract Types
+## PHASE 4 — R25 Part B: Raam + Bemiddeling Contract Types ✅ COMPLETE
 
 ### What we are building
 Two new contract types based on the exact templates in `BemiddelingZZP.xlsx`: Raam (framework agreement) and Bemiddeling (mediation agreement). These are used for the ZZP mediation workflow where Boratech acts as intermediary between a transport company and a ZZP driver.

@@ -1948,6 +1948,8 @@
     "admins": "Beheerders",
     "moduleToggles": "Modulebeheer",
     "potentialDrivers": "Potentiële chauffeurs",
+    "employees": "Medewerkers",
+    "contracts": "Contracten",
     "reports": "Rapporten",
     "annualStatements": "Jaaropgaven",
     "quotes": "Offertes",
@@ -4070,6 +4072,92 @@
     "deleteConfirm": {
       "title": "Beginsaldo verwijderen",
       "message": "Weet u zeker dat u het beginsaldo voor {year} wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    }
+  },
+  "employees": {
+    "title": "Medewerkers",
+    "subtitle": "Beheer niet-chauffeur personeel met toegang tot het platform",
+    "navigation": "Medewerkers",
+    "addNew": "Medewerker toevoegen",
+    "emptyState": "Geen medewerkers gevonden",
+    "list": {
+      "search": "Zoeken op naam of e-mail",
+      "loadError": "Ophalen medewerkers mislukt",
+      "columns": {
+        "name": "Naam",
+        "email": "E-mail",
+        "role": "Functie",
+        "company": "Bedrijf",
+        "actions": "Acties"
+      }
+    },
+    "sections": {
+      "personal": "Persoonlijke gegevens",
+      "role": "Functie & instellingen",
+      "contract": "Contract"
+    },
+    "fields": {
+      "firstName": {
+        "label": "Voornaam",
+        "required": "Voornaam is verplicht"
+      },
+      "lastName": {
+        "label": "Achternaam",
+        "required": "Achternaam is verplicht"
+      },
+      "email": {
+        "label": "E-mail",
+        "required": "E-mail is verplicht",
+        "invalid": "Voer een geldig e-mailadres in"
+      },
+      "role": {
+        "label": "Functie",
+        "required": "Functie is verplicht"
+      },
+      "company": {
+        "label": "Bedrijf",
+        "required": "Bedrijf is verplicht"
+      },
+      "language": {
+        "label": "Taal"
+      },
+      "externalClientNumber": {
+        "label": "Klantnummer"
+      },
+      "contractType": {
+        "label": "Contracttype"
+      },
+      "createdAt": "Aangemaakt",
+      "updatedAt": "Bijgewerkt"
+    },
+    "role": {
+      "Planner": "Planner",
+      "Admin": "Beheerder",
+      "Manager": "Manager",
+      "Accountant": "Accountant",
+      "HR": "HR",
+      "Other": "Overig"
+    },
+    "actions": {
+      "view": "Bekijken",
+      "edit": "Bewerken",
+      "delete": "Verwijderen",
+      "cancel": "Annuleren"
+    },
+    "create": {
+      "title": "Nieuwe medewerker toevoegen",
+      "subtitle": "Maak een account en medewerkersprofiel aan",
+      "error": "Aanmaken medewerker mislukt"
+    },
+    "edit": {
+      "title": "Medewerker bewerken",
+      "save": "Wijzigingen opslaan",
+      "error": "Bijwerken medewerker mislukt"
+    },
+    "detail": {
+      "notFound": "Medewerker niet gevonden",
+      "deleteTitle": "Medewerker verwijderen",
+      "deleteConfirm": "Weet u zeker dat u deze medewerker wilt verwijderen? Het inlogaccount blijft behouden maar het medewerkersprofiel wordt verwijderd."
     }
   }
 }

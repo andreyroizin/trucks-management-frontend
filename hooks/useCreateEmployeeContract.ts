@@ -4,10 +4,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/utils/api'; // or wherever your axios instance is
 import { ApiResponse } from '@/types/api';
 
+export type ContractType =
+    | 'CAO'
+    | 'ZZP'
+    | 'Inleen'
+    | 'BriefLoonschaal'
+    | 'Raam'
+    | 'Bemiddeling';
+
 // POST body structure
 export type CreateEmployeeContractInput = {
     driverId?: string;
     companyId?: string;
+    contractType?: ContractType;
 
     nightHoursAllowed?: boolean;
     kilometersAllowanceAllowed?: boolean;
@@ -50,6 +59,57 @@ export type CreateEmployeeContractInput = {
     companyPhoneNumber?: string;
     companyBtw?: string;
     companyKvk?: string;
+
+    // ZZP fields
+    zzpBtwNumber?: string;
+    zzpKvkNumber?: string;
+    zzpHourlyRateExclBtw?: number;
+    zzpBtwPercentage?: number;
+    zzpMediationFeePerWeek?: number;
+    zzpContractNumber?: string;
+    zzpWorkDescription?: string;
+    zzpLocation?: string;
+
+    // Inleen fields
+    inleenLendingCompanyId?: string;
+    inleenBorrowingCompanyId?: string;
+    inleenStartDate?: string | null;
+    inleenEndDate?: string | null;
+    inleenHourlyRate?: number;
+    inleenWorkDescription?: string;
+    inleenLocation?: string;
+
+    // BriefLoonschaal fields
+    briefMonthlySalary?: number;
+    briefGrade?: string;
+    briefExpectedMonthlyHours?: number;
+
+    // Raam fields
+    raamContractNumber?: string;
+    raamOpdrachtgeverName?: string;
+    raamOpdrachtgeverKvk?: string;
+    raamOpdrachtgeverAddress?: string;
+    raamOpdrachtgeverCity?: string;
+    raamWorkDescription?: string;
+    raamLocation?: string;
+    raamHourlyRateExclBtw?: number;
+    raamBtwPercentage?: number;
+    raamPaymentTermDays?: string;
+    raamStartDate?: string | null;
+    raamEndDate?: string | null;
+
+    // Bemiddeling fields
+    bemiddelingContractNumber?: string;
+    bemiddelingOpdrachtnemerKvk?: string;
+    bemiddelingOpdrachtnemerBtw?: string;
+    bemiddelingWorkDescription?: string;
+    bemiddelingLocation?: string;
+    bemiddelingHourlyRateExclBtw?: number;
+    bemiddelingBtwPercentage?: number;
+    bemiddelingMediationFeePerWeek?: number;
+    bemiddelingPaymentTermDays?: string;
+    bemiddelingStartDate?: string | null;
+    bemiddelingEndDate?: string | null;
 };
 
 // POST function

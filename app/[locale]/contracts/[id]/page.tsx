@@ -24,6 +24,7 @@ import {useEmployeeContractDetail} from '@/hooks/useEmployeeContractDetail';
 import {useDeleteEmployeeContract} from "@/hooks/useDeleteEmployeeContract";
 import ConfirmModal from '@/components/ConfirmModal';
 import {useDownloadContract} from "@/hooks/useDownloadContract";
+import {useGenerateContractPdf} from "@/hooks/useGenerateContractPdf";
 import {useTranslations} from 'next-intl';
 
 export default function ContractDetailPage() {
@@ -48,8 +49,19 @@ export default function ContractDetailPage() {
     } = useEmployeeContractDetail(id as string);
     const { mutateAsync: downloadContract, isPending: downloading } =
         useDownloadContract();
+    const { mutateAsync: generatePdf, isPending: generating } =
+        useGenerateContractPdf();
 
     const contractSigned = contract?.status === 1;
+
+    const handleGeneratePdf = async () => {
+        try {
+            const res = await generatePdf(id as string);
+            downloadBase64Pdf(res.contentBase64, res.fileName);
+        } catch (err: any) {
+            alert(err.message || 'Failed to generate PDF');
+        }
+    };
 
     // 3) Deletion
     const {mutateAsync: deleteContract, isPending} = useDeleteEmployeeContract();
@@ -113,13 +125,23 @@ export default function ContractDetailPage() {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h5">{t('contracts.detail.title')}</Typography>
                 <Box display="flex" gap={2}>
+                    {/* Generate PDF — always available for any contract type */}
+                    <Button
+                        variant="outlined"
+                        disabled={generating}
+                        onClick={handleGeneratePdf}
+                    >
+                        {generating ? 'Generating…' : 'Download PDF'}
+                    </Button>
+
+                    {/* Download signed copy — only available after the contract has been signed */}
                     {contractSigned && (
                         <Button
                             variant="outlined"
                             disabled={downloading}
                             onClick={handleContractDownload}
                         >
-                            {downloading ? t('contracts.detail.actions.downloading') : t('contracts.detail.actions.downloadContract')}
+                            {downloading ? t('contracts.detail.actions.downloading') : 'Download Signed Copy'}
                         </Button>
                     )}
                     <Link href={`/contracts/edit/${contract.id}`} passHref>
