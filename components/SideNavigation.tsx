@@ -235,6 +235,14 @@ export default function SideNavigation() {
                     </NavItem>
                 )}
 
+                {/* Employees — gated by HR module, visible to globalAdmin + customerAdmin */}
+                {isModuleEnabled('HR') && (isGlobalAdmin || user?.roles?.includes('customerAdmin')) && (
+                    <NavItem active={isActive('/employees')} main onClick={() => go('/employees')}>
+                        <ListItemIcon><PersonIcon/></ListItemIcon>
+                        <ListItemText primary={t('navigation.employees')}/>
+                    </NavItem>
+                )}
+
                 {/* Vehicles */}
                 <NavItem active={isActive('/cars')} main onClick={() => go('/cars')}>
                     <ListItemIcon><LocalShippingIcon/></ListItemIcon>
