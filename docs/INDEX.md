@@ -45,6 +45,9 @@
 | [features/PLANNING.md](features/PLANNING.md) | Weekly/daily planning, capacity |
 | [features/INVOICING.md](features/INVOICING.md) | Driver invoices, reports |
 | [features/MODULE_TOGGLES.md](features/MODULE_TOGGLES.md) | Module toggle system — per-admin feature access control |
+| [features/ANNUAL_STATEMENTS.md](features/ANNUAL_STATEMENTS.md) | Jaaropgave: year-end & departure statements |
+| [features/QUOTES.md](features/QUOTES.md) | Quote/Offerte: create, manage, PDF generation |
+| [features/STARTING_BALANCES.md](features/STARTING_BALANCES.md) | Admin override for driver starting balances (vacation, TvT, ADV) |
 
 ---
 

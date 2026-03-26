@@ -1944,6 +1944,8 @@
     "moduleToggles": "Module Toggles",
     "potentialDrivers": "Potential Drivers",
     "reports": "Reports",
+    "annualStatements": "Annual Statements",
+    "quotes": "Quotes",
     "settings": "Settings",
     "profile": {
       "title": "Profile",
@@ -3871,6 +3873,248 @@
       "title": "Convert to Driver",
       "description": "This will open the driver creation form pre-filled with the candidate's data. Complete the remaining fields and save to create the driver account.",
       "confirm": "Proceed to Create Driver"
+    }
+  },
+  "annualStatements": {
+    "title": "Annual Statements",
+    "subtitle": "Generate and manage annual statements (jaaropgave) for employees",
+    "tabs": {
+      "active": "Active Employees",
+      "departing": "Departing Employees"
+    },
+    "active": {
+      "title": "Year-End Annual Statements",
+      "yearLabel": "Year",
+      "generateAll": "Generate for All Active Employees",
+      "generating": "Generating...",
+      "statusGenerated": "Generated",
+      "statusPending": "Pending",
+      "statusSent": "Sent",
+      "noData": "No annual statements found for this year.",
+      "table": {
+        "employee": "Employee",
+        "hours": "Total Hours",
+        "grossWage": "Gross Wage",
+        "vacation": "Vacation Days",
+        "status": "Status",
+        "actions": "Actions",
+        "generatedAt": "Generated"
+      },
+      "progress": "{count} of {total} generated ({percentage}%)"
+    },
+    "departing": {
+      "title": "Departing Employees (Mid-Year Statements)",
+      "filterLabel": "Filter",
+      "noData": "No pending departures found.",
+      "overdueWarning": "{count} overdue (>28 days)",
+      "table": {
+        "employee": "Employee",
+        "company": "Company",
+        "terminationDate": "Terminated",
+        "period": "Period Covered",
+        "daysSince": "Days Since",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "statusOverdue": "OVERDUE",
+      "statusPending": "Pending",
+      "statusDone": "Done"
+    },
+    "actions": {
+      "generate": "Generate",
+      "generateNow": "Generate Now",
+      "download": "Download",
+      "view": "View",
+      "delete": "Delete"
+    },
+    "generate": {
+      "title": "Generate Annual Statement",
+      "selectDriver": "Select Driver",
+      "selectYear": "Year",
+      "submit": "Generate",
+      "submitting": "Generating...",
+      "success": "Annual statement generated successfully",
+      "error": "Failed to generate annual statement"
+    },
+    "batch": {
+      "title": "Generate Annual Statements for {year}",
+      "description": "This will generate jaaropgave for all employees who were active as of December 31, {year}.",
+      "employeesFound": "Employees found: {count}",
+      "confirm": "Generate All",
+      "cancel": "Cancel",
+      "progress": "Generating Annual Statements...",
+      "progressDetail": "{completed} of {total} completed",
+      "success": "{count} annual statements generated for {year}",
+      "successWithErrors": "{count} generated, {errors} errors",
+      "runInBackground": "Close",
+      "error": "Failed to generate batch statements"
+    },
+    "terminate": {
+      "title": "Terminate Employee: {name}",
+      "terminationDate": "Termination Date",
+      "reason": "Reason",
+      "reasons": {
+        "resignation": "Resignation",
+        "contractExpired": "Contract Expired",
+        "performance": "Performance Issues",
+        "other": "Other"
+      },
+      "otherReason": "Specify reason",
+      "generateJaaropgave": "Generate annual statement (jaaropgave) now",
+      "generateJaaropgaveHint": "Recommended — legal requirement within 4 weeks",
+      "sendTerminationLetter": "Send termination letter",
+      "sendTerminationLetterHint": "Coming soon",
+      "confirm": "Confirm Termination",
+      "cancel": "Cancel",
+      "confirming": "Processing...",
+      "success": "Employee terminated successfully",
+      "error": "Failed to terminate employee"
+    },
+    "deleteConfirm": {
+      "title": "Delete Annual Statement",
+      "message": "Are you sure you want to delete this annual statement? This action cannot be undone.",
+      "success": "Annual statement deleted",
+      "error": "Failed to delete annual statement"
+    },
+    "errors": {
+      "loadFailed": "Failed to load annual statements",
+      "loadPendingFailed": "Failed to load pending departures",
+      "loadOverdueFailed": "Failed to load overdue statements"
+    }
+  },
+  "quotes": {
+    "title": "Quotes",
+    "subtitle": "Create and manage quotes (offertes) for customers",
+    "createButton": "New Quote",
+    "searchPlaceholder": "Search by quote number, client or subject...",
+    "noData": "No quotes found.",
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    },
+    "filter": {
+      "allStatuses": "All Statuses"
+    },
+    "table": {
+      "quoteNumber": "Quote #",
+      "client": "Client",
+      "subject": "Subject",
+      "total": "Total (incl. BTW)",
+      "status": "Status",
+      "validUntil": "Valid Until",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadPdf": "Download PDF",
+      "delete": "Delete",
+      "edit": "Edit",
+      "markSent": "Mark as Sent",
+      "markAccepted": "Accept",
+      "markRejected": "Reject",
+      "revertToDraft": "Revert to Draft"
+    },
+    "deleteConfirm": {
+      "title": "Delete Quote",
+      "message": "Are you sure you want to delete this quote? This action cannot be undone."
+    },
+    "create": {
+      "title": "Create Quote",
+      "subtitle": "Fill in the details to create a new quote",
+      "submitButton": "Save as Draft"
+    },
+    "edit": {
+      "title": "Edit Quote",
+      "submitButton": "Save Changes"
+    },
+    "detail": {
+      "backToList": "Back to Quotes",
+      "createdOn": "Created {date}",
+      "sentOn": "Sent {date}",
+      "acceptedOn": "Accepted {date}",
+      "rejectedOn": "Rejected {date}",
+      "from": "From",
+      "to": "To",
+      "subject": "Subject",
+      "validUntil": "Valid until",
+      "lineItems": "Line Items",
+      "lineTotal": "Total",
+      "notes": "Notes & Terms"
+    },
+    "form": {
+      "companySection": "Company",
+      "company": "Company",
+      "clientSection": "Customer",
+      "existingClient": "Existing client",
+      "selectClient": "Select client",
+      "clientName": "Customer name",
+      "clientEmail": "Email",
+      "clientAddress": "Address",
+      "clientPostcode": "Postcode",
+      "clientCity": "City",
+      "clientCountry": "Country",
+      "clientKvk": "KVK number",
+      "clientBtw": "BTW number",
+      "detailsSection": "Quote Details",
+      "subject": "Subject",
+      "validUntil": "Valid until",
+      "vatPercentage": "BTW %",
+      "notes": "Notes / Terms",
+      "lineItemsSection": "Line Items",
+      "addLineItem": "Add line",
+      "removeLineItem": "Remove",
+      "lineDescription": "Description",
+      "lineQuantity": "Quantity",
+      "lineUnit": "Unit",
+      "lineUnitPrice": "Unit price (excl. BTW)",
+      "subtotal": "Subtotal excl. BTW",
+      "vatAmount": "BTW ({percentage}%)",
+      "totalInclVat": "Total incl. BTW",
+      "submitting": "Saving..."
+    },
+    "units": {
+      "uur": "Hour",
+      "rit": "Trip",
+      "dag": "Day",
+      "stuk": "Piece"
+    },
+    "errors": {
+      "createFailed": "Failed to create quote",
+      "updateFailed": "Failed to update quote",
+      "deleteFailed": "Failed to delete quote",
+      "statusUpdateFailed": "Failed to update quote status",
+      "loadFailed": "Failed to load quotes"
+    }
+  },
+  "startingBalances": {
+    "title": "Starting Balances",
+    "subtitle": "Override the starting balance for vacation, TvT, and ADV hours. These values are added to the calculated totals in timesheets.",
+    "year": "Year",
+    "vacationHours": "Vacation Hours",
+    "vacationDays": "≈ {days} days",
+    "tvtHours": "TvT Hours",
+    "advHours": "ADV Hours",
+    "notes": "Notes",
+    "notesPlaceholder": "e.g. Carried over from previous employer",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete Balance",
+    "setOn": "Set on {date} by {user}",
+    "success": {
+      "saved": "Starting balance saved successfully",
+      "deleted": "Starting balance deleted successfully"
+    },
+    "errors": {
+      "saveFailed": "Failed to save starting balance",
+      "deleteFailed": "Failed to delete starting balance"
+    },
+    "deleteConfirm": {
+      "title": "Delete Starting Balance",
+      "message": "Are you sure you want to delete the starting balance for {year}? This cannot be undone."
     }
   }
 }

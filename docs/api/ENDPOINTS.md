@@ -326,3 +326,42 @@ All endpoints return JSON wrapped in `ApiResponse<T>` unless noted. See [api/CON
 | GET | `/drivers/{id}/telegram/registration-link` | Get Telegram registration link |
 | DELETE | `/drivers/{id}/telegram` | Disconnect Telegram |
 | POST | `/telegram/test` | Test Telegram |
+
+---
+
+## Annual Statements (Jaaropgave)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/annual-statements` | List annual statements (paginated, filterable by year/driver/status/company) |
+| GET | `/annual-statements/pending-departures` | List terminated drivers needing jaaropgave |
+| GET | `/annual-statements/overdue` | List departures overdue >28 days |
+| POST | `/annual-statements/generate` | Generate single statement (body: `{ driverId, year }`) |
+| POST | `/annual-statements/generate-for-departure/{driverId}` | Generate departure statement for terminated driver |
+| POST | `/annual-statements/generate-year-end-batch/{year}` | Batch generate for all active employees of given year |
+| GET | `/annual-statements/{id}/download` | Download statement PDF (blob) |
+
+---
+
+## Quotes (Offerte)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/quotes` | List quotes (paginated, filterable by search/status/company) |
+| GET | `/quotes/{id}` | Quote detail with line items |
+| POST | `/quotes` | Create quote (auto-generates number, status = Draft) |
+| PUT | `/quotes/{id}` | Update quote (Draft only) |
+| PUT | `/quotes/{id}/status` | Update quote status (body: `{ status }`) |
+| DELETE | `/quotes/{id}` | Soft delete quote |
+| GET | `/quotes/{id}/pdf` | Download quote PDF (blob) |
+
+---
+
+## Starting Balances
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/drivers/{driverId}/starting-balances` | List starting balances (optional `?year=` filter) |
+| GET | `/drivers/{driverId}/starting-balances/{year}` | Get starting balance for specific year |
+| POST | `/drivers/{driverId}/starting-balances` | Upsert starting balance (body: `{ year, vacationHours, tvtHours, advHours, notes? }`) |
+| DELETE | `/drivers/{driverId}/starting-balances/{year}` | Delete starting balance for specific year |

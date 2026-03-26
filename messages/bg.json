@@ -1949,6 +1949,8 @@
     "moduleToggles": "Модули",
     "potentialDrivers": "Потенциални шофьори",
     "reports": "Отчети",
+    "annualStatements": "Годишни справки",
+    "quotes": "Оферти",
     "settings": "Настройки",
     "profile": {
       "title": "Профил",
@@ -3856,6 +3858,248 @@
       "title": "Конвертиране в шофьор",
       "description": "Ще се отвори формата за създаване на шофьор, предварително попълнена с данните на кандидата. Попълнете останалите полета и запазете, за да създадете акаунта.",
       "confirm": "Продължи към създаване на шофьор"
+    }
+  },
+  "annualStatements": {
+    "title": "Годишни справки",
+    "subtitle": "Генериране и управление на годишни справки за служители",
+    "tabs": {
+      "active": "Активни служители",
+      "departing": "Напускащи служители"
+    },
+    "active": {
+      "title": "Годишни справки (Край на годината)",
+      "yearLabel": "Година",
+      "generateAll": "Генериране за всички активни служители",
+      "generating": "Генериране...",
+      "statusGenerated": "Генерирано",
+      "statusPending": "Чакащо",
+      "statusSent": "Изпратено",
+      "noData": "Няма намерени годишни справки за тази година.",
+      "table": {
+        "employee": "Служител",
+        "hours": "Общо часове",
+        "grossWage": "Брутна заплата",
+        "vacation": "Дни отпуска",
+        "status": "Статус",
+        "actions": "Действия",
+        "generatedAt": "Генерирано"
+      },
+      "progress": "{count} от {total} генерирани ({percentage}%)"
+    },
+    "departing": {
+      "title": "Напускащи служители (Междинни справки)",
+      "filterLabel": "Филтър",
+      "noData": "Няма намерени чакащи напускания.",
+      "overdueWarning": "{count} просрочени (>28 дни)",
+      "table": {
+        "employee": "Служител",
+        "company": "Компания",
+        "terminationDate": "Прекратен",
+        "period": "Период",
+        "daysSince": "Дни от",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "statusOverdue": "ПРОСРОЧЕНО",
+      "statusPending": "Чакащо",
+      "statusDone": "Готово"
+    },
+    "actions": {
+      "generate": "Генериране",
+      "generateNow": "Генерирай сега",
+      "download": "Изтегли",
+      "view": "Преглед",
+      "delete": "Изтрий"
+    },
+    "generate": {
+      "title": "Генериране на годишна справка",
+      "selectDriver": "Избери служител",
+      "selectYear": "Година",
+      "submit": "Генериране",
+      "submitting": "Генериране...",
+      "success": "Годишната справка е генерирана успешно",
+      "error": "Неуспешно генериране на годишна справка"
+    },
+    "batch": {
+      "title": "Генериране на годишни справки за {year}",
+      "description": "Това ще генерира годишна справка за всички служители, които са били активни към 31 декември {year}.",
+      "employeesFound": "Намерени служители: {count}",
+      "confirm": "Генерирай всички",
+      "cancel": "Отказ",
+      "progress": "Генериране на годишни справки...",
+      "progressDetail": "{completed} от {total} завършени",
+      "success": "{count} годишни справки генерирани за {year}",
+      "successWithErrors": "{count} генерирани, {errors} грешки",
+      "runInBackground": "Затвори",
+      "error": "Неуспешно групово генериране"
+    },
+    "terminate": {
+      "title": "Прекратяване на служител: {name}",
+      "terminationDate": "Дата на прекратяване",
+      "reason": "Причина",
+      "reasons": {
+        "resignation": "Подаване на оставка",
+        "contractExpired": "Изтекъл договор",
+        "performance": "Проблеми с изпълнението",
+        "other": "Друго"
+      },
+      "otherReason": "Уточнете причина",
+      "generateJaaropgave": "Генерирай годишна справка сега",
+      "generateJaaropgaveHint": "Препоръчително — законово изискване в рамките на 4 седмици",
+      "sendTerminationLetter": "Изпрати писмо за прекратяване",
+      "sendTerminationLetterHint": "Очаквайте скоро",
+      "confirm": "Потвърди прекратяване",
+      "cancel": "Отказ",
+      "confirming": "Обработка...",
+      "success": "Служителят е прекратен успешно",
+      "error": "Неуспешно прекратяване на служител"
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на годишна справка",
+      "message": "Сигурни ли сте, че искате да изтриете тази годишна справка? Това действие не може да бъде отменено.",
+      "success": "Годишната справка е изтрита",
+      "error": "Неуспешно изтриване на годишна справка"
+    },
+    "errors": {
+      "loadFailed": "Неуспешно зареждане на годишни справки",
+      "loadPendingFailed": "Неуспешно зареждане на чакащи напускания",
+      "loadOverdueFailed": "Неуспешно зареждане на просрочени справки"
+    }
+  },
+  "quotes": {
+    "title": "Оферти",
+    "subtitle": "Създавайте и управлявайте оферти за клиенти",
+    "createButton": "Нова Оферта",
+    "searchPlaceholder": "Търсене по номер, клиент или тема...",
+    "noData": "Няма намерени оферти.",
+    "status": {
+      "draft": "Чернова",
+      "sent": "Изпратена",
+      "accepted": "Приета",
+      "rejected": "Отхвърлена",
+      "expired": "Изтекла"
+    },
+    "filter": {
+      "allStatuses": "Всички статуси"
+    },
+    "table": {
+      "quoteNumber": "Оферта #",
+      "client": "Клиент",
+      "subject": "Тема",
+      "total": "Общо (с ДДС)",
+      "status": "Статус",
+      "validUntil": "Валидна до",
+      "created": "Създадена",
+      "actions": "Действия"
+    },
+    "actions": {
+      "downloadPdf": "Изтегли PDF",
+      "delete": "Изтрий",
+      "edit": "Редактирай",
+      "markSent": "Маркирай като Изпратена",
+      "markAccepted": "Приеми",
+      "markRejected": "Отхвърли",
+      "revertToDraft": "Върни в Чернова"
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на оферта",
+      "message": "Сигурни ли сте, че искате да изтриете тази оферта? Действието не може да бъде отменено."
+    },
+    "create": {
+      "title": "Създаване на оферта",
+      "subtitle": "Попълнете данните за нова оферта",
+      "submitButton": "Запази като чернова"
+    },
+    "edit": {
+      "title": "Редактиране на оферта",
+      "submitButton": "Запази промените"
+    },
+    "detail": {
+      "backToList": "Обратно към офертите",
+      "createdOn": "Създадена {date}",
+      "sentOn": "Изпратена {date}",
+      "acceptedOn": "Приета {date}",
+      "rejectedOn": "Отхвърлена {date}",
+      "from": "От",
+      "to": "До",
+      "subject": "Тема",
+      "validUntil": "Валидна до",
+      "lineItems": "Позиции",
+      "lineTotal": "Общо",
+      "notes": "Бележки и условия"
+    },
+    "form": {
+      "companySection": "Фирма",
+      "company": "Фирма",
+      "clientSection": "Клиент",
+      "existingClient": "Съществуващ клиент",
+      "selectClient": "Избери клиент",
+      "clientName": "Име на клиент",
+      "clientEmail": "Имейл",
+      "clientAddress": "Адрес",
+      "clientPostcode": "Пощенски код",
+      "clientCity": "Град",
+      "clientCountry": "Държава",
+      "clientKvk": "KVK номер",
+      "clientBtw": "ДДС номер",
+      "detailsSection": "Детайли на офертата",
+      "subject": "Тема",
+      "validUntil": "Валидна до",
+      "vatPercentage": "ДДС %",
+      "notes": "Бележки / Условия",
+      "lineItemsSection": "Позиции",
+      "addLineItem": "Добави позиция",
+      "removeLineItem": "Премахни",
+      "lineDescription": "Описание",
+      "lineQuantity": "Количество",
+      "lineUnit": "Мерна единица",
+      "lineUnitPrice": "Ед. цена (без ДДС)",
+      "subtotal": "Междинна сума без ДДС",
+      "vatAmount": "ДДС ({percentage}%)",
+      "totalInclVat": "Общо с ДДС",
+      "submitting": "Запазване..."
+    },
+    "units": {
+      "uur": "Час",
+      "rit": "Курс",
+      "dag": "Ден",
+      "stuk": "Брой"
+    },
+    "errors": {
+      "createFailed": "Неуспешно създаване на оферта",
+      "updateFailed": "Неуспешно обновяване на оферта",
+      "deleteFailed": "Неуспешно изтриване на оферта",
+      "statusUpdateFailed": "Неуспешна промяна на статус",
+      "loadFailed": "Неуспешно зареждане на оферти"
+    }
+  },
+  "startingBalances": {
+    "title": "Начални салда",
+    "subtitle": "Задайте начално салдо за отпуск, TvT и ADV часове. Тези стойности се добавят към изчислените суми в справките.",
+    "year": "Година",
+    "vacationHours": "Часове отпуск",
+    "vacationDays": "≈ {days} дни",
+    "tvtHours": "TvT часове",
+    "advHours": "ADV часове",
+    "notes": "Бележки",
+    "notesPlaceholder": "напр. Пренесени от предишен работодател",
+    "save": "Запази",
+    "saving": "Запазване...",
+    "cancel": "Отказ",
+    "delete": "Изтрий салдо",
+    "setOn": "Зададено на {date} от {user}",
+    "success": {
+      "saved": "Начално салдо запазено успешно",
+      "deleted": "Начално салдо изтрито успешно"
+    },
+    "errors": {
+      "saveFailed": "Неуспешно запазване на начално салдо",
+      "deleteFailed": "Неуспешно изтриване на начално салдо"
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на начално салдо",
+      "message": "Сигурни ли сте, че искате да изтриете началното салдо за {year}? Това действие не може да бъде отменено."
     }
   }
 }

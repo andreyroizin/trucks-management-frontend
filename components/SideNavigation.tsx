@@ -15,6 +15,8 @@ import LocalShippingIcon from '@mui/icons-material/LocalShippingRounded';
 import TargetIcon from '@mui/icons-material/ExploreRounded';
 import BusinessIcon from '@mui/icons-material/BusinessRounded';
 import AssessmentIcon from '@mui/icons-material/AssessmentRounded';
+import DescriptionIcon from '@mui/icons-material/DescriptionRounded';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuoteRounded';
 import SettingsIcon from '@mui/icons-material/SettingsRounded';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CalendarTodayIcon from '@mui/icons-material/CalendarTodayRounded';
@@ -274,6 +276,18 @@ export default function SideNavigation() {
                         <ListItemText primary={t('navigation.reports')}/>
                     </NavItem>
                 )}
+
+                {/* Annual Statements */}
+                <NavItem active={isActive('/annual-statements')} main onClick={() => go('/annual-statements')}>
+                    <ListItemIcon><DescriptionIcon/></ListItemIcon>
+                    <ListItemText primary={t('navigation.annualStatements')}/>
+                </NavItem>
+
+                {/* Quotes */}
+                <NavItem active={pathNoLocale.startsWith('/quotes')} main onClick={() => go('/quotes')}>
+                    <ListItemIcon><RequestQuoteIcon/></ListItemIcon>
+                    <ListItemText primary={t('navigation.quotes')}/>
+                </NavItem>
 
                 {/* <Divider sx={{my: 3}}/> */}
 

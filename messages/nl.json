@@ -1949,6 +1949,8 @@
     "moduleToggles": "Modulebeheer",
     "potentialDrivers": "Potentiële chauffeurs",
     "reports": "Rapporten",
+    "annualStatements": "Jaaropgaven",
+    "quotes": "Offertes",
     "settings": "Instellingen",
     "profile": {
       "title": "Profiel",
@@ -3826,6 +3828,248 @@
       "title": "Converteren naar chauffeur",
       "description": "Dit opent het aanmaakformulier voor chauffeurs, vooringevuld met de gegevens van de kandidaat. Vul de resterende velden in en sla op om het chauffeursprofiel aan te maken.",
       "confirm": "Ga door naar chauffeur aanmaken"
+    }
+  },
+  "annualStatements": {
+    "title": "Jaaropgaven",
+    "subtitle": "Genereer en beheer jaaropgaven voor werknemers",
+    "tabs": {
+      "active": "Actieve Werknemers",
+      "departing": "Vertrekkende Werknemers"
+    },
+    "active": {
+      "title": "Jaaropgaven (Jaareinde)",
+      "yearLabel": "Jaar",
+      "generateAll": "Genereer voor alle actieve werknemers",
+      "generating": "Bezig met genereren...",
+      "statusGenerated": "Gegenereerd",
+      "statusPending": "In afwachting",
+      "statusSent": "Verzonden",
+      "noData": "Geen jaaropgaven gevonden voor dit jaar.",
+      "table": {
+        "employee": "Werknemer",
+        "hours": "Totale Uren",
+        "grossWage": "Bruto Loon",
+        "vacation": "Vakantiedagen",
+        "status": "Status",
+        "actions": "Acties",
+        "generatedAt": "Gegenereerd"
+      },
+      "progress": "{count} van {total} gegenereerd ({percentage}%)"
+    },
+    "departing": {
+      "title": "Vertrekkende Werknemers (Tussentijdse Opgaven)",
+      "filterLabel": "Filter",
+      "noData": "Geen openstaande vertrekkers gevonden.",
+      "overdueWarning": "{count} te laat (>28 dagen)",
+      "table": {
+        "employee": "Werknemer",
+        "company": "Bedrijf",
+        "terminationDate": "Beëindigd",
+        "period": "Periode",
+        "daysSince": "Dagen Sinds",
+        "status": "Status",
+        "actions": "Acties"
+      },
+      "statusOverdue": "TE LAAT",
+      "statusPending": "In afwachting",
+      "statusDone": "Gereed"
+    },
+    "actions": {
+      "generate": "Genereer",
+      "generateNow": "Nu Genereren",
+      "download": "Download",
+      "view": "Bekijken",
+      "delete": "Verwijderen"
+    },
+    "generate": {
+      "title": "Jaaropgave Genereren",
+      "selectDriver": "Selecteer Werknemer",
+      "selectYear": "Jaar",
+      "submit": "Genereren",
+      "submitting": "Bezig met genereren...",
+      "success": "Jaaropgave succesvol gegenereerd",
+      "error": "Jaaropgave genereren mislukt"
+    },
+    "batch": {
+      "title": "Jaaropgaven genereren voor {year}",
+      "description": "Dit genereert een jaaropgave voor alle werknemers die op 31 december {year} actief waren.",
+      "employeesFound": "Werknemers gevonden: {count}",
+      "confirm": "Alles Genereren",
+      "cancel": "Annuleren",
+      "progress": "Jaaropgaven worden gegenereerd...",
+      "progressDetail": "{completed} van {total} voltooid",
+      "success": "{count} jaaropgaven gegenereerd voor {year}",
+      "successWithErrors": "{count} gegenereerd, {errors} fouten",
+      "runInBackground": "Sluiten",
+      "error": "Batch generatie mislukt"
+    },
+    "terminate": {
+      "title": "Werknemer beëindigen: {name}",
+      "terminationDate": "Beëindigingsdatum",
+      "reason": "Reden",
+      "reasons": {
+        "resignation": "Ontslag genomen",
+        "contractExpired": "Contract verlopen",
+        "performance": "Prestatieproblemen",
+        "other": "Anders"
+      },
+      "otherReason": "Specificeer reden",
+      "generateJaaropgave": "Jaaropgave nu genereren",
+      "generateJaaropgaveHint": "Aanbevolen — wettelijke verplichting binnen 4 weken",
+      "sendTerminationLetter": "Beëindigingsbrief versturen",
+      "sendTerminationLetterHint": "Binnenkort beschikbaar",
+      "confirm": "Bevestig Beëindiging",
+      "cancel": "Annuleren",
+      "confirming": "Verwerken...",
+      "success": "Werknemer succesvol beëindigd",
+      "error": "Beëindiging werknemer mislukt"
+    },
+    "deleteConfirm": {
+      "title": "Jaaropgave Verwijderen",
+      "message": "Weet u zeker dat u deze jaaropgave wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "success": "Jaaropgave verwijderd",
+      "error": "Verwijderen van jaaropgave mislukt"
+    },
+    "errors": {
+      "loadFailed": "Laden van jaaropgaven mislukt",
+      "loadPendingFailed": "Laden van openstaande vertrekkers mislukt",
+      "loadOverdueFailed": "Laden van te late opgaven mislukt"
+    }
+  },
+  "quotes": {
+    "title": "Offertes",
+    "subtitle": "Maak en beheer offertes voor klanten",
+    "createButton": "Nieuwe Offerte",
+    "searchPlaceholder": "Zoek op offertenummer, klant of onderwerp...",
+    "noData": "Geen offertes gevonden.",
+    "status": {
+      "draft": "Concept",
+      "sent": "Verzonden",
+      "accepted": "Geaccepteerd",
+      "rejected": "Afgewezen",
+      "expired": "Verlopen"
+    },
+    "filter": {
+      "allStatuses": "Alle Statussen"
+    },
+    "table": {
+      "quoteNumber": "Offerte #",
+      "client": "Klant",
+      "subject": "Onderwerp",
+      "total": "Totaal (incl. BTW)",
+      "status": "Status",
+      "validUntil": "Geldig tot",
+      "created": "Aangemaakt",
+      "actions": "Acties"
+    },
+    "actions": {
+      "downloadPdf": "PDF Downloaden",
+      "delete": "Verwijderen",
+      "edit": "Bewerken",
+      "markSent": "Markeer als Verzonden",
+      "markAccepted": "Accepteren",
+      "markRejected": "Afwijzen",
+      "revertToDraft": "Terug naar Concept"
+    },
+    "deleteConfirm": {
+      "title": "Offerte Verwijderen",
+      "message": "Weet u zeker dat u deze offerte wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
+    },
+    "create": {
+      "title": "Offerte Aanmaken",
+      "subtitle": "Vul de gegevens in om een nieuwe offerte te maken",
+      "submitButton": "Opslaan als Concept"
+    },
+    "edit": {
+      "title": "Offerte Bewerken",
+      "submitButton": "Wijzigingen Opslaan"
+    },
+    "detail": {
+      "backToList": "Terug naar Offertes",
+      "createdOn": "Aangemaakt {date}",
+      "sentOn": "Verzonden {date}",
+      "acceptedOn": "Geaccepteerd {date}",
+      "rejectedOn": "Afgewezen {date}",
+      "from": "Van",
+      "to": "Aan",
+      "subject": "Onderwerp",
+      "validUntil": "Geldig tot",
+      "lineItems": "Regelitems",
+      "lineTotal": "Totaal",
+      "notes": "Opmerkingen & Voorwaarden"
+    },
+    "form": {
+      "companySection": "Bedrijf",
+      "company": "Bedrijf",
+      "clientSection": "Klant",
+      "existingClient": "Bestaande klant",
+      "selectClient": "Selecteer klant",
+      "clientName": "Klantnaam",
+      "clientEmail": "E-mail",
+      "clientAddress": "Adres",
+      "clientPostcode": "Postcode",
+      "clientCity": "Plaats",
+      "clientCountry": "Land",
+      "clientKvk": "KVK-nummer",
+      "clientBtw": "BTW-nummer",
+      "detailsSection": "Offerte Details",
+      "subject": "Onderwerp",
+      "validUntil": "Geldig tot",
+      "vatPercentage": "BTW %",
+      "notes": "Opmerkingen / Voorwaarden",
+      "lineItemsSection": "Regelitems",
+      "addLineItem": "Regel toevoegen",
+      "removeLineItem": "Verwijderen",
+      "lineDescription": "Omschrijving",
+      "lineQuantity": "Aantal",
+      "lineUnit": "Eenheid",
+      "lineUnitPrice": "Prijs per eenheid (excl. BTW)",
+      "subtotal": "Subtotaal excl. BTW",
+      "vatAmount": "BTW ({percentage}%)",
+      "totalInclVat": "Totaal incl. BTW",
+      "submitting": "Opslaan..."
+    },
+    "units": {
+      "uur": "Uur",
+      "rit": "Rit",
+      "dag": "Dag",
+      "stuk": "Stuk"
+    },
+    "errors": {
+      "createFailed": "Offerte aanmaken mislukt",
+      "updateFailed": "Offerte bijwerken mislukt",
+      "deleteFailed": "Offerte verwijderen mislukt",
+      "statusUpdateFailed": "Status bijwerken mislukt",
+      "loadFailed": "Offertes laden mislukt"
+    }
+  },
+  "startingBalances": {
+    "title": "Beginsaldo's",
+    "subtitle": "Overschrijf het beginsaldo voor vakantie-, TvT- en ADV-uren. Deze waarden worden opgeteld bij de berekende totalen in urenstaten.",
+    "year": "Jaar",
+    "vacationHours": "Vakantie-uren",
+    "vacationDays": "≈ {days} dagen",
+    "tvtHours": "TvT-uren",
+    "advHours": "ADV-uren",
+    "notes": "Opmerkingen",
+    "notesPlaceholder": "bijv. Overgenomen van vorige werkgever",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "cancel": "Annuleren",
+    "delete": "Saldo verwijderen",
+    "setOn": "Ingesteld op {date} door {user}",
+    "success": {
+      "saved": "Beginsaldo succesvol opgeslagen",
+      "deleted": "Beginsaldo succesvol verwijderd"
+    },
+    "errors": {
+      "saveFailed": "Beginsaldo opslaan mislukt",
+      "deleteFailed": "Beginsaldo verwijderen mislukt"
+    },
+    "deleteConfirm": {
+      "title": "Beginsaldo verwijderen",
+      "message": "Weet u zeker dat u het beginsaldo voor {year} wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
     }
   }
 }
