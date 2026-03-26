@@ -219,8 +219,7 @@ export default function PotentialDriversPage() {
                 open={!!deleteId}
                 title={t('potentialDrivers.detail.deleteConfirm')}
                 onConfirm={handleDelete}
-                onCancel={() => setDeleteId(null)}
-                loading={isDeleting}
+                onClose={() => setDeleteId(null)}
             />
         </Box>
     );
